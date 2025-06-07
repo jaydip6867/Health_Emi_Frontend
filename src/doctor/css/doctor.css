@@ -1,0 +1,85 @@
+body{
+    background: #EDF6FF;
+}
+.slider_doctor img{
+    display: block;
+    margin: auto;
+}
+.doctor_testi_content h4{
+    color: #223F99;
+    font-size: 32px;
+}
+.doctor_testi_content p{
+    color: #757575;
+    font-size: 22px;
+}
+.theme_btn{
+    background-color: #223F99;
+    color: white;
+    font-size: 14px;
+}
+.register_doctor .form-label{
+    font-size: 14px;
+}
+.register_doctor input , .register_doctor input::placeholder{
+    font-size: 14px;
+    padding-left: 30px;
+    color: #757575;
+}
+.register_doctor input::placeholder{
+    color: #bfbfbf;
+    padding-left: 10px;
+}
+.register_doctor input.upload_file_doc{
+    padding-left: 10px;
+}
+.register_doctor .icon_input{
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    /* color: #8c8c8c; */
+}
+.form-link{
+    color: #223F99;
+    font-weight: 500;
+}
+.register_doctor h3{
+    color: #223F99;
+    font-weight: 700;
+    font-size: 36px;
+}
+.register_doctor p{
+    color: #757575;
+}
+.slider_doctor .slick-dots{
+    display: flex !important;
+    justify-content: center;
+}
+.slider_doctor .slick-dots .slick-active{
+    width: 30px;
+}
+.slider_doctor .slick-dots button::before{
+    content: '';
+    height: 5px;
+    width: 5px;
+    border-radius: 5px;
+    background-color: #223f99;
+    transition: .3s ease-in-out;
+}
+.slider_doctor .slick-dots .slick-active button::before{
+    content: '';
+    width: 100%;
+    position: absolute;
+    background-color: #223F99;
+    border-radius: 5px;
+    transition: .3s ease-in-out;
+}
+.slider_doctor .slick-dots li button , .slider_doctor .slick-dots li{
+    height: 5px;
+    width: 5px;
+    padding: 0;
+    margin: 0 5px;
+}
+.register_doctor input.otpfield{
+    font-size: 30px;
+}
