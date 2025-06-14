@@ -21,7 +21,7 @@ body{
 .register_doctor .form-label{
     font-size: 14px;
 }
-.register_doctor input , .register_doctor input::placeholder{
+.register_doctor .frm_input , .register_doctor input::placeholder{
     font-size: 14px;
     padding-left: 30px;
     color: #757575;
@@ -82,4 +82,15 @@ body{
 }
 .register_doctor input.otpfield{
     font-size: 30px;
+}
+
+
+/* tostify color change */
+.custom-toast-error {
+  background-color: #e74c3c;
+  color: #fff;
+}
+.custom-toast-success {
+  background-color: #2acc01;
+  color: #fff;
 }

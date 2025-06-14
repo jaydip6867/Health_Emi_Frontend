@@ -1,54 +1,67 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+
 import { Col, Container, Row, Button, Form } from 'react-bootstrap';
-import Slider from 'react-slick';
+
 import { AiOutlinePhone } from 'react-icons/ai';
 import './css/doctor.css';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { CiLock } from 'react-icons/ci';
+import DoctorTestimonial from './DoctorTestimonial';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
 
 const DoctorLogin = () => {
-    var doctor_testimonial = {
-        dots: true,
-        infinite: true,
-        arrows: false,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        autoplay: true,
-    };
+    
+    var navigate = useNavigate();
+
+    // var logindata;
+
+    useEffect(()=>{
+        var data = JSON.parse(localStorage.getItem('doctordata'));
+        // console.log('logindata = ', data)
+        if(!data){
+            navigate('/doctor')
+        }
+        else{
+            navigate('doctordashboard')
+        }
+
+    },[navigate])
+
+    var frmdata = {email:'',password:''}
+    const [frmdoctor,setfrmdoctor] = useState(frmdata);
+
+    function selfrmdata(e){
+        const { name, value } = e.target;
+        setfrmdoctor(frmdoctor => ({
+            ...frmdoctor,
+            [name]: value
+        }));
+    }
+
+    function logindoctor(){
+        console.log(frmdoctor)
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/login',
+            data: frmdoctor
+        }).then((res) => {
+            toast('Doctor Login successfully...',{className:'custom-toast-success'})
+            // console.log(res)
+            localStorage.setItem('doctordata',JSON.stringify(res))
+            navigate('doctordashboard')
+        }).catch(function (error) {
+            // console.log(error);
+            toast(error.response.data.Message,{className:'custom-toast-error'})
+        });
+    }
+    
     return (
         <div className='min-vh-100 d-flex align-items-center'>
             <Container className='py-3'>
                 <Row className='align-items-center'>
-                    <Col md={{ span: 5, offset: 1 }} className="d-none d-md-block">
-                        <Slider {...doctor_testimonial} className='slider_doctor'>
-                            <div className='item text-center'>
-                                <img src={require('./assets/doctor_testimonial_1.png')} />
-                                <div className='doctor_testi_content'>
-                                    <h4>Thousands of Specialists</h4>
-                                    <p>Get medical advice and treatment service from Specialists doctor from any time</p>
-                                </div>
-                            </div>
-                            <div className='item text-center'>
-                                <img src={require('./assets/doctor_testimonial_1.png')} />
-                                <div className='doctor_testi_content'>
-                                    <h4>Thousands of Specialists</h4>
-                                    <p>Get medical advice and treatment service from Specialists doctor from any time</p>
-                                </div>
-                            </div>
-                            <div className='item text-center'>
-                                <img src={require('./assets/doctor_testimonial_1.png')} />
-                                <div className='doctor_testi_content'>
-                                    <h4>Thousands of Specialists</h4>
-                                    <p>Get medical advice and treatment service from Specialists doctor from any time</p>
-                                </div>
-                            </div>
-
-                        </Slider>
-                    </Col>
+                    <DoctorTestimonial/>
                     <Col md={5}>
                         <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
                             <div className='text-center'>
@@ -58,32 +71,33 @@ const DoctorLogin = () => {
                             <Form>
 
                                 <Form.Group controlId="mobile" className='position-relative mb-3'>
-                                    <Form.Label>Mobile No.</Form.Label>
-                                    <Form.Control placeholder="Mobile No." />
+                                    <Form.Label>Email</Form.Label>
+                                    <Form.Control placeholder="Enter Email" name='email' value={frmdoctor.email} className='frm_input' onChange={selfrmdata} />
                                     <AiOutlinePhone className='icon_input' />
                                 </Form.Group>
 
                                 <Form.Group controlId="password" className='position-relative mb-1'>
                                     <Form.Label>Password</Form.Label>
-                                    <Form.Control placeholder="Password" />
+                                    <Form.Control placeholder="Enter Password" name='password' value={frmdoctor.password} className='frm_input' onChange={selfrmdata} />
                                     <CiLock className='icon_input' />
                                 </Form.Group>
                                 <div className='form_bottom_div text-end'>
-                                    <p><Link to={'/DoctorForgot'} className='form-link'>Forgotten Password ?</Link> </p>
+                                    <p><Link to={'forgotdoctor'} className='form-link'>Forgotten Password ?</Link> </p>
                                 </div>
 
-                                <Link to={'/Doctor_Dashboard'} type="button" className='btn btn-primary d-block w-100 theme_btn mt-4'>
+                                <Button onClick={logindoctor} type="button" className='btn btn-primary d-block w-100 theme_btn mt-4'>
                                     Sign In
-                                </Link>
+                                </Button>
                             </Form>
                             <div className='form_bottom_div text-center mt-3'>
-                                <p>Don't have an Account? <Link to={'/'} className='form-link'>Sign Up</Link> </p>
+                                <p>Don't have an Account? <Link to={'doctorregister'} className='form-link'>Sign Up</Link> </p>
                             </div>
                         </div>
                     </Col>
 
                 </Row>
             </Container>
+            <ToastContainer />
         </div>
     )
 }

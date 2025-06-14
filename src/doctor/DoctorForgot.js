@@ -5,24 +5,81 @@ import "slick-carousel/slick/slick-theme.css";
 import { Col, Container, Row, Button, Form } from 'react-bootstrap';
 import Slider from 'react-slick';
 import './css/doctor.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CiLock } from 'react-icons/ci';
 import { FaRegEnvelope } from 'react-icons/fa';
+import DoctorTestimonial from './DoctorTestimonial';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
 
 const DoctorForgot = () => {
+
+    var navigate = useNavigate();
 
     const [doc_email, setdoc_email] = useState(true);
     const [doc_forgt_otp, setdoc_forgt_otp] = useState(false);
     const [doc_reset_ps, setdoc_rest_ps] = useState(false);
 
-    function emailotpforgot(){
-        setdoc_email(false);
-        setdoc_forgt_otp(true);
+    const [email, setemail] = useState('')
+    const [otp, setotp] = useState('')
+    const [newps, setnewps] = useState('')
+    // const [cfmps, setcfmps] = useState('')
+
+    function emailotpforgot() {
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/forgetpassword',
+            data: {
+                "email": email,
+            }
+        }).then((res) => {
+            toast('OTP sent To your email...', { className: 'custom-toast-success' })
+            // console.log(res)
+            setdoc_email(false);
+            setdoc_forgt_otp(true);
+        }).catch(function (error) {
+            console.log(error);
+            toast(error.response.data.Message, { className: 'custom-toast-error' })
+        });
+
     }
 
-    function otpverifydone(){
-        setdoc_forgt_otp(false);
-        setdoc_rest_ps(true);
+    function otpverifydone() {
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/forgetpassword/verifyotp',
+            data: {
+                "email": email,
+                "otp": otp
+            }
+        }).then((res) => {
+            toast('OTP Verify Successfully...', { className: 'custom-toast-success' })
+            console.log(res)
+            setdoc_forgt_otp(false);
+            setdoc_rest_ps(true);
+        }).catch(function (error) {
+            // console.log(error);
+            toast(error.response.data.Message, { className: 'custom-toast-error' })
+        });
+
+    }
+
+    function resetps() {
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/forgetpassword/setpassword',
+            data: {
+                "email": email,
+                "password": newps
+            }
+        }).then((res) => {
+            toast('Password Reset Successfully...', { className: 'custom-toast-success' })
+            // console.log(res)
+            navigate('/doctor')
+        }).catch(function (error) {
+            // console.log(error);
+            toast(error.response.data.Message, { className: 'custom-toast-error' })
+        });
     }
 
     var doctor_testimonial = {
@@ -38,32 +95,7 @@ const DoctorForgot = () => {
         <div className='min-vh-100 d-flex align-items-center'>
             <Container className='py-3'>
                 <Row className='align-items-center'>
-                    <Col md={{ span: 5, offset: 1 }} className="d-none d-md-block">
-                        <Slider {...doctor_testimonial} className='slider_doctor'>
-                            <div className='item text-center'>
-                                <img src={require('./assets/doctor_testimonial_1.png')} />
-                                <div className='doctor_testi_content'>
-                                    <h4>Thousands of Specialists</h4>
-                                    <p>Get medical advice and treatment service from Specialists doctor from any time</p>
-                                </div>
-                            </div>
-                            <div className='item text-center'>
-                                <img src={require('./assets/doctor_testimonial_1.png')} />
-                                <div className='doctor_testi_content'>
-                                    <h4>Thousands of Specialists</h4>
-                                    <p>Get medical advice and treatment service from Specialists doctor from any time</p>
-                                </div>
-                            </div>
-                            <div className='item text-center'>
-                                <img src={require('./assets/doctor_testimonial_1.png')} />
-                                <div className='doctor_testi_content'>
-                                    <h4>Thousands of Specialists</h4>
-                                    <p>Get medical advice and treatment service from Specialists doctor from any time</p>
-                                </div>
-                            </div>
-
-                        </Slider>
-                    </Col>
+                    <DoctorTestimonial />
                     {
                         doc_email === true ? <Col md={5}>
                             <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
@@ -75,11 +107,11 @@ const DoctorForgot = () => {
 
                                     <Form.Group controlId="Email" className='position-relative mb-3'>
                                         <Form.Label>Email Address</Form.Label>
-                                        <Form.Control placeholder="Email Address" />
+                                        <Form.Control placeholder="Email Address" name='email' value={email} onChange={(e) => setemail(e.target.value)} className='frm_input' />
                                         <FaRegEnvelope className='icon_input' />
                                     </Form.Group>
 
-                                    <Button type="button" onClick={() => { emailotpforgot()}} className='d-block w-100 theme_btn my-3 mt-4'>
+                                    <Button type="button" onClick={emailotpforgot} className='d-block w-100 theme_btn my-3 mt-4'>
                                         Send OTP
                                     </Button>
                                 </Form>
@@ -94,7 +126,7 @@ const DoctorForgot = () => {
                                     <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
                                     <Form>
                                         <Form.Group as={Col} controlId="fullname" className='position-relative my-3'>
-                                            <Form.Control type="text" placeholder="Ex:- 1234" className='otpfield' />
+                                            <Form.Control type="text" name='otp' value={otp} onChange={(e) => setotp(e.target.value)} placeholder="Ex:- 1234" className='otpfield' />
                                         </Form.Group>
                                     </Form>
                                     <div className='form_bottom_div text-end mt-3'>
@@ -102,7 +134,7 @@ const DoctorForgot = () => {
                                     </div>
                                 </div>
 
-                                <Button type="button" onClick={() => { otpverifydone() }} className='d-block w-100 theme_btn my-3'>
+                                <Button type="button" onClick={otpverifydone} className='d-block w-100 theme_btn my-3'>
                                     Verify OTP
                                 </Button>
                             </div>
@@ -119,17 +151,17 @@ const DoctorForgot = () => {
 
                                     <Form.Group controlId="password" className='position-relative mb-3'>
                                         <Form.Label>New Password</Form.Label>
-                                        <Form.Control type='password' placeholder="New Password" />
+                                        <Form.Control type='password' placeholder="New Password" name='newpassword' value={newps} onChange={(e) => setnewps(e.target.value)} className='frm_input' />
                                         <CiLock className='icon_input' />
                                     </Form.Group>
 
-                                    <Form.Group controlId="password" className='position-relative mb-3'>
+                                    {/* <Form.Group controlId="password" className='position-relative mb-3'>
                                         <Form.Label>Confirm Password</Form.Label>
-                                        <Form.Control type='password' placeholder="Confirm Password" />
+                                        <Form.Control type='password' placeholder="Confirm Password" name='confirmpassword' value={cfmps} onChange={(e) => setcfmps(e.target.value)} className='frm_input' />
                                         <CiLock className='icon_input' />
-                                    </Form.Group>
+                                    </Form.Group> */}
 
-                                    <Button type="button" className='d-block w-100 theme_btn my-3 mt-4'>
+                                    <Button type="button" onClick={resetps} className='d-block w-100 theme_btn my-3 mt-4'>
                                         Continue To Sign In
                                     </Button>
                                 </Form>
@@ -139,6 +171,7 @@ const DoctorForgot = () => {
 
                 </Row>
             </Container>
+            <ToastContainer />
         </div>
     )
 }
