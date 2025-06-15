@@ -18,7 +18,7 @@ body{
     color: white;
     font-size: 14px;
 }
-.register_doctor .form-label{
+.register_doctor .form-label,  .frm-select{
     font-size: 14px;
 }
 .register_doctor .frm_input , .register_doctor input::placeholder{
@@ -26,7 +26,7 @@ body{
     padding-left: 30px;
     color: #757575;
 }
-.register_doctor input::placeholder{
+.register_doctor input::placeholder, .register_doctor textarea::placeholder{
     color: #bfbfbf;
     padding-left: 10px;
 }

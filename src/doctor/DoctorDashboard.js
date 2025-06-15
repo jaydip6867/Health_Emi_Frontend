@@ -6,6 +6,7 @@ const DoctorDashboard = () => {
   var navigate = useNavigate();
 
   const [doctor,setdoctor] = useState(null)
+  const [token,settoken] = useState(null)
 
   useEffect(()=>{
     var data = JSON.parse(localStorage.getItem('doctordata'));
@@ -14,6 +15,7 @@ const DoctorDashboard = () => {
     }
     else{
       setdoctor(data.data.Data.doctorData);
+      settoken(`Bearer ${data.data.Data.accessToken}`)
     }
   },[navigate])
 

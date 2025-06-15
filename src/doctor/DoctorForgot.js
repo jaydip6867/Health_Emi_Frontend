@@ -11,10 +11,12 @@ import { FaRegEnvelope } from 'react-icons/fa';
 import DoctorTestimonial from './DoctorTestimonial';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
+import Loader from '../Loader';
 
 const DoctorForgot = () => {
 
     var navigate = useNavigate();
+    const [loading,setloading] = useState(false);
 
     const [doc_email, setdoc_email] = useState(true);
     const [doc_forgt_otp, setdoc_forgt_otp] = useState(false);
@@ -26,6 +28,7 @@ const DoctorForgot = () => {
     // const [cfmps, setcfmps] = useState('')
 
     function emailotpforgot() {
+        setloading(true)
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/doctor/forgetpassword',
@@ -40,6 +43,8 @@ const DoctorForgot = () => {
         }).catch(function (error) {
             console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
+        }).finally(()=>{
+            setloading(false)
         });
 
     }
@@ -61,7 +66,6 @@ const DoctorForgot = () => {
             // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         });
-
     }
 
     function resetps() {
@@ -82,15 +86,6 @@ const DoctorForgot = () => {
         });
     }
 
-    var doctor_testimonial = {
-        dots: true,
-        infinite: true,
-        arrows: false,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        autoplay: true,
-    };
     return (
         <div className='min-vh-100 d-flex align-items-center'>
             <Container className='py-3'>
@@ -172,6 +167,7 @@ const DoctorForgot = () => {
                 </Row>
             </Container>
             <ToastContainer />
+            {loading ? <Loader/> : ''}
         </div>
     )
 }

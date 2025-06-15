@@ -3,17 +3,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { Col, Container, Row, Button, Form } from 'react-bootstrap';
 
-import { AiOutlinePhone } from 'react-icons/ai';
 import './css/doctor.css';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { CiLock } from 'react-icons/ci';
 import DoctorTestimonial from './DoctorTestimonial';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
+import Loader from '../Loader';
+import { FaRegEnvelope } from 'react-icons/fa';
 
 const DoctorLogin = () => {
     
     var navigate = useNavigate();
+    const [loading,setloading] = useState(false)
 
     // var logindata;
 
@@ -41,7 +43,8 @@ const DoctorLogin = () => {
     }
 
     function logindoctor(){
-        console.log(frmdoctor)
+        // console.log(frmdoctor)
+        setloading(true)
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/doctor/login',
@@ -54,6 +57,8 @@ const DoctorLogin = () => {
         }).catch(function (error) {
             // console.log(error);
             toast(error.response.data.Message,{className:'custom-toast-error'})
+        }).finally(()=>{
+            setloading(false)
         });
     }
     
@@ -73,7 +78,7 @@ const DoctorLogin = () => {
                                 <Form.Group controlId="mobile" className='position-relative mb-3'>
                                     <Form.Label>Email</Form.Label>
                                     <Form.Control placeholder="Enter Email" name='email' value={frmdoctor.email} className='frm_input' onChange={selfrmdata} />
-                                    <AiOutlinePhone className='icon_input' />
+                                    <FaRegEnvelope className='icon_input' />
                                 </Form.Group>
 
                                 <Form.Group controlId="password" className='position-relative mb-1'>
@@ -98,6 +103,7 @@ const DoctorLogin = () => {
                 </Row>
             </Container>
             <ToastContainer />
+            {loading ? <Loader/> : ''}
         </div>
     )
 }
