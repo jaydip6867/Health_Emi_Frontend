@@ -5,6 +5,9 @@ import DoctorLogin from './doctor/DoctorLogin';
 import DoctorForgot from './doctor/DoctorForgot';
 import DoctorDashboard from './doctor/DoctorDashboard';
 import Home from './Home';
+import NotFound from './NotFound';
+import D_Appointment from './doctor/D_Appointment';
+import DoctorProfile from './doctor/DoctorProfile';
 
 function App() {
   return (
@@ -16,7 +19,10 @@ function App() {
           <Route path='doctorregister' element={<DoctorRegister/>}></Route>
           <Route path='forgotdoctor' element={<DoctorForgot/>}></Route>
           <Route path='doctordashboard' element={<DoctorDashboard/>}></Route>
+          <Route path='doctorprofile' element={<DoctorProfile/>}></Route>
+          <Route path='doctorappointment' element={<D_Appointment/>}></Route>
         </Route>
+        <Route path='*' element={<NotFound/>} />
       </Routes>
     </div>
   );

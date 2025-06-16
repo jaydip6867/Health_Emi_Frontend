@@ -83,7 +83,7 @@ const DoctorLogin = () => {
 
                                 <Form.Group controlId="password" className='position-relative mb-1'>
                                     <Form.Label>Password</Form.Label>
-                                    <Form.Control placeholder="Enter Password" name='password' value={frmdoctor.password} className='frm_input' onChange={selfrmdata} />
+                                    <Form.Control type='password' placeholder="Enter Password" name='password' value={frmdoctor.password} className='frm_input' onChange={selfrmdata} />
                                     <CiLock className='icon_input' />
                                 </Form.Group>
                                 <div className='form_bottom_div text-end'>

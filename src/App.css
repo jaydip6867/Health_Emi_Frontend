@@ -22,3 +22,56 @@
   font-weight: 700;
   src: url('./assets/fonts/hanken-grotesk-v11-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
+
+/* loader css */
+/* HTML: <div class="loader"></div> */
+.loader_box{
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, .7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.loader {
+  width: 50px;
+  --b: 8px; 
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 1px;
+  background: conic-gradient(#0000 10%,#f03355) content-box;
+  -webkit-mask:
+    repeating-conic-gradient(#0000 0deg,#000 1deg 20deg,#0000 21deg 36deg),
+    radial-gradient(farthest-side,#0000 calc(100% - var(--b) - 1px),#000 calc(100% - var(--b)));
+  -webkit-mask-composite: destination-in;
+          mask-composite: intersect;
+  animation:l4 1s infinite steps(10);
+}
+@keyframes l4 {to{transform: rotate(1turn)}}
+
+/* sidebar css */
+.sidebar_nav a{
+  display: block;
+  padding: 10px 10px 10px 40px;
+  color: #fff;
+  text-decoration: none;
+}
+.sidebar_nav a.active{
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.doctor_profile .dropdown-menu
+{
+  border: none;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+  padding: 10px 5px 5px 5px;
+  border-top: 2px solid #223F99;
+}
+.doctor_profile .dropdown-menu > *{
+  display: block;
+  width: 100%;
+  padding: 5px;
+  font-size: 12px; 
+}

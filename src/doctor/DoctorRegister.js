@@ -7,7 +7,7 @@ import './css/doctor.css';
 import { AiOutlinePhone, AiOutlineUser } from 'react-icons/ai';
 import { FaRegEnvelope } from 'react-icons/fa';
 import { CiLock, CiLocationOn } from 'react-icons/ci';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import DoctorTestimonial from './DoctorTestimonial';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
@@ -117,13 +117,13 @@ const DoctorRegister = () => {
 
     function send_doctor_otp() {
         setloading(true)
-        console.log(frmdoctor)
+        // console.log(frmdoctor)
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/doctor/signup',
             data: frmdoctor
         }).then((res) => {
-            toast('doctor register successfully...', { className: 'custom-toast-success' })
+            toast('OTP send to your Email...', { className: 'custom-toast-success' })
             setdocreg(false);
             setdocotp(true);
         }).catch(function (error) {
@@ -147,7 +147,7 @@ const DoctorRegister = () => {
                 "otp": otp
             }
         }).then((res) => {
-            toast('otp verify successfully...', { className: 'custom-toast-success' })
+            toast('OTP verify successfully...', { className: 'custom-toast-success' })
             setdocotp(false);
             setdocreg2(true);
             console.log(res);
@@ -236,7 +236,7 @@ const DoctorRegister = () => {
 
                                     <Form.Group controlId="password" className='position-relative mb-3'>
                                         <Form.Label>Password</Form.Label>
-                                        <Form.Control placeholder="Password" className='frm_input' name='password' value={frmdoctor.password} onChange={selfrmdata} />
+                                        <Form.Control type='password' placeholder="Password" className='frm_input' name='password' value={frmdoctor.password} onChange={selfrmdata} />
                                         <CiLock className='icon_input' />
                                     </Form.Group>
 
@@ -345,14 +345,12 @@ const DoctorRegister = () => {
                                         <div className='position-relative'>
                                             <Form.Label>Country</Form.Label>
                                             <Form.Select className='frm-select' name='country' onChange={handleCountryChange} value={selectedCountryCode}>
-                                                <option value={null}>Select Country</option>
-                                                {countries.map((country) => (
+                                               {countries.map((country) => (
                                                     <option key={country.isoCode} value={country.isoCode}>
                                                         {country.name}
                                                     </option>
                                                 ))}
                                             </Form.Select>
-                                            {/* <AiOutlineUser className='icon_input' /> */}
                                         </div>
                                     </Form.Group>
 
@@ -360,14 +358,12 @@ const DoctorRegister = () => {
                                         <div className='position-relative'>
                                             <Form.Label>State</Form.Label>
                                             <Form.Select className='frm-select' name='state' onChange={handleStateChange} value={selectedStateCode} disabled={!selectedCountryCode}>
-                                                {/* <option>Select State</option> */}
                                                 {states.map((state) => (
                                                     <option key={state.isoCode} value={state.isoCode}>
                                                         {state.name}
                                                     </option>
                                                 ))}
                                             </Form.Select>
-                                            {/* <FaRegEnvelope className='icon_input' /> */}
                                         </div>
                                     </Form.Group>
 
@@ -375,14 +371,12 @@ const DoctorRegister = () => {
                                         <div className='position-relative'>
                                             <Form.Label>City</Form.Label>
                                             <Form.Select className='frm-select' name='city' onChange={selfrmdata} disabled={!selectedStateCode}>
-                                                {/* <option>Select City</option> */}
                                                 {
                                                     cities.map((vc, vi) => {
                                                         return (<option key={vi} value={vc.name}>{vc.name}</option>)
                                                     })
                                                 }
                                             </Form.Select>
-                                            {/* <FaRegEnvelope className='icon_input' /> */}
                                         </div>
                                     </Form.Group>
 
