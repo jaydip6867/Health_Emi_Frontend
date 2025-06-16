@@ -9,7 +9,7 @@ const DoctorNav = (name) => {
             <div className='top_nav bg-white rounded p-2 shadow mb-4'>
                 <Row className='align-items-center justify-content-between'>
                     <Col xs={'auto'}>
-                        <h6 className='m-0'>Hello Doctor, {name == null ? name.doctorname : ''}</h6>
+                        <h6 className='m-0'>Hello Doctor, {name && name.doctorname}</h6>
                     </Col>
                     <Col xs={'auto'} className='doctor_profile'>
                         <Dropdown>

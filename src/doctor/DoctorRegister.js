@@ -441,7 +441,7 @@ const DoctorRegister = () => {
                 </Row>
             </Container>
             <ToastContainer />
-            {loading ? <Loader /> : ''}
+            {loading ? <Loader />:''}
         </div>
     )
 }
