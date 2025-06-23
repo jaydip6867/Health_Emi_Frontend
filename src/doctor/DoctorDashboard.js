@@ -24,9 +24,9 @@ const DoctorDashboard = () => {
     }
   }, [navigate])
 
-  useEffect(() => {
-    if (doctor != null) { toast(`Welcome Doctor ${doctor.name}`, {autoClose: 2000 }) }
-  }, [doctor])
+  // useEffect(() => {
+  //   if (doctor != null) { toast(`Welcome Doctor ${doctor.name}`, {autoClose: 2000 }) }
+  // }, [doctor])
 
   return (
     <>

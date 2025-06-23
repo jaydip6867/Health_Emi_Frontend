@@ -9,6 +9,8 @@ import NotFound from './NotFound';
 import D_Appointment from './doctor/D_Appointment';
 import DoctorProfile from './doctor/DoctorProfile';
 import PatientRegister from './patient/PatientRegister';
+import PatientLogin from './patient/PatientLogin';
+import D_Surgery from './doctor/D_Surgery';
 
 function App() {
   return (
@@ -22,8 +24,12 @@ function App() {
           <Route path='doctordashboard' element={<DoctorDashboard/>}></Route>
           <Route path='doctorprofile' element={<DoctorProfile/>}></Route>
           <Route path='doctorappointment' element={<D_Appointment/>}></Route>
+          <Route path='doctorsurgery' element={<D_Surgery/>}></Route>
         </Route>
-        <Route path='/patient_register' element={<PatientRegister/>}></Route>
+        <Route path='/patient'>
+          <Route path='' index element={<PatientLogin/>}></Route>
+          <Route path='patientregister' element={<PatientRegister/>}></Route>
+        </Route>
         <Route path='*' element={<NotFound/>} />
       </Routes>
     </div>
