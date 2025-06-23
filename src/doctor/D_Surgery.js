@@ -70,7 +70,6 @@ const D_Surgery = () => {
 
     function addsurgery() {
         setloading(true)
-        console.log(token)
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/doctor/surgeries/save',

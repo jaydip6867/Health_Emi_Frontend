@@ -21,6 +21,10 @@ body{
 .register_doctor .form-label,  .frm-select{
     font-size: 14px;
 }
+select.frm_input{
+    font-size: 14px;
+    padding-left: 12px !important;
+}
 .register_doctor .frm_input , .register_doctor input::placeholder{
     font-size: 14px;
     padding-left: 30px;
