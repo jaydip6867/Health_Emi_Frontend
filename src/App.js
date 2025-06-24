@@ -11,26 +11,32 @@ import DoctorProfile from './doctor/DoctorProfile';
 import PatientRegister from './patient/PatientRegister';
 import PatientLogin from './patient/PatientLogin';
 import D_Surgery from './doctor/D_Surgery';
+import PatientForgotps from './patient/PatientForgotps';
+import PatientDashboard from './patient/PatientDashboard';
+import PatientProfile from './patient/PatientProfile';
 
 function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path='/' element={<Home/>}></Route>
+        <Route path='/' element={<Home />}></Route>
         <Route path='/doctor'>
-          <Route path='' index element={<DoctorLogin/>}></Route>
-          <Route path='doctorregister' element={<DoctorRegister/>}></Route>
-          <Route path='forgotdoctor' element={<DoctorForgot/>}></Route>
-          <Route path='doctordashboard' element={<DoctorDashboard/>}></Route>
-          <Route path='doctorprofile' element={<DoctorProfile/>}></Route>
-          <Route path='doctorappointment' element={<D_Appointment/>}></Route>
-          <Route path='doctorsurgery' element={<D_Surgery/>}></Route>
+          <Route path='' index element={<DoctorLogin />}></Route>
+          <Route path='doctorregister' element={<DoctorRegister />}></Route>
+          <Route path='forgotdoctor' element={<DoctorForgot />}></Route>
+          <Route path='doctordashboard' element={<DoctorDashboard />}></Route>
+          <Route path='doctorprofile' element={<DoctorProfile />}></Route>
+          <Route path='doctorappointment' element={<D_Appointment />}></Route>
+          <Route path='doctorsurgery' element={<D_Surgery />}></Route>
         </Route>
+        <Route path='/patientregister' element={<PatientRegister />}></Route>
         <Route path='/patient'>
-          <Route path='' index element={<PatientLogin/>}></Route>
-          <Route path='patientregister' element={<PatientRegister/>}></Route>
+          <Route path='' index element={<PatientLogin />}></Route>
+          <Route path='forgotpatient' index element={<PatientForgotps />}></Route>
+          <Route path='patientdahsboard' element={<PatientDashboard />}></Route>
+          <Route path='patientprofile' element={<PatientProfile />}></Route>
         </Route>
-        <Route path='*' element={<NotFound/>} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </div>
   );

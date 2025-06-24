@@ -18,7 +18,7 @@ const DoctorNav = (name) => {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                                <NavLink to={'/doctor/doctorprofile'}>Profile</NavLink>
+                                <NavLink to={'/doctor/doctorprofile'} className='text-decoration-none d-block text-center p-2 profile_nav'>Profile</NavLink>
                                 <Button className='btn-navbar' onClick={() => (localStorage.removeItem('doctordata'), navigate('/doctor'))}>Logout</Button>
 
                             </Dropdown.Menu>

@@ -86,11 +86,21 @@ const DoctorProfile = () => {
         else {
             setdoctor(data.data.Data.doctorData);
             settoken(`Bearer ${data.data.Data.accessToken}`)
+
         }
     }, [navigate])
 
     useEffect(() => {
         setloading(true)
+        if (doctor) {
+            setTimeout(() => {
+                getprofiledata()
+            }, 200);
+        }
+    }, [doctor])
+
+    function getprofiledata() {
+
         axios({
             method: 'get',
             url: 'https://healtheasy-o25g.onrender.com/doctor/profile',
@@ -99,13 +109,14 @@ const DoctorProfile = () => {
             }
         }).then((res) => {
             setprofile(res.data.Data)
-            console.log('profile', res.data.Data)
+            // console.log('profile', res.data.Data)
         }).catch(function (error) {
             console.log(error);
         }).finally(() => {
             setloading(false)
         });
-    }, [doctor])
+
+    }
 
     function deletdoctor() {
         Swal.fire({
@@ -173,12 +184,53 @@ const DoctorProfile = () => {
         console.log(profile)
     }
 
-    function updateprofiledata(){
-        setdisabled(true)
-        setSelectedCountryCode('')
-        setSelectedStateCode('')
-        console.log('update profile data = ',profile)
-    }   
+    function updateprofiledata(id) {
+
+        console.log('update profile data = ', id, profile)
+        // setloading(true)
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/profile/edit',
+            headers: {
+                Authorization: token
+            },
+            data: {
+                "name":profile.name,
+                "email":profile.email,
+                "gender":profile.gender,
+                "mobile":profile.mobile,
+                "pincode":profile.pincode,
+                "specialty":profile.specialty,
+                "sub_specialty":profile.sub_specialty,
+                "qualification":profile.qualification,
+                "experience":profile.experience,
+                "hospital_name":profile.hospital_name,
+                "hospital_address":profile.hospital_address,
+                "country":profile.country,
+                "state":profile.state,
+                "city":profile.city,
+                "identityproof":profile.identityproof
+            }
+        }).then((res) => {
+            // setprofile(res.data.Data)
+            getprofiledata()
+            setdisabled(true)
+            setSelectedCountryCode('')
+            setSelectedStateCode('')
+            Swal.fire({
+                title: "Profile Update Successfully...",
+                icon: "success",
+            });
+        }).catch(function (error) {
+            Swal.fire({
+                title: "Profile Not Update.",
+                text: "Something Is Missing. Please Check Details...",
+                icon: "error",
+            });
+        }).finally(() => {
+            setloading(false)
+        });
+    }
     return (
         <>
             <Container fluid className='p-0'>
@@ -189,169 +241,170 @@ const DoctorProfile = () => {
                         <div className='bg-white rounded p-3'>
                             <h4>Doctor Profile</h4>
 
-                            <div className='p-3 shadow'>
-                                <Form className='register_doctor row g-4'>
-                                    <Form.Group as={Col} controlId="fullname" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Full Name</Form.Label>
-                                            <Form.Control type="text" placeholder="Full Name" className='frm_input' name="name" value={profile && profile.name} disabled={IsDisable} onChange={profiledata} />
-                                            <AiOutlineUser className='icon_input' />
-                                        </div>
-                                    </Form.Group>
+                            {
+                                profile !== null ? <div className='p-3 shadow'>
+                                    <Form className='register_doctor row g-4'>
+                                        <Form.Group as={Col} controlId="name" className='col-6 col-md-4 col-lg-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Name</Form.Label>
+                                                <Form.Control type="text" placeholder="Full Name" className='frm_input' name="name" value={profile && profile.name} disabled={IsDisable} onChange={profiledata} />
+                                                <AiOutlineUser className='icon_input' />
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group as={Col} controlId="email" className='col-6 col-md-4 col-lg-3'>
-                                        <div className="position-relative">
-                                            <Form.Label>Email</Form.Label>
-                                            <Form.Control type="email" placeholder="Email" className='frm_input' name="email" value={profile && profile.email} disabled={IsDisable} onChange={profiledata} />
-                                            <FaRegEnvelope className='icon_input' />
-                                        </div>
-                                    </Form.Group>
+                                        <Form.Group as={Col} controlId="email" className='col-6 col-md-4 col-lg-3'>
+                                            <div className="position-relative">
+                                                <Form.Label>Email</Form.Label>
+                                                <Form.Control type="email" placeholder="Email" className='frm_input' name="email" value={profile && profile.email} disabled={IsDisable} onChange={profiledata} />
+                                                <FaRegEnvelope className='icon_input' />
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="mobile" className='col-6 col-md-4 col-lg-3'>
-                                        <div className="position-relative">
-                                            <Form.Label>Mobile No.</Form.Label>
-                                            <Form.Control placeholder="Mobile No." className='frm_input' name='mobile' value={profile && profile.mobile} disabled={IsDisable} onChange={profiledata} />
-                                            <AiOutlinePhone className='icon_input' />
-                                        </div>
-                                    </Form.Group>
+                                        <Form.Group controlId="mobile" className='col-6 col-md-4 col-lg-3'>
+                                            <div className="position-relative">
+                                                <Form.Label>Mobile No.</Form.Label>
+                                                <Form.Control placeholder="Mobile No." className='frm_input' name='mobile' value={profile && profile.mobile} disabled={IsDisable} onChange={profiledata} />
+                                                <AiOutlinePhone className='icon_input' />
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="gender" className='col-6 col-md-4 col-lg-3'>
-                                        <Form.Label>Gender </Form.Label>
-                                        <div className='d-flex gap-3'>
-                                            <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' checked={profile && profile.gender == "Male" ? true : false} onChange={profiledata} disabled={IsDisable} /> Male</label>
-                                            <label><Form.Check type='radio' name='gender' value={'Female'} className='d-inline-block me-2' checked={profile && profile.gender == "Female" ? true : false} onChange={profiledata} disabled={IsDisable} /> Female</label>
-                                        </div>
-                                    </Form.Group>
+                                        <Form.Group controlId="gender" className='col-6 col-md-4 col-lg-3'>
+                                            <Form.Label>Gender </Form.Label>
+                                            <div className='d-flex gap-3'>
+                                                <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' checked={profile && profile.gender == "Male" ? true : false} onChange={profiledata} disabled={IsDisable} /> Male</label>
+                                                <label><Form.Check type='radio' name='gender' value={'Female'} className='d-inline-block me-2' checked={profile && profile.gender == "Female" ? true : false} onChange={profiledata} disabled={IsDisable} /> Female</label>
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="mobile" className='col-6 col-md-4 col-lg-3'>
-                                        <div className="position-relative">
-                                            <Form.Label>Pincode</Form.Label>
-                                            <Form.Control placeholder="Pincode" className='frm_input' name='pincode' value={profile && profile.pincode} disabled={IsDisable} onChange={profiledata} />
-                                            <CiLocationOn className='icon_input' />
-                                        </div>
-                                    </Form.Group>
+                                        <Form.Group controlId="mobile" className='col-6 col-md-4 col-lg-3'>
+                                            <div className="position-relative">
+                                                <Form.Label>Pincode</Form.Label>
+                                                <Form.Control placeholder="Pincode" className='frm_input' name='pincode' value={profile && profile.pincode} disabled={IsDisable} onChange={profiledata} />
+                                                <CiLocationOn className='icon_input' />
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group as={Col} controlId="Speciality" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Speciality</Form.Label>
-                                            <Form.Control type="text" placeholder="Ex:- Cardiology" className='frm_input' name="specialty" value={profile && profile.specialty} disabled={IsDisable} onChange={profiledata} />
-                                            <AiOutlineUser className='icon_input' />
-                                        </div>
-                                    </Form.Group>
+                                        <Form.Group as={Col} controlId="Speciality" className='col-6 col-md-4 col-lg-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Speciality</Form.Label>
+                                                <Form.Control type="text" placeholder="Ex:- Cardiology" className='frm_input' name="specialty" value={profile && profile.specialty} disabled={IsDisable} onChange={profiledata} />
+                                                <AiOutlineUser className='icon_input' />
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group as={Col} controlId="SubSpeciality" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Sub Speciality</Form.Label>
-                                            <Form.Control type="email" placeholder="Ex:- Echocardiography" className='frm_input' name="sub_specialty" value={profile && profile.sub_specialty} disabled={IsDisable} onChange={profiledata} />
-                                            <FaRegEnvelope className='icon_input' />
-                                        </div>
-                                    </Form.Group>
+                                        <Form.Group as={Col} controlId="SubSpeciality" className='col-6 col-md-4 col-lg-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Sub Speciality</Form.Label>
+                                                <Form.Control type="email" placeholder="Ex:- Echocardiography" className='frm_input' name="sub_specialty" value={profile && profile.sub_specialty} disabled={IsDisable} onChange={profiledata} />
+                                                <FaRegEnvelope className='icon_input' />
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="Degree" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Degree Registration No.</Form.Label>
-                                            <Form.Control placeholder="Ex:- Dk4567" className='frm_input' name="degree_registration_no" value={profile && profile.degree_registration_no} disabled={IsDisable} onChange={profiledata} />
-                                            <AiOutlinePhone className='icon_input' />
-                                        </div>
-                                    </Form.Group>
+                                        <Form.Group controlId="Degree" className='col-6 col-md-4 col-lg-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Degree Registration No.</Form.Label>
+                                                <Form.Control placeholder="Ex:- Dk4567" className='frm_input' name="degree_registration_no" value={profile && profile.degree_registration_no} disabled={IsDisable} onChange={profiledata} />
+                                                <AiOutlinePhone className='icon_input' />
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="Qualification" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Qualification</Form.Label>
-                                            <Form.Control placeholder="Ex:- D.H.M.S, MD" className='frm_input' name="qualification" value={profile && profile.qualification} disabled={IsDisable} onChange={profiledata} />
-                                            <CiLock className='icon_input' />
-                                        </div>
-                                    </Form.Group>
+                                        <Form.Group controlId="Qualification" className='col-6 col-md-4 col-lg-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Qualification</Form.Label>
+                                                <Form.Control placeholder="Ex:- D.H.M.S, MD" className='frm_input' name="qualification" value={profile && profile.qualification} disabled={IsDisable} onChange={profiledata} />
+                                                <CiLock className='icon_input' />
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="Experience" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Experience</Form.Label>
-                                            <Form.Control placeholder="Ex:- 5 Years" className='frm_input' name="experience" value={profile && profile.experience} disabled={IsDisable} onChange={profiledata} />
-                                            <CiLock className='icon_input' />
-                                        </div>
-                                    </Form.Group>
+                                        <Form.Group controlId="Experience" className='col-6 col-md-4 col-lg-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Experience</Form.Label>
+                                                <Form.Control placeholder="Ex:- 5 Years" className='frm_input' name="experience" value={profile && profile.experience} disabled={IsDisable} onChange={profiledata} />
+                                                <CiLock className='icon_input' />
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="Hospitalname" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Hospital Name</Form.Label>
-                                            <Form.Control placeholder="Enter Hospital Name" className='frm_input' name="hospital_name" value={profile && profile.hospital_name} disabled={IsDisable} onChange={profiledata} />
-                                            <CiLock className='icon_input' />
-                                        </div>
-                                    </Form.Group>
+                                        <Form.Group controlId="Hospitalname" className='col-6 col-md-4 col-lg-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Hospital Name</Form.Label>
+                                                <Form.Control placeholder="Enter Hospital Name" className='frm_input' name="hospital_name" value={profile && profile.hospital_name} disabled={IsDisable} onChange={profiledata} />
+                                                <CiLock className='icon_input' />
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="Hospitaladdress" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Hospital Address</Form.Label>
-                                            <Form.Control as="textarea" placeholder="Enter Hospital Address" name="hospital_address" value={profile && profile.hospital_address} disabled={IsDisable} onChange={profiledata} />
-                                        </div>
-                                    </Form.Group>
+                                        <Form.Group controlId="Hospitaladdress" className='col-6 col-md-4 col-lg-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Hospital Address</Form.Label>
+                                                <Form.Control as="textarea" placeholder="Enter Hospital Address" name="hospital_address" value={profile && profile.hospital_address} disabled={IsDisable} onChange={profiledata} />
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="Hospitaladdress" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Doctor Profile</Form.Label>
-                                            <Form.Control type="file" placeholder="Experience" name='identityproof' className='upload_file_doc' disabled={IsDisable} onChange={profiledata} />
-                                        </div>
-                                    </Form.Group>
+                                        <Form.Group controlId="Hospitaladdress" className='col-6 col-md-4 col-lg-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Doctor Profile</Form.Label>
+                                                <Form.Control type="file" placeholder="Experience" name='identityproof' className='upload_file_doc' disabled={IsDisable} onChange={profiledata} />
+                                            </div>
+                                        </Form.Group>
 
-                                    <Form.Group as={Col} controlId="Country" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Country</Form.Label>
-                                            <Form.Select className='frm-select' name='country' disabled={IsDisable} onChange={handleCountryChange}  >
-                                                {countries.map((country) => (
-                                                    <option key={country.isoCode} value={country.isoCode} selected={profile && profile.country == country.name ? true : false}>
-                                                        {country.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group as={Col} controlId="State" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>State</Form.Label>
-                                            <Form.Select className='frm-select' name='state'  onChange={handleStateChange} value={selectedStateCode} disabled={!selectedCountryCode}>
-                                                {!selectedCountryCode?<option>{profile && profile.state}</option>:''}
-                                                {states.map((state) => {
-                                                    return (
-                                                        <option key={state.isoCode} value={state.isoCode} selected={profile && profile.state == state.name ? true : false}>
-                                                            {state.name}
+                                        <Form.Group as={Col} controlId="Country" className='col-6 col-md-4 col-lg-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Country</Form.Label>
+                                                <Form.Select className='frm-select' name='country' disabled={IsDisable} onChange={handleCountryChange}  >
+                                                    {countries.map((country) => (
+                                                        <option key={country.isoCode} value={country.isoCode} selected={profile && profile.country == country.name ? true : false}>
+                                                            {country.name}
                                                         </option>
-                                                    )
-                                                })}
-                                            </Form.Select>
+                                                    ))}
+                                                </Form.Select>
+                                            </div>
+                                        </Form.Group>
+
+                                        <Form.Group as={Col} controlId="State" className='col-6 col-md-4 col-lg-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>State</Form.Label>
+                                                <Form.Select className='frm-select' name='state' onChange={handleStateChange} value={selectedStateCode} disabled={!selectedCountryCode}>
+                                                    {!selectedCountryCode ? <option>{profile && profile.state}</option> : ''}
+                                                    {states.map((state) => {
+                                                        return (
+                                                            <option key={state.isoCode} value={state.isoCode} selected={profile && profile.state == state.name ? true : false}>
+                                                                {state.name}
+                                                            </option>
+                                                        )
+                                                    })}
+                                                </Form.Select>
+                                            </div>
+                                        </Form.Group>
+
+                                        <Form.Group as={Col} controlId="City" className='mb-3 col-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>City</Form.Label>
+                                                <Form.Select className='frm-select' name='city' onChange={profiledata} disabled={!selectedStateCode}>
+                                                    {!selectedStateCode ? <option>{profile && profile.city}</option> : ''}
+                                                    {
+                                                        cities && cities.map((city, vi) => {
+                                                            return (<option key={vi} value={city.name} selected={profile && profile.city == city.name ? true : false}>{city.name}</option>)
+                                                        })
+                                                    }
+                                                </Form.Select>
+                                            </div>
+                                        </Form.Group>
+
+                                        <div className='text-center border-top'>
+                                            {IsDisable ? <Button type="button" className='theme_btn col-3 mt-3' onClick={() => setdisabled(false)}>
+                                                Edit Profile
+                                            </Button> : <Button type="button" className='theme_btn col-3 mt-3' onClick={() => updateprofiledata(profile._id)}>
+                                                Update
+                                            </Button>}
                                         </div>
-                                    </Form.Group>
-
-                                    <Form.Group as={Col} controlId="City" className='mb-3 col-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>City</Form.Label>
-                                            <Form.Select className='frm-select' name='city' onChange={profiledata} disabled={!selectedStateCode}>
-                                                { !selectedStateCode? <option>{profile && profile.city}</option> : ''}
-                                                {
-                                                    cities && cities.map((city, vi) => {
-                                                        return (<option key={vi} value={city.name} selected={profile && profile.city == city.name ? true : false}>{city.name}</option>)
-                                                    })
-                                                }
-                                            </Form.Select>
-                                        </div>
-                                    </Form.Group>
-
-                                    <div className='text-center border-top'>
-                                        {IsDisable? <Button type="button" className='theme_btn col-3 mt-3' onClick={() => setdisabled(false)}>
-                                            Edit Profile
-                                        </Button> : <Button type="button" className='theme_btn col-3 mt-3' onClick={updateprofiledata}>
-                                            Update
-                                        </Button>}
-                                    </div>
-                                </Form>
-                            </div>
-
-                            <Button variant='danger' onClick={deletdoctor}>Delete Doctor</Button>
+                                    </Form>
+                                </div> : ''
+                            }
+                            <Button variant='danger' className='mt-4' onClick={deletdoctor}>Delete Doctor</Button>
                         </div>
                     </Col>
                 </Row>
             </Container>
-            {loading?<Loader />:''}
+            {loading ? <Loader /> : ''}
         </>
     )
 }

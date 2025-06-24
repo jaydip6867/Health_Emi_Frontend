@@ -125,7 +125,7 @@ const DoctorForgot = () => {
                                         </Form.Group>
                                     </Form>
                                     <div className='form_bottom_div text-end mt-3'>
-                                        <p><Link className='form-link'>Resend OTP ?</Link> </p>
+                                        <p><Link className='form-link' onClick={emailotpforgot}>Resend OTP ?</Link> </p>
                                     </div>
                                 </div>
 

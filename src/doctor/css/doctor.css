@@ -1,68 +1,87 @@
-body{
+body {
     background: #EDF6FF;
 }
-.slider_doctor img{
+
+.slider_doctor img {
     display: block;
     margin: auto;
 }
-.doctor_testi_content h4{
+
+.doctor_testi_content h4 {
     color: #223F99;
     font-size: 32px;
 }
-.doctor_testi_content p{
+
+.doctor_testi_content p {
     color: #757575;
     font-size: 22px;
 }
-.theme_btn{
+
+.theme_btn {
     background-color: #223F99;
     color: white;
     font-size: 14px;
 }
-.register_doctor .form-label,  .frm-select{
+
+.register_doctor .form-label,
+.frm-select {
     font-size: 14px;
 }
-select.frm_input{
+
+select.frm_input {
     font-size: 14px;
     padding-left: 12px !important;
 }
-.register_doctor .frm_input , .register_doctor input::placeholder{
+
+.register_doctor .frm_input,
+.register_doctor input::placeholder {
     font-size: 14px;
     padding-left: 30px;
     color: #757575;
 }
-.register_doctor input::placeholder, .register_doctor textarea::placeholder{
+
+.register_doctor input::placeholder,
+.register_doctor textarea::placeholder {
     color: #bfbfbf;
     padding-left: 10px;
 }
-.register_doctor input.upload_file_doc{
+
+.register_doctor input.upload_file_doc {
     padding-left: 10px;
 }
-.register_doctor .icon_input{
+
+.register_doctor .icon_input {
     position: absolute;
     bottom: 10px;
     left: 10px;
     /* color: #8c8c8c; */
 }
-.form-link{
+
+.form-link {
     color: #223F99;
     font-weight: 500;
 }
-.register_doctor h3{
+
+.register_doctor h3 {
     color: #223F99;
     font-weight: 700;
     font-size: 36px;
 }
-.register_doctor p{
+
+.register_doctor p {
     color: #757575;
 }
-.slider_doctor .slick-dots{
+
+.slider_doctor .slick-dots {
     display: flex !important;
     justify-content: center;
 }
-.slider_doctor .slick-dots .slick-active{
+
+.slider_doctor .slick-dots .slick-active {
     width: 30px;
 }
-.slider_doctor .slick-dots button::before{
+
+.slider_doctor .slick-dots button::before {
     content: '';
     height: 5px;
     width: 5px;
@@ -70,7 +89,8 @@ select.frm_input{
     background-color: #223f99;
     transition: .3s ease-in-out;
 }
-.slider_doctor .slick-dots .slick-active button::before{
+
+.slider_doctor .slick-dots .slick-active button::before {
     content: '';
     width: 100%;
     position: absolute;
@@ -78,23 +98,39 @@ select.frm_input{
     border-radius: 5px;
     transition: .3s ease-in-out;
 }
-.slider_doctor .slick-dots li button , .slider_doctor .slick-dots li{
+
+.slider_doctor .slick-dots li button,
+.slider_doctor .slick-dots li {
     height: 5px;
     width: 5px;
     padding: 0;
     margin: 0 5px;
 }
-.register_doctor input.otpfield{
+
+.register_doctor input.otpfield {
     font-size: 30px;
 }
 
 
 /* tostify color change */
 .custom-toast-error {
-  background-color: #e74c3c;
-  color: #fff;
+    background-color: #e74c3c;
+    color: #fff;
 }
+
 .custom-toast-success {
-  background-color: #2acc01;
-  color: #fff;
+    background-color: #2acc01;
+    color: #fff;
 }
+.profile_nav:hover{
+    background-color: #EDF6FF;
+    color: #223f99;
+    border-radius: 4px;
+}
+/* .desc_3line {
+    display: -webkit-box;
+    max-width: 600px;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+} */

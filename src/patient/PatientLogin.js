@@ -1,11 +1,51 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap'
 import '../doctor/css/doctor.css'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { CiLock } from 'react-icons/ci'
 import { FaRegEnvelope } from 'react-icons/fa'
+import Loader from '../Loader'
+import { toast, ToastContainer } from 'react-toastify'
+import axios from 'axios'
 
 const PatientLogin = () => {
+
+    var navigate = useNavigate();
+    const [loading, setloading] = useState(false)
+
+    const [email, setemail] = useState('')
+    const [password, setps] = useState('')
+
+    useEffect(() => {
+        var data = JSON.parse(localStorage.getItem('PatientLogin'));
+        if (!data) {
+            navigate('/patient')
+        }
+        else {
+            navigate('patientdahsboard')
+        }
+
+    }, [navigate])
+
+    function patientsignin() {
+        setloading(true)
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/user/login',
+            data: { "email": email, "password": password }
+        }).then((res) => {
+            console.log(res)
+            localStorage.setItem('PatientLogin', JSON.stringify(res.data.Data))
+            toast(res.data.Message, { className: 'custom-toast-success' });
+            navigate('patientdahsboard')
+        }).catch(function (error) {
+            console.log(error);
+            toast(error.response.data.Message, { className: 'custom-toast-error' })
+        }).finally(() => {
+            setloading(false)
+        });
+    }
+
     return (
         <>
             <div className='min-vh-100 d-flex align-items-center'>
@@ -21,30 +61,32 @@ const PatientLogin = () => {
 
                                     <Form.Group controlId="mobile" className='position-relative mb-3'>
                                         <Form.Label>Email</Form.Label>
-                                        <Form.Control placeholder="Enter Email" name='email' value={''} className='frm_input' onChange={''} />
+                                        <Form.Control placeholder="Enter Email" name='email' value={email} className='frm_input' onChange={(e) => setemail(e.target.value)} />
                                         <FaRegEnvelope className='icon_input' />
                                     </Form.Group>
 
                                     <Form.Group controlId="password" className='position-relative mb-1'>
                                         <Form.Label>Password</Form.Label>
-                                        <Form.Control type='password' placeholder="Enter Password" name='password' value={''} className='frm_input' onChange={''} />
+                                        <Form.Control type='password' placeholder="Enter Password" name='password' value={password} className='frm_input' onChange={(e) => setps(e.target.value)} />
                                         <CiLock className='icon_input' />
                                     </Form.Group>
                                     <div className='form_bottom_div text-end'>
-                                        <p><Link to={'forgotdoctor'} className='form-link'>Forgotten Password ?</Link> </p>
+                                        <p><Link to={'forgotpatient'} className='form-link'>Forgotten Password ?</Link> </p>
                                     </div>
 
-                                    <Button onClick={''} type="button" className='btn btn-primary d-block w-100 theme_btn mt-4'>
+                                    <Button onClick={patientsignin} type="button" className='btn btn-primary d-block w-100 theme_btn mt-4'>
                                         Sign In
                                     </Button>
                                 </Form>
                                 <div className='form_bottom_div text-center mt-3'>
-                                    <p>Don't have an Account? <Link to={'patientregister'} className='form-link'>Sign Up</Link> </p>
+                                    <p>Don't have an Account? <Link to={'/patientregister'} className='form-link'>Sign Up</Link> </p>
                                 </div>
                             </div>
                         </Col>
                     </Row>
                 </Container>
+                <ToastContainer />
+                {loading ? <Loader /> : ''}
             </div>
         </>
     )

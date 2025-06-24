@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import Loader from '../Loader'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 
 const PatientRegister = () => {
 
@@ -28,10 +29,12 @@ const PatientRegister = () => {
   };
 
   function patientsignup() {
+    console.log(patient)
     setloading(true)
     axios({
       method: 'post',
       url: 'https://healtheasy-o25g.onrender.com/user/signup',
+      data: patient
     }).then((res) => {
       toast(res.data.Message, { className: 'custom-toast-success' });
       setpatreg(false);
@@ -45,25 +48,33 @@ const PatientRegister = () => {
   }
 
   function otpverifydone() {
-        setloading(true)
-        axios({
-            method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/signup/otpverification',
-            data: {
-                "email": patient.email,
-                "otp": otp
-            }
-        }).then((res) => {
-            toast('Patient Regiuster successfully...', { className: 'custom-toast-success' })
-            console.log(res);
-            navigate('/patient')
-        }).catch(function (error) {
-            console.log(error);
-            toast(error, { className: 'custom-toast-error' })
-        }).finally(() => {
-            setloading(false)
-        });
-    }
+    setloading(true)
+    axios({
+      method: 'post',
+      url: 'https://healtheasy-o25g.onrender.com/user/signup/otpverification',
+      data: {
+        "email": patient.email,
+        "otp": otp
+      }
+    }).then((res) => {
+      // toast('Patient Register successfully...', { className: 'custom-toast-success' })
+      // console.log(res);
+      Swal.fire({
+        title: 'Patient Register successfully.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+      }).then((result) => {
+        if (result.isConfirmed || result.isDismissed) {
+          navigate('/patient'); // Navigate to home page
+        }
+      });
+    }).catch(function (error) {
+      console.log(error);
+      toast(error, { className: 'custom-toast-error' })
+    }).finally(() => {
+      setloading(false)
+    });
+  }
 
   return (
     <>

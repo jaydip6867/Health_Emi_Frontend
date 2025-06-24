@@ -1,41 +1,40 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import DoctorNav from './DoctorNav';
+import P_Sidebar from './P_Sidebar';
+import P_nav from './P_nav';
 import { Col, Container, Row } from 'react-bootstrap';
-import DoctorSidebar from './DoctorSidebar';
 
-const DoctorDashboard = () => {
+const PatientDashboard = () => {
 
   var navigate = useNavigate();
 
-  const [doctor, setdoctor] = useState(null)
+  const [patient, setpatient] = useState(null)
   const [token, settoken] = useState(null)
 
   useEffect(() => {
-    var data = JSON.parse(localStorage.getItem('doctordata'));
+    var data = JSON.parse(localStorage.getItem('PatientLogin'));
     if (!data) {
-      navigate('/doctor')
+      navigate('/patient')
     }
     else {
-      setdoctor(data.data.Data.doctorData);
-      settoken(`Bearer ${data.data.Data.accessToken}`)
+      setpatient(data.userData);
+      settoken(`Bearer ${data.accessToken}`)
     }
   }, [navigate])
 
   return (
     <>
-
       <Container fluid className='p-0'>
         <Row className='g-0'>
-          <DoctorSidebar />
+          <P_Sidebar />
           <Col xs={12} sm={9} lg={10} className='p-3'>
-            <DoctorNav doctorname={doctor && doctor.name} />
+            <P_nav patientname={patient && patient.name} />
             <div className='bg-white rounded p-2'>
               {
-              doctor === null ?
+              patient === null ?
                 'data loading' :
                 <div>
-                  hello doctor {doctor.name}
+                  hello {patient.name}
                 </div>
             }
             </div>
@@ -46,4 +45,4 @@ const DoctorDashboard = () => {
   )
 }
 
-export default DoctorDashboard
+export default PatientDashboard
