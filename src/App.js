@@ -14,6 +14,8 @@ import D_Surgery from './doctor/D_Surgery';
 import PatientForgotps from './patient/PatientForgotps';
 import PatientDashboard from './patient/PatientDashboard';
 import PatientProfile from './patient/PatientProfile';
+import P_DoctorAppointment from './patient/P_DoctorAppointment';
+import P_DoctorProfile from './patient/P_DoctorProfile';
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
           <Route path='' index element={<PatientLogin />}></Route>
           <Route path='forgotpatient' index element={<PatientForgotps />}></Route>
           <Route path='patientdahsboard' element={<PatientDashboard />}></Route>
+          <Route path='patientdoctorappointment' element={<P_DoctorAppointment />}></Route>
+          <Route path='doctor_ap/:id' element={<P_DoctorProfile />}></Route>
           <Route path='patientprofile' element={<PatientProfile />}></Route>
         </Route>
         <Route path='*' element={<NotFound />} />

@@ -9,6 +9,7 @@ import { AiOutlinePhone, AiOutlineUser } from 'react-icons/ai';
 import { FaRegEnvelope } from 'react-icons/fa';
 import { CiLocationOn } from 'react-icons/ci';
 import { toast } from 'react-toastify';
+import Loader from '../Loader';
 
 const PatientProfile = () => {
     var navigate = useNavigate();
@@ -180,8 +181,8 @@ const PatientProfile = () => {
                                         <Form.Group controlId="gender" className='col-6 col-md-4 col-lg-3'>
                                             <Form.Label>Gender </Form.Label>
                                             <div className='d-flex gap-3'>
-                                                <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' checked={profile && profile.gender == "Male" ? true : false} onChange={profiledata} disabled={IsDisable} /> Male</label>
-                                                <label><Form.Check type='radio' name='gender' value={'Female'} className='d-inline-block me-2' checked={profile && profile.gender == "Female" ? true : false} onChange={profiledata} disabled={IsDisable} /> Female</label>
+                                                <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' checked={profile && profile.gender === "Male" ? true : false} onChange={profiledata} disabled={IsDisable} /> Male</label>
+                                                <label><Form.Check type='radio' name='gender' value={'Female'} className='d-inline-block me-2' checked={profile && profile.gender === "Female" ? true : false} onChange={profiledata} disabled={IsDisable} /> Female</label>
                                             </div>
                                         </Form.Group>
 
@@ -222,6 +223,7 @@ const PatientProfile = () => {
                     </Col>
                 </Row>
             </Container>
+            {loading ? <Loader />:''}
         </>
     )
 }

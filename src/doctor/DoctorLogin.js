@@ -70,7 +70,7 @@ const DoctorLogin = () => {
                     <Col md={5}>
                         <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
                             <div className='text-center'>
-                                <h3>Sign In</h3>
+                                <h3>Doctor - Sign In</h3>
                                 <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
                             </div>
                             <Form>

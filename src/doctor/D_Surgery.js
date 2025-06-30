@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Loader from '../Loader';
 import DoctorSidebar from './DoctorSidebar';
 import DoctorNav from './DoctorNav';
-import { Button, Col, Container, Form, Row, Table } from 'react-bootstrap';
+import { Button, Col, Container, Form, Modal, Row, Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlinePhone } from 'react-icons/ai';
 import { CiLock } from 'react-icons/ci';
@@ -59,7 +59,7 @@ const D_Surgery = () => {
                 "search": "",
             }
         }).then((res) => {
-            console.log(res.data.Data)
+            // console.log(res.data.Data)
             setsurgerylist(res.data.Data)
         }).catch(function (error) {
             // console.log(error);
@@ -131,6 +131,21 @@ const D_Surgery = () => {
             }
         });
     }
+
+    // display surgery in model
+    const [show, setShow] = useState(false);
+    const [single_view, setsingleview] = useState(null);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    function btnview(id) {
+        var datasingle = surgerylist.filter((v, i) => { return v._id === id })
+        setsingleview(datasingle);
+        handleShow()
+        // console.log(datasingle)
+    }
+
     return (
         <>
             <Container fluid className='p-0'>
@@ -202,6 +217,7 @@ const D_Surgery = () => {
                                         <th>Features</th>
                                         <th>Description</th>
                                         {/* <th>Edit</th> */}
+                                        <th>View</th>
                                         <th>Delete</th>
                                     </tr>
                                 </thead>
@@ -216,6 +232,9 @@ const D_Surgery = () => {
                                                 <td>{v.additional_features}</td>
                                                 <td className='desc_3line'>{v.description}</td>
                                                 {/* <td><button className='btn btn-info btn-sm'>Edit</button></td> */}
+                                                <td><Button variant="primary" className='btn btn-primary btn-sm' onClick={() => btnview(v._id)}>
+                                                    View
+                                                </Button></td>
                                                 <td><button className='btn btn-danger btn-sm' onClick={() => deletesurgery(v._id)}>Delete</button></td>
                                             </tr>
                                         )
@@ -225,6 +244,30 @@ const D_Surgery = () => {
                         </div>
                     </Col>
                 </Row>
+                {
+                    single_view && single_view.map((v, i) => {
+                        return (
+                            <Modal show={show} onHide={handleClose} centered size="lg">
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Surgery Detail</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <div>
+                                        <p><b>Surgery Name :- </b><span>{v.name}</span></p>
+                                        <p><b>Surgery Price :- </b><span>{v.price}</span></p>
+                                        <p><b>Surgery Features :- </b><span>{v.additional_features}</span></p>
+                                        <p><b>Surgery Description :- </b><span>{v.description}</span></p>
+                                    </div>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        Close
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                        )
+                    })
+                }
             </Container>
             <ToastContainer />
             {loading ? <Loader /> : ''}

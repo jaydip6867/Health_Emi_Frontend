@@ -198,7 +198,7 @@ const DoctorRegister = () => {
                         doc_reg === true ? <Col md={5}>
                             <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
                                 <div className='text-center'>
-                                    <h3>Signup</h3>
+                                    <h3>Doctor - Sign up</h3>
                                     <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
                                 </div>
                                 <Form>
@@ -282,7 +282,7 @@ const DoctorRegister = () => {
                         doc_reg2 === true ? <Col md={5}>
                             <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
                                 <div className='text-center'>
-                                    <h3>Profile Details</h3>
+                                    <h3>Doctor Profile Details</h3>
                                     <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
                                 </div>
                                 <Form as={Row}>
