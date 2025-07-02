@@ -10,8 +10,11 @@ import { FaRegEnvelope } from 'react-icons/fa';
 import { CiLocationOn } from 'react-icons/ci';
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
+import CryptoJS from "crypto-js";
 
 const PatientProfile = () => {
+    const SECRET_KEY = "health-emi";
+    
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
     const [IsDisable, setdisabled] = useState(true)
@@ -23,7 +26,10 @@ const PatientProfile = () => {
     const [token, settoken] = useState(null)
 
     useEffect(() => {
-        var data = JSON.parse(localStorage.getItem('PatientLogin'));
+        var getlocaldata = localStorage.getItem('PatientLogin');
+        const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+        const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+        var data = JSON.parse(decrypted);
         if (!data) {
             navigate('/patient')
         }
@@ -223,7 +229,7 @@ const PatientProfile = () => {
                     </Col>
                 </Row>
             </Container>
-            {loading ? <Loader />:''}
+            {loading ? <Loader /> : ''}
         </>
     )
 }

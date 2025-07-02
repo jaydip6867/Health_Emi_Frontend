@@ -7,8 +7,11 @@ import { FaRegEnvelope } from 'react-icons/fa'
 import Loader from '../Loader'
 import { toast, ToastContainer } from 'react-toastify'
 import axios from 'axios'
+import CryptoJS from "crypto-js";
 
 const PatientLogin = () => {
+
+    const SECRET_KEY = "health-emi";
 
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
@@ -17,7 +20,12 @@ const PatientLogin = () => {
     const [password, setps] = useState('')
 
     useEffect(() => {
-        var data = JSON.parse(localStorage.getItem('PatientLogin'));
+        var getlocaldata = localStorage.getItem('PatientLogin');
+        if (getlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+        }
         if (!data) {
             navigate('/patient')
         }
@@ -34,8 +42,10 @@ const PatientLogin = () => {
             url: 'https://healtheasy-o25g.onrender.com/user/login',
             data: { "email": email, "password": password }
         }).then((res) => {
-            console.log(res)
-            localStorage.setItem('PatientLogin', JSON.stringify(res.data.Data))
+            // console.log(res)
+            const encrypted = CryptoJS.AES.encrypt(JSON.stringify(res.data.Data), SECRET_KEY).toString();
+            localStorage.setItem('PatientLogin', encrypted)
+            console.log(encrypted)
             toast(res.data.Message, { className: 'custom-toast-success' });
             navigate('patientdahsboard')
         }).catch(function (error) {

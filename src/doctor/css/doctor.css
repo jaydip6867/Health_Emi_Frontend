@@ -137,3 +137,6 @@ select.frm_input {
  .icon_doctor{
     font-size: 50px;
  }
+ .btnradio-app.btn-group>.btn:not(:last-child):not(.dropdown-toggle), .btnradio-app.btn-group>:not(.btn-check:first-child)+.btn{
+    border-radius: 0;
+ }

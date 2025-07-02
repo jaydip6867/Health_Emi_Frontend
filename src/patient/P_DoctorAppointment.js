@@ -5,10 +5,11 @@ import P_nav from './P_nav';
 import Loader from '../Loader';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FaUserDoctor } from "react-icons/fa6";
 import { BsGeoAltFill, BsHeart, BsStarFill } from 'react-icons/bs';
+import CryptoJS from "crypto-js";
 
 const P_DoctorAppointment = () => {
+    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
 
@@ -16,7 +17,12 @@ const P_DoctorAppointment = () => {
     const [token, settoken] = useState(null)
 
     useEffect(() => {
-        var data = JSON.parse(localStorage.getItem('PatientLogin'));
+        var getlocaldata = localStorage.getItem('PatientLogin');
+        if (getlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+        }
         if (!data) {
             navigate('/patient')
         }
@@ -107,8 +113,8 @@ const P_DoctorAppointment = () => {
                             <div className='mt-2 d-flex gap-2 w-100 overflow-x-auto'>
                                 <Button variant="outline-dark rounded-pill px-4 btn-sm">All</Button>
                                 {
-                                    category && category.map((v,i)=>{
-                                        return(
+                                    category && category.map((v, i) => {
+                                        return (
                                             <Button variant="outline-dark rounded-pill px-4 btn-sm" key={i}>{v}</Button>
                                         )
                                     })
