@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Container, Row } from 'react-bootstrap'
+import { Col, Container, Dropdown, Row, Table } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
 import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'
@@ -26,22 +26,22 @@ const D_Appointment = () => {
         }
     }, [navigate])
 
-    useEffect(()=>{
-        appointmentlist()
-    },[token])
+    useEffect(() => {
+        setloading(true)
+        if (doctor) {
+            setTimeout(() => {
+                appointmentlist()
+            }, 200);
+        }
+    }, [token])
 
     function appointmentlist() {
-        setloading(true)
+        // setloading(true)
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/list',
             headers: {
                 Authorization: token
-            },
-            data: {
-                "search": '',
-                "startDate": '18-06-2025',
-                "endDate": '23-06-2025',
             }
         }).then((res) => {
             console.log(res)
@@ -63,13 +63,46 @@ const D_Appointment = () => {
                     <Col xs={12} sm={9} lg={10} className='p-3'>
                         <DoctorNav doctorname={doctor && doctor.name} />
                         <div className='bg-white rounded p-2'>
-                            {
-                                doctor === null ?
-                                    'data loading' :
-                                    <div>
-                                        Table Data
-                                    </div>
-                            }
+                            <h5 className='mb-4'>All Appointment</h5>
+                            <Table bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Patient Name</th>
+                                        <th>Deases</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                        <th>Modify</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        appointment && appointment.map((v, i) => {
+                                            return (
+                                                <tr key={i}>
+                                                    <th>{i + 1}</th>
+                                                    <td>{v.patientname}</td>
+                                                    <td>{v.surgerydetails.name}</td>
+                                                    <td>{v.surgerydetails.price}</td>
+                                                    <td>{v.status} </td>
+                                                    <td>
+                                                        <Dropdown>
+                                                            <Dropdown.Toggle variant="secondary" size='sm' id="dropdown-basic">
+                                                                Edit
+                                                            </Dropdown.Toggle>
+
+                                                            <Dropdown.Menu>
+                                                                <Dropdown.Item href="#/action-1">Accept</Dropdown.Item>
+                                                                <Dropdown.Item href="#/action-2">Cancel</Dropdown.Item>
+                                                            </Dropdown.Menu>
+                                                        </Dropdown>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
+                                </tbody>
+                            </Table>
                         </div>
                     </Col>
                 </Row>

@@ -122,7 +122,7 @@ const P_DoctorProfile = () => {
                 icon: "success",
                 confirmButtonText: 'Ok.'
             }).then((result) => {
-                navigate('/patient/patientdoctorappointment');
+                navigate('/patient/appointment');
             });
         }).catch(function (error) {
             Swal.fire({

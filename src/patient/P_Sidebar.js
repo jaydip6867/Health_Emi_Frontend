@@ -10,7 +10,7 @@ const P_Sidebar = () => {
                 <div className='sidebar_nav'>
                     <NavLink to={'/patient/patientdahsboard'} className={({ isActive }) => (isActive ? 'active' : '')}>Dashboard</NavLink>
                     <NavLink to={'/patient/patientdoctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}>Add Appointment</NavLink>
-                    {/* <NavLink to={'/doctor/doctorsurgery'} className={({ isActive }) => (isActive ? 'active' : '')} >Surgery</NavLink> */}
+                    <NavLink to={'/patient/appointment'} className={({ isActive }) => (isActive ? 'active' : '')} >View Appointment</NavLink>
                     {/* <NavLink to={'/doctor/calender'} className={({ isActive }) => (isActive ? 'active' : '')}>Calender</NavLink> */}
                 </div>
             </Col>

@@ -16,6 +16,7 @@ import PatientDashboard from './patient/PatientDashboard';
 import PatientProfile from './patient/PatientProfile';
 import P_DoctorAppointment from './patient/P_DoctorAppointment';
 import P_DoctorProfile from './patient/P_DoctorProfile';
+import P_Appointment from './patient/P_Appointment';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path='forgotpatient' index element={<PatientForgotps />}></Route>
           <Route path='patientdahsboard' element={<PatientDashboard />}></Route>
           <Route path='patientdoctorappointment' element={<P_DoctorAppointment />}></Route>
+          <Route path='appointment' element={<P_Appointment />}></Route>
           <Route path='doctor_ap/:id' element={<P_DoctorProfile />}></Route>
           <Route path='patientprofile' element={<PatientProfile />}></Route>
         </Route>

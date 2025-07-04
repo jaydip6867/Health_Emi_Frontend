@@ -71,7 +71,7 @@ const PatientProfile = () => {
             ...profile,
             [name]: value
         }))
-        console.log(profile)
+        // console.log(profile)
     }
 
     function deletepatient() {
@@ -212,7 +212,6 @@ const PatientProfile = () => {
                                                 </Form.Select>
                                             </div>
                                         </Form.Group>
-
 
                                         <div className='text-center border-top'>
                                             {IsDisable ? <Button type="button" className='theme_btn col-3 mt-3' onClick={() => setdisabled(false)}>
