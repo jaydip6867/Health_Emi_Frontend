@@ -10,7 +10,7 @@ const DoctorSidebar = () => {
                 <NavLink to={'/doctor/doctordashboard'} className={({ isActive }) => (isActive ? 'active' : '')}>Dashboard</NavLink>
                 <NavLink to={'/doctor/doctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}>Appointment</NavLink>
                 <NavLink to={'/doctor/doctorsurgery'} className={({ isActive }) => (isActive ? 'active' : '')} >Surgery</NavLink>
-                {/* <NavLink to={'/doctor/calender'} className={({ isActive }) => (isActive ? 'active' : '')}>Calender</NavLink> */}
+                <NavLink to={'/doctor/calender'} className={({ isActive }) => (isActive ? 'active' : '')}>Calender</NavLink>
             </div>
         </Col>
     )

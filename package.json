@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fullcalendar/daygrid": "^6.1.18",
+    "@fullcalendar/interaction": "^6.1.18",
+    "@fullcalendar/react": "^6.1.18",
+    "@fullcalendar/timegrid": "^6.1.18",
     "@react-icons/all-files": "^4.1.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -12,6 +16,7 @@
     "bootstrap": "^5.3.6",
     "country-state-city": "^3.2.1",
     "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.13",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",
     "react-datepicker": "^8.4.0",

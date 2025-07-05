@@ -70,6 +70,7 @@ const D_Appointment = () => {
                                         <th>No</th>
                                         <th>Patient Name</th>
                                         <th>Deases</th>
+                                        <th>Date & Time</th>
                                         <th>Price</th>
                                         <th>Status</th>
                                         <th>Modify</th>
@@ -83,6 +84,7 @@ const D_Appointment = () => {
                                                     <th>{i + 1}</th>
                                                     <td>{v.patientname}</td>
                                                     <td>{v.surgerydetails.name}</td>
+                                                    <td>{v.date} , {v.time}</td>
                                                     <td>{v.surgerydetails.price}</td>
                                                     <td>{v.status} </td>
                                                     <td>
