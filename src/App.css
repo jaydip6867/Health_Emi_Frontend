@@ -54,13 +54,25 @@
 
 /* sidebar css */
 .sidebar_nav a{
-  display: block;
-  padding: 10px 10px 10px 40px;
-  color: #fff;
+  display: flex;
+  padding: 10px 0 10px 20px;
+  color: #222;
   text-decoration: none;
 }
+.sidebar_nav a svg{
+  font-size: 24px;
+  margin-right: 10px;
+}
 .sidebar_nav a.active{
-  background-color: rgba(255, 255, 255, 0.2);
+  /* background-color: rgba(255, 255, 255, 0.2); */
+  background-color: rgba(34, 64, 153,.1);
+  color: #223F99;
+  border-radius: 8px 0 0 8px;
+  border: 1px solid rgba(34, 64, 153,.3);
+  border-right: 4px solid #223F99;
+  font-weight: bold;
+  margin: 10px 0;
+  box-shadow: -3px 0px 5px rgba(34, 64, 153,.3);
 }
 .doctor_profile .dropdown-menu
 {
