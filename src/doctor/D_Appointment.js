@@ -44,7 +44,7 @@ const D_Appointment = () => {
                 Authorization: token
             }
         }).then((res) => {
-            console.log(res)
+            // console.log(res)
             setappointment(res.data.Data)
         }).catch(function (error) {
             console.log(error);

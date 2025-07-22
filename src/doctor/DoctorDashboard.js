@@ -34,7 +34,7 @@ const DoctorDashboard = () => {
               {
               doctor === null ?
                 'data loading' :
-                <div>
+                <div className='ps-2'>
                   hello doctor {doctor.name}
                 </div>
             }

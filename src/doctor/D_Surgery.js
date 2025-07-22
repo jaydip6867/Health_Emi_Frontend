@@ -10,6 +10,7 @@ import './css/doctor.css';
 import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { MdDelete, MdEditDocument, MdOutlineRemoveRedEye } from 'react-icons/md';
 
 
 const D_Surgery = () => {
@@ -146,6 +147,28 @@ const D_Surgery = () => {
         // console.log(datasingle)
     }
 
+    // display surgery in model
+    const [editshow, seteditShow] = useState(false);
+    const [edit_record, seteditrecord] = useState(null);
+
+    const edithandleClose = () => seteditShow(false);
+    const edithandleShow = () => seteditShow(true);
+
+    function btnedit(id) {
+        var datasingle = surgerylist.filter((v, i) => { return v._id === id })
+        seteditrecord(datasingle);
+        edithandleShow()
+    }
+
+    const seleditsurgery = (e) => {
+        const { name, value } = e.target;
+        seteditrecord(surgery => ({
+            ...surgery,
+            [name]: value
+        }))
+        // console.log(edit_record)
+    };
+
     return (
         <>
             <Container fluid className='p-0'>
@@ -217,8 +240,7 @@ const D_Surgery = () => {
                                         <th>Features</th>
                                         <th>Description</th>
                                         {/* <th>Edit</th> */}
-                                        <th>View</th>
-                                        <th>Delete</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -232,10 +254,18 @@ const D_Surgery = () => {
                                                 <td>{v.additional_features}</td>
                                                 <td className='desc_3line'>{v.description}</td>
                                                 {/* <td><button className='btn btn-info btn-sm'>Edit</button></td> */}
-                                                <td><Button variant="primary" className='btn btn-primary btn-sm' onClick={() => btnview(v._id)}>
-                                                    View
-                                                </Button></td>
-                                                <td><button className='btn btn-danger btn-sm' onClick={() => deletesurgery(v._id)}>Delete</button></td>
+                                                <td>
+                                                    {/* <Button variant="primary" className='btn btn-primary btn-sm' onClick={() => btnview(v._id)}>
+                                                        View
+                                                    </Button> */}
+                                                    <div className='p-2 d-flex gap-3'>
+                                                        <MdEditDocument className='fs-4' onClick={() => btnedit(v._id)} />
+                                                        <MdOutlineRemoveRedEye onClick={() => btnview(v._id)} className='text-primary fs-4' />
+                                                        <MdDelete onClick={() => deletesurgery(v._id)} className='text-danger fs-4' />
+                                                    </div>
+                                                    {/* <button className='btn btn-danger btn-sm' onClick={() => deletesurgery(v._id)}>Delete</button> */}
+
+                                                </td>
                                             </tr>
                                         )
                                     })}
@@ -247,7 +277,7 @@ const D_Surgery = () => {
                 {
                     single_view && single_view.map((v, i) => {
                         return (
-                            <Modal show={show} onHide={handleClose} centered size="lg">
+                            <Modal show={show} onHide={handleClose} centered size="lg" key={i}>
                                 <Modal.Header closeButton>
                                     <Modal.Title>Surgery Detail</Modal.Title>
                                 </Modal.Header>
@@ -261,6 +291,68 @@ const D_Surgery = () => {
                                 </Modal.Body>
                                 <Modal.Footer>
                                     <Button variant="secondary" onClick={handleClose}>
+                                        Close
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                        )
+                    })
+                }
+                {
+                    edit_record && edit_record.map((v, i) => {
+                        return (
+                            <Modal show={editshow} onHide={edithandleClose} centered size="lg" key={i}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Update Surgery</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Form className='row register_doctor'>
+                                        <Form.Group controlId="name" className='mb-3 col-6'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Surgery Name</Form.Label>
+                                                <Form.Control placeholder="Ex:- Cataract Surgery" name="name" value={v.name} onChange={seleditsurgery} />
+                                                {/* <AiOutlinePhone className='icon_input' /> */}
+                                            </div>
+                                        </Form.Group>
+
+                                        <Form.Group controlId="price" className='mb-3 col-6'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Price</Form.Label>
+                                                <Form.Control placeholder="Ex:- 18000" name="price" value={v.price} onChange={seleditsurgery} />
+                                                {/* <CiLock className='icon_input' /> */}
+                                            </div>
+                                        </Form.Group>
+
+                                        <Form.Group controlId="days" className='mb-3 col-6'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Days</Form.Label>
+                                                <Form.Control placeholder="Ex:- 1" name="days" value={v.days} onChange={seleditsurgery} />
+                                                {/* <CiLock className='icon_input' /> */}
+                                            </div>
+                                        </Form.Group>
+
+                                        <Form.Group controlId="additional_features" className='mb-3 col-6'>
+                                            <div className='position-relative'>
+                                                <Form.Label>additional_features</Form.Label>
+                                                <Form.Control placeholder="Ex:- Blade-free laser option, intraocular lens implant" name="additional_features" value={v.additional_features} onChange={seleditsurgery} />
+                                                {/* <CiLock className='icon_input' /> */}
+                                            </div>
+                                        </Form.Group>
+
+                                        <Form.Group controlId="description" className='mb-3 col-12'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Description</Form.Label>
+                                                <Form.Control as="textarea" placeholder="Ex:- Cataract surgery involves removing ...." name="description" value={v.description} onChange={seleditsurgery} />
+                                            </div>
+                                        </Form.Group>
+
+                                    </Form>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Form.Group >
+                                        <Form.Control type='button' value={'Update Surgery'} onClick={addsurgery} className='theme_btn' />
+                                    </Form.Group>
+                                    <Button variant="secondary" onClick={edithandleClose}>
                                         Close
                                     </Button>
                                 </Modal.Footer>

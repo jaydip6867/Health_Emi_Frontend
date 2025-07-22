@@ -6,7 +6,7 @@ const P_nav = (name) => {
     var navigate = useNavigate();
     return (
         // <Col xs={12} sm={10} className='p-3'>
-                <div className='top_nav bg-white rounded p-2 shadow mb-4'>
+                <div className='top_nav bg-white rounded p-2 shadow-sm mb-4'>
                     <Row className='align-items-center justify-content-between'>
                         <Col xs={'auto'}>
                             <h6 className='m-0'>Hello Mr, {name && name.patientname}</h6>
