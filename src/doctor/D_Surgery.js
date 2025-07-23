@@ -4,8 +4,6 @@ import DoctorSidebar from './DoctorSidebar';
 import DoctorNav from './DoctorNav';
 import { Button, Col, Container, Form, Modal, Row, Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { AiOutlinePhone } from 'react-icons/ai';
-import { CiLock } from 'react-icons/ci';
 import './css/doctor.css';
 import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
@@ -156,8 +154,9 @@ const D_Surgery = () => {
 
     function btnedit(id) {
         var datasingle = surgerylist.filter((v, i) => { return v._id === id })
-        seteditrecord(datasingle);
+        seteditrecord(datasingle[0]);
         edithandleShow()
+        // console.log(datasingle[0])
     }
 
     const seleditsurgery = (e) => {
@@ -168,6 +167,39 @@ const D_Surgery = () => {
         }))
         // console.log(edit_record)
     };
+
+    function editsurgery() {
+        setloading(true)
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/surgeries/save',
+            headers: {
+                Authorization: token,
+            },
+            data: {
+                surgeryid: edit_record._id,
+                name: edit_record.name,
+                price: edit_record.price,
+                days: edit_record.days,
+                additional_features: edit_record.additional_features,
+                description: edit_record.description
+            }
+        }).then((res) => {
+            // toast('Surgery added...', { className: 'custom-toast-success' })
+            Swal.fire({
+                title: "Surgery Updated...",
+                icon: "success",
+            });
+            getsurgery()
+            seteditrecord(null)
+            edithandleClose()
+        }).catch(function (error) {
+            console.log(error);
+            toast(error.response.data.Message, { className: 'custom-toast-error' })
+        }).finally(() => {
+            setloading(false)
+        });
+    }
 
     return (
         <>
@@ -230,11 +262,11 @@ const D_Surgery = () => {
                             </Col>
                         </Row>
                         <div className='bg-white rounded p-2 shadow'>
-                            <Table bordered hover>
+                            <Table bordered hover responsive>
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Surgery Name</th>
+                                        <th className='text-nowrap'>Surgery Name</th>
                                         <th>Price</th>
                                         <th>Days</th>
                                         <th>Features</th>
@@ -299,66 +331,64 @@ const D_Surgery = () => {
                     })
                 }
                 {
-                    edit_record && edit_record.map((v, i) => {
-                        return (
-                            <Modal show={editshow} onHide={edithandleClose} centered size="lg" key={i}>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>Update Surgery</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <Form className='row register_doctor'>
-                                        <Form.Group controlId="name" className='mb-3 col-6'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Surgery Name</Form.Label>
-                                                <Form.Control placeholder="Ex:- Cataract Surgery" name="name" value={v.name} onChange={seleditsurgery} />
-                                                {/* <AiOutlinePhone className='icon_input' /> */}
-                                            </div>
-                                        </Form.Group>
-
-                                        <Form.Group controlId="price" className='mb-3 col-6'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Price</Form.Label>
-                                                <Form.Control placeholder="Ex:- 18000" name="price" value={v.price} onChange={seleditsurgery} />
-                                                {/* <CiLock className='icon_input' /> */}
-                                            </div>
-                                        </Form.Group>
-
-                                        <Form.Group controlId="days" className='mb-3 col-6'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Days</Form.Label>
-                                                <Form.Control placeholder="Ex:- 1" name="days" value={v.days} onChange={seleditsurgery} />
-                                                {/* <CiLock className='icon_input' /> */}
-                                            </div>
-                                        </Form.Group>
-
-                                        <Form.Group controlId="additional_features" className='mb-3 col-6'>
-                                            <div className='position-relative'>
-                                                <Form.Label>additional_features</Form.Label>
-                                                <Form.Control placeholder="Ex:- Blade-free laser option, intraocular lens implant" name="additional_features" value={v.additional_features} onChange={seleditsurgery} />
-                                                {/* <CiLock className='icon_input' /> */}
-                                            </div>
-                                        </Form.Group>
-
-                                        <Form.Group controlId="description" className='mb-3 col-12'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Description</Form.Label>
-                                                <Form.Control as="textarea" placeholder="Ex:- Cataract surgery involves removing ...." name="description" value={v.description} onChange={seleditsurgery} />
-                                            </div>
-                                        </Form.Group>
-
-                                    </Form>
-                                </Modal.Body>
-                                <Modal.Footer>
-                                    <Form.Group >
-                                        <Form.Control type='button' value={'Update Surgery'} onClick={addsurgery} className='theme_btn' />
+                    !edit_record ? '' :
+                        <Modal show={editshow} onHide={edithandleClose} centered size="lg">
+                            <Modal.Header closeButton>
+                                <Modal.Title>Update Surgery</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Form className='row register_doctor'>
+                                    <Form.Group controlId="name" className='mb-3 col-6'>
+                                        <div className='position-relative'>
+                                            <Form.Label>Surgery Name</Form.Label>
+                                            <Form.Control placeholder="Ex:- Cataract Surgery" name="name" value={edit_record.name} onChange={seleditsurgery} />
+                                            {/* <AiOutlinePhone className='icon_input' /> */}
+                                        </div>
                                     </Form.Group>
-                                    <Button variant="secondary" onClick={edithandleClose}>
-                                        Close
-                                    </Button>
-                                </Modal.Footer>
-                            </Modal>
-                        )
-                    })
+
+                                    <Form.Group controlId="price" className='mb-3 col-6'>
+                                        <div className='position-relative'>
+                                            <Form.Label>Price</Form.Label>
+                                            <Form.Control placeholder="Ex:- 18000" name="price" value={edit_record.price} onChange={seleditsurgery} />
+                                            {/* <CiLock className='icon_input' /> */}
+                                        </div>
+                                    </Form.Group>
+
+                                    <Form.Group controlId="days" className='mb-3 col-6'>
+                                        <div className='position-relative'>
+                                            <Form.Label>Days</Form.Label>
+                                            <Form.Control placeholder="Ex:- 1" name="days" value={edit_record.days} onChange={seleditsurgery} />
+                                            {/* <CiLock className='icon_input' /> */}
+                                        </div>
+                                    </Form.Group>
+
+                                    <Form.Group controlId="additional_features" className='mb-3 col-6'>
+                                        <div className='position-relative'>
+                                            <Form.Label>additional_features</Form.Label>
+                                            <Form.Control placeholder="Ex:- Blade-free laser option, intraocular lens implant" name="additional_features" value={edit_record.additional_features} onChange={seleditsurgery} />
+                                            {/* <CiLock className='icon_input' /> */}
+                                        </div>
+                                    </Form.Group>
+
+                                    <Form.Group controlId="description" className='mb-3 col-12'>
+                                        <div className='position-relative'>
+                                            <Form.Label>Description</Form.Label>
+                                            <Form.Control as="textarea" placeholder="Ex:- Cataract surgery involves removing ...." name="description" value={edit_record.description} onChange={seleditsurgery} />
+                                        </div>
+                                    </Form.Group>
+
+                                </Form>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Form.Group >
+                                    <Form.Control type='button' value={'Update Surgery'} onClick={editsurgery} className='theme_btn' />
+                                </Form.Group>
+                                <Button variant="secondary" onClick={edithandleClose}>
+                                    Close
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+
                 }
             </Container>
             <ToastContainer />

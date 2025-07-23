@@ -111,6 +111,20 @@ select.frm_input {
     font-size: 30px;
 }
 
+/* styles.css or in your component's CSS module */
+.sticky-md-up {
+  position: sticky;
+  top: 0; /* or any offset you want */
+  z-index: 1020; /* optional, to stay on top */
+}
+
+/* Hide on smaller devices */
+@media (max-width: 767.98px) {
+  .sticky-md-up {
+    position: static; /* disable sticky for small devices */
+  }
+}
+
 
 /* tostify color change */
 .custom-toast-error {
@@ -140,3 +154,9 @@ select.frm_input {
  .btnradio-app.btn-group>.btn:not(:last-child):not(.dropdown-toggle), .btnradio-app.btn-group>:not(.btn-check:first-child)+.btn{
     border-radius: 0;
  }
+
+/* calender modify css */
+.fc-scrollgrid-sync-inner a{
+    color: #222;
+    text-decoration: none;
+}

@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom'
 
 const DoctorSidebar = () => {
     return (
-        <Col xs={12} sm={3} lg={2} className='position-sticky top-0 vh-100 p-3 pe-0'>
+        <Col xs={12} sm={3} lg={2} className='sticky-md-up top-0 vh-100 p-3 pe-0'>
             <div className='bg-white h-100 rounded shadow'>
                 <div className='px-3'><h4 className='p-3 m-0 border-bottom text-center'>Health Doctor</h4></div>
                 <div className='sidebar_nav mt-3 ps-3'>
