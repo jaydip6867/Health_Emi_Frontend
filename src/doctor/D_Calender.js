@@ -105,7 +105,7 @@ const D_Calender = () => {
     };
     return (
         <>
-            <Container fluid className='p-0'>
+            <Container fluid className='p-0 panel'>
                 <Row className='g-0'>
                     <DoctorSidebar />
                     <Col xs={12} sm={9} lg={10} className='p-3'>

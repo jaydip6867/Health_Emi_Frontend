@@ -23,6 +23,8 @@
   src: url('./assets/fonts/hanken-grotesk-v11-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
+
+
 /* loader css */
 /* HTML: <div class="loader"></div> */
 .loader_box{
@@ -87,4 +89,23 @@
   width: 100%;
   padding: 5px;
   font-size: 12px; 
+}
+
+/* main page navbar toggler */
+.navbar-toggler{
+  border: none !important;
+}
+.navbar-toggler:focus{
+  box-shadow: none !important;
+}
+
+.shadow-img{
+  filter: drop-shadow(0 0 15px rgba(0,0,0,0.3));
+}
+
+/* footer css */
+.footer_bg
+{
+  background-color: #223F99;
+  color: #fff;
 }

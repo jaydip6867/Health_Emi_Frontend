@@ -78,7 +78,7 @@ const PatientRegister = () => {
 
   return (
     <>
-      <div className='min-vh-100 d-flex align-items-center'>
+      <div className='min-vh-100 d-flex align-items-center panel'>
         <Container className='py-3'>
           <Row className='justify-content-center'>
             {
