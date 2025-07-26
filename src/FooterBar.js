@@ -11,7 +11,7 @@ const FooterBar = () => {
                     <Row>
                         <Col xs={12} md={6}>
                             <div className='footer_logo'>
-                                <h4>Health</h4>
+                                <h4>CodeZil</h4>
                             </div>
                             <p className='py-3'>Crafting exceptional digital experiences through thoughtful design and innovative solutions that elevate your brand presence.</p>
                             <div className='py-2'>
@@ -44,7 +44,7 @@ const FooterBar = () => {
 
                 </Container>
             </footer>
-            <div className='text-center py-3 footer_bg border-top border-opacity-25 border-light'>Copyright © 2025, Health Easy EMI. All rights reserved.</div>
+            <div className='text-center py-3 footer_bg border-top border-opacity-25 border-light'>Copyright © 2025, CodeZil technologies. All rights reserved.</div>
         </>
     )
 }

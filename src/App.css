@@ -1,33 +1,41 @@
 /* hanken-grotesk-regular - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
+  /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
   font-family: 'Hanken Grotesk';
   font-style: normal;
   font-weight: 400;
-  src: url('./assets/fonts/hanken-grotesk-v11-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('./assets/fonts/hanken-grotesk-v11-latin-regular.woff2') format('woff2');
+  /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
+
 /* hanken-grotesk-500 - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
+  /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
   font-family: 'Hanken Grotesk';
   font-style: normal;
   font-weight: 500;
-  src: url('./assets/fonts/hanken-grotesk-v11-latin-500.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('./assets/fonts/hanken-grotesk-v11-latin-500.woff2') format('woff2');
+  /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
+
 /* hanken-grotesk-700 - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
+  /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
   font-family: 'Hanken Grotesk';
   font-style: normal;
   font-weight: 700;
-  src: url('./assets/fonts/hanken-grotesk-v11-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('./assets/fonts/hanken-grotesk-v11-latin-700.woff2') format('woff2');
+  /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
 
 
 /* loader css */
 /* HTML: <div class="loader"></div> */
-.loader_box{
+.loader_box {
   height: 100%;
   width: 100%;
   position: fixed;
@@ -39,73 +47,94 @@
   justify-content: center;
   z-index: 100000;
 }
+
 .loader {
   width: 50px;
-  --b: 8px; 
+  --b: 8px;
   aspect-ratio: 1;
   border-radius: 50%;
   padding: 1px;
-  background: conic-gradient(#0000 10%,#f03355) content-box;
+  background: conic-gradient(#0000 10%, #f03355) content-box;
   -webkit-mask:
-    repeating-conic-gradient(#0000 0deg,#000 1deg 20deg,#0000 21deg 36deg),
-    radial-gradient(farthest-side,#0000 calc(100% - var(--b) - 1px),#000 calc(100% - var(--b)));
+    repeating-conic-gradient(#0000 0deg, #000 1deg 20deg, #0000 21deg 36deg),
+    radial-gradient(farthest-side, #0000 calc(100% - var(--b) - 1px), #000 calc(100% - var(--b)));
   -webkit-mask-composite: destination-in;
-          mask-composite: intersect;
-  animation:l4 1s infinite steps(10);
+  mask-composite: intersect;
+  animation: l4 1s infinite steps(10);
 }
-@keyframes l4 {to{transform: rotate(1turn)}}
+
+@keyframes l4 {
+  to {
+    transform: rotate(1turn)
+  }
+}
 
 /* sidebar css */
-.sidebar_nav a{
+.sidebar_nav a {
   display: flex;
   padding: 10px 0 10px 20px;
   color: #222;
   text-decoration: none;
 }
-.sidebar_nav a svg{
+
+.sidebar_nav a svg {
   font-size: 24px;
   margin-right: 10px;
 }
-.sidebar_nav a.active{
+
+.sidebar_nav a.active {
   /* background-color: rgba(255, 255, 255, 0.2); */
-  background-color: rgba(34, 64, 153,.1);
+  background-color: rgba(34, 64, 153, .1);
   color: #223F99;
   border-radius: 8px 0 0 8px;
-  border: 1px solid rgba(34, 64, 153,.3);
+  border: 1px solid rgba(34, 64, 153, .3);
   border-right: 4px solid #223F99;
   font-weight: bold;
   margin: 10px 0;
-  box-shadow: -3px 0px 5px rgba(34, 64, 153,.3);
+  box-shadow: -3px 0px 5px rgba(34, 64, 153, .3);
 }
-.doctor_profile .dropdown-menu
-{
+
+.doctor_profile .dropdown-menu {
   border: none;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
   padding: 10px 5px 5px 5px;
   border-top: 2px solid #223F99;
 }
-.doctor_profile .dropdown-menu > *{
+
+.doctor_profile .dropdown-menu>* {
   display: block;
   width: 100%;
   padding: 5px;
-  font-size: 12px; 
+  font-size: 12px;
 }
 
 /* main page navbar toggler */
-.navbar-toggler{
+.navbar-toggler {
   border: none !important;
 }
-.navbar-toggler:focus{
+
+.navbar-toggler:focus {
   box-shadow: none !important;
 }
 
-.shadow-img{
-  filter: drop-shadow(0 0 15px rgba(0,0,0,0.3));
+.shadow-img {
+  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.3));
+}
+
+/* search box css */
+.searchbox .input-group:not(.has-validation)>.dropdown-toggle:nth-last-child(n+3){
+  border-radius: 0;
+}
+.searchbox .form-control:focus{
+  box-shadow: none !important;
+  border-color: #222;
+}
+.searchbox .input-group>:not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback){
+  border-radius: 0;
 }
 
 /* footer css */
-.footer_bg
-{
+.footer_bg {
   background-color: #223F99;
   color: #fff;
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import NavBar from './NavBar'
-import { Card, Col, Container, Row } from 'react-bootstrap'
+import { Button, Card, Col, Container, Dropdown, DropdownButton, Form, InputGroup, Row } from 'react-bootstrap'
 import FooterBar from './FooterBar'
 import { FaGooglePlay } from 'react-icons/fa'
 
@@ -9,8 +9,30 @@ const Home = () => {
   return (
     <>
       <NavBar />
-      {/* <Link to={'doctor'}>Doctor</Link> */}
-      {/* <Link to={'patient'}>Patient</Link> */}
+      {/* search by city and doctor name or surgery */}
+      <section className='pt-5'>
+        <Container>
+          <Row className='justify-content-center searchbox'>
+            <Col xs={12} md={8}>
+              <InputGroup className="mb-3">
+                <DropdownButton
+                  variant="outline-secondary"
+                  title="Select City"
+                  id="input-group-dropdown-1"
+                >
+                  <Dropdown.Item href="#">Action</Dropdown.Item>
+                  <Dropdown.Item href="#">Another action</Dropdown.Item>
+                  <Dropdown.Item href="#">Something else here</Dropdown.Item>
+                </DropdownButton>
+                <Form.Control placeholder='Hospital, Speciality, Surgery, Procedure' />
+                <Button variant="primary" id="button-addon2">
+                  Search
+                </Button>
+              </InputGroup>
+            </Col>
+          </Row>
+        </Container>
+      </section>
       <section className='py-5'>
         <Container>
           <Row className='justify-content-center g-4 px-5 p-sm-0'>
@@ -23,7 +45,7 @@ const Home = () => {
                   <Card.Body>
                     <Card.Title>Instant Video Consultation</Card.Title>
                     <Card.Text>
-                      <span style={{ 'font-size': '14px' }}>Connect Within 60 seconds</span>
+                      <span style={{ 'fontSize': '14px' }}>Connect Within 60 seconds</span>
                       <Link className='stretched-link'></Link>
                     </Card.Text>
                   </Card.Body>
@@ -39,7 +61,7 @@ const Home = () => {
                   <Card.Body>
                     <Card.Title>Find Doctors Near You</Card.Title>
                     <Card.Text>
-                      <span style={{ 'font-size': '14px' }}>Confirmed Appointments</span>
+                      <span style={{ 'fontSize': '14px' }}>Confirmed Appointments</span>
                       <Link className='stretched-link'></Link>
                     </Card.Text>
                   </Card.Body>
@@ -55,7 +77,7 @@ const Home = () => {
                   <Card.Body>
                     <Card.Title>Surgeries</Card.Title>
                     <Card.Text>
-                      <span style={{ 'font-size': '14px' }}>Safe and trusted surgery centers</span>
+                      <span style={{ 'fontSize': '14px' }}>Safe and trusted surgery centers</span>
                       <Link className='stretched-link'></Link>
                     </Card.Text>
                   </Card.Body>
