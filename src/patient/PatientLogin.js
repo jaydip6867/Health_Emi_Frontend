@@ -45,8 +45,8 @@ const PatientLogin = () => {
             // console.log(res)
             const encrypted = CryptoJS.AES.encrypt(JSON.stringify(res.data.Data), SECRET_KEY).toString();
             localStorage.setItem('PatientLogin', encrypted)
-            console.log(encrypted)
-            toast(res.data.Message, { className: 'custom-toast-success' });
+            // console.log(encrypted)
+            // toast(res.data.Message, { className: 'custom-toast-success' });
             navigate('patientdahsboard')
         }).catch(function (error) {
             console.log(error);

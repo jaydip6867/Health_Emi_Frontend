@@ -11,8 +11,10 @@ import { AiOutlinePhone, AiOutlineUser } from 'react-icons/ai'
 import { FaRegEnvelope } from 'react-icons/fa'
 import { CiLocationOn, CiLock } from 'react-icons/ci'
 import { Country, State, City } from 'country-state-city';
+import CryptoJS from "crypto-js";
 
 const DoctorProfile = () => {
+    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
     const [IsDisable, setdisabled] = useState(true)
@@ -79,14 +81,18 @@ const DoctorProfile = () => {
 
 
     useEffect(() => {
-        var data = JSON.parse(localStorage.getItem('doctordata'));
+        var getlocaldata = localStorage.getItem('healthdoctor');
+        if (getlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+        }
         if (!data) {
             navigate('/doctor')
         }
         else {
-            setdoctor(data.data.Data.doctorData);
-            settoken(`Bearer ${data.data.Data.accessToken}`)
-
+            setdoctor(data.doctorData);
+            settoken(`Bearer ${data.accessToken}`)
         }
     }, [navigate])
 
@@ -195,21 +201,21 @@ const DoctorProfile = () => {
                 Authorization: token
             },
             data: {
-                "name":profile.name,
-                "email":profile.email,
-                "gender":profile.gender,
-                "mobile":profile.mobile,
-                "pincode":profile.pincode,
-                "specialty":profile.specialty,
-                "sub_specialty":profile.sub_specialty,
-                "qualification":profile.qualification,
-                "experience":profile.experience,
-                "hospital_name":profile.hospital_name,
-                "hospital_address":profile.hospital_address,
-                "country":profile.country,
-                "state":profile.state,
-                "city":profile.city,
-                "identityproof":profile.identityproof
+                "name": profile.name,
+                "email": profile.email,
+                "gender": profile.gender,
+                "mobile": profile.mobile,
+                "pincode": profile.pincode,
+                "specialty": profile.specialty,
+                "sub_specialty": profile.sub_specialty,
+                "qualification": profile.qualification,
+                "experience": profile.experience,
+                "hospital_name": profile.hospital_name,
+                "hospital_address": profile.hospital_address,
+                "country": profile.country,
+                "state": profile.state,
+                "city": profile.city,
+                "identityproof": profile.identityproof
             }
         }).then((res) => {
             // setprofile(res.data.Data)

@@ -11,30 +11,39 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import Loader from '../Loader';
 import { FaRegEnvelope } from 'react-icons/fa';
+import CryptoJS from "crypto-js";
 
 const DoctorLogin = () => {
-    
+
+    const SECRET_KEY = "health-emi";
+
     var navigate = useNavigate();
-    const [loading,setloading] = useState(false)
+    const [loading, setloading] = useState(false)
 
     // var logindata;
 
-    useEffect(()=>{
-        var data = JSON.parse(localStorage.getItem('doctordata'));
+    useEffect(() => {
+        var getlocaldata = localStorage.getItem('healthdoctor');
+        if (getlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+        }
+        // var data = JSON.parse(localStorage.getItem('doctordata'));
         // console.log('logindata = ', data)
-        if(!data){
+        if (!data) {
             navigate('/doctor')
         }
-        else{
+        else {
             navigate('doctordashboard')
         }
 
-    },[navigate])
+    }, [navigate])
 
-    var frmdata = {email:'',password:''}
-    const [frmdoctor,setfrmdoctor] = useState(frmdata);
+    var frmdata = { email: '', password: '' }
+    const [frmdoctor, setfrmdoctor] = useState(frmdata);
 
-    function selfrmdata(e){
+    function selfrmdata(e) {
         const { name, value } = e.target;
         setfrmdoctor(frmdoctor => ({
             ...frmdoctor,
@@ -42,7 +51,7 @@ const DoctorLogin = () => {
         }));
     }
 
-    function logindoctor(){
+    function logindoctor() {
         // console.log(frmdoctor)
         setloading(true)
         axios({
@@ -50,23 +59,25 @@ const DoctorLogin = () => {
             url: 'https://healtheasy-o25g.onrender.com/doctor/login',
             data: frmdoctor
         }).then((res) => {
-            toast('Doctor Login successfully...',{className:'custom-toast-success'})
+            const encrypted = CryptoJS.AES.encrypt(JSON.stringify(res.data.Data), SECRET_KEY).toString();
+            localStorage.setItem('healthdoctor', encrypted)
+            // toast('Doctor Login successfully...', { className: 'custom-toast-success' })
             // console.log(res)
-            localStorage.setItem('doctordata',JSON.stringify(res))
+            // localStorage.setItem('doctordata', JSON.stringify(res))
             navigate('doctordashboard')
         }).catch(function (error) {
             // console.log(error);
-            toast(error.response.data.Message,{className:'custom-toast-error'})
-        }).finally(()=>{
+            toast(error.response.data.Message, { className: 'custom-toast-error' })
+        }).finally(() => {
             setloading(false)
         });
     }
-    
+
     return (
         <div className='min-vh-100 d-flex align-items-center panel'>
             <Container className='py-3'>
                 <Row className='align-items-center'>
-                    <DoctorTestimonial/>
+                    <DoctorTestimonial />
                     <Col md={5}>
                         <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
                             <div className='text-center'>
@@ -103,7 +114,7 @@ const DoctorLogin = () => {
                 </Row>
             </Container>
             <ToastContainer />
-            {loading ? <Loader/> : ''}
+            {loading ? <Loader /> : ''}
         </div>
     )
 }

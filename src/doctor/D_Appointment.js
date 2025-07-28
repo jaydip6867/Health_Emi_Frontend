@@ -5,26 +5,34 @@ import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Loader from '../Loader'
+import CryptoJS from "crypto-js";
 
 const D_Appointment = () => {
+    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
 
     const [doctor, setdoctor] = useState(null)
     const [token, settoken] = useState(null)
 
-    const [appointment, setappointment] = useState(null)
 
     useEffect(() => {
-        var data = JSON.parse(localStorage.getItem('doctordata'));
+        var getlocaldata = localStorage.getItem('healthdoctor');
+        if (getlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+        }
         if (!data) {
             navigate('/doctor')
         }
         else {
-            setdoctor(data.data.Data.doctorData);
-            settoken(`Bearer ${data.data.Data.accessToken}`)
+            setdoctor(data.doctorData);
+            settoken(`Bearer ${data.accessToken}`)
         }
     }, [navigate])
+
+    const [appointment, setappointment] = useState(null)
 
     useEffect(() => {
         setloading(true)

@@ -11,10 +11,12 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import CryptoJS from "crypto-js";
 
 dayjs.extend(utc);
 
 const D_Calender = () => {
+    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
 
@@ -24,13 +26,18 @@ const D_Calender = () => {
     const [appointment, setappointment] = useState(null)
 
     useEffect(() => {
-        var data = JSON.parse(localStorage.getItem('doctordata'));
+        var getlocaldata = localStorage.getItem('healthdoctor');
+        if (getlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+        }
         if (!data) {
             navigate('/doctor')
         }
         else {
-            setdoctor(data.data.Data.doctorData);
-            settoken(`Bearer ${data.data.Data.accessToken}`)
+            setdoctor(data.doctorData);
+            settoken(`Bearer ${data.accessToken}`)
         }
     }, [navigate])
 

@@ -9,15 +9,16 @@ import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { MdDelete, MdEditDocument, MdOutlineRemoveRedEye } from 'react-icons/md';
-
+import CryptoJS from "crypto-js";
 
 const D_Surgery = () => {
+    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
 
     const [doctor, setdoctor] = useState(null)
     const [token, settoken] = useState(null)
-    const [s_type, sets_type] = useState([
+    const s_type = [
         "Appendectomy",
         "Cataract Surgery",
         "Cesarean Section (C-Section)",
@@ -43,8 +44,8 @@ const D_Surgery = () => {
         "Tubal Ligation",
         "Vasectomy",
         "Whipple Procedure (Pancreaticoduodenectomy)"
-    ])
-    var surgeryobj = { name: '', price: '', days: '', additional_features: '', description: '',surgery_type: '', yearsof_experience: '',completed_surgery:'',features:'' }
+    ];
+    var surgeryobj = { name: '', price: '', days: '', additional_features: '', description: '', surgery_type: '', yearsof_experience: '', completed_surgery: '', features: '' }
     const [surgery, setsurgery] = useState(surgeryobj)
     const [surgerylist, setsurgerylist] = useState(null)
 
@@ -57,13 +58,18 @@ const D_Surgery = () => {
     };
 
     useEffect(() => {
-        var data = JSON.parse(localStorage.getItem('doctordata'));
+        var getlocaldata = localStorage.getItem('healthdoctor');
+        if (getlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+        }
         if (!data) {
             navigate('/doctor')
         }
         else {
-            setdoctor(data.data.Data.doctorData);
-            settoken(`Bearer ${data.data.Data.accessToken}`)
+            setdoctor(data.doctorData);
+            settoken(`Bearer ${data.accessToken}`)
         }
     }, [navigate])
 
@@ -111,7 +117,7 @@ const D_Surgery = () => {
                 icon: "success",
             });
             getsurgery()
-            var surg = { name: '', price: '', days: '', additional_features: '', description: '', surgery_type: '', yearsof_experience: '',completed_surgery:'',features:'' }
+            var surg = { name: '', price: '', days: '', additional_features: '', description: '', surgery_type: '', yearsof_experience: '', completed_surgery: '', features: '' }
             setsurgery(surg);
         }).catch(function (error) {
             // console.log(error);
@@ -283,7 +289,7 @@ const D_Surgery = () => {
                                                 <Form.Label>Experiance</Form.Label>
                                                 <Form.Select placeholder="Ex:- 18000" name="yearsof_experience" value={surgery.yearsof_experience} onChange={selsurgery}>
                                                     <option value={''} selected disabled>Select Experiance</option>
-                                                    {['0+','1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
+                                                    {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
                                                         <option key={level} value={level}>
                                                             {level} years
                                                         </option>
@@ -296,7 +302,7 @@ const D_Surgery = () => {
                                                 <Form.Label>completed Surgery</Form.Label>
                                                 <Form.Select placeholder="Ex:- 18000" name="completed_surgery" value={surgery.completed_surgery} onChange={selsurgery}>
                                                     <option value={''} selected disabled>Select Completed Surgery</option>
-                                                    {['10+', '20+', '30+', '40+', '50+', '100+', '200+','300+','500+','1000+','2000+','5000+'].map((level) => (
+                                                    {['10+', '20+', '30+', '40+', '50+', '100+', '200+', '300+', '500+', '1000+', '2000+', '5000+'].map((level) => (
                                                         <option key={level} value={level}>
                                                             {level}
                                                         </option>
@@ -333,9 +339,7 @@ const D_Surgery = () => {
                                     </Form>
                                 </div>
                             </Col>
-                            <Col sm={6}>
-                                <div></div>
-                            </Col>
+                            
                         </Row>
                         <div className='bg-white rounded p-2 shadow'>
                             <Table bordered hover responsive>
@@ -359,9 +363,9 @@ const D_Surgery = () => {
                                                 <td>{v.name}</td>
                                                 <td>{v.price}</td>
                                                 <td>{v.days}</td>
-                                                <td>{!v.yearsof_experience? '0':v.yearsof_experience} Years of Experiance
-                                                    <hr/>
-                                                    {!v.completed_surgery? '0':v.completed_surgery} Surgeries Done
+                                                <td>{!v.yearsof_experience ? '0' : v.yearsof_experience} Years of Experiance
+                                                    <hr />
+                                                    {!v.completed_surgery ? '0' : v.completed_surgery} Surgeries Done
                                                 </td>
                                                 <td>{v.features}</td>
                                                 <td>{v.additional_features}</td>
@@ -420,21 +424,21 @@ const D_Surgery = () => {
                             <Modal.Body>
                                 <Form className='row register_doctor'>
                                     <Form.Group controlId="type" className='mb-3 col-md-3'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Surgery Type</Form.Label>
-                                                <Form.Select placeholder="Ex:- 18000" name="surgery_type" value={edit_record.surgery_type} onChange={seleditsurgery}>
-                                                    <option value={''}>Select Surgery Type</option>
-                                                    {s_type.map((v, i) => {
-                                                        return (<option key={i} value={v} selected={edit_record.surgery_type === v ? true : false}>{v}</option>)
-                                                    })}
-                                                </Form.Select>
-                                            </div>
-                                        </Form.Group>
+                                        <div className='position-relative'>
+                                            <Form.Label>Surgery Type</Form.Label>
+                                            <Form.Select placeholder="Ex:- 18000" name="surgery_type" value={edit_record.surgery_type} onChange={seleditsurgery}>
+                                                <option value={''}>Select Surgery Type</option>
+                                                {s_type.map((v, i) => {
+                                                    return (<option key={i} value={v} selected={edit_record.surgery_type === v ? true : false}>{v}</option>)
+                                                })}
+                                            </Form.Select>
+                                        </div>
+                                    </Form.Group>
                                     <Form.Group controlId="name" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Surgery Name</Form.Label>
                                             <Form.Control placeholder="Ex:- Cataract Surgery" name="name" value={edit_record.name} onChange={seleditsurgery} />
-                                            
+
                                         </div>
                                     </Form.Group>
 
@@ -442,7 +446,7 @@ const D_Surgery = () => {
                                         <div className='position-relative'>
                                             <Form.Label>Price</Form.Label>
                                             <Form.Control placeholder="Ex:- 18000" name="price" value={edit_record.price} onChange={seleditsurgery} />
-                                            
+
                                         </div>
                                     </Form.Group>
 
@@ -450,49 +454,49 @@ const D_Surgery = () => {
                                         <div className='position-relative'>
                                             <Form.Label>Days</Form.Label>
                                             <Form.Control placeholder="Ex:- 1" name="days" value={edit_record.days} onChange={seleditsurgery} />
-                                            
+
                                         </div>
                                     </Form.Group>
                                     <Form.Group controlId="days" className='mb-3 col-6 col-md-3'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Experiance</Form.Label>
-                                                <Form.Select placeholder="Ex:- 18000" name="yearsof_experience" value={edit_record.yearsof_experience} onChange={seleditsurgery}>
-                                                    <option value={''} selected disabled>Select Experiance</option>
-                                                    {['0+','1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
-                                                        <option key={level} value={level} selected={edit_record.yearsof_experience === level ? true : false}>
-                                                            {level} years
-                                                        </option>
-                                                    ))}
-                                                </Form.Select>
-                                            </div>
-                                        </Form.Group>
-                                        <Form.Group controlId="days" className='mb-3 col-6 col-md-3'>
-                                            <div className='position-relative'>
-                                                <Form.Label>completed Surgery</Form.Label>
-                                                <Form.Select placeholder="Ex:- 18000" name="completed_surgery" value={edit_record.completed_surgery} onChange={seleditsurgery}>
-                                                    <option value={''} selected disabled>Select Completed Surgery</option>
-                                                    {['10+', '20+', '30+', '40+', '50+', '100+', '200+','300+','500+','1000+','2000+','5000+'].map((level) => (
-                                                        <option key={level} value={level} selected={edit_record.completed_surgery === level ? true : false}>
-                                                            {level}
-                                                        </option>
-                                                    ))}
-                                                </Form.Select>
-                                            </div>
-                                        </Form.Group>
+                                        <div className='position-relative'>
+                                            <Form.Label>Experiance</Form.Label>
+                                            <Form.Select placeholder="Ex:- 18000" name="yearsof_experience" value={edit_record.yearsof_experience} onChange={seleditsurgery}>
+                                                <option value={''} selected disabled>Select Experiance</option>
+                                                {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
+                                                    <option key={level} value={level} selected={edit_record.yearsof_experience === level ? true : false}>
+                                                        {level} years
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </div>
+                                    </Form.Group>
+                                    <Form.Group controlId="days" className='mb-3 col-6 col-md-3'>
+                                        <div className='position-relative'>
+                                            <Form.Label>completed Surgery</Form.Label>
+                                            <Form.Select placeholder="Ex:- 18000" name="completed_surgery" value={edit_record.completed_surgery} onChange={seleditsurgery}>
+                                                <option value={''} selected disabled>Select Completed Surgery</option>
+                                                {['10+', '20+', '30+', '40+', '50+', '100+', '200+', '300+', '500+', '1000+', '2000+', '5000+'].map((level) => (
+                                                    <option key={level} value={level} selected={edit_record.completed_surgery === level ? true : false}>
+                                                        {level}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </div>
+                                    </Form.Group>
 
-                                        <Form.Group controlId="additional_features" className='mb-3 col-12 col-md-3'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Features</Form.Label>
-                                                <Form.Control placeholder="Ex:- Blade-free laser option" name="features" value={edit_record.features} onChange={seleditsurgery} />
-                                                
-                                            </div>
-                                        </Form.Group>
+                                    <Form.Group controlId="additional_features" className='mb-3 col-12 col-md-3'>
+                                        <div className='position-relative'>
+                                            <Form.Label>Features</Form.Label>
+                                            <Form.Control placeholder="Ex:- Blade-free laser option" name="features" value={edit_record.features} onChange={seleditsurgery} />
+
+                                        </div>
+                                    </Form.Group>
 
                                     <Form.Group controlId="additional_features" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>additional_features</Form.Label>
                                             <Form.Control placeholder="Ex:- Blade-free laser option, intraocular lens implant" name="additional_features" value={edit_record.additional_features} onChange={seleditsurgery} />
-                                            
+
                                         </div>
                                     </Form.Group>
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Col } from 'react-bootstrap'
-import { MdCalendarMonth, MdDifference, MdDiversity1, MdSpaceDashboard } from 'react-icons/md'
+import { MdCalendarMonth, MdCardGiftcard, MdDifference, MdDiversity1, MdSpaceDashboard } from 'react-icons/md'
 import { NavLink } from 'react-router-dom'
 
 const DoctorSidebar = () => {
@@ -12,6 +12,7 @@ const DoctorSidebar = () => {
                     <NavLink to={'/doctor/doctordashboard'} className={({ isActive }) => (isActive ? 'active' : '')}><MdSpaceDashboard /> Dashboard</NavLink>
                     <NavLink to={'/doctor/doctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}><MdDifference />Appointment</NavLink>
                     <NavLink to={'/doctor/doctorsurgery'} className={({ isActive }) => (isActive ? 'active' : '')} ><MdDiversity1 />Surgery</NavLink>
+                    <NavLink to={'/doctor/doctorblog'} className={({ isActive }) => (isActive ? 'active' : '')} ><MdCardGiftcard />Blog</NavLink>
                     <NavLink to={'/doctor/calender'} className={({ isActive }) => (isActive ? 'active' : '')}><MdCalendarMonth /> Calender</NavLink>
                 </div>
             </div>
