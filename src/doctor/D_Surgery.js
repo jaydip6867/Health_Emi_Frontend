@@ -119,6 +119,7 @@ const D_Surgery = () => {
             getsurgery()
             var surg = { name: '', price: '', days: '', additional_features: '', description: '', surgery_type: '', yearsof_experience: '', completed_surgery: '', features: '' }
             setsurgery(surg);
+            handlesurClose()
         }).catch(function (error) {
             // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
@@ -238,6 +239,11 @@ const D_Surgery = () => {
         });
     }
 
+    // show add surgery model 
+    const [show_ad_sur,setadsur]= useState(false);
+    const handlesurClose = () => setadsur(false);
+    const handlesurShow = () => setadsur(true);
+
     return (
         <>
             <Container fluid className='p-0 panel'>
@@ -245,6 +251,70 @@ const D_Surgery = () => {
                     <DoctorSidebar />
                     <Col xs={12} sm={9} lg={10} className='p-3'>
                         <DoctorNav doctorname={doctor && doctor.name} />
+
+                        <div className='bg-white rounded p-3 shadow '>
+                            <Row className='mt-2 mb-3 justify-content-between'>
+                                <Col xs={'auto'}>
+                                    <h4>My Surgeries</h4>
+                                </Col>
+                                <Col xs={'auto'}>
+                                    <Button variant='primary' onClick={handlesurShow}>Add Surgery</Button>
+                                </Col>
+                            </Row>
+                            <Table bordered hover responsive>
+                                <thead>
+                                    <tr align="middle">
+                                        <th>No</th>
+                                        <th>Surgery Name</th>
+                                        <th>Price</th>
+                                        <th>Category</th>
+                                        {/* <th>Experiance</th> */}
+                                        {/* <th>Features</th> */}
+                                        {/* <th>Description</th> */}
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {surgerylist && surgerylist.map((v, i) => {
+                                        return (
+                                            <tr key={i} align="middle">
+                                                <th>{i + 1}</th>
+                                                <td>{v.name}</td>
+                                                <td>{v.price}</td>
+                                                <td>{v.surgery_type}</td>
+                                                {/* <td>{!v.yearsof_experience ? '0' : v.yearsof_experience} Years of Experiance
+                                                    <hr />
+                                                    {!v.completed_surgery ? '0' : v.completed_surgery} Surgeries Done
+                                                </td>
+                                                <td>{v.features}</td>
+                                                <td>{v.additional_features}</td>
+                                                <td className='desc_3line'>{v.description}</td> */}
+                                                <td>
+                                                    {/* <Button variant="primary" className='btn btn-primary btn-sm' onClick={() => btnview(v._id)}>
+                                                        View
+                                                    </Button> */}
+                                                    <div className='p-1 d-flex justify-content-center gap-3'>
+                                                        <MdEditDocument className='fs-5' onClick={() => btnedit(v._id)} />
+                                                        <MdOutlineRemoveRedEye onClick={() => btnview(v._id)} className='text-primary fs-5' />
+                                                        <MdDelete onClick={() => deletesurgery(v._id)} className='text-danger fs-5' />
+                                                    </div>
+                                                    {/* <button className='btn btn-danger btn-sm' onClick={() => deletesurgery(v._id)}>Delete</button> */}
+
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </Table>
+                        </div>
+                    </Col>
+                </Row>
+                {/* add surgery */}
+                <Modal show={show_ad_sur} onHide={handlesurClose} centered size="xl">
+                    <Modal.Header closeButton>
+                        <Modal.Title>Add Surgery Detail</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
                         <Row className='g-4'>
                             <Col xs={12} md={12}>
                                 <div className='bg-white rounded p-3 shadow'>
@@ -264,7 +334,6 @@ const D_Surgery = () => {
                                             <div className='position-relative'>
                                                 <Form.Label>Surgery Name</Form.Label>
                                                 <Form.Control placeholder="Ex:- Cataract Surgery" name="name" value={surgery.name} onChange={selsurgery} />
-                                                {/* <AiOutlinePhone className='icon_input' /> */}
                                             </div>
                                         </Form.Group>
 
@@ -272,7 +341,6 @@ const D_Surgery = () => {
                                             <div className='position-relative'>
                                                 <Form.Label>Price</Form.Label>
                                                 <Form.Control placeholder="Ex:- 18000" name="price" value={surgery.price} onChange={selsurgery} />
-                                                {/* <CiLock className='icon_input' /> */}
                                             </div>
                                         </Form.Group>
 
@@ -281,7 +349,6 @@ const D_Surgery = () => {
                                             <div className='position-relative'>
                                                 <Form.Label>Days</Form.Label>
                                                 <Form.Control placeholder="Ex:- 1" name="days" value={surgery.days} onChange={selsurgery} />
-                                                {/* <CiLock className='icon_input' /> */}
                                             </div>
                                         </Form.Group>
                                         <Form.Group controlId="days" className='mb-3 col-6 col-md-3'>
@@ -315,14 +382,12 @@ const D_Surgery = () => {
                                             <div className='position-relative'>
                                                 <Form.Label>Features</Form.Label>
                                                 <Form.Control placeholder="Ex:- Blade-free laser option" name="features" value={surgery.features} onChange={selsurgery} />
-                                                {/* <CiLock className='icon_input' /> */}
                                             </div>
                                         </Form.Group>
                                         <Form.Group controlId="additional_features" className='mb-3 col-12 col-md-6'>
                                             <div className='position-relative'>
                                                 <Form.Label>additional_features</Form.Label>
                                                 <Form.Control placeholder="Ex:- Blade-free laser option, intraocular lens implant" name="additional_features" value={surgery.additional_features} onChange={selsurgery} />
-                                                {/* <CiLock className='icon_input' /> */}
                                             </div>
                                         </Form.Group>
 
@@ -339,57 +404,16 @@ const D_Surgery = () => {
                                     </Form>
                                 </div>
                             </Col>
-                            
                         </Row>
-                        <div className='bg-white rounded p-2 shadow'>
-                            <Table bordered hover responsive>
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th className='text-nowrap'>Surgery Name</th>
-                                        <th>Price</th>
-                                        <th>Days</th>
-                                        <th>Experiance</th>
-                                        <th>Features</th>
-                                        <th>Description</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {surgerylist && surgerylist.map((v, i) => {
-                                        return (
-                                            <tr key={i}>
-                                                <th>{i + 1}</th>
-                                                <td>{v.name}</td>
-                                                <td>{v.price}</td>
-                                                <td>{v.days}</td>
-                                                <td>{!v.yearsof_experience ? '0' : v.yearsof_experience} Years of Experiance
-                                                    <hr />
-                                                    {!v.completed_surgery ? '0' : v.completed_surgery} Surgeries Done
-                                                </td>
-                                                <td>{v.features}</td>
-                                                <td>{v.additional_features}</td>
-                                                <td className='desc_3line'>{v.description}</td>
-                                                <td>
-                                                    {/* <Button variant="primary" className='btn btn-primary btn-sm' onClick={() => btnview(v._id)}>
-                                                        View
-                                                    </Button> */}
-                                                    <div className='p-2 d-flex gap-3'>
-                                                        <MdEditDocument className='fs-4' onClick={() => btnedit(v._id)} />
-                                                        <MdOutlineRemoveRedEye onClick={() => btnview(v._id)} className='text-primary fs-4' />
-                                                        <MdDelete onClick={() => deletesurgery(v._id)} className='text-danger fs-4' />
-                                                    </div>
-                                                    {/* <button className='btn btn-danger btn-sm' onClick={() => deletesurgery(v._id)}>Delete</button> */}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handlesurClose}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
 
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </Table>
-                        </div>
-                    </Col>
-                </Row>
+                {/* view single surgery */}
                 {
                     single_view && single_view.map((v, i) => {
                         return (
@@ -415,110 +439,109 @@ const D_Surgery = () => {
                         )
                     })
                 }
-                {
-                    !edit_record ? '' :
-                        <Modal show={editshow} onHide={edithandleClose} centered size="xl">
-                            <Modal.Header closeButton>
-                                <Modal.Title>Update Surgery</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Form className='row register_doctor'>
-                                    <Form.Group controlId="type" className='mb-3 col-md-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Surgery Type</Form.Label>
-                                            <Form.Select placeholder="Ex:- 18000" name="surgery_type" value={edit_record.surgery_type} onChange={seleditsurgery}>
-                                                <option value={''}>Select Surgery Type</option>
-                                                {s_type.map((v, i) => {
-                                                    return (<option key={i} value={v} selected={edit_record.surgery_type === v ? true : false}>{v}</option>)
-                                                })}
-                                            </Form.Select>
-                                        </div>
-                                    </Form.Group>
-                                    <Form.Group controlId="name" className='mb-3 col-6'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Surgery Name</Form.Label>
-                                            <Form.Control placeholder="Ex:- Cataract Surgery" name="name" value={edit_record.name} onChange={seleditsurgery} />
-
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group controlId="price" className='mb-3 col-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Price</Form.Label>
-                                            <Form.Control placeholder="Ex:- 18000" name="price" value={edit_record.price} onChange={seleditsurgery} />
-
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group controlId="days" className='mb-3 col-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Days</Form.Label>
-                                            <Form.Control placeholder="Ex:- 1" name="days" value={edit_record.days} onChange={seleditsurgery} />
-
-                                        </div>
-                                    </Form.Group>
-                                    <Form.Group controlId="days" className='mb-3 col-6 col-md-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Experiance</Form.Label>
-                                            <Form.Select placeholder="Ex:- 18000" name="yearsof_experience" value={edit_record.yearsof_experience} onChange={seleditsurgery}>
-                                                <option value={''} selected disabled>Select Experiance</option>
-                                                {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
-                                                    <option key={level} value={level} selected={edit_record.yearsof_experience === level ? true : false}>
-                                                        {level} years
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                        </div>
-                                    </Form.Group>
-                                    <Form.Group controlId="days" className='mb-3 col-6 col-md-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>completed Surgery</Form.Label>
-                                            <Form.Select placeholder="Ex:- 18000" name="completed_surgery" value={edit_record.completed_surgery} onChange={seleditsurgery}>
-                                                <option value={''} selected disabled>Select Completed Surgery</option>
-                                                {['10+', '20+', '30+', '40+', '50+', '100+', '200+', '300+', '500+', '1000+', '2000+', '5000+'].map((level) => (
-                                                    <option key={level} value={level} selected={edit_record.completed_surgery === level ? true : false}>
-                                                        {level}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group controlId="additional_features" className='mb-3 col-12 col-md-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Features</Form.Label>
-                                            <Form.Control placeholder="Ex:- Blade-free laser option" name="features" value={edit_record.features} onChange={seleditsurgery} />
-
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group controlId="additional_features" className='mb-3 col-6'>
-                                        <div className='position-relative'>
-                                            <Form.Label>additional_features</Form.Label>
-                                            <Form.Control placeholder="Ex:- Blade-free laser option, intraocular lens implant" name="additional_features" value={edit_record.additional_features} onChange={seleditsurgery} />
-
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group controlId="description" className='mb-3 col-6'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Description</Form.Label>
-                                            <Form.Control as="textarea" placeholder="Ex:- Cataract surgery involves removing ...." name="description" value={edit_record.description} onChange={seleditsurgery} />
-                                        </div>
-                                    </Form.Group>
-
-                                </Form>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Form.Group >
-                                    <Form.Control type='button' value={'Update Surgery'} onClick={editsurgery} className='theme_btn' />
+                {/* update surgery */}
+                {!edit_record ? '' :
+                    <Modal show={editshow} onHide={edithandleClose} centered size="xl">
+                        <Modal.Header closeButton>
+                            <Modal.Title>Update Surgery</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Form className='row register_doctor'>
+                                <Form.Group controlId="type" className='mb-3 col-md-3'>
+                                    <div className='position-relative'>
+                                        <Form.Label>Surgery Type</Form.Label>
+                                        <Form.Select placeholder="Ex:- 18000" name="surgery_type" value={edit_record.surgery_type} onChange={seleditsurgery}>
+                                            <option value={''}>Select Surgery Type</option>
+                                            {s_type.map((v, i) => {
+                                                return (<option key={i} value={v} selected={edit_record.surgery_type === v ? true : false}>{v}</option>)
+                                            })}
+                                        </Form.Select>
+                                    </div>
                                 </Form.Group>
-                                <Button variant="secondary" onClick={edithandleClose}>
-                                    Close
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
+                                <Form.Group controlId="name" className='mb-3 col-6'>
+                                    <div className='position-relative'>
+                                        <Form.Label>Surgery Name</Form.Label>
+                                        <Form.Control placeholder="Ex:- Cataract Surgery" name="name" value={edit_record.name} onChange={seleditsurgery} />
 
+                                    </div>
+                                </Form.Group>
+
+                                <Form.Group controlId="price" className='mb-3 col-3'>
+                                    <div className='position-relative'>
+                                        <Form.Label>Price</Form.Label>
+                                        <Form.Control placeholder="Ex:- 18000" name="price" value={edit_record.price} onChange={seleditsurgery} />
+
+                                    </div>
+                                </Form.Group>
+
+                                <Form.Group controlId="days" className='mb-3 col-3'>
+                                    <div className='position-relative'>
+                                        <Form.Label>Days</Form.Label>
+                                        <Form.Control placeholder="Ex:- 1" name="days" value={edit_record.days} onChange={seleditsurgery} />
+
+                                    </div>
+                                </Form.Group>
+                                <Form.Group controlId="days" className='mb-3 col-6 col-md-3'>
+                                    <div className='position-relative'>
+                                        <Form.Label>Experiance</Form.Label>
+                                        <Form.Select placeholder="Ex:- 18000" name="yearsof_experience" value={edit_record.yearsof_experience} onChange={seleditsurgery}>
+                                            <option value={''} selected disabled>Select Experiance</option>
+                                            {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
+                                                <option key={level} value={level} selected={edit_record.yearsof_experience === level ? true : false}>
+                                                    {level} years
+                                                </option>
+                                            ))}
+                                        </Form.Select>
+                                    </div>
+                                </Form.Group>
+                                <Form.Group controlId="days" className='mb-3 col-6 col-md-3'>
+                                    <div className='position-relative'>
+                                        <Form.Label>completed Surgery</Form.Label>
+                                        <Form.Select placeholder="Ex:- 18000" name="completed_surgery" value={edit_record.completed_surgery} onChange={seleditsurgery}>
+                                            <option value={''} selected disabled>Select Completed Surgery</option>
+                                            {['10+', '20+', '30+', '40+', '50+', '100+', '200+', '300+', '500+', '1000+', '2000+', '5000+'].map((level) => (
+                                                <option key={level} value={level} selected={edit_record.completed_surgery === level ? true : false}>
+                                                    {level}
+                                                </option>
+                                            ))}
+                                        </Form.Select>
+                                    </div>
+                                </Form.Group>
+
+                                <Form.Group controlId="additional_features" className='mb-3 col-12 col-md-3'>
+                                    <div className='position-relative'>
+                                        <Form.Label>Features</Form.Label>
+                                        <Form.Control placeholder="Ex:- Blade-free laser option" name="features" value={edit_record.features} onChange={seleditsurgery} />
+
+                                    </div>
+                                </Form.Group>
+
+                                <Form.Group controlId="additional_features" className='mb-3 col-6'>
+                                    <div className='position-relative'>
+                                        <Form.Label>additional_features</Form.Label>
+                                        <Form.Control placeholder="Ex:- Blade-free laser option, intraocular lens implant" name="additional_features" value={edit_record.additional_features} onChange={seleditsurgery} />
+
+                                    </div>
+                                </Form.Group>
+
+                                <Form.Group controlId="description" className='mb-3 col-6'>
+                                    <div className='position-relative'>
+                                        <Form.Label>Description</Form.Label>
+                                        <Form.Control as="textarea" placeholder="Ex:- Cataract surgery involves removing ...." name="description" value={edit_record.description} onChange={seleditsurgery} />
+                                    </div>
+                                </Form.Group>
+
+                            </Form>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Form.Group >
+                                <Form.Control type='button' value={'Update Surgery'} onClick={editsurgery} className='theme_btn' />
+                            </Form.Group>
+                            <Button variant="secondary" onClick={edithandleClose}>
+                                Close
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
                 }
             </Container>
             <ToastContainer />

@@ -173,7 +173,7 @@ const D_Blog = () => {
     const [startDate, setStartDate] = useState(new Date());
 
     function editblog() {
-        const data = { ...edit_record,expirydate: startDate }
+        const data = { ...edit_record, expirydate: startDate }
         const date = new Date(data.expirydate);
         const formattedDate = date.toLocaleDateString("en-GB"); // Gives dd/mm/yyyy
         // Replace slashes with dashes
@@ -212,6 +212,11 @@ const D_Blog = () => {
         });
     }
 
+    // show add blog model 
+    const [show_ad_blog, setadblog] = useState(false);
+    const handleblogClose = () => setadblog(false);
+    const handleblogShow = () => setadblog(true);
+
     return (
         <>
 
@@ -220,55 +225,22 @@ const D_Blog = () => {
                     <DoctorSidebar />
                     <Col xs={12} sm={9} lg={10} className='p-3'>
                         <DoctorNav doctorname={doctor && doctor.name} />
-                        <Row className='g-4'>
-                            <Col xs={12} md={6}>
-                                <div className='bg-white rounded p-3 shadow'>
-                                    <Form className='row register_doctor'>
-                                        <Form.Group controlId="title" className='mb-3'>
-                                            <div>
-                                                <Form.Label>Title</Form.Label>
-                                                <Form.Control placeholder="Ex:- What is Tomato Flu: Symptoms, Causes, Treatment & Preventive Tips" name="title" value={blog.title} onChange={(e) => setblog({ ...blog, title: e.target.value })} />
-                                            </div>
-                                        </Form.Group>
-                                        <Form.Group controlId="description" className='mb-3'>
-                                            <div>
-                                                <Form.Label>Description</Form.Label>
-                                                <Form.Control as="textarea" placeholder="The ‘new’ virus, tomato flu, is a variant of already existing hand, " name="description" value={blog.description} onChange={(e) => setblog({ ...blog, description: e.target.value })} />
-                                            </div>
-                                        </Form.Group>
-                                        <Form.Group controlId="expirydate" className='mb-3'>
-                                            <Form.Label>Expiry Date</Form.Label>
-                                            <div>
-                                                <DatePicker selected={blog.expirydate}
-                                                    onChange={(date) => setblog({ ...blog, expirydate: date })}
-                                                    dateFormat="dd-MM-y"
-                                                    placeholderText="Select date"
-                                                    locale={enGB}
-                                                    minDate={new Date()} />
-                                            </div>
-                                        </Form.Group>
-                                        <div className='mb-3'>
-                                            <Form.Check type="switch" name="showto_doctor" label="Display Blog to doctor" id="docshow" checked={blog.showto_doctor} onChange={(e) => setblog({ ...blog, showto_doctor: e.target.checked })} />
-                                            <Form.Check type="switch" name="showto_patient" label="Display Blog to patient" id="patshow" checked={blog.showto_patient} onChange={(e) => setblog({ ...blog, showto_patient: e.target.checked })} />
-                                        </div>
 
-                                        <Form.Group className='col-12'>
-                                            <Form.Control type='button' value={'Add Blog'} onClick={addblog} className='theme_btn' />
-                                        </Form.Group>
-                                    </Form>
-                                </div>
-                            </Col>
-                            <Col sm={6}>
-                                <div></div>
-                            </Col>
-                        </Row>
-                        <div className='bg-white rounded p-2 mt-3 shadow'>
+                        <div className='bg-white rounded p-3 mt-3 shadow'>
+                            <Row className='mt-2 mb-3 justify-content-between'>
+                                <Col xs={'auto'}>
+                                    <h4>My Blogs</h4>
+                                </Col>
+                                <Col xs={'auto'}>
+                                    <Button variant='primary' onClick={handleblogShow}>Add Blog</Button>
+                                </Col>
+                            </Row>
                             <Table bordered hover responsive>
                                 <thead>
-                                    <tr>
+                                    <tr align="middle">
                                         <th>No</th>
                                         <th className='text-nowrap'>Blog Title</th>
-                                        <th>Description</th>
+                                        {/* <th>Description</th> */}
                                         <th>Expiry Date</th>
                                         <th>Action</th>
                                     </tr>
@@ -276,16 +248,16 @@ const D_Blog = () => {
                                 <tbody>
                                     {bloglist && bloglist.map((v, i) => {
                                         return (
-                                            <tr key={i}>
+                                            <tr key={i} align="middle">
                                                 <th>{i + 1}</th>
                                                 <td>{v.title}</td>
-                                                <td>{v.description}</td>
+                                                {/* <td>{v.description}</td> */}
                                                 <td>{v.expirydate}</td>
                                                 <td>
-                                                    <div className='p-2 d-flex gap-3'>
-                                                        <MdEditDocument className='fs-4' onClick={() => btnedit(v._id)} />
-                                                        <MdOutlineRemoveRedEye onClick={() => btnview(v._id)} className='text-primary fs-4' />
-                                                        <MdDelete onClick={() => deleteblog(v._id)} className='text-danger fs-4' />
+                                                    <div className='p-2 d-flex justify-content-center gap-3'>
+                                                        <MdEditDocument className='fs-5' onClick={() => btnedit(v._id)} />
+                                                        <MdOutlineRemoveRedEye onClick={() => btnview(v._id)} className='text-primary fs-5' />
+                                                        <MdDelete onClick={() => deleteblog(v._id)} className='text-danger fs-5' />
                                                     </div>
 
                                                 </td>
@@ -297,6 +269,58 @@ const D_Blog = () => {
                         </div>
                     </Col>
                 </Row>
+                {/* add blog modal */}
+                <Modal show={show_ad_blog} onHide={handleblogClose} centered size="lg">
+                    <Modal.Header closeButton>
+                        <Modal.Title>Add Surgery Detail</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Row className='g-4'>
+                            <Col xs={12}>
+                                <Form className='row register_doctor px-2 gy-3'>
+                                    <Form.Group controlId="title">
+                                        <div>
+                                            <Form.Label>Title</Form.Label>
+                                            <Form.Control placeholder="Ex:- What is Tomato Flu: Symptoms, Causes, Treatment & Preventive Tips" name="title" value={blog.title} onChange={(e) => setblog({ ...blog, title: e.target.value })} />
+                                        </div>
+                                    </Form.Group>
+                                    <Form.Group controlId="description">
+                                        <div>
+                                            <Form.Label>Description</Form.Label>
+                                            <Form.Control as="textarea" placeholder="The ‘new’ virus, tomato flu, is a variant of already existing hand, " name="description" value={blog.description} onChange={(e) => setblog({ ...blog, description: e.target.value })} />
+                                        </div>
+                                    </Form.Group>
+                                    <Form.Group controlId="expirydate">
+                                        <Form.Label>Expiry Date</Form.Label>
+                                        <div>
+                                            <DatePicker selected={blog.expirydate}
+                                                onChange={(date) => setblog({ ...blog, expirydate: date })}
+                                                dateFormat="dd-MM-y"
+                                                placeholderText="Select date"
+                                                locale={enGB}
+                                                minDate={new Date()} />
+                                        </div>
+                                    </Form.Group>
+                                    <div className='mb-3'>
+                                        <Form.Check type="switch" name="showto_doctor" label="Display Blog to doctor" id="docshow" checked={blog.showto_doctor} onChange={(e) => setblog({ ...blog, showto_doctor: e.target.checked })} />
+                                        <Form.Check type="switch" name="showto_patient" label="Display Blog to patient" id="patshow" checked={blog.showto_patient} onChange={(e) => setblog({ ...blog, showto_patient: e.target.checked })} />
+                                    </div>
+
+
+                                </Form>
+                            </Col>
+                        </Row>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Form.Group >
+                            <Form.Control type='button' value={'Add Blog'} onClick={addblog} className='theme_btn' />
+                        </Form.Group>
+                        <Button variant="secondary" onClick={handleblogClose}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+                {/* view blog modal */}
                 {
                     single_view && single_view.map((v, i) => {
                         return (
@@ -319,9 +343,10 @@ const D_Blog = () => {
                         )
                     })
                 }
+                {/* update log modal */}
                 {
                     !edit_record ? '' :
-                        <Modal show={editshow} onHide={edithandleClose} centered size="xl">
+                        <Modal show={editshow} onHide={edithandleClose} centered size="lg">
                             <Modal.Header closeButton>
                                 <Modal.Title>Update Blog</Modal.Title>
                             </Modal.Header>
