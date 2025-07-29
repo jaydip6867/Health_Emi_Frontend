@@ -112,7 +112,7 @@ const PatientRegister = () => {
 
                     <Form.Group controlId="mobile" className='position-relative mb-3'>
                       <Form.Label>Mobile</Form.Label>
-                      <Form.Control placeholder="Enter Mobile" name='mobile' value={patient.mobile} className='frm_input' onChange={patientch} />
+                      <Form.Control placeholder="Enter Mobile" name='mobile' value={patient.mobile} className='frm_input' onChange={patientch} pattern='[0-9]{10}' />
                       <FaRegEnvelope className='icon_input' />
                     </Form.Group>
 

@@ -145,13 +145,13 @@ const DoctorProfile = () => {
                 }).then((res) => {
                     // toast('Doctor Account Delete successfully...', { className: 'custom-toast-success' })
                     // console.log(res)
-                    localStorage.removeItem('doctordata')
+                    localStorage.removeItem('healthdoctor')
                 }).catch(function (error) {
                     // console.log(error);
                     toast(error.response.data.Message, { className: 'custom-toast-error' })
                 }).finally(() => {
                     // setloading(false)
-                    navigate('/doctor')
+                    navigate('/')
                 });
                 Swal.fire({
                     title: "Deleted!",
@@ -160,25 +160,6 @@ const DoctorProfile = () => {
                 });
             }
         });
-        // setloading(true)
-        // axios({
-        //     method: 'get',
-        //     url: 'https://healtheasy-o25g.onrender.com/doctor/profile/remove',
-        //     headers: {
-        //         Authorization: token
-        //     }
-        //     // data: profile
-        // }).then((res) => {
-        //     toast('Doctor Account Delete successfully...', { className: 'custom-toast-success' })
-        //     // console.log(res)
-        //     localStorage.removeItem('doctordata')
-        //     navigate('/doctor')
-        // }).catch(function (error) {
-        //     // console.log(error);
-        //     toast(error.response.data.Message, { className: 'custom-toast-error' })
-        // }).finally(() => {
-        //     setloading(false)
-        // });
     }
 
     function profiledata(e) {

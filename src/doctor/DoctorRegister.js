@@ -220,7 +220,7 @@ const DoctorRegister = () => {
                                         <AiOutlinePhone className='icon_input' />
                                     </Form.Group>
 
-                                    <Form.Group controlId="gender" className='position-relative mb-3'>
+                                    <Form.Group className='position-relative mb-3'>
                                         <Form.Label>Gender </Form.Label>
                                         <div className='d-flex gap-3'>
                                             <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' onChange={selfrmdata} /> Male</label>
@@ -228,7 +228,7 @@ const DoctorRegister = () => {
                                         </div>
                                     </Form.Group>
 
-                                    <Form.Group controlId="mobile" className='position-relative mb-3'>
+                                    <Form.Group controlId="pincode" className='position-relative mb-3'>
                                         <Form.Label>Pincode</Form.Label>
                                         <Form.Control placeholder="Pincode" className='frm_input' name='pincode' value={frmdoctor.pincode} onChange={selfrmdata} />
                                         <CiLocationOn className='icon_input' />

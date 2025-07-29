@@ -14,7 +14,7 @@ import CryptoJS from "crypto-js";
 
 const PatientProfile = () => {
     const SECRET_KEY = "health-emi";
-    
+
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
     const [IsDisable, setdisabled] = useState(true)
@@ -94,19 +94,20 @@ const PatientProfile = () => {
                 }).then((res) => {
                     // toast('Doctor Account Delete successfully...', { className: 'custom-toast-success' })
                     // console.log(res)
-                    localStorage.removeItem('doctordata')
+                    localStorage.removeItem('PatientLogin')
                 }).catch(function (error) {
                     // console.log(error);
                     toast(error.response.data.Message, { className: 'custom-toast-error' })
                 }).finally(() => {
                     // setloading(false)
-                    navigate('/doctor')
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Your Account has been deleted.",
+                        icon: "success"
+                    });
+                    navigate('/')
                 });
-                Swal.fire({
-                    title: "Deleted!",
-                    text: "Your Account has been deleted.",
-                    icon: "success"
-                });
+
             }
         });
     }
