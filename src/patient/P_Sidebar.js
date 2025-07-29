@@ -1,6 +1,6 @@
 import React from 'react'
 import { Col } from 'react-bootstrap'
-import { MdDifference, MdOutlineListAlt, MdSpaceDashboard } from 'react-icons/md'
+import { MdCardGiftcard, MdDifference, MdOutlineListAlt, MdSpaceDashboard } from 'react-icons/md'
 import { NavLink } from 'react-router-dom'
 
 const P_Sidebar = () => {
@@ -13,7 +13,7 @@ const P_Sidebar = () => {
                         <NavLink to={'/patient/patientdahsboard'} className={({ isActive }) => (isActive ? 'active' : '')}><MdSpaceDashboard />Dashboard</NavLink>
                         <NavLink to={'/patient/patientdoctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}><MdDifference />Add Appointment</NavLink>
                         <NavLink to={'/patient/appointment'} className={({ isActive }) => (isActive ? 'active' : '')} ><MdOutlineListAlt />View Appointment</NavLink>
-                        <NavLink to={'/patient/blog'} className={({ isActive }) => (isActive ? 'active' : '')}>Blog</NavLink>
+                        <NavLink to={'/patient/blog'} className={({ isActive }) => (isActive ? 'active' : '')}><MdCardGiftcard />Blog</NavLink>
                     </div>
                 </div>
             </Col>
