@@ -1,8 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import NavBar from './NavBar'
+import NavBar from '../NavBar'
 import { Button, Card, Col, Container, Dropdown, DropdownButton, Form, InputGroup, Row } from 'react-bootstrap'
-import FooterBar from './FooterBar'
+import FooterBar from '../FooterBar'
 import { FaGooglePlay } from 'react-icons/fa'
 
 const Home = () => {
@@ -40,7 +40,7 @@ const Home = () => {
               <Card className='h-100 rounded-5 shadow'>
                 <div className='rounded-5 overflow-hidden'>
                   <div className='text-center'>
-                    <Card.Img variant="top" src={require('./assets/image/doctor1.png')} />
+                    <Card.Img variant="top" src={require('../assets/image/doctor1.png')} />
                   </div>
                   <Card.Body>
                     <Card.Title>Instant Video Consultation</Card.Title>
@@ -56,7 +56,7 @@ const Home = () => {
               <Card className='rounded-5  h-100 shadow'>
                 <div className='rounded-5 overflow-hidden'>
                   <div className='text-center'>
-                    <Card.Img variant="top" src={require('./assets/image/doctor2.png')} />
+                    <Card.Img variant="top" src={require('../assets/image/doctor2.png')} />
                   </div>
                   <Card.Body>
                     <Card.Title>Find Doctors Near You</Card.Title>
@@ -72,7 +72,7 @@ const Home = () => {
               <Card className='rounded-5  h-100 shadow'>
                 <div className='rounded-5 overflow-hidden'>
                   <div className='text-center'>
-                    <Card.Img variant="top" src={require('./assets/image/doctor3.png')} />
+                    <Card.Img variant="top" src={require('../assets/image/doctor3.png')} />
                   </div>
                   <Card.Body>
                     <Card.Title>Surgeries</Card.Title>
@@ -87,13 +87,66 @@ const Home = () => {
           </Row>
         </Container>
       </section>
+      {/* speciality section */}
+      <section className='py-5'>
+        <Container>
+          <div className='text-center sec_head'>
+            <h2>Consult top doctors online for any health concern</h2>
+            <p>Private online consultations with verified doctors in all specialists</p>
+          </div>
+          <Row>
+            <Col>
+              <div className='card border-0 speciality_box_item text-center'>
+                <img src={require('../assets/image/period.png')} className='img-fluid' />
+                <h6 className='mb-1'>Period doubts or Pregnancy </h6>
+                <Link className='stretched-link'>Consult Now</Link>
+              </div>
+            </Col>
+            <Col>
+              <div className='card border-0 speciality_box_item text-center'>
+                <img src={require('../assets/image/period.png')} className='img-fluid' />
+                <h6 className='mb-1'>Period doubts or Pregnancy </h6>
+                <Link className='stretched-link'>Consult Now</Link>
+              </div>
+            </Col>
+            <Col>
+              <div className='card border-0 speciality_box_item text-center'>
+                <img src={require('../assets/image/period.png')} className='img-fluid' />
+                <h6 className='mb-1'>Period doubts or Pregnancy </h6>
+                <Link className='stretched-link'>Consult Now</Link>
+              </div>
+            </Col>
+            <Col>
+              <div className='card border-0 speciality_box_item text-center'>
+                <img src={require('../assets/image/period.png')} className='img-fluid' />
+                <h6 className='mb-1'>Period doubts or Pregnancy </h6>
+                <Link className='stretched-link'>Consult Now</Link>
+              </div>
+            </Col>
+            <Col>
+              <div className='card border-0 speciality_box_item text-center'>
+                <img src={require('../assets/image/period.png')} className='img-fluid' />
+                <h6 className='mb-1'>Period doubts or Pregnancy </h6>
+                <Link className='stretched-link'>Consult Now</Link>
+              </div>
+            </Col>
+            <Col>
+              <div className='card border-0 speciality_box_item text-center'>
+                <img src={require('../assets/image/period.png')} className='img-fluid' />
+                <h6 className='mb-1'>Period doubts or Pregnancy </h6>
+                <Link className='stretched-link'>Consult Now</Link>
+              </div>
+            </Col>
+          </Row>
+        </Container>
+      </section>
       {/* download app section */}
       <section >
         <Container className='border-top border-secondary-subtle py-5'>
           <Row className='align-items-center justify-content-center g-4'>
             <Col xs={12} sm={6} md={5}>
               <div className='text-center text-sm-start'>
-                <img src={require('./assets/image/call-patient-half.png')} className="img-fluid shadow-img" />
+                <img src={require('../assets/image/call-patient-half.png')} className="img-fluid shadow-img" />
               </div>
             </Col>
             <Col xs={12} sm={6} md={5}>
@@ -111,6 +164,7 @@ const Home = () => {
           </Row>
         </Container>
       </section>
+      
       <FooterBar />
     </>
   )

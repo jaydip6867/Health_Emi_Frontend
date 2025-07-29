@@ -4,7 +4,6 @@ import DoctorRegister from './doctor/DoctorRegister';
 import DoctorLogin from './doctor/DoctorLogin';
 import DoctorForgot from './doctor/DoctorForgot';
 import DoctorDashboard from './doctor/DoctorDashboard';
-import Home from './Home';
 import NotFound from './NotFound';
 import D_Appointment from './doctor/D_Appointment';
 import DoctorProfile from './doctor/DoctorProfile';
@@ -20,12 +19,17 @@ import P_Appointment from './patient/P_Appointment';
 import D_Calender from './doctor/D_Calender';
 import D_Blog from './doctor/D_Blog';
 import P_Blog from './patient/P_Blog';
+import Home from './Visitor/Home';
+import About from './Visitor/About';
+import Contact from './Visitor/Contact';
 
 function App() {
   return (
     <div className="App">
       <Routes>
         <Route path='/' element={<Home />}></Route>
+        <Route path='/about' element={<About />}></Route>
+        <Route path='/contact' element={<Contact />}></Route>
         <Route path='/doctor'>
           <Route path='' index element={<DoctorLogin />}></Route>
           <Route path='doctorregister' element={<DoctorRegister />}></Route>
