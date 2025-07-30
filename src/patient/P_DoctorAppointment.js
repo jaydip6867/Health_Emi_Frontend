@@ -51,9 +51,9 @@ const P_DoctorAppointment = () => {
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/user/doctors/list',
-            headers: {
-                Authorization: token
-            },
+            // headers: {
+            //     Authorization: token
+            // },
             data: {
                 "search": d
             }

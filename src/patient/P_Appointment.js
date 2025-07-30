@@ -83,7 +83,7 @@ const P_Appointment = () => {
                                         appoint_data && appoint_data.map((v, i) => {
                                             return (
                                                 <tr key={i}>
-                                                    <th>{i+1}</th>
+                                                    <th>{i + 1}</th>
                                                     <td>{v.doctorid.name}</td>
                                                     <td>{v.surgerydetails.name}</td>
                                                     <td>{v.surgerydetails.price}</td>

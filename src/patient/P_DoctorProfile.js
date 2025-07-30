@@ -59,9 +59,9 @@ const P_DoctorProfile = () => {
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/user/doctors/getone',
-            headers: {
-                Authorization: token
-            },
+            // headers: {
+            //     Authorization: token
+            // },
             data: {
                 "doctorid": d_id
             }

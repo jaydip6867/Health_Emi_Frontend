@@ -51,16 +51,16 @@ const About = () => {
             {/* health section */}
             <section className='py-5 bg-secondary-subtle'>
                 <Container>
-                    <Row>
+                    <Row className='align-items-center'>
                         <Col xs={12} md={6}>
-                            <div className='sec_head mb-0 text-center text-md-start py-5'>
+                            <div className='sec_head mb-0 text-center text-md-start'>
                                 <h2>Health is a habit</h2>
                                 <hr style={{ 'width': '100px' }} className='mx-md-0 mx-auto' />
                                 <p className='mb-0'>It is the journey that takes you to new destinations every day with endless possibilities of life on the back of happiness, energy, and hope. Practo wants to make this journey easy for every Indian and help them live healthier and longer lives.</p>
                             </div>
                         </Col>
-                        <Col xs={12} md={6}>
-                            <img src='' className='img-fluid'/>
+                        <Col xs={12} md={4} className='mx-auto'>
+                            <img src={require('../assets/image/health-habit.png')} className='img-fluid shadow-img'/>
                         </Col>
                     </Row>
                 </Container>
