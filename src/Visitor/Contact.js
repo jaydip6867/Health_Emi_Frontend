@@ -1,7 +1,7 @@
 import React from 'react'
-import NavBar from '../NavBar'
-import FooterBar from '../FooterBar'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap'
+import NavBar from './Component/NavBar'
+import FooterBar from './Component/FooterBar'
 
 const Contact = () => {
     return (

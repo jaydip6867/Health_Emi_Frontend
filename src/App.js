@@ -4,7 +4,7 @@ import DoctorRegister from './doctor/DoctorRegister';
 import DoctorLogin from './doctor/DoctorLogin';
 import DoctorForgot from './doctor/DoctorForgot';
 import DoctorDashboard from './doctor/DoctorDashboard';
-import NotFound from './NotFound';
+import NotFound from './Visitor/NotFound';
 import D_Appointment from './doctor/D_Appointment';
 import DoctorProfile from './doctor/DoctorProfile';
 import PatientRegister from './patient/PatientRegister';
@@ -22,6 +22,9 @@ import P_Blog from './patient/P_Blog';
 import Home from './Visitor/Home';
 import About from './Visitor/About';
 import Contact from './Visitor/Contact';
+import VideoConsult from './Visitor/VideoConsult';
+import Surgeries from './Visitor/Surgeries';
+import Doctors from './Visitor/Doctors';
 
 function App() {
   return (
@@ -30,6 +33,9 @@ function App() {
         <Route path='/' element={<Home />}></Route>
         <Route path='/about' element={<About />}></Route>
         <Route path='/contact' element={<Contact />}></Route>
+        <Route path='/consult' element={<VideoConsult />}></Route>
+        <Route path='/doctorfind' element={<Doctors />}></Route>
+        <Route path='/surgery' element={<Surgeries />}></Route>
         <Route path='/doctor'>
           <Route path='' index element={<DoctorLogin />}></Route>
           <Route path='doctorregister' element={<DoctorRegister />}></Route>

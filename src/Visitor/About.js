@@ -1,8 +1,8 @@
 import React from 'react'
-import NavBar from '../NavBar'
-import FooterBar from '../FooterBar'
 import { Col, Container, Row } from 'react-bootstrap'
 import { FcBiotech, FcElectricalSensor, FcFinePrint } from 'react-icons/fc'
+import NavBar from './Component/NavBar'
+import FooterBar from './Component/FooterBar'
 
 const About = () => {
     return (
