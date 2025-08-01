@@ -25,8 +25,10 @@ const Home = () => {
     <>
       <NavBar />
       {/* search by city and doctor name or surgery */}
+      
       <section className='pt-5'>
         <Container>
+          
           <Row className='justify-content-center searchbox'>
             <Col xs={12} md={8}>
               <InputGroup className="mb-3">
