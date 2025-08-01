@@ -1,11 +1,26 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Card, Col, Container, Dropdown, DropdownButton, Form, InputGroup, Row } from 'react-bootstrap'
 import NavBar from './Component/NavBar'
 import FooterBar from './Component/FooterBar'
 import AppDownload from './Component/AppDownload'
+import { City, Country, State } from 'country-state-city';
 
 const Home = () => {
+  const [cities, setCities] = useState([]);
+  useEffect(() => {
+    getcitiesname();
+  }, []);
+  function getcitiesname() {
+    const india = Country.getCountryByCode("IN");
+    const states = State.getStatesOfCountry(india.isoCode);
+    const allCities = states.flatMap((state) =>
+      City.getCitiesOfState(india.isoCode, state.isoCode)
+    );
+    setCities(allCities);
+  }
+
+  const [searchinput,setsearchinput] = useState({city:'',name:''})
   return (
     <>
       <NavBar />
@@ -15,16 +30,14 @@ const Home = () => {
           <Row className='justify-content-center searchbox'>
             <Col xs={12} md={8}>
               <InputGroup className="mb-3">
-                <DropdownButton
-                  variant="outline-secondary"
-                  title="Select City"
-                  id="input-group-dropdown-1"
-                >
-                  <Dropdown.Item href="#">Action</Dropdown.Item>
-                  <Dropdown.Item href="#">Another action</Dropdown.Item>
-                  <Dropdown.Item href="#">Something else here</Dropdown.Item>
-                </DropdownButton>
-                <Form.Control placeholder='Hospital, Speciality, Surgery, Procedure' />
+                <Form.Select className='frm-select city rounded-0' value={searchinput.city} onChange={(e)=>setsearchinput({...searchinput,city:e.target.value})} name='city' style={{'maxWidth':'150px'}}>
+                  {
+                    cities && cities.map((city, vi) => {
+                      return (<option key={vi} value={city.name} >{city.name}</option>)
+                    })
+                  }
+                </Form.Select>
+                <Form.Control placeholder='Hospital, Speciality, Surgery, Procedure' value={searchinput.name} onChange={(e)=>setsearchinput({...searchinput,name:e.target.value})} name='name' />
                 <Button variant="primary" id="button-addon2">
                   Search
                 </Button>
@@ -97,42 +110,42 @@ const Home = () => {
           <Row>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('../assets/image/period.png')} className='img-fluid' />
+                <img src={require('../assets/image/period.png')} className='img-fluid' alt='period' />
                 <h6 className='mb-1'>Period doubts or Pregnancy </h6>
                 <Link className='stretched-link'>Consult Now</Link>
               </div>
             </Col>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('../assets/image/period.png')} className='img-fluid' />
+                <img src={require('../assets/image/period.png')} className='img-fluid' alt='period' />
                 <h6 className='mb-1'>Period doubts or Pregnancy </h6>
                 <Link className='stretched-link'>Consult Now</Link>
               </div>
             </Col>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('../assets/image/period.png')} className='img-fluid' />
+                <img src={require('../assets/image/period.png')} className='img-fluid' alt='period' />
                 <h6 className='mb-1'>Period doubts or Pregnancy </h6>
                 <Link className='stretched-link'>Consult Now</Link>
               </div>
             </Col>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('../assets/image/period.png')} className='img-fluid' />
+                <img src={require('../assets/image/period.png')} className='img-fluid' alt='period' />
                 <h6 className='mb-1'>Period doubts or Pregnancy </h6>
                 <Link className='stretched-link'>Consult Now</Link>
               </div>
             </Col>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('../assets/image/period.png')} className='img-fluid' />
+                <img src={require('../assets/image/period.png')} className='img-fluid' alt='period' />
                 <h6 className='mb-1'>Period doubts or Pregnancy </h6>
                 <Link className='stretched-link'>Consult Now</Link>
               </div>
             </Col>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('../assets/image/period.png')} className='img-fluid' />
+                <img src={require('../assets/image/period.png')} className='img-fluid' alt='period' />
                 <h6 className='mb-1'>Period doubts or Pregnancy </h6>
                 <Link className='stretched-link'>Consult Now</Link>
               </div>
@@ -141,7 +154,7 @@ const Home = () => {
         </Container>
       </section>
       {/* App Download Section  */}
-      <AppDownload/>
+      <AppDownload />
       <FooterBar />
     </>
   )

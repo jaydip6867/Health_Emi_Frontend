@@ -28,7 +28,7 @@ const Doctors = () => {
                         </Col>
                         <Col xs={12} md={6}>
                             <div className='w-50 mx-auto shadow-img'>
-                                <img src={require('../assets/image/Appoinment-Booking.png')} className='img-fluid' />
+                                <img src={require('../assets/image/Appoinment-Booking.png')} className='img-fluid' alt='appointment booking' />
                             </div>
                         </Col>
                     </Row>

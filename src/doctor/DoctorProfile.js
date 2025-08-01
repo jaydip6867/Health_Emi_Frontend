@@ -56,7 +56,7 @@ const DoctorProfile = () => {
         setStates(filteredStates);
         setCities([]);
         setSelectedStateCode("");
-        console.log(sel_contry[0].name)
+        // console.log(sel_contry[0].name)
     };
 
     // When user selects a state
@@ -72,7 +72,7 @@ const DoctorProfile = () => {
 
         const filteredCities = City.getCitiesOfState(selectedCountryCode, stateCode);
         setCities(filteredCities);
-        console.log(sel_state[0].name)
+        // console.log(sel_state[0].name)
     };
 
 
@@ -168,7 +168,7 @@ const DoctorProfile = () => {
             ...profile,
             [name]: value
         }))
-        console.log(profile)
+        // console.log(profile)
     }
 
     function updateprofiledata(id) {
@@ -258,8 +258,8 @@ const DoctorProfile = () => {
                                         <Form.Group controlId="gender" className='col-6 col-md-4 col-lg-3'>
                                             <Form.Label>Gender </Form.Label>
                                             <div className='d-flex gap-3'>
-                                                <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' checked={profile && profile.gender == "Male" ? true : false} onChange={profiledata} disabled={IsDisable} /> Male</label>
-                                                <label><Form.Check type='radio' name='gender' value={'Female'} className='d-inline-block me-2' checked={profile && profile.gender == "Female" ? true : false} onChange={profiledata} disabled={IsDisable} /> Female</label>
+                                                <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' checked={profile && profile.gender === "Male" ? true : false} onChange={profiledata} disabled={IsDisable} /> Male</label>
+                                                <label><Form.Check type='radio' name='gender' value={'Female'} className='d-inline-block me-2' checked={profile && profile.gender === "Female" ? true : false} onChange={profiledata} disabled={IsDisable} /> Female</label>
                                             </div>
                                         </Form.Group>
 
@@ -338,7 +338,7 @@ const DoctorProfile = () => {
                                                 <Form.Label>Country</Form.Label>
                                                 <Form.Select className='frm-select' name='country' disabled={IsDisable} onChange={handleCountryChange}  >
                                                     {countries.map((country) => (
-                                                        <option key={country.isoCode} value={country.isoCode} selected={profile && profile.country == country.name ? true : false}>
+                                                        <option key={country.isoCode} value={country.isoCode} selected={profile && profile.country === country.name ? true : false}>
                                                             {country.name}
                                                         </option>
                                                     ))}
@@ -353,7 +353,7 @@ const DoctorProfile = () => {
                                                     {!selectedCountryCode ? <option>{profile && profile.state}</option> : ''}
                                                     {states.map((state) => {
                                                         return (
-                                                            <option key={state.isoCode} value={state.isoCode} selected={profile && profile.state == state.name ? true : false}>
+                                                            <option key={state.isoCode} value={state.isoCode} selected={profile && profile.state === state.name ? true : false}>
                                                                 {state.name}
                                                             </option>
                                                         )
@@ -369,7 +369,7 @@ const DoctorProfile = () => {
                                                     {!selectedStateCode ? <option>{profile && profile.city}</option> : ''}
                                                     {
                                                         cities && cities.map((city, vi) => {
-                                                            return (<option key={vi} value={city.name} selected={profile && profile.city == city.name ? true : false}>{city.name}</option>)
+                                                            return (<option key={vi} value={city.name} selected={profile && profile.city === city.name ? true : false}>{city.name}</option>)
                                                         })
                                                     }
                                                 </Form.Select>
