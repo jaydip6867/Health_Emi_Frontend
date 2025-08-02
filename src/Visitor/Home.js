@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Card, Col, Container, Dropdown, DropdownButton, Form, InputGroup, Row } from 'react-bootstrap'
+import { Button, Card, Col, Container, Form, InputGroup, Row } from 'react-bootstrap'
 import NavBar from './Component/NavBar'
 import FooterBar from './Component/FooterBar'
 import AppDownload from './Component/AppDownload'
+import Loader from '../Loader'
 import { City, Country, State } from 'country-state-city';
+import axios from 'axios'
 
 const Home = () => {
+  const [loading, setloading] = useState(false)
   const [cities, setCities] = useState([]);
   useEffect(() => {
     getcitiesname();
+    getsuggestion();
   }, []);
   function getcitiesname() {
     const india = Country.getCountryByCode("IN");
@@ -20,26 +24,88 @@ const Home = () => {
     setCities(allCities);
   }
 
-  const [searchinput,setsearchinput] = useState({city:'',name:''})
+  const [searchinputcity, setsearchinputcity] = useState('')
+  const [recordlist, setreclist] = useState([])
+  const [inputValue, setInputValue] = useState('');
+  const [showList, setShowList] = useState(false);
+  const getsuggestion = async (n) => {
+    await axios({
+      method: 'post',
+      url: 'https://healtheasy-o25g.onrender.com/user/suggestions',
+      data: {
+        "search": n
+      }
+    }).then((res) => {
+      console.log(res.data.Data)
+      setreclist(res.data.Data)
+    }).catch(function (error) {
+      console.log(error);
+    }).finally(() => {
+    });
+  }
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+    setShowList(true);
+    getsuggestion(e.target.value)
+  };
+
+  const handleSelectItem = (item) => {
+    setInputValue(item);
+    setShowList(false);
+  };
+
   return (
     <>
       <NavBar />
       {/* search by city and doctor name or surgery */}
-      
+
       <section className='pt-5'>
         <Container>
-          
+
           <Row className='justify-content-center searchbox'>
             <Col xs={12} md={8}>
               <InputGroup className="mb-3">
-                <Form.Select className='frm-select city rounded-0' value={searchinput.city} onChange={(e)=>setsearchinput({...searchinput,city:e.target.value})} name='city' style={{'maxWidth':'150px'}}>
+                <Form.Select className='frm-select city rounded-0' value={searchinputcity} onChange={(e) => setsearchinputcity(e.target.value)} name='city' style={{ 'maxWidth': '150px' }}>
                   {
                     cities && cities.map((city, vi) => {
                       return (<option key={vi} value={city.name} >{city.name}</option>)
                     })
                   }
                 </Form.Select>
-                <Form.Control placeholder='Hospital, Speciality, Surgery, Procedure' value={searchinput.name} onChange={(e)=>setsearchinput({...searchinput,name:e.target.value})} name='name' />
+                <div className='flex-grow-1 position-relative'>
+                  <Form.Control placeholder='Hospital, Speciality, Surgery, Procedure' autoComplete="off" value={inputValue} onChange={handleInputChange} onFocus={() => setShowList(true)} onBlur={() => setTimeout(() => setShowList(false), 50)} name='name' />
+                  {showList && recordlist.length > 0 && (
+                    <ul style={{
+                      position: 'absolute',
+                      top: '40px',
+                      width: '100%',
+                      border: '1px solid #ccc',
+                      backgroundColor: 'white',
+                      listStyle: 'none',
+                      padding: '0',
+                      margin: '0',
+                      maxHeight: '350px',
+                      overflowY: 'auto',
+                      zIndex: 10
+                    }}>
+                      {recordlist.map((item, index) => (
+                        <li
+                          key={index}
+                          onClick={() => handleSelectItem(item.name)}
+                          style={{
+                            padding: '8px',
+                            cursor: 'pointer',
+                            borderBottom: '1px solid #eee'
+                          }}
+                          onMouseDown={(e) => e.preventDefault()} // Prevent input blur before click
+                        >
+                          {item.type === 'surgery' ? <Link to={`/surgery/${encodeURIComponent(btoa(item.id))}`}>{item.name}</Link> : <Link to={`/doctorprofile/${encodeURIComponent(btoa(item.id))}`}>{item.name}</Link> }
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
                 <Button variant="primary" id="button-addon2">
                   Search
                 </Button>
@@ -158,6 +224,7 @@ const Home = () => {
       {/* App Download Section  */}
       <AppDownload />
       <FooterBar />
+      {loading ? <Loader /> : ''}
     </>
   )
 }

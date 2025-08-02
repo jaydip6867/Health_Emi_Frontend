@@ -21,11 +21,11 @@ const AppDownload = () => {
                             <div>
                                 <p className='text-secondary'>Get the link to download the app</p>
                                 <Form className='d-flex mb-3'>
-                                    <div class="input-container">
-                                        <div class="country-code">+91</div>
+                                    <div className="input-container">
+                                        <div className="country-code">+91</div>
                                         <input type="tel" placeholder="Enter phone number" />
                                     </div>
-                                    <button class="button primary send-app-link-button">Send app link</button>
+                                    <button className="button primary send-app-link-button">Send app link</button>
                                 </Form>
                                 <div className='app_btn d-flex'>
                                     <a className='btn btn-dark'><FaGooglePlay /> Google Play</a>

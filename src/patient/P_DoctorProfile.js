@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import Loader from '../Loader';
-import { Button, Card, Col, Container, Form, Image, ListGroup, Modal, Row, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+import { Button, Card, Col, Container, Form, Image, ListGroup, Modal, Row } from 'react-bootstrap';
 import P_Sidebar from './P_Sidebar';
 import P_nav from './P_nav';
 import { FaMapMarkerAlt } from 'react-icons/fa';
@@ -55,7 +55,7 @@ const P_DoctorProfile = () => {
         }
     }, [patient])
 
-    function getdoctordata(d) {
+    function getdoctordata() {
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/user/doctors/getone',
@@ -151,7 +151,7 @@ const P_DoctorProfile = () => {
                                     {/* Doctor Info */}
                                     <Col md={8}>
                                         <div className="d-flex align-items-start">
-                                            {doctor_profile.identityproof == '' ? <Image src={require('../assets/image/doctor_img.jpg')} roundedCircle className="me-3" width={120} /> : <Image src={doctor_profile.identityproof} roundedCircle className="me-3" width={120} />}
+                                            {doctor_profile.identityproof === '' ? <Image src={require('../assets/image/doctor_img.jpg')} roundedCircle className="me-3" width={120} /> : <Image src={doctor_profile.identityproof} roundedCircle className="me-3" width={120} />}
                                             {/* <Image src="https://via.placeholder.com/80" roundedCircle className="me-3" /> */}
                                             <div>
                                                 <h5>Dr. {doctor_profile.name}</h5>

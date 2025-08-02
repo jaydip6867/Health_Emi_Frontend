@@ -134,6 +134,9 @@
 .searchbox .input-group>:not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
   border-radius: 0;
 }
+.searchbox input{
+  border-radius: 0;
+}
 
 .searchbox .form-select:focus{
   box-shadow: none;

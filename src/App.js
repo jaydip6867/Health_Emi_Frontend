@@ -25,6 +25,8 @@ import Contact from './Visitor/Contact';
 import VideoConsult from './Visitor/VideoConsult';
 import Surgeries from './Visitor/Surgeries';
 import Doctors from './Visitor/Doctors';
+import DoctorProfilePage from './Visitor/DoctorProfilePage';
+import Surgerydoctorlist from './Visitor/Surgerydoctorlist';
 
 function App() {
   return (
@@ -35,7 +37,9 @@ function App() {
         <Route path='/contact' element={<Contact />}></Route>
         <Route path='/consult' element={<VideoConsult />}></Route>
         <Route path='/doctorfind' element={<Doctors />}></Route>
+        <Route path='/doctorprofile/:id' element={<DoctorProfilePage />}></Route>
         <Route path='/surgery' element={<Surgeries />}></Route>
+        <Route path='/surgery/:id' element={<Surgerydoctorlist />}></Route>
         <Route path='/doctor'>
           <Route path='' index element={<DoctorLogin />}></Route>
           <Route path='doctorregister' element={<DoctorRegister />}></Route>
