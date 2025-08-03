@@ -27,6 +27,8 @@ import Surgeries from './Visitor/Surgeries';
 import Doctors from './Visitor/Doctors';
 import DoctorProfilePage from './Visitor/DoctorProfilePage';
 import Surgerydoctorlist from './Visitor/Surgerydoctorlist';
+import AdminLogin from './Admin/AdminLogin';
+import AdminDashboard from './Admin/AdminDashboard';
 
 function App() {
   return (
@@ -61,6 +63,10 @@ function App() {
           <Route path='blog' element={<P_Blog />}></Route>
           <Route path='doctor_ap/:id' element={<P_DoctorProfile />}></Route>
           <Route path='patientprofile' element={<PatientProfile />}></Route>
+        </Route>
+        <Route path='healthadmin'>
+          <Route path='' index element={<AdminLogin />}></Route>
+          <Route path='admindashboard' index element={<AdminDashboard />}></Route>
         </Route>
         <Route path='*' element={<NotFound />} />
       </Routes>
