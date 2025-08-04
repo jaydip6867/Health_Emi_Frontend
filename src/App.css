@@ -256,3 +256,9 @@
   background-color: #223F99;
   color: #fff;
 }
+
+/* admin panel data-table header css */
+.rdt_TableHeadRow {
+  font-weight: bold;
+  font-size: 16px;
+}

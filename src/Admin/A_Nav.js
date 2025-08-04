@@ -9,10 +9,12 @@ const A_Nav = () => {
             <div className='top_nav bg-white rounded p-2 shadow-sm mb-4'>
                 <Row className='align-items-center justify-content-between'>
                     <Col xs={'auto'}>
-                        <h6 className='m-0'>Hello Mr,</h6>
+                        <h6 className='m-0'>Hello Admin,</h6>
                     </Col>
                     <Col xs={'auto'} className='doctor_profile'>
-                        <Dropdown>
+                        <Button className='btn-navbar btn-danger btn-sm' onClick={() => (localStorage.removeItem('healthadmincredit'), navigate('/healthadmin'))}>Logout</Button>
+
+                        {/* <Dropdown>
                             <Dropdown.Toggle id="dropdown-basic">
                                 Patient Profile
                             </Dropdown.Toggle>
@@ -22,7 +24,7 @@ const A_Nav = () => {
                                 <Button className='btn-navbar' onClick={() => (localStorage.removeItem('healthadmincredit'), navigate('/healthadmin'))}>Logout</Button>
 
                             </Dropdown.Menu>
-                        </Dropdown>
+                        </Dropdown> */}
                     </Col>
                 </Row>
             </div>

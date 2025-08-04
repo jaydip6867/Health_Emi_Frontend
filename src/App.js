@@ -29,6 +29,8 @@ import DoctorProfilePage from './Visitor/DoctorProfilePage';
 import Surgerydoctorlist from './Visitor/Surgerydoctorlist';
 import AdminLogin from './Admin/AdminLogin';
 import AdminDashboard from './Admin/AdminDashboard';
+import A_DoctorCategory from './Admin/A_DoctorCategory';
+import A_SurgeryType from './Admin/A_SurgeryType';
 
 function App() {
   return (
@@ -64,9 +66,11 @@ function App() {
           <Route path='doctor_ap/:id' element={<P_DoctorProfile />}></Route>
           <Route path='patientprofile' element={<PatientProfile />}></Route>
         </Route>
-        <Route path='healthadmin'>
+        <Route path='/healthadmin'>
           <Route path='' index element={<AdminLogin />}></Route>
           <Route path='admindashboard' index element={<AdminDashboard />}></Route>
+          <Route path='doctorcategory' index element={<A_DoctorCategory />}></Route>
+          <Route path='surgerytype' index element={<A_SurgeryType />}></Route>
         </Route>
         <Route path='*' element={<NotFound />} />
       </Routes>
