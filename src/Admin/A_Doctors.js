@@ -20,6 +20,7 @@ const A_Doctors = () => {
         else {
             setadmin(data.userData);
             settoken(`Bearer ${data.accessToken}`)
+            console.log(admin)
         }
     }, [navigate])
     return (

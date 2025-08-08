@@ -115,7 +115,7 @@ const A_SurgeryType = () => {
             if (result.isConfirmed) {
                 axios({
                     method: 'post',
-                    url: 'https://healtheasy-o25g.onrender.com/admin/doctorcategories/remove',
+                    url: 'https://healtheasy-o25g.onrender.com/admin/surgerytypes/remove',
                     headers: {
                         Authorization: token
                     },
@@ -133,6 +133,7 @@ const A_SurgeryType = () => {
                     // console.log(error);
                     toast(error.response.data.Message, { className: 'custom-toast-error' })
                 }).finally(() => {
+                    setloading(false)
                 });
 
             }
