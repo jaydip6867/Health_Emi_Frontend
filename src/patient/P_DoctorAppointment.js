@@ -167,7 +167,6 @@ const P_DoctorAppointment = () => {
                                             )
                                         })
                                 }
-
                             </Row>
                         </div>
                     </Col>

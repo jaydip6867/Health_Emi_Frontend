@@ -51,10 +51,10 @@ const DoctorLogin = () => {
         }));
     }
 
-    function logindoctor() {
+    const logindoctor = async () => {
         // console.log(frmdoctor)
         setloading(true)
-        axios({
+        await axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/doctor/login',
             data: frmdoctor
