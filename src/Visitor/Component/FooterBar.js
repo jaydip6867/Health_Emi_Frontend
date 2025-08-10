@@ -25,7 +25,7 @@ const FooterBar = () => {
                             <ul className='list-unstyled'>
                                 <li><Link to={'/about'} className='nav-link'>About</Link></li>
                                 <li><Link to={'/contact'} className='nav-link'>Contact</Link></li>
-                                <li><Link  className='nav-link'>Find Doctor</Link></li>
+                                <li><Link className='nav-link'>Find Doctor</Link></li>
                                 <li><Link to={'/consult'} className='nav-link'>Video Consultant</Link></li>
                                 <li><Link to={'/surgery'} className='nav-link'>Surgeries</Link></li>
                             </ul>
@@ -33,18 +33,18 @@ const FooterBar = () => {
                         <Col xs={12} md={3}>
                             <h5>Menus</h5>
                             <ul className='list-unstyled'>
-                                <li><Link  className='nav-link'>About</Link></li>
-                                <li><Link  className='nav-link'>Contact</Link></li>
-                                <li><Link  className='nav-link'>Find Doctor</Link></li>
-                                <li><Link  className='nav-link'>Video Consultant</Link></li>
-                                <li><Link  className='nav-link'>Surgeries</Link></li>
+                                <li><Link className='nav-link'>About</Link></li>
+                                <li><Link className='nav-link'>Contact</Link></li>
+                                <li><Link className='nav-link'>Find Doctor</Link></li>
+                                <li><Link className='nav-link'>Video Consultant</Link></li>
+                                <li><Link className='nav-link'>Surgeries</Link></li>
                             </ul>
                         </Col>
                     </Row>
 
                 </Container>
+                <div className='text-center py-3 footer_bg border-top border-opacity-25 border-light'>Copyright © 2025, CodeZil technologies. All rights reserved.</div>
             </footer>
-            <div className='text-center py-3 footer_bg border-top border-opacity-25 border-light'>Copyright © 2025, CodeZil technologies. All rights reserved.</div>
         </>
     )
 }

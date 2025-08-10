@@ -251,6 +251,12 @@
   border-radius: 50%;
 }
 
+/* doctor list box css */
+.doctor_list > div{
+  display: flex;
+  place-content: center;
+}
+
 /* footer css */
 .footer_bg {
   background-color: #223F99;

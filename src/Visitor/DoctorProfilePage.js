@@ -25,9 +25,6 @@ const DoctorProfilePage = () => {
     await axios({
       method: 'post',
       url: 'https://healtheasy-o25g.onrender.com/user/doctors/getone',
-      // headers: {
-      //     Authorization: token
-      // },
       data: {
         "doctorid": d
       }
