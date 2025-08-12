@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Loader from '../Loader'
-import { Col, Container, Row, Table } from 'react-bootstrap'
+import { Col, Container, Modal, Row, Table } from 'react-bootstrap'
 import P_Sidebar from './P_Sidebar'
 import P_nav from './P_nav'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import DataTable from 'react-data-table-component'
+import { MdOutlineRemoveRedEye } from 'react-icons/md'
 
 const P_Blog = () => {
     const SECRET_KEY = "health-emi";
@@ -59,6 +61,45 @@ const P_Blog = () => {
             setloading(false)
         });
     }
+
+    // display Appointment Details in model
+    const [show, setShow] = useState(false);
+    const [single_view, setsingleview] = useState(null);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    function btnview(id) {
+        var datasingle = bloglist.filter((v, i) => { return v._id === id })
+        setsingleview(datasingle);
+        handleShow()
+        // console.log(datasingle)
+    }
+
+    // table data
+    const columns = [{
+        name: 'No',
+        selector: (row, index) => index + 1,
+        sortable: true,
+        maxWidth: '80px',
+        minWidth: '80px',
+        width: '80px'
+    }, {
+        name: 'Title',
+        cell: row => row.title
+    },
+    {
+        name: 'Description',
+        cell: row => row.description
+    },
+    {
+        name: 'View',
+        cell: row => <MdOutlineRemoveRedEye onClick={() => btnview(row._id)} className='text-primary fs-5' />,
+        maxWidth: '80px',
+        minWidth: '80px',
+        width: '80px'
+    }]
+
     return (
         <>
             <Container fluid className='p-0 panel'>
@@ -68,7 +109,8 @@ const P_Blog = () => {
                         <P_nav patientname={patient && patient.name} />
                         <div className='bg-white rounded p-3 mb-3'>
                             <h5 className='mb-3'>All Blogs</h5>
-                            <Table hover bordered responsive>
+                            <DataTable columns={columns} data={bloglist ? bloglist : ''} pagination />
+                            {/* <Table hover bordered responsive>
                                 <thead>
                                     <tr>
                                         <th>No</th>
@@ -89,10 +131,28 @@ const P_Blog = () => {
                                         })
                                     }
                                 </tbody>
-                            </Table>
+                            </Table> */}
                         </div>
                     </Col>
                 </Row>
+                {/* view single surgery */}
+                {
+                    single_view && single_view.map((v, i) => {
+                        return (
+                            <Modal show={show} onHide={handleClose} centered size="lg" key={i}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Blog Detail</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <div>
+                                        <h3>{v.title}</h3>
+                                        <p>{v.description}</p>
+                                    </div>
+                                </Modal.Body>
+                            </Modal>
+                        )
+                    })
+                }
             </Container>
             {loading ? <Loader /> : ''}
         </>

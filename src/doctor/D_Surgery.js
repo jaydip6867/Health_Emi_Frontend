@@ -158,7 +158,7 @@ const D_Surgery = () => {
         // console.log(datasingle)
     }
 
-    // display surgery in model
+    // display edit surgery in model
     const [editshow, seteditShow] = useState(false);
     const [edit_record, seteditrecord] = useState(null);
 

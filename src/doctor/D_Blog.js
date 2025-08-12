@@ -240,7 +240,6 @@ const D_Blog = () => {
                                     <tr align="middle">
                                         <th>No</th>
                                         <th className='text-nowrap'>Blog Title</th>
-                                        {/* <th>Description</th> */}
                                         <th>Expiry Date</th>
                                         <th>Action</th>
                                     </tr>
@@ -251,7 +250,6 @@ const D_Blog = () => {
                                             <tr key={i} align="middle">
                                                 <th>{i + 1}</th>
                                                 <td>{v.title}</td>
-                                                {/* <td>{v.description}</td> */}
                                                 <td>{v.expirydate}</td>
                                                 <td>
                                                     <div className='p-2 d-flex justify-content-center gap-3'>
