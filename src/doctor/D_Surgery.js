@@ -10,6 +10,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { MdDelete, MdEditDocument, MdOutlineRemoveRedEye } from 'react-icons/md';
 import CryptoJS from "crypto-js";
+import DataTable from 'react-data-table-component';
 
 const D_Surgery = () => {
     const SECRET_KEY = "health-emi";
@@ -299,7 +300,7 @@ const D_Surgery = () => {
     }
 
     // select surgery type and doctor category when update model open
-    const selUpsugdoc = (e) =>{
+    const selUpsugdoc = (e) => {
         var s_name = s_type.filter((v) => {
             return v._id === e
         })
@@ -325,6 +326,38 @@ const D_Surgery = () => {
         // console.log('edit change', s_name)
     }
 
+    // table data
+    const columns = [{
+        name: 'No',
+        selector: (row, index) => index + 1,
+        sortable: true,
+        maxWidth: '80px',
+        minWidth: '80px',
+        width: '80px'
+    }, {
+        name: 'Surgery Name',
+        cell: row => row.name
+    },
+    {
+        name: 'Price',
+        cell: row => row.price
+    },
+    {
+        name: 'Category',
+        cell: row => row.doctorcategory.categoryname
+    },
+    {
+        name: 'Action',
+        cell: row => <div className='d-flex gap-3'>
+            <MdEditDocument className='fs-5' onClick={() => btnedit(row._id)} />
+            <MdOutlineRemoveRedEye onClick={() => btnview(row._id)} className='text-primary fs-5' />
+            <MdDelete onClick={() => deletesurgery(row._id)} className='text-danger fs-5' />
+        </div>,
+        maxWidth: '150px',
+        minWidth: '150px',
+        width: '150px'
+    }]
+
     return (
         <>
             <Container fluid className='p-0 panel'>
@@ -342,51 +375,8 @@ const D_Surgery = () => {
                                     <Button variant='primary' onClick={handlesurShow}>Add Surgery</Button>
                                 </Col>
                             </Row>
-                            <Table bordered hover responsive>
-                                <thead>
-                                    <tr align="middle">
-                                        <th>No</th>
-                                        <th>Surgery Name</th>
-                                        <th>Price</th>
-                                        <th>Category</th>
-                                        {/* <th>Experiance</th> */}
-                                        {/* <th>Features</th> */}
-                                        {/* <th>Description</th> */}
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {surgerylist && surgerylist.map((v, i) => {
-                                        return (
-                                            <tr key={i} align="middle">
-                                                <th>{i + 1}</th>
-                                                <td>{v.name}</td>
-                                                <td>{v.price}</td>
-                                                <td>{v.doctorcategory.categoryname}</td>
-                                                {/* <td>{!v.yearsof_experience ? '0' : v.yearsof_experience} Years of Experiance
-                                                    <hr />
-                                                    {!v.completed_surgery ? '0' : v.completed_surgery} Surgeries Done
-                                                </td>
-                                                <td>{v.features}</td>
-                                                <td>{v.additional_features}</td>
-                                                <td className='desc_3line'>{v.description}</td> */}
-                                                <td>
-                                                    {/* <Button variant="primary" className='btn btn-primary btn-sm' onClick={() => btnview(v._id)}>
-                                                        View
-                                                    </Button> */}
-                                                    <div className='p-1 d-flex justify-content-center gap-3'>
-                                                        <MdEditDocument className='fs-5' onClick={() => btnedit(v._id)} />
-                                                        <MdOutlineRemoveRedEye onClick={() => btnview(v._id)} className='text-primary fs-5' />
-                                                        <MdDelete onClick={() => deletesurgery(v._id)} className='text-danger fs-5' />
-                                                    </div>
-                                                    {/* <button className='btn btn-danger btn-sm' onClick={() => deletesurgery(v._id)}>Delete</button> */}
-
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </Table>
+                            <DataTable columns={columns} data={surgerylist ? surgerylist : ''} pagination />
+                            
                         </div>
                     </Col>
                 </Row>

@@ -28,6 +28,9 @@ const DoctorRegister = () => {
     // Fetch all countries when component mounts
     useEffect(() => {
         setCountries(Country.getAllCountries());
+
+        // if doctor verify but not profile done
+        docprofilenotdone()
     }, []);
 
     // Function to handle all initial data
@@ -161,6 +164,14 @@ const DoctorRegister = () => {
         });
     }
 
+    const docprofilenotdone = () =>{
+        var docregdata = JSON.parse(localStorage.getItem('doctordetail'));
+        if(docregdata){
+            setdocreg2(true)
+            setdocreg(false)
+        }
+    }
+
     function profileadd() {
         console.log(frmdocprofile)
         var doctordata = JSON.parse(localStorage.getItem('doctordetail'));
@@ -201,7 +212,7 @@ const DoctorRegister = () => {
                                     <h3>Doctor - Sign up</h3>
                                     <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
                                 </div>
-                                <Form>
+                                <Form autoComplete='off'>
                                     <Form.Group as={Col} controlId="fullname" className='position-relative mb-3'>
                                         <Form.Label>Full Name</Form.Label>
                                         <Form.Control type="text" placeholder="Full Name" className='frm_input' name="name" value={frmdoctor.name} onChange={selfrmdata} />
@@ -210,7 +221,7 @@ const DoctorRegister = () => {
 
                                     <Form.Group as={Col} controlId="email" className='position-relative mb-3'>
                                         <Form.Label>Email</Form.Label>
-                                        <Form.Control type="email" placeholder="Email" className='frm_input' name="email" value={frmdoctor.email} onChange={selfrmdata} />
+                                        <Form.Control type="email" placeholder="Email" autoComplete='off' className='frm_input' name="email" value={frmdoctor.email} onChange={selfrmdata} />
                                         <FaRegEnvelope className='icon_input' />
                                     </Form.Group>
 
@@ -236,7 +247,7 @@ const DoctorRegister = () => {
 
                                     <Form.Group controlId="password" className='position-relative mb-3'>
                                         <Form.Label>Password</Form.Label>
-                                        <Form.Control type='password' placeholder="Password" className='frm_input' name='password' value={frmdoctor.password} onChange={selfrmdata} />
+                                        <Form.Control type='password' placeholder="Password" autoComplete='off' className='frm_input' name='password' value={frmdoctor.password} onChange={selfrmdata} />
                                         <CiLock className='icon_input' />
                                     </Form.Group>
 

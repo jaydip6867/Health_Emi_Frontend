@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import Loader from '../Loader';
 import { MdDelete, MdEditDocument, MdOutlineRemoveRedEye } from 'react-icons/md';
 import { formatDate } from 'date-fns';
+import DataTable from 'react-data-table-component';
 
 const D_Blog = () => {
     const SECRET_KEY = "health-emi";
@@ -217,6 +218,34 @@ const D_Blog = () => {
     const handleblogClose = () => setadblog(false);
     const handleblogShow = () => setadblog(true);
 
+    // table data
+    const columns = [{
+        name: 'No',
+        selector: (row, index) => index + 1,
+        sortable: true,
+        maxWidth: '80px',
+        minWidth: '80px',
+        width: '80px'
+    }, {
+        name: 'Title',
+        cell: row => row.title
+    },
+    {
+        name: 'Expiry Date',
+        cell: row => row.expirydate
+    },
+    {
+        name: 'Action',
+        cell: row => <div className='d-flex gap-3'>
+            <MdEditDocument className='fs-5' onClick={() => btnedit(row._id)} />
+            <MdOutlineRemoveRedEye onClick={() => btnview(row._id)} className='text-primary fs-5' />
+            <MdDelete onClick={() => deleteblog(row._id)} className='text-danger fs-5' />
+        </div>,
+        maxWidth: '150px',
+        minWidth: '150px',
+        width: '150px'
+    }]
+
     return (
         <>
 
@@ -235,35 +264,7 @@ const D_Blog = () => {
                                     <Button variant='primary' onClick={handleblogShow}>Add Blog</Button>
                                 </Col>
                             </Row>
-                            <Table bordered hover responsive>
-                                <thead>
-                                    <tr align="middle">
-                                        <th>No</th>
-                                        <th className='text-nowrap'>Blog Title</th>
-                                        <th>Expiry Date</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {bloglist && bloglist.map((v, i) => {
-                                        return (
-                                            <tr key={i} align="middle">
-                                                <th>{i + 1}</th>
-                                                <td>{v.title}</td>
-                                                <td>{v.expirydate}</td>
-                                                <td>
-                                                    <div className='p-2 d-flex justify-content-center gap-3'>
-                                                        <MdEditDocument className='fs-5' onClick={() => btnedit(v._id)} />
-                                                        <MdOutlineRemoveRedEye onClick={() => btnview(v._id)} className='text-primary fs-5' />
-                                                        <MdDelete onClick={() => deleteblog(v._id)} className='text-danger fs-5' />
-                                                    </div>
-
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </Table>
+                            <DataTable columns={columns} data={bloglist ? bloglist : ''} pagination />
                         </div>
                     </Col>
                 </Row>
