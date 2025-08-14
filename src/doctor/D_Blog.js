@@ -99,6 +99,7 @@ const D_Blog = () => {
             });
             getblog()
             setblog({ title: '', description: '', showto_doctor: false, showto_patient: true, expirydate: null });
+            handleblogClose()
         }).catch(function (error) {
             console.log(error);
             toast(error.message, { className: 'custom-toast-error' })

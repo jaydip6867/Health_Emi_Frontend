@@ -34,6 +34,7 @@ const P_DoctorAppointment = () => {
 
     // const [searchdoc, setsearchdoc] = useState('')
     const [doctorlist, setdoctorlist] = useState(null)
+    const [dispdoctorlist, setdispdoctorlist] = useState(null)
     const [searchdoctorlist, setsearchdoctorlist] = useState(null)
     const typingTimeoutRef = useRef(null);
     const [category, setcategory] = useState(null)
@@ -59,6 +60,7 @@ const P_DoctorAppointment = () => {
             }
         }).then((res) => {
             setdoctorlist(res.data.Data)
+            setdispdoctorlist(res.data.Data)
             // console.log('doctor ', res.data.Data)
             var doctordata = res.data.Data.map(doctor => doctor.name)
             setsearchdoctorlist(doctordata)
@@ -85,9 +87,23 @@ const P_DoctorAppointment = () => {
 
         // Set a new timer
         typingTimeoutRef.current = setTimeout(() => {
-            getdoctordata(value);
+            // getdoctordata(value);
+            setdispdoctorlist(doctorlist)
             console.log(doctorlist)
         }, 500);
+    }
+
+    const catfilterdoctor = (s) => {
+        if (s !== 'All') {
+            var filter_data = doctorlist.filter((v)=>{
+                return v.specialty == s
+            })
+            setdispdoctorlist(filter_data)
+        }
+        else{
+            setdispdoctorlist(doctorlist)
+        }
+        // console.log(filter_data)
     }
 
     return (
@@ -111,11 +127,11 @@ const P_DoctorAppointment = () => {
                                 </datalist>
                             </div>
                             <div className='mt-2 d-flex gap-2 w-100 overflow-x-auto'>
-                                <Button variant="outline-dark rounded-pill px-4 btn-sm">All</Button>
+                                <Button variant="outline-dark rounded-pill px-4 btn-sm" onClick={() => catfilterdoctor('All')}>All</Button>
                                 {
                                     category && category.map((v, i) => {
                                         return (
-                                            <Button variant="outline-dark rounded-pill px-4 btn-sm" key={i}>{v}</Button>
+                                            <Button variant="outline-dark rounded-pill px-4 btn-sm" key={i} onClick={() => catfilterdoctor(v)}>{v}</Button>
                                         )
                                     })
                                 }
@@ -125,8 +141,8 @@ const P_DoctorAppointment = () => {
                             <h5>Doctor List</h5>
                             <Row className='g-4'>
                                 {
-                                    doctorlist === null ? <Col>No Doctor Found</Col> :
-                                        doctorlist.map((v, i) => {
+                                    dispdoctorlist === null ? <Col>No Doctor Found</Col> :
+                                        dispdoctorlist.map((v, i) => {
                                             return (
                                                 <Col xs={12} sm={6} md={4} key={i}>
                                                     <Card className="shadow-sm rounded-4" style={{ maxWidth: '420px' }}>
