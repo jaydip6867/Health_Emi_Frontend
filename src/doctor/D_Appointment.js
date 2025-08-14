@@ -40,9 +40,7 @@ const D_Appointment = () => {
     useEffect(() => {
         setloading(true)
         if (doctor) {
-            setTimeout(() => {
-                appointmentlist()
-            }, 200);
+            appointmentlist()
         }
     }, [token])
 
@@ -120,7 +118,7 @@ const D_Appointment = () => {
     },
     {
         name: 'Deases',
-        cell: row => row.surgerydetails.name
+        cell: row => row.surgerydetails?.name
     },
     {
         name: 'Date & Time',

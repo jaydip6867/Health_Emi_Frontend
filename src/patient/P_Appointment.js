@@ -90,11 +90,11 @@ const P_Appointment = () => {
     },
     {
         name: 'Surgery',
-        cell: row => row.surgerydetails.name
+        cell: row => row.surgerydetails?.name
     },
     {
         name: 'Price',
-        cell: row => row.surgerydetails.price
+        cell: row => row.surgerydetails?.price
     },
     {
         name: 'Date & Time',
