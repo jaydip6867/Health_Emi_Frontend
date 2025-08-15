@@ -80,7 +80,7 @@ const P_DoctorProfile = () => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    var app_obj = { alt_mobile: '', surgeryid: '', appointment_reason: '', report: '' }
+    var app_obj = { alt_mobile: '', surgeryid: '', appointment_reason: '', report: '', visit_types: '' }
     const [apt_data, setaptdata] = useState(app_obj)
 
     function appchangedata(e) {
@@ -114,7 +114,8 @@ const P_DoctorProfile = () => {
                 "surgeryid": apt_data.surgeryid,
                 "appointment_reason": apt_data.appointment_reason,
                 "report": apt_data.report,
-                "doctorid": id
+                "doctorid": id,
+                "visit_types": apt_data.visit_types
             }
         }).then((res) => {
             Swal.fire({
@@ -253,17 +254,26 @@ const P_DoctorProfile = () => {
                                         </Form.Select></Col>
                                         <Col xs={4}><Form.Label>Reason</Form.Label><Form.Control value={apt_data.appointment_reason} name='appointment_reason' onChange={appchangedata} placeholder='Appointment Reason' ></Form.Control></Col>
                                         <Col xs={4}><Form.Label>Reports</Form.Label><Form.Control type='file' value={apt_data.report} name='report' onChange={appchangedata}></Form.Control></Col>
+                                        <Col xs={12} md={4}>
+                                            <Form.Check label="Home Visit" type='radio' name='visit_types' value={'home_visit'} onChange={appchangedata} />
+                                            <Form.Check label="Clinic Visit" type='radio' name='visit_types' value={'clinic_visit'} onChange={appchangedata} />
+                                            <Form.Check label="EOPD" type='radio' name='visit_types' value={'eopd'} onChange={appchangedata} />
+                                        </Col>
+                                        <Col xs={6} md={6}>
+                                            <Form.Label>Appointment Date</Form.Label><br />
+                                            <DatePicker selected={selectedDate}
+                                                onChange={(date) => setSelectedDate(date)}
+                                                showTimeSelect
+                                                timeFormat="hh:mm a"
+                                                timeIntervals={15}
+                                                dateFormat="dd-MM-yyyy hh:mm a"
+                                                placeholderText="Select date and time"
+                                                minDate={new Date()} /></Col>
                                     </Row>
                                 </Form>
                             </Col>
-                            <Col xs={12} md={6}><DatePicker selected={selectedDate}
-                                onChange={(date) => setSelectedDate(date)}
-                                showTimeSelect
-                                timeFormat="hh:mm a"
-                                timeIntervals={15}
-                                dateFormat="dd-MM-yyyy hh:mm a"
-                                placeholderText="Select date and time"
-                                minDate={new Date()} /></Col>
+
+
                             {/* <Col xs={12} md={6}>
                                 <ToggleButtonGroup type="radio" name="options" defaultValue={1} className='btnradio-app flex-wrap gap-2'>
                                     {

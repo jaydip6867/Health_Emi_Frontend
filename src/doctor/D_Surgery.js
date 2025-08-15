@@ -22,7 +22,7 @@ const D_Surgery = () => {
 
     var incl = 'Most surgery packages typically include an initial consultation and a basic pre-surgery evaluation to assess the patient’s readiness. They also cover essential diagnostic tests such as blood reports, ECGs, or X-rays, along with the complete surgical procedure cost. Charges for the operation theatre, surgeon, and anesthesia are included, as well as the standard hospital stay for a specified number of days with routine nursing care. Standard room charges (general or semi-private), basic in-hospital medications, and one post-operative follow-up visit are also generally part of the inclusive offerings.';
     var excl = 'Exclusions usually apply to any medical needs that go beyond the standard procedure. This includes extended hospital stays beyond the package limit, ICU or emergency care, and the use of premium or imported surgical materials such as specialized implants or lenses. Additional physiotherapy sessions, specialist consultations, extra follow-up visits, or any treatment related to post-surgery complications are also not included. Upgrading to deluxe or private rooms, personal or attendant meals, discharge medications, and ambulance or transport charges are typically billed separately.';
-    var surgeryobj = { name: '', price: '', days: '', additional_features: '', description: '', surgerytypeid: '', doctorcategory: '', specialty: '', inclusive: incl, exclusive: excl, yearsof_experience: '', completed_surgery: '', features: 'Blade-free laser' }
+    var surgeryobj = { name: '', price: '', days: '', additional_features: '', description: '', surgerytypeid: '', doctorcategory: '', specialty: '', inclusive: incl, exclusive: excl, yearsof_experience: '', completed_surgery: '', features: 'Blade-free laser', home_visit_price: '', clinic_visit_price: '', eopd_price: '' }
     const [surgery, setsurgery] = useState(surgeryobj)
     const [surgerylist, setsurgerylist] = useState(null)
 
@@ -96,7 +96,6 @@ const D_Surgery = () => {
                 icon: "success",
             });
             getsurgery()
-            // var surg = { name: '', price: '', days: '', additional_features: '', description: '', surgerytypeid: '', doctorcategory: '' , specialty: '', inclusive: incl, exclusive: excl, yearsof_experience: '', completed_surgery: '',features:''}
             setsurgery(surgeryobj);
             handlesurClose()
         }).catch(function (error) {
@@ -182,7 +181,10 @@ const D_Surgery = () => {
             exclusive: datasingle[0].exclusive,
             yearsof_experience: datasingle[0].yearsof_experience,
             completed_surgery: datasingle[0].completed_surgery,
-            features: datasingle[0].features
+            features: datasingle[0].features,
+            home_visit_price: datasingle[0].home_visit_price,
+            clinic_visit_price: datasingle[0].clinic_visit_price,
+            eopd_price: datasingle[0].eopd_price,
         };
         seteditrecord(surgeryobj);
         edithandleShow()
@@ -376,7 +378,7 @@ const D_Surgery = () => {
                                 </Col>
                             </Row>
                             <DataTable columns={columns} data={surgerylist ? surgerylist : ''} pagination />
-                            
+
                         </div>
                     </Col>
                 </Row>
@@ -393,7 +395,7 @@ const D_Surgery = () => {
                                         <Form.Group controlId="type" className='mb-3 col-md-3'>
                                             <div className='position-relative'>
                                                 <Form.Label>Surgery Type</Form.Label>
-                                                <Form.Select placeholder="Ex:- 18000" name="surgerytypeid" value={s_type_name} onChange={schange}>
+                                                <Form.Select name="surgerytypeid" value={s_type_name} onChange={schange}>
                                                     <option value={''}>Select Surgery Type</option>
                                                     {s_type?.map((v, i) => {
                                                         return (<option key={i} value={v._id}>{v.surgerytypename}</option>)
@@ -404,7 +406,7 @@ const D_Surgery = () => {
                                         <Form.Group controlId="type" className='mb-3 col-md-3'>
                                             <div className='position-relative'>
                                                 <Form.Label>Doctor Category</Form.Label>
-                                                <Form.Select placeholder="Ex:- 18000" name="doctorcategory" value={surgery.doctorcategory} onChange={selsurgery}>
+                                                <Form.Select name="doctorcategory" value={surgery.doctorcategory} onChange={selsurgery}>
                                                     <option value={''} selected disabled>Doctor Category</option>
                                                     {d_sel_cat?.map((v, i) => {
                                                         return (<option key={i} value={v._id}>{v.categoryname}</option>)
@@ -412,7 +414,7 @@ const D_Surgery = () => {
                                                 </Form.Select>
                                             </div>
                                         </Form.Group>
-                                        <Form.Group controlId="name" className='mb-3 col-md-3'>
+                                        <Form.Group controlId="name" className='mb-3 col-md-6'>
                                             <div className='position-relative'>
                                                 <Form.Label>Surgery Name</Form.Label>
                                                 <Form.Control placeholder="Ex:- Cataract Surgery" name="name" value={surgery.name} onChange={selsurgery} />
@@ -423,6 +425,24 @@ const D_Surgery = () => {
                                             <div className='position-relative'>
                                                 <Form.Label>Price</Form.Label>
                                                 <Form.Control placeholder="Ex:- 18000" name="price" value={surgery.price} onChange={selsurgery} />
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group controlId="Home Visit price" className='mb-3 col-6 col-md-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Home Visit Price</Form.Label>
+                                                <Form.Control placeholder="Ex:- 18000" name="home_visit_price" value={surgery.home_visit_price} onChange={selsurgery} />
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group controlId="Clinic Visit price" className='mb-3 col-6 col-md-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>Clinic Visit price</Form.Label>
+                                                <Form.Control placeholder="Ex:- 18000" name="clinic_visit_price" value={surgery.clinic_visit_price} onChange={selsurgery} />
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group controlId="EOPD price" className='mb-3 col-6 col-md-3'>
+                                            <div className='position-relative'>
+                                                <Form.Label>EOPD price</Form.Label>
+                                                <Form.Control placeholder="Ex:- 18000" name="eopd_price" value={surgery.eopd_price} onChange={selsurgery} />
                                             </div>
                                         </Form.Group>
 
@@ -537,6 +557,9 @@ const D_Surgery = () => {
                                         <p><b>Experiance :- </b><span>{v.yearsof_experience} Years of experiance & {v.completed_surgery} Completed Surgeries</span></p>
                                         <p><b>Surgery Features :- </b><span>{v.additional_features}</span></p>
                                         <p><b>Surgery Description :- </b><span>{v.description}</span></p>
+                                        <p><b>Home Visit Charge :- </b><span>&#8377;{v.home_visit_price}/-</span></p>
+                                        <p><b>Clinic Visit Charge :- </b><span>&#8377;{v.clinic_visit_price}/-</span></p>
+                                        <p><b>EOPD Charge :- </b><span>&#8377;{v.eopd_price}/-</span></p>
                                     </div>
                                 </Modal.Body>
                                 <Modal.Footer>
@@ -578,7 +601,7 @@ const D_Surgery = () => {
                                         </Form.Select>
                                     </div>
                                 </Form.Group>
-                                <Form.Group controlId="name" className='mb-3 col-3'>
+                                <Form.Group controlId="name" className='mb-3 col-6'>
                                     <div className='position-relative'>
                                         <Form.Label>Surgery Name</Form.Label>
                                         <Form.Control placeholder="Ex:- Cataract Surgery" name="name" value={edit_record.name} onChange={seleditsurgery} />
@@ -589,7 +612,25 @@ const D_Surgery = () => {
                                     <div className='position-relative'>
                                         <Form.Label>Price</Form.Label>
                                         <Form.Control placeholder="Ex:- 18000" name="price" value={edit_record.price} onChange={seleditsurgery} />
+                                    </div>
+                                </Form.Group>
 
+                                <Form.Group controlId="Home Visit price" className='mb-3 col-6 col-md-3'>
+                                    <div className='position-relative'>
+                                        <Form.Label>Home Visit Price</Form.Label>
+                                        <Form.Control placeholder="Ex:- 18000" name="home_visit_price" value={edit_record.home_visit_price} onChange={seleditsurgery} />
+                                    </div>
+                                </Form.Group>
+                                <Form.Group controlId="Clinic Visit price" className='mb-3 col-6 col-md-3'>
+                                    <div className='position-relative'>
+                                        <Form.Label>Clinic Visit price</Form.Label>
+                                        <Form.Control placeholder="Ex:- 18000" name="clinic_visit_price" value={edit_record.clinic_visit_price} onChange={seleditsurgery} />
+                                    </div>
+                                </Form.Group>
+                                <Form.Group controlId="EOPD price" className='mb-3 col-6 col-md-3'>
+                                    <div className='position-relative'>
+                                        <Form.Label>EOPD price</Form.Label>
+                                        <Form.Control placeholder="Ex:- 18000" name="eopd_price" value={edit_record.eopd_price} onChange={seleditsurgery} />
                                     </div>
                                 </Form.Group>
 

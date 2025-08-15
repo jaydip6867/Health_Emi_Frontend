@@ -31,6 +31,10 @@ const DoctorRegister = () => {
 
         // if doctor verify but not profile done
         docprofilenotdone()
+
+        // get specialty & category
+        getspeciality()
+        getdoctorcategory()
     }, []);
 
     // Function to handle all initial data
@@ -46,7 +50,7 @@ const DoctorRegister = () => {
         const countryCode = e.target.value;
         setSelectedCountryCode(countryCode);
         const { name, value } = e.target;
-        var sel_contry = countries.filter((v,i)=>{return value === v.isoCode})
+        var sel_contry = countries.filter((v, i) => { return value === v.isoCode })
         setdocprofile(frmdocprofile => ({
             ...frmdocprofile,
             [name]: sel_contry[0].name
@@ -63,7 +67,7 @@ const DoctorRegister = () => {
         const stateCode = e.target.value;
         setSelectedStateCode(stateCode);
         const { name, value } = e.target;
-        var sel_state = states.filter((v,i)=>{return value === v.isoCode})
+        var sel_state = states.filter((v, i) => { return value === v.isoCode })
         setdocprofile(frmdocprofile => ({
             ...frmdocprofile,
             [name]: sel_state[0].name
@@ -90,18 +94,18 @@ const DoctorRegister = () => {
         password: '',
     }
 
-    var profile_data= {
-        specialty:'',
-        sub_specialty:'',
-        degree_registration_no:'',
-        qualification:'',
-        experience:'',
-        hospital_name:'',
-        hospital_address:'',
-        country:'',
-        state:'',
-        city:'',
-        identityproof:''
+    var profile_data = {
+        specialty: '',
+        sub_specialty: '',
+        degree_registration_no: '',
+        qualification: '',
+        experience: '',
+        hospital_name: '',
+        hospital_address: '',
+        country: '',
+        state: '',
+        city: '',
+        identityproof: ''
     }
     const [frmdoctor, setfrmdoctor] = useState(frmdata);
     const [frmdocprofile, setdocprofile] = useState(profile_data);
@@ -109,13 +113,13 @@ const DoctorRegister = () => {
     const selfrmdata = (e) => {
         const { name, value } = e.target;
         doc_reg ?
-        setfrmdoctor(frmdoctor => ({
-            ...frmdoctor,
-            [name]: value
-        })) : setdocprofile(frmdocprofile => ({
-            ...frmdocprofile,
-            [name]: value
-        }))
+            setfrmdoctor(frmdoctor => ({
+                ...frmdoctor,
+                [name]: value
+            })) : setdocprofile(frmdocprofile => ({
+                ...frmdocprofile,
+                [name]: value
+            }))
     };
 
     function send_doctor_otp() {
@@ -154,7 +158,7 @@ const DoctorRegister = () => {
             setdocotp(false);
             setdocreg2(true);
             console.log(res);
-            localStorage.setItem('doctordetail',JSON.stringify(res));
+            localStorage.setItem('doctordetail', JSON.stringify(res));
             // Navigate('/doctor')
         }).catch(function (error) {
             console.log(error);
@@ -164,9 +168,9 @@ const DoctorRegister = () => {
         });
     }
 
-    const docprofilenotdone = () =>{
+    const docprofilenotdone = () => {
         var docregdata = JSON.parse(localStorage.getItem('doctordetail'));
-        if(docregdata){
+        if (docregdata) {
             setdocreg2(true)
             setdocreg(false)
         }
@@ -181,7 +185,7 @@ const DoctorRegister = () => {
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/doctor/profile/savebasicdetails',
-            headers:{
+            headers: {
                 Authorization: `Bearer ${token}`,
             },
             data: frmdocprofile
@@ -197,6 +201,64 @@ const DoctorRegister = () => {
         });
         // setdocreg2(false);
         // setdocnext1(true);
+    }
+
+    // get specialty and category
+    const [s_type, setstype] = useState(null)
+    // get all speciality 
+    const getspeciality = () => {
+        setloading(true)
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/surgerytypes/list',
+            data: {
+                "search": "",
+            }
+        }).then((res) => {
+            // console.log('speciality = ',res.data.Data)
+            setstype(res.data.Data)
+        }).catch(function (error) {
+            // console.log(error);
+            toast(error.response.data.Message, { className: 'custom-toast-error' })
+        }).finally(() => {
+            setloading(false)
+        });
+    }
+
+    const [d_category, setdcategory] = useState(null)
+    // get all doctor category 
+    const getdoctorcategory = () => {
+        setloading(true)
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/doctorcategories/list',
+            data: {
+                "search": "",
+            }
+        }).then((res) => {
+            // console.log('d_category = ',res.data.Data)
+            setdcategory(res.data.Data)
+        }).catch(function (error) {
+            console.log(error);
+            // toast(error.response.data.Message, { className: 'custom-toast-error' })
+        }).finally(() => {
+            setloading(false)
+        });
+    }
+
+    const [d_sel_cat, setdselcat] = useState([])
+    const [s_type_name, setsname] = useState('')
+    const schange = (e) => {
+        var s_name = s_type.filter((v) => {
+            return v._id === e.target.value
+        })
+        setfrmdoctor({ ...frmdoctor, frmdoctor: e.target.value })
+        setsname(s_name.surgerytypename)
+        var d_data = d_category.filter((v, i) => {
+            return v.surgerytypeid?._id === e.target.value
+        })
+        setdselcat(d_data);
+        // console.log(e.target.value , d_data)
     }
 
 
@@ -300,16 +362,26 @@ const DoctorRegister = () => {
                                     <Form.Group as={Col} controlId="Speciality" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Speciality</Form.Label>
-                                            <Form.Control type="text" placeholder="Ex:- Cardiology" className='frm_input' name="specialty" value={frmdocprofile.specialty} onChange={selfrmdata} />
-                                            <AiOutlineUser className='icon_input' />
+                                            <Form.Select name="specialty" value={s_type_name} onChange={schange}>
+                                                {/* <Form.Control type="text" placeholder="Ex:- Cardiology" className='frm_input' name="specialty" value={frmdocprofile.specialty} onChange={selfrmdata} /> */}
+                                                <option value={''}>Select Surgery Type</option>
+                                                {s_type?.map((v, i) => {
+                                                    return (<option key={i} value={v._id}>{v.surgerytypename}</option>)
+                                                })}
+                                            </Form.Select>
                                         </div>
                                     </Form.Group>
 
                                     <Form.Group as={Col} controlId="SubSpeciality" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Sub Speciality</Form.Label>
-                                            <Form.Control type="email" placeholder="Ex:- Echocardiography" className='frm_input' name="sub_specialty" value={frmdocprofile.sub_specialty} onChange={selfrmdata} />
-                                            <FaRegEnvelope className='icon_input' />
+                                            {/* <Form.Control type="email" placeholder="Ex:- Echocardiography" className='frm_input' name="sub_specialty" value={frmdocprofile.sub_specialty} onChange={selfrmdata} /> */}
+                                            <Form.Select name="sub_specialty" value={frmdocprofile.sub_specialty} onChange={selfrmdata}>
+                                            <option value={''} selected disabled>Doctor Category</option>
+                                            {d_sel_cat?.map((v, i) => {
+                                                return (<option key={i} value={v._id}>{v.categoryname}</option>)
+                                            })}
+                                            </Form.Select>
                                         </div>
                                     </Form.Group>
 
@@ -356,7 +428,7 @@ const DoctorRegister = () => {
                                         <div className='position-relative'>
                                             <Form.Label>Country</Form.Label>
                                             <Form.Select className='frm-select' name='country' onChange={handleCountryChange} value={selectedCountryCode}>
-                                               {countries.map((country) => (
+                                                {countries.map((country) => (
                                                     <option key={country.isoCode} value={country.isoCode}>
                                                         {country.name}
                                                     </option>
@@ -452,7 +524,7 @@ const DoctorRegister = () => {
                 </Row>
             </Container>
             <ToastContainer />
-            {loading ? <Loader />:''}
+            {loading ? <Loader /> : ''}
         </div>
     )
 }

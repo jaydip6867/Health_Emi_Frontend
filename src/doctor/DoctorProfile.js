@@ -242,7 +242,7 @@ const DoctorProfile = () => {
                                         <Form.Group as={Col} controlId="email" className='col-6 col-md-4 col-lg-3'>
                                             <div className="position-relative">
                                                 <Form.Label>Email</Form.Label>
-                                                <Form.Control type="email" placeholder="Email" className='frm_input' name="email" value={profile && profile.email} disabled={IsDisable} onChange={profiledata} />
+                                                <Form.Control type="email" placeholder="Email" className='frm_input' name="email" value={profile && profile.email} disabled onChange={profiledata} />
                                                 <FaRegEnvelope className='icon_input' />
                                             </div>
                                         </Form.Group>
@@ -274,7 +274,7 @@ const DoctorProfile = () => {
                                         <Form.Group as={Col} controlId="Speciality" className='col-6 col-md-4 col-lg-3'>
                                             <div className='position-relative'>
                                                 <Form.Label>Speciality</Form.Label>
-                                                <Form.Control type="text" placeholder="Ex:- Cardiology" className='frm_input' name="specialty" value={profile && profile.specialty} disabled={IsDisable} onChange={profiledata} />
+                                                <Form.Control type="text" placeholder="Ex:- Cardiology" className='frm_input' name="specialty" value={profile && profile.specialty} disabled onChange={profiledata} />
                                                 <AiOutlineUser className='icon_input' />
                                             </div>
                                         </Form.Group>
@@ -282,7 +282,7 @@ const DoctorProfile = () => {
                                         <Form.Group as={Col} controlId="SubSpeciality" className='col-6 col-md-4 col-lg-3'>
                                             <div className='position-relative'>
                                                 <Form.Label>Sub Speciality</Form.Label>
-                                                <Form.Control type="email" placeholder="Ex:- Echocardiography" className='frm_input' name="sub_specialty" value={profile && profile.sub_specialty} disabled={IsDisable} onChange={profiledata} />
+                                                <Form.Control type="email" placeholder="Ex:- Echocardiography" className='frm_input' name="sub_specialty" value={profile && profile.sub_specialty} disabled onChange={profiledata} />
                                                 <FaRegEnvelope className='icon_input' />
                                             </div>
                                         </Form.Group>
