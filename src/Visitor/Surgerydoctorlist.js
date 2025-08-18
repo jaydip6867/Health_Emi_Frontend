@@ -13,7 +13,7 @@ const Surgerydoctorlist = () => {
     const [doctor_list, setdoclist] = useState([])
 
     useEffect(() => {
-        console.log('id = ', d_id)
+        // console.log('id = ', d_id)
         setloading(true)
         if (d_id) {
             getdoctorlist(d_id)
@@ -44,49 +44,48 @@ const Surgerydoctorlist = () => {
             <section className='py-5'>
                 <Container>
                     <h2 className='mb-5'>{doctor_list && doctor_list[0]?.surgerytypeid?.surgerytypename} Doctors List</h2>
-                    <Row xs={1} sm={2} md={3} lg={4} className="g-4">
-                        {doctor_list.length <= 0 ? <Col>No Doctor Found...</Col> : doctor_list.map((doc, i) => (
-                            <Col key={i}>
-                                <Card className="h-100 doctor_list">
-                                    {/* Card image container */}
-                                    <div>
-                                        {
-                                            doc.identityproof === '' ? <Card.Img
-                                                variant="top"
-                                                src={require('../assets/image/doctor_img.jpg')}
-                                                alt={`Photo of ${doc.name}`}
-                                                style={{ width: "150px", height: "150px", objectFit: "contain", borderRadius:"50%"}}
-                                            /> : <Card.Img
-                                                variant="top"
-                                                src={doc.identityproof}
-                                                alt={`Photo of ${doc.name}`}
-                                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                            />
-                                        }
-                                    </div>
-
-                                    <Card.Body className="d-flex flex-column">
-                                        <Card.Title className="d-flex align-items-center justify-content-between">
-                                            <span style={{ fontSize: "1rem", fontWeight: 600 }}>{doc.name}</span>
-                                        </Card.Title>
-
-                                        <Card.Subtitle className="mb-2 text-muted">{doc.specialization}</Card.Subtitle>
-
-                                        <Card.Text className="mt-auto">
-                                            <strong>Contact: </strong>
-                                            <a href={`tel:${doc.phone}`} style={{ textDecoration: "none" }}>
-                                                {doc.phone}
-                                            </a>
-                                        </Card.Text>
-                                    </Card.Body>
-
-                                    <Card.Footer className="text-muted small">
-                                        ID: {doc.id}
-                                    </Card.Footer>
-                                    <Link to={`/doctorprofile/${encodeURIComponent(btoa(doc._id))}`} className='stretched-link'></Link>
-                                </Card>
-                            </Col>
-                        ))}
+                    <Row>
+                        <Col xs={12} md={8}>
+                            <Row xs={1} className="g-4">
+                                {doctor_list.length <= 0 ? <Col>No Doctor Found...</Col> : doctor_list.map((doc, i) => (
+                                    <Col key={i}>
+                                        <Card className="mb-3 border-0 p-3 border-top rounded-0">
+                                            <Row className="g-0">
+                                                <Col md={4}>
+                                                    {
+                                                        doc.identityproof === '' ? <Card.Img
+                                                            variant="top"
+                                                            src={require('../assets/image/doctor_img.jpg')}
+                                                            alt={`Photo of ${doc.name}`}
+                                                            style={{ width: "150px", height: "150px", objectFit: "contain", borderRadius: "50%" }}
+                                                        /> : <Card.Img
+                                                            variant="top"
+                                                            src={doc.identityproof}
+                                                            alt={`Photo of ${doc.name}`}
+                                                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                                        />
+                                                    }
+                                                </Col>
+                                                <Col md={8}>
+                                                    <Card.Body>
+                                                        <Card.Title>Dr. {doc.name}</Card.Title>
+                                                            <span>{doc.specialty}</span><br/>
+                                                            <span>{doc.experience} years experience overall</span>
+                                                            <p><b>{doc.hospital_address}</b>. {doc.hospital_name}</p>
+                                                      
+                                                            <Link to={`/doctorprofile/${encodeURIComponent(btoa(doc._id))}`} className="text-body-primary text-decoration-none">View Profile</Link>
+                                                        
+                                                    </Card.Body>
+                                                </Col>
+                                            </Row>
+                                        </Card>
+                                    </Col>
+                                ))}
+                            </Row>
+                        </Col>
+                        <Col className='position-sticky top-0'>
+                            lorem sd
+                        </Col>
                     </Row>
                 </Container>
             </section>

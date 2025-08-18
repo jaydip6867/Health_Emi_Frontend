@@ -106,9 +106,9 @@ const Home = () => {
                     </ul>
                   )}
                 </div>
-                <Button variant="primary" id="button-addon2">
+                {/* <Button variant="primary" id="button-addon2">
                   Search
-                </Button>
+                </Button> */}
               </InputGroup>
             </Col>
           </Row>
