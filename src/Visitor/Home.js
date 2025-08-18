@@ -100,7 +100,7 @@ const Home = () => {
                           }}
                           onMouseDown={(e) => e.preventDefault()} // Prevent input blur before click
                         >
-                          {item.type === 'surgery' ? <Link to={`/surgery/${encodeURIComponent(btoa(item.id))}`}>{item.name}</Link> : <Link to={`/doctorprofile/${encodeURIComponent(btoa(item.id))}`}>{item.name}</Link> }
+                          {item.type === 'surgery' ? <Link to={`/surgery/${encodeURIComponent(btoa(item.id))}`} className='text-decoration-none d-flex justify-content-between px-3'><span>{item.name}</span> <span className='text-muted'>{item.type}</span> </Link> : <Link to={`/doctorprofile/${encodeURIComponent(btoa(item.id))}`}className='text-decoration-none d-flex justify-content-between px-3'><span>{item.name}</span> <span className='text-muted'>{item.type}</span></Link>}
                         </li>
                       ))}
                     </ul>
