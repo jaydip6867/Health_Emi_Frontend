@@ -31,6 +31,8 @@ import AdminLogin from './Admin/AdminLogin';
 import AdminDashboard from './Admin/AdminDashboard';
 import A_DoctorCategory from './Admin/A_DoctorCategory';
 import A_SurgeryType from './Admin/A_SurgeryType';
+import Amb_register from './Ambulance/Amb_register';
+import Amb_login from './Ambulance/Amb_login';
 
 function App() {
   return (
@@ -69,6 +71,12 @@ function App() {
         <Route path='/healthadmin'>
           <Route path='' index element={<AdminLogin />}></Route>
           <Route path='admindashboard' index element={<AdminDashboard />}></Route>
+          <Route path='doctorcategory' index element={<A_DoctorCategory />}></Route>
+          <Route path='surgerytype' index element={<A_SurgeryType />}></Route>
+        </Route>
+        <Route path='/ambulance'>
+          <Route path='' index element={<Amb_login />}></Route>
+          <Route path='ambregister' index element={<Amb_register />}></Route>
           <Route path='doctorcategory' index element={<A_DoctorCategory />}></Route>
           <Route path='surgerytype' index element={<A_SurgeryType />}></Route>
         </Route>
