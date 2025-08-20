@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Container, Dropdown, Modal, Row, Table } from 'react-bootstrap'
+import { Button, Col, Container, Dropdown, Form, Modal, Row, Table } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
 import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'
@@ -9,6 +9,7 @@ import CryptoJS from "crypto-js";
 import Swal from 'sweetalert2'
 import DataTable from 'react-data-table-component'
 import { MdOutlineRemoveRedEye } from 'react-icons/md'
+import DatePicker from 'react-datepicker'
 
 const D_Appointment = () => {
     const SECRET_KEY = "health-emi";
@@ -104,6 +105,28 @@ const D_Appointment = () => {
         // console.log(datasingle)
     }
 
+    // reschedule appoinetment date
+    const [selectedDate, setSelectedDate] = useState(null);
+
+    const [showreschedule, setrescheduleShow] = useState(false);
+    const [schedule_data, setschedule_data] = useState(null);
+
+    const handlerescheduleClose = () => setrescheduleShow(false);
+    const handlerescheduleShow = () => setrescheduleShow(true);
+
+    const reschedule_modal = (id) =>{
+        var data = appointment.filter((v)=>{
+            return v._id === id
+        })
+        setschedule_data(data)
+        console.log(data)
+        handlerescheduleShow()
+    }
+
+    const reschedule_appointment = () =>{
+        handlerescheduleClose()
+    }
+
     // table data
     const columns = [{
         name: 'No',
@@ -159,6 +182,7 @@ const D_Appointment = () => {
                     <Dropdown.Menu>
                         <Dropdown.Item href="#/action-1" onClick={() => appointmentbtn(row._id, 'Accept')}>Accept</Dropdown.Item>
                         <Dropdown.Item href="#/action-2" onClick={() => appointmentbtn(row._id, 'Cancel')}>Cancel</Dropdown.Item>
+                        <Dropdown.Item href="#/action-2" onClick={() => reschedule_modal(row._id)}>Reschedule</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown> : ''
     }]
@@ -235,6 +259,32 @@ const D_Appointment = () => {
                                         <p><b>Price :- </b><span>{v.surgerydetails?.price}</span></p>
                                     </div>
                                 </Modal.Body>
+                            </Modal>
+                        )
+                    })
+                }
+                {/* reschedule surgery surgery */}
+                {
+                    schedule_data && schedule_data.map((v, i) => {
+                        return (
+                            <Modal show={showreschedule} onHide={handlerescheduleClose} centered size="lg" key={i}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Reschedule Surgery</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Form.Label>New Appointment Date</Form.Label><br />
+                                            <DatePicker selected={selectedDate}
+                                                onChange={(date) => setSelectedDate(date)}
+                                                showTimeSelect
+                                                timeFormat="hh:mm a"
+                                                timeIntervals={15}
+                                                dateFormat="dd-MM-yyyy hh:mm a"
+                                                placeholderText="Select date and time"
+                                                minDate={new Date()} />
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button onClick={reschedule_appointment}>Reschedule Date</Button>
+                                </Modal.Footer>
                             </Modal>
                         )
                     })

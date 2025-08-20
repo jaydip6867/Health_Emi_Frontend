@@ -248,17 +248,30 @@ const DoctorRegister = () => {
 
     const [d_sel_cat, setdselcat] = useState([])
     const [s_type_name, setsname] = useState('')
+    const [sub_type_name, setsubname] = useState('')
     const schange = (e) => {
         var s_name = s_type.filter((v) => {
             return v._id === e.target.value
         })
-        setfrmdoctor({ ...frmdoctor, frmdoctor: e.target.value })
+        setdocprofile({ ...frmdocprofile, specialty: s_name[0].surgerytypename })
+        // var data = {...frmdocprofile};
+        // data.specialty = s_name[0].surgerytypename;
+        // setdocprofile(data)
         setsname(s_name.surgerytypename)
         var d_data = d_category.filter((v, i) => {
             return v.surgerytypeid?._id === e.target.value
         })
         setdselcat(d_data);
-        // console.log(e.target.value , d_data)
+        console.log(e.target.value, d_data, frmdocprofile)
+    }
+
+    const subchange = (e) => {
+        var sub_name = d_sel_cat.filter((v) => {
+            return v._id === e.target.value
+        })
+        setsubname(sub_name[0].categoryname)
+        // console.log(sub_name[0].categoryname)
+        setdocprofile({ ...frmdocprofile, sub_specialty: sub_name[0].categoryname })
     }
 
 
@@ -376,11 +389,11 @@ const DoctorRegister = () => {
                                         <div className='position-relative'>
                                             <Form.Label>Sub Speciality</Form.Label>
                                             {/* <Form.Control type="email" placeholder="Ex:- Echocardiography" className='frm_input' name="sub_specialty" value={frmdocprofile.sub_specialty} onChange={selfrmdata} /> */}
-                                            <Form.Select name="sub_specialty" value={frmdocprofile.sub_specialty} onChange={selfrmdata}>
-                                            <option value={''} selected disabled>Doctor Category</option>
-                                            {d_sel_cat?.map((v, i) => {
-                                                return (<option key={i} value={v._id}>{v.categoryname}</option>)
-                                            })}
+                                            <Form.Select name="sub_specialty" value={sub_type_name} onChange={subchange}>
+                                                <option value={''} selected disabled>Doctor Category</option>
+                                                {d_sel_cat?.map((v, i) => {
+                                                    return (<option key={i} value={v._id}>{v.categoryname}</option>)
+                                                })}
                                             </Form.Select>
                                         </div>
                                     </Form.Group>
@@ -404,8 +417,14 @@ const DoctorRegister = () => {
                                     <Form.Group controlId="Experience" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Experience</Form.Label>
-                                            <Form.Control placeholder="Ex:- 5 Years" className='frm_input' name="experience" value={frmdocprofile.experience} onChange={selfrmdata} />
-                                            <CiLock className='icon_input' />
+                                            <Form.Select placeholder="Ex:- 5 Years" className='frm_input text-dark' name="experience" value={frmdocprofile.experience} onChange={selfrmdata} >
+                                                <option value={''} selected disabled>Select Experiance</option>
+                                                {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
+                                                    <option key={level} value={level+' years'}>
+                                                        {level} years
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
                                         </div>
                                     </Form.Group>
 
