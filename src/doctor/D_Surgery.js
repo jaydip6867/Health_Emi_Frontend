@@ -573,7 +573,7 @@ const D_Surgery = () => {
                                                         type="checkbox"
                                                         value={item}
                                                         id={incl_index + 'i'}
-                                                        checked={selectededitinclItems?.includes(item)}
+                                                        checked={selectedinclItems?.includes(item)}
                                                         onChange={() => handleinclChange(item)}
                                                         label={item}
                                                     />
@@ -590,7 +590,7 @@ const D_Surgery = () => {
                                                         type="checkbox"
                                                         value={item}
                                                         id={excl_index + 'e'}
-                                                        checked={selectededitexclItems?.includes(item)}
+                                                        checked={selectedexclItems?.includes(item)}
                                                         onChange={() => handleexclChange(item)}
                                                         label={item}
                                                     />
