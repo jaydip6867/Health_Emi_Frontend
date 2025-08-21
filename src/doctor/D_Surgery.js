@@ -20,8 +20,48 @@ const D_Surgery = () => {
     const [doctor, setdoctor] = useState(null)
     const [token, settoken] = useState(null)
 
-    var incl = 'Most surgery packages typically include an initial consultation and a basic pre-surgery evaluation to assess the patient’s readiness. They also cover essential diagnostic tests such as blood reports, ECGs, or X-rays, along with the complete surgical procedure cost. Charges for the operation theatre, surgeon, and anesthesia are included, as well as the standard hospital stay for a specified number of days with routine nursing care. Standard room charges (general or semi-private), basic in-hospital medications, and one post-operative follow-up visit are also generally part of the inclusive offerings.';
+    var incl = 'Most surgery packages typically include an initial consultation and a basic pre-surgery evaluation to assess the patient’s readiness. They also cover essential diagnostic tests such as blood reports, ECGs, X-rays, along with the complete surgical procedure cost. Charges for the operation theatre, surgeon, and anesthesia are included, as well as the standard hospital stay for a specified number of days with routine nursing care. Standard room charges (general or semi-private), basic in-hospital medications, and one post-operative follow-up visit are also generally part of the inclusive offerings.';
     var excl = 'Exclusions usually apply to any medical needs that go beyond the standard procedure. This includes extended hospital stays beyond the package limit, ICU or emergency care, and the use of premium or imported surgical materials such as specialized implants or lenses. Additional physiotherapy sessions, specialist consultations, extra follow-up visits, or any treatment related to post-surgery complications are also not included. Upgrading to deluxe or private rooms, personal or attendant meals, discharge medications, and ambulance or transport charges are typically billed separately.';
+    const incl_items = incl.split(',').map(item => item.trim());
+    const excl_items = excl.split(',').map(item => item.trim());
+    // State to store selected items
+    const [selectedinclItems, setSelectedinclItems] = useState(incl_items);
+    const [selectedexclItems, setSelectedexclItems] = useState(excl_items);
+    // Handle checkbox change
+    const handleinclChange = (item) => {
+        if (!editshow) {
+            setSelectedinclItems(prev =>
+                prev.includes(item)
+                    ? prev.filter(i => i !== item) // Remove if already selected
+                    : [...prev, item]              // Add if not selected
+            );
+        }
+        else {
+            setSelectededitinclItems(prev =>
+                prev.includes(item)
+                    ? prev.filter(i => i !== item) // Remove if already selected
+                    : [...prev, item]              // Add if not selected
+            );
+        }
+    };
+    const handleexclChange = (item) => {
+        if (!editshow) {
+            setSelectedexclItems(prev =>
+                prev.includes(item)
+                    ? prev.filter(i => i !== item) // Remove if already selected
+                    : [...prev, item]              // Add if not selected
+            );
+        }
+        else {
+            setSelectededitexclItems(prev =>
+                prev.includes(item)
+                    ? prev.filter(i => i !== item) // Remove if already selected
+                    : [...prev, item]              // Add if not selected
+            );
+        }
+    };
+
+
     var surgeryobj = { name: '', price: '', days: '', additional_features: '', description: '', surgerytypeid: '', doctorcategory: '', specialty: '', inclusive: incl, exclusive: excl, yearsof_experience: '', completed_surgery: '', features: 'Blade-free laser', home_visit_price: '', clinic_visit_price: '', eopd_price: '' }
     const [surgery, setsurgery] = useState(surgeryobj)
     const [surgerylist, setsurgerylist] = useState(null)
@@ -81,6 +121,12 @@ const D_Surgery = () => {
     }
 
     function addsurgery() {
+        var surgerydata = { ...surgery };
+        surgerydata.inclusive = selectedinclItems.join(', ')
+        surgerydata.exclusive = selectedexclItems.join(', ')
+        setsurgery(surgerydata)
+        // console.log(surgerydata)
+
         setloading(true)
         axios({
             method: 'post',
@@ -88,7 +134,8 @@ const D_Surgery = () => {
             headers: {
                 Authorization: token,
             },
-            data: surgery
+            // data: surgery
+            data: surgerydata
         }).then((res) => {
             // toast('Surgery added...', { className: 'custom-toast-success' })
             Swal.fire({
@@ -104,7 +151,7 @@ const D_Surgery = () => {
         }).finally(() => {
             setloading(false)
         });
-        console.log(surgery)
+        // console.log(surgery)
     }
 
     function deletesurgery(sid) {
@@ -186,11 +233,21 @@ const D_Surgery = () => {
             clinic_visit_price: datasingle[0].clinic_visit_price,
             eopd_price: datasingle[0].eopd_price,
         };
+        const ed_incl_items = surgeryobj.inclusive.split(',').map(item => item.trim());
+        const ed_excl_items = surgeryobj.exclusive.split(',').map(item => item.trim());
+        setSelectededitinclItems(ed_incl_items)
+        setSelectededitexclItems(ed_excl_items)
         seteditrecord(surgeryobj);
         edithandleShow()
         // console.log('edit record list', datasingle[0])
         selUpsugdoc(surgeryobj.surgerytypeid)
+
+        // console.log(ed_incl_items, ed_excl_items)
+        // console.log(incl_items, excl_items)
     }
+    // state tos store edit selected items
+    const [selectededitinclItems, setSelectededitinclItems] = useState([]);
+    const [selectededitexclItems, setSelectededitexclItems] = useState([]);
 
     const seleditsurgery = (e) => {
         const { name, value } = e.target;
@@ -202,6 +259,10 @@ const D_Surgery = () => {
     };
 
     function editsurgery() {
+        var editsurgerydata = { ...edit_record };
+        editsurgerydata.inclusive = selectededitinclItems.join(', ')
+        editsurgerydata.exclusive = selectededitexclItems.join(', ')
+        seteditrecord(editsurgerydata)
         // console.log(edit_record)
         setloading(true)
         axios({
@@ -210,7 +271,8 @@ const D_Surgery = () => {
             headers: {
                 Authorization: token,
             },
-            data: edit_record
+            // data: edit_record
+            data: editsurgerydata
             // {
             //     surgeryid: edit_record._id,
             //     name: edit_record.name,
@@ -504,13 +566,35 @@ const D_Surgery = () => {
                                         <Form.Group controlId="description" className='mb-3 col-12 col-md-6'>
                                             <div className='position-relative'>
                                                 <Form.Label>Inclusive</Form.Label>
-                                                <Form.Control as="textarea" placeholder="Enter inclusive deatils" name="inclusive" value={surgery.inclusive} onChange={selsurgery} rows={5} />
+                                                {/* <Form.Control as="textarea" placeholder="Enter inclusive deatils" name="inclusive" value={surgery.inclusive} onChange={selsurgery} rows={5} /> */}
+                                                {incl_items.map((item, incl_index) => (
+                                                    <Form.Check
+                                                        key={incl_index}
+                                                        type="checkbox"
+                                                        value={item}
+                                                        id={incl_index + 'i'}
+                                                        checked={selectededitinclItems?.includes(item)}
+                                                        onChange={() => handleinclChange(item)}
+                                                        label={item}
+                                                    />
+                                                ))}
                                             </div>
                                         </Form.Group>
                                         <Form.Group controlId="description" className='mb-3 col-12 col-md-6'>
                                             <div className='position-relative'>
                                                 <Form.Label>Exclusive</Form.Label>
-                                                <Form.Control as="textarea" placeholder="Enter exclusive deatils" name="exclusive" value={surgery.exclusive} onChange={selsurgery} rows={5} />
+                                                {/* <Form.Control as="textarea" placeholder="Enter exclusive deatils" name="exclusive" value={surgery.exclusive} onChange={selsurgery} rows={5} /> */}
+                                                {excl_items.map((item, excl_index) => (
+                                                    <Form.Check
+                                                        key={excl_index}
+                                                        type="checkbox"
+                                                        value={item}
+                                                        id={excl_index + 'e'}
+                                                        checked={selectededitexclItems?.includes(item)}
+                                                        onChange={() => handleexclChange(item)}
+                                                        label={item}
+                                                    />
+                                                ))}
                                             </div>
                                         </Form.Group>
                                         <Form.Group controlId="additional_features" className='mb-3 col-12 col-md-6'>
@@ -535,11 +619,11 @@ const D_Surgery = () => {
                             </Col>
                         </Row>
                     </Modal.Body>
-                    <Modal.Footer>
+                    {/* <Modal.Footer>
                         <Button variant="secondary" onClick={handlesurClose}>
                             Close
                         </Button>
-                    </Modal.Footer>
+                    </Modal.Footer> */}
                 </Modal>
 
                 {/* view single surgery */}
@@ -560,6 +644,8 @@ const D_Surgery = () => {
                                         <p><b>Home Visit Charge :- </b><span>&#8377;{v.home_visit_price}/-</span></p>
                                         <p><b>Clinic Visit Charge :- </b><span>&#8377;{v.clinic_visit_price}/-</span></p>
                                         <p><b>EOPD Charge :- </b><span>&#8377;{v.eopd_price}/-</span></p>
+                                        <p><b>Inclusive :- </b><span>{v.inclusive}</span></p>
+                                        <p><b>Exclusive :- </b><span>{v.exclusive}</span></p>
                                     </div>
                                 </Modal.Body>
                                 <Modal.Footer>
@@ -691,13 +777,33 @@ const D_Surgery = () => {
                                 <Form.Group controlId="inclusive" className='mb-3 col-12 col-md-6'>
                                     <div className='position-relative'>
                                         <Form.Label>Inclusive</Form.Label>
-                                        <Form.Control as="textarea" placeholder="Enter inclusive deatils" name="inclusive" value={edit_record.inclusive} onChange={seleditsurgery} rows={5} />
+                                        {incl_items.map((item, incl_index) => (
+                                            <Form.Check
+                                                key={incl_index}
+                                                type="checkbox"
+                                                value={item}
+                                                id={incl_index + 'iedit'}
+                                                checked={selectededitinclItems?.includes(item)}
+                                                onChange={() => handleinclChange(item)}
+                                                label={item}
+                                            />
+                                        ))}
                                     </div>
                                 </Form.Group>
                                 <Form.Group controlId="exclusive" className='mb-3 col-12 col-md-6'>
                                     <div className='position-relative'>
                                         <Form.Label>Exclusive</Form.Label>
-                                        <Form.Control as="textarea" placeholder="Enter exclusive deatils" name="exclusive" value={edit_record.exclusive} onChange={seleditsurgery} rows={5} />
+                                        {excl_items.map((item, excl_index) => (
+                                            <Form.Check
+                                                key={excl_index}
+                                                type="checkbox"
+                                                value={item}
+                                                id={excl_index + 'eedit'}
+                                                checked={selectededitexclItems?.includes(item)}
+                                                onChange={() => handleexclChange(item)}
+                                                label={item}
+                                            />
+                                        ))}
                                     </div>
                                 </Form.Group>
 

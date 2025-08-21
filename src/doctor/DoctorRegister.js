@@ -417,7 +417,7 @@ const DoctorRegister = () => {
                                     <Form.Group controlId="Experience" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Experience</Form.Label>
-                                            <Form.Select placeholder="Ex:- 5 Years" className='frm_input text-dark' name="experience" value={frmdocprofile.experience} onChange={selfrmdata} >
+                                            <Form.Select className='frm_input text-dark' name="experience" value={frmdocprofile.experience} onChange={selfrmdata} >
                                                 <option value={''} selected disabled>Select Experiance</option>
                                                 {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
                                                     <option key={level} value={level+' years'}>
