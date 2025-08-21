@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import { FcBiotech, FcElectricalSensor, FcFinePrint } from 'react-icons/fc'
 import NavBar from './Component/NavBar'
 import FooterBar from './Component/FooterBar'
 
 const About = () => {
+
+    useEffect(()=>{
+        document.title = "About Health Easy EMI - Our Mission to healthy India"
+    },[])
     return (
         <>
             <NavBar />

@@ -12,6 +12,7 @@ const Home = () => {
   const [loading, setloading] = useState(false)
   const [cities, setCities] = useState([]);
   useEffect(() => {
+    document.title = "Health Easy EMI - Keep Life Healthy"
     getcitiesname();
     getsuggestion();
   }, []);
@@ -29,6 +30,7 @@ const Home = () => {
   const [inputValue, setInputValue] = useState('');
   const [showList, setShowList] = useState(false);
   const getsuggestion = async (n) => {
+    setloading(true)
     await axios({
       method: 'post',
       url: 'https://healtheasy-o25g.onrender.com/user/suggestions',
@@ -41,6 +43,7 @@ const Home = () => {
     }).catch(function (error) {
       console.log(error);
     }).finally(() => {
+      setloading(false)
     });
   }
 
