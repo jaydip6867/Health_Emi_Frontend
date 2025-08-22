@@ -11,7 +11,6 @@ import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
 import { MdDelete, MdEditDocument, MdOutlineRemoveRedEye } from 'react-icons/md';
-import { formatDate } from 'date-fns';
 import DataTable from 'react-data-table-component';
 
 const D_Blog = () => {
@@ -48,6 +47,7 @@ const D_Blog = () => {
     }, [token])
 
     const [bloglist, setbloglist] = useState(null)
+    const [displist, setdisplist] = useState(null)
     function getblog() {
         setloading(true)
         axios({
@@ -62,6 +62,7 @@ const D_Blog = () => {
         }).then((res) => {
             // console.log(res.data.Data)
             setbloglist(res.data.Data)
+            setdisplist(res.data.Data)
         }).catch(function (error) {
             // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
@@ -247,6 +248,15 @@ const D_Blog = () => {
         width: '150px'
     }]
 
+    const [search, setSearch] = useState('');
+    const searchbox = (e) =>{
+        setSearch(e.target.value)
+        var data = bloglist.filter(items=>items.title.includes(e.target.value))
+        setdisplist(data)
+        // console.log(data)
+    }
+    
+
     return (
         <>
 
@@ -265,7 +275,18 @@ const D_Blog = () => {
                                     <Button variant='primary' onClick={handleblogShow}>Add Blog</Button>
                                 </Col>
                             </Row>
-                            <DataTable columns={columns} data={bloglist ? bloglist : ''} pagination />
+                            <Row>
+                                <Col xs={4}>
+                                    <input
+                                        type="text"
+                                        placeholder="Search by title or author"
+                                        value={search}
+                                        onChange={searchbox}
+                                        style={{ marginBottom: '10px', padding: '8px', width: '300px' }}
+                                    />
+                                </Col>
+                            </Row>
+                            <DataTable columns={columns} data={displist ? displist : ''} pagination />
                         </div>
                     </Col>
                 </Row>

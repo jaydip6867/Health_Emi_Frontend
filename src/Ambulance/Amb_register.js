@@ -1,280 +1,316 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap'
-import { ToastContainer } from 'react-toastify'
+import { toast, ToastContainer } from 'react-toastify'
 import Loader from '../Loader'
-import { useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { City, State } from 'country-state-city'
+import axios from 'axios'
 
 const Amb_register = () => {
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
 
-    const statesWithCities = {
-        Maharashtra: ["Mumbai", "Pune", "Nagpur"],
-        Karnataka: ["Bangalore", "Mysore", "Mangalore"],
-        Delhi: ["New Delhi", "Dwarka", "Rohini"],
-        // Add more states and cities as needed
-    };
+    const [states, setStates] = useState([]);
+    const [selectedState, setSelectedState] = useState("");
+    const [cities, setCities] = useState([]);
+    const [selectedCity, setSelectedCity] = useState("");
 
     useEffect(() => {
 
+        var ambdata = JSON.parse(localStorage.getItem('ambulancedetail'));
+        if (ambdata) {
+            setambreg(false)
+            setambotp(true)
+        }
+        // Load all states of India
+        const indianStates = State.getStatesOfCountry("IN");
+        setStates(indianStates);
     }, [])
+
+    useEffect(() => {
+        // When state changes, fetch cities
+        if (selectedState) {
+            const citiesList = City.getCitiesOfState("IN", selectedState);
+            setCities(citiesList);
+            setSelectedCity(""); // Reset city selection
+            var sel_state = states.filter((v, i) => { return v.isoCode === selectedState })
+            setFormData(formData => ({
+                ...formData,
+                state: sel_state[0].name
+            }))
+        } else {
+            setCities([]);
+            setSelectedCity("");
+        }
+    }, [selectedState]);
 
     // Form fields state
     const [formData, setFormData] = useState({
-        fullName: "",
+        fullname: "",
         email: "",
+        mobile: "",
         password: "",
         state: "",
         city: "",
-        rcBookNo: "",
-        rcBookPhoto: null,
-        aadharNo: "",
-        aadharPhoto: null,
+        profilepic: null,
+        rc_no: "",
+        rc_pic: null,
+        aadhar_no: "",
+        aadhar_pic: null,
         address: "",
     });
 
-    const [cities, setCities] = useState([]);
+    const [amb_reg, setambreg] = useState(true);
+    const [amb_otp, setambotp] = useState(false);
 
-    // For error handling
-    const [errors, setErrors] = useState({});
 
     // handle change
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-        if (files) {
-            setFormData((prev) => ({ ...prev, [name]: files[0] }));
+        // if (files) {
+        //     setFormData((prev) => ({ ...prev, [name]: files[0] }));
+        // } else {
+        //     setFormData((prev) => ({ ...prev, [name]: value }));
+        // }
+        if (e.target.type === 'file') {
+            const file = files[0];
+            if (file) {
+                // Store the File object and optionally the file name
+                setFormData((prev) => ({
+                    ...prev,
+                    [name]: e.target.value,               // Actual File object
+                }));
+            }
         } else {
-            setFormData((prev) => ({ ...prev, [name]: value }));
+            setFormData((prev) => ({
+                ...prev,
+                [name]: value,
+            }));
         }
     };
 
-    // When state changes, update cities
-    useEffect(() => {
-        if (formData.state) {
-            setCities(statesWithCities[formData.state] || []);
-            setFormData((prev) => ({ ...prev, city: "" })); // reset city selection
-        }
-    }, [formData.state]);
-
-    // Basic validation function
-    const validate = () => {
-        let tempErrors = {};
-        if (!formData.fullName.trim()) tempErrors.fullName = "Full name is required";
-        if (!formData.email.trim()) {
-            tempErrors.email = "Email is required";
-        } else if (
-            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)
-        ) {
-            tempErrors.email = "Invalid email address";
-        }
-        if (!formData.password) {
-            tempErrors.password = "Password is required";
-        } else if (formData.password.length < 6) {
-            tempErrors.password = "Password must be at least 6 characters";
-        }
-        if (!formData.state) tempErrors.state = "State is required";
-        if (!formData.city) tempErrors.city = "City is required";
-        if (!formData.rcBookNo.trim())
-            tempErrors.rcBookNo = "RC Book Number is required";
-        if (!formData.rcBookPhoto)
-            tempErrors.rcBookPhoto = "RC Book Photo is required";
-        if (!formData.aadharNo.trim())
-            tempErrors.aadharNo = "Aadhar Number is required";
-        if (!formData.aadharPhoto)
-            tempErrors.aadharPhoto = "Aadhar Photo is required";
-        if (!formData.address.trim())
-            tempErrors.address = "Address is required";
-
-        setErrors(tempErrors);
-
-        return Object.keys(tempErrors).length === 0;
-    };
-
-    // Mock API for sending OTP
-    const sendOtp = (email) => {
-        return new Promise((resolve) => {
-            console.log("Sending OTP to:", email);
-            setTimeout(() => {
-                resolve(true);
-            }, 1500);
+    const ambulance_reg = () => {
+        console.log(formData)
+        setloading(true)
+        // console.log(frmdoctor)
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/ambulance/signup',
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            data: formData
+        }).then((res) => {
+            toast('OTP send to your Email...', { className: 'custom-toast-success' })
+            setambreg(false);
+            setambotp(true);
+            console.log(res)
+            localStorage.setItem('ambulancedetail', JSON.stringify(res));
+        }).catch(function (error) {
+            console.log(error);
+            // toast(error.response.data.Message, { className: 'custom-toast-error' })
+        }).finally(() => {
+            setloading(false)
         });
-    };
+    }
 
-    // Handle form submit
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const [otp, setotp] = useState('');
 
-        if (!validate()) {
-            return;
-        }
+    function otpverifydone() {
+        console.log(formData)
+        setloading(true)
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/ambulance/signup/otpverification',
+            data: {
+                "email": 'jeelahir005@gmail.com',
+                "otp": otp
+            }
+        }).then((res) => {
+            toast('OTP verify successfully...', { className: 'custom-toast-success' })
+            console.log(res);
+            localStorage.removeItem('ambulancedetail');
+            Navigate('/ambulance')
+        }).catch(function (error) {
+            console.log(error);
+            toast(error, { className: 'custom-toast-error' })
+        }).finally(() => {
+            setloading(false)
+        });
+    }
 
-        // Here you would upload files and send form data to backend
-        // For simulation, we'll just send OTP and navigate to OTP page with email stored
-
-        try {
-            await sendOtp(formData.email);
-
-            // Save registration data temporarily in localStorage for OTP verification
-            // (In real app, do this in backend and use JWT or session)
-            localStorage.setItem(
-                "pendingRegistration",
-                JSON.stringify(formData)
-            );
-            navigate("/otp-verify");
-        } catch (err) {
-            alert("Failed to send OTP. Please try again.");
-        }
-    };
     return (
         <>
             <div className='min-vh-100 d-flex align-items-center panel'>
                 <Container className='py-3'>
                     <Row className='justify-content-center'>
-                        <Col xs={5}>
-                            <div className='register_doctor bg-white p-3 py-3 px-4 rounded-4 shadow'>
-                                <div className='text-center'>
-                                    <h3>Ambulance - Register</h3>
-                                    <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
-                                </div>
-                                <Form onSubmit={handleSubmit} noValidate as={Row}>
-                                    <Form.Group controlId="email" className='position-relative mb-3'>
-                                        <Form.Label>Email</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="fullName"
-                                            value={formData.fullName}
-                                            onChange={handleChange}
-                                            style={{ width: "100%", padding: 6, marginTop: 4 }}
-                                        />
-                                        {errors.fullName && <div style={{ color: "red" }}>{errors.fullName}</div>}
-                                    </Form.Group>
-
-                                    <Form.Group controlId="email" className='position-relative mb-3'>
-                                        <Form.Label>Email</Form.Label>
-                                        <Form.Control placeholder="Enter Email" name='email' value={formData.email} onChange={handleChange} />
-                                        {errors.email && <div style={{ color: "red" }}>{errors.email}</div>}
-                                    </Form.Group>
-
-                                    <Form.Group controlId="password" className='position-relative mb-3'>
-                                        <Form.Label>Password</Form.Label>
-                                        <Form.Control type='password' placeholder="Enter Password" name='password' value={formData.password} onChange={handleChange} />
-                                        {errors.password && <div style={{ color: "red" }}>{errors.password}</div>}
-                                    </Form.Group>
-
-                                    <Form.Group controlId="state" className='position-relative mb-3 col-6'>
-                                        <Form.Label>State</Form.Label>
-                                        <Form.Select
-                                            name="state"
-                                            value={formData.state}
-                                            onChange={handleChange}
-                                        >
-                                            <option value="">--Select State--</option>
-                                            {Object.keys(statesWithCities).map((stateName) => (
-                                                <option key={stateName} value={stateName}>
-                                                    {stateName}
-                                                </option>
-                                            ))}
-                                        </Form.Select>
-                                        {errors.state && <div style={{ color: "red" }}>{errors.state}</div>}
-                                    </Form.Group>
-
-                                    <Form.Group controlId="city" className='position-relative mb-3 col-6'>
-                                        <Form.Label>City</Form.Label>
-                                        <Form.Select
-                                            name="city"
-                                            value={formData.city}
-                                            onChange={handleChange}
-                                            style={{ width: "100%", padding: 6, marginTop: 4 }}
-                                            disabled={!formData.state}
-                                        >
-                                            <option value="">--Select City--</option>
-                                            {cities.map((cityName) => (
-                                                <option key={cityName} value={cityName}>
-                                                    {cityName}
-                                                </option>
-                                            ))}
-                                        </Form.Select>
-                                        {errors.city && <div style={{ color: "red" }}>{errors.city}</div>}
-                                    </Form.Group>
-
-                                    <Form.Group controlId="rcno" className='position-relative mb-3 col-6'>
-                                        <Form.Label>RC Book No:</Form.Label>
+                        {
+                            amb_reg === true ? <Col xs={5}>
+                                <div className='register_doctor bg-white p-3 py-3 px-4 rounded-4 shadow'>
+                                    <div className='text-center'>
+                                        <h3>Ambulance - Register</h3>
+                                        <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
+                                    </div>
+                                    <Form as={Row} autoComplete='off' encType='multipart/form-data'>
+                                        <Form.Group controlId="fullname" className='position-relative mb-3'>
+                                            <Form.Label>Fullname</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                name="rcBookNo"
-                                                value={formData.rcBookNo}
+                                                name="fullname"
+                                                value={formData.fullname}
                                                 onChange={handleChange}
-                                                style={{ width: "100%", padding: 6, marginTop: 4 }}
                                             />
-                                        {errors.rcBookNo && <div style={{ color: "red" }}>{errors.rcBookNo}</div>}
-                                    </Form.Group>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="rcphoto" className='position-relative mb-3 col-6'>
-                                        <Form.Label>RC Book Photo:</Form.Label>
+                                        <Form.Group controlId="email" className='position-relative mb-3'>
+                                            <Form.Label>Email</Form.Label>
+                                            <Form.Control placeholder="Enter Email" name='email' value={formData.email} onChange={handleChange} />
+                                        </Form.Group>
+
+                                        <Form.Group controlId="password" className='position-relative mb-3'>
+                                            <Form.Label>Password</Form.Label>
+                                            <Form.Control type='password' placeholder="Enter Password" name='password' value={formData.password} onChange={handleChange} />
+                                        </Form.Group>
+
+                                        <Form.Group controlId="mobile" className='position-relative mb-3 col-6'>
+                                            <Form.Label>Mobile</Form.Label>
+                                            <Form.Control type='tel' placeholder="Enter Mobile" name='mobile' value={formData.mobile} onChange={handleChange} />
+                                        </Form.Group>
+
+                                        <Form.Group controlId="profilepic" className='position-relative mb-3 col-6'>
+                                            <Form.Label>Profile Photo:</Form.Label>
                                             <Form.Control
                                                 type="file"
-                                                name="rcBookPhoto"
-                                                accept="image/*"
+                                                name="profilepic"
+                                                accept=".jpg,.png"
                                                 onChange={handleChange}
-                                                style={{ width: "100%", marginTop: 4 }}
                                             />
-                                        {errors.rcBookPhoto && <div style={{ color: "red" }}>{errors.rcBookPhoto}</div>}
-                                    </Form.Group>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="aadharno" className='position-relative mb-3 col-6'>
-                                        <Form.Label>Aadhar No:</Form.Label>
+                                        <Form.Group controlId="state" className='position-relative mb-3 col-6'>
+                                            <Form.Label>State</Form.Label>
+                                            <Form.Select
+                                                name="state"
+                                                value={selectedState}
+                                                onChange={(e) => setSelectedState(e.target.value)}
+                                            >
+                                                <option value="">--Select State--</option>
+                                                {states.map((state) => (
+                                                    <option key={state.isoCode} value={state.isoCode}>
+                                                        {state.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+
+                                        <Form.Group controlId="city" className='position-relative mb-3 col-6'>
+                                            <Form.Label>City</Form.Label>
+                                            <Form.Select
+                                                name="city"
+                                                value={formData.city}
+                                                onChange={handleChange}
+                                                disabled={cities.length === 0}
+                                            >
+                                                <option value="">--Select City--</option>
+                                                {cities.map((city) => (
+                                                    <option key={city.name} value={city.name}>
+                                                        {city.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+
+                                        <Form.Group controlId="rc_no" className='position-relative mb-3 col-6'>
+                                            <Form.Label>RC Book No:</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                name="aadharNo"
-                                                value={formData.aadharNo}
+                                                name="rc_no"
+                                                value={formData.rc_no}
                                                 onChange={handleChange}
-                                                style={{ width: "100%", padding: 6, marginTop: 4 }}
                                             />
-                                        {errors.aadharNo && <div style={{ color: "red" }}>{errors.aadharNo}</div>}
-                                    </Form.Group>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="aadharphoto" className='position-relative mb-3 col-6'>
-                                        <Form.Label>Aadhar Photo:</Form.Label>
+                                        <Form.Group controlId="rc_pic" className='position-relative mb-3 col-6'>
+                                            <Form.Label>RC Book Photo:</Form.Label>
                                             <Form.Control
                                                 type="file"
-                                                name="aadharPhoto"
-                                                accept="image/*"
+                                                name="rc_pic"
+                                                accept=".jpg,.png"
                                                 onChange={handleChange}
-                                                style={{ width: "100%", marginTop: 4 }}
                                             />
-                                        {errors.aadharPhoto && <div style={{ color: "red" }}>{errors.aadharPhoto}</div>}
-                                    </Form.Group>
+                                        </Form.Group>
 
-                                    <Form.Group controlId="password" className='position-relative mb-3'>
-                                        <Form.Label>Address</Form.Label>
+                                        <Form.Group controlId="aadhar_no" className='position-relative mb-3 col-6'>
+                                            <Form.Label>Aadhar No:</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="aadhar_no"
+                                                value={formData.aadhar_no}
+                                                onChange={handleChange}
+                                            />
+                                        </Form.Group>
+
+                                        <Form.Group controlId="aadhar_pic" className='position-relative mb-3 col-6'>
+                                            <Form.Label>Aadhar Photo:</Form.Label>
+                                            <Form.Control
+                                                type="file"
+                                                name="aadhar_pic"
+                                                accept=".jpg,.png"
+                                                onChange={handleChange}
+                                            />
+                                        </Form.Group>
+
+                                        <Form.Group controlId="password" className='position-relative mb-3'>
+                                            <Form.Label>Address</Form.Label>
                                             <Form.Control as={'textarea'}
                                                 name="address"
                                                 value={formData.address}
                                                 onChange={handleChange}
                                                 rows={3}
-                                                style={{ width: "100%", padding: 6, marginTop: 4 }}
                                             />
-                                        {errors.address && <div style={{ color: "red" }}>{errors.address}</div>}
-                                    </Form.Group>
+                                        </Form.Group>
 
-                                    <Button type="submit" className='btn btn-primary d-block w-100 theme_btn mt-4'>
-                                        Register
-                                    </Button>
-                                </Form>
+                                        <Button type="button" onClick={ambulance_reg} className='btn btn-primary d-block w-100 theme_btn mt-4'>
+                                            Register
+                                        </Button>
+                                    </Form>
 
-                                <div style={{ marginTop: 20 }}>
-                                    Already have an account?{" "}
-                                    <button
-                                        onClick={() => {
-                                            navigate("/ambulance");
-                                        }}
-                                        style={{ color: "blue", background: "none", border: "none", cursor: "pointer" }}
-                                    >
-                                        Login here
-                                    </button>
+                                    <div style={{ marginTop: 20 }}>
+                                        Already have an account?{" "}
+                                        <button
+                                            onClick={() => {
+                                                navigate("/ambulance");
+                                            }}
+                                            style={{ color: "blue", background: "none", border: "none", cursor: "pointer" }}
+                                        >
+                                            Login here
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </Col>
+                            </Col> : ''
+                        }
+                        {
+                            amb_otp === true ? <Col md={5}>
+                                <div className='register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100'>
+                                    <div className='text-center'>
+                                        <h3>OTP Verification</h3>
+                                        <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
+                                        <Form>
+                                            <Form.Group as={Col} controlId="otp" className='position-relative my-3'>
+                                                <Form.Control type="text" name='otp' value={otp} onChange={(e) => setotp(e.target.value)} placeholder="Ex:- 1234" className='otpfield' pattern='[0-9]{4}' />
+                                            </Form.Group>
+                                        </Form>
+                                        <div className='form_bottom_div text-end mt-3'>
+                                            <p><Link className='form-link'>Resend OTP ?</Link> </p>
+                                        </div>
+                                    </div>
+
+                                    <Button type="button" onClick={otpverifydone} className='d-block w-100 theme_btn my-3'>
+                                        Verify OTP
+                                    </Button>
+                                </div>
+                            </Col> : ''
+                        }
                     </Row>
                 </Container>
                 <ToastContainer />

@@ -29,6 +29,7 @@ import DoctorProfilePage from './Visitor/DoctorProfilePage';
 import Surgerydoctorlist from './Visitor/Surgerydoctorlist';
 import Amb_register from './Ambulance/Amb_register';
 import Amb_login from './Ambulance/Amb_login';
+import Amb_dashboard from './Ambulance/Amb_dashboard';
 
 function App() {
   return (
@@ -67,6 +68,7 @@ function App() {
         <Route path='/ambulance'>
           <Route path='' index element={<Amb_login />}></Route>
           <Route path='ambregister' index element={<Amb_register />}></Route>
+          <Route path='ambdashboard' index element={<Amb_dashboard />}></Route>
         </Route>
         <Route path='*' element={<NotFound />} />
       </Routes>

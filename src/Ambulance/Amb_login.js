@@ -19,40 +19,40 @@ const Amb_login = () => {
     const [password, setps] = useState('')
 
     useEffect(() => {
-        // var getlocaldata = localStorage.getItem('PatientLogin');
-        // if (getlocaldata != null) {
-        //     const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
-        //     const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-        //     var data = JSON.parse(decrypted);
-        // }
-        // if (!data) {
-        //     navigate('/patient')
-        // }
-        // else {
-        //     navigate('patientdahsboard')
-        // }
+        var getlocaldata = localStorage.getItem('Ambulance');
+        if (getlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+        }
+        if (!data) {
+            navigate('/ambulance')
+        }
+        else {
+            navigate('ambdashboard')
+        }
 
     }, [navigate])
 
     function ambulancesignin() {
-        // setloading(true)
-        // axios({
-        //     method: 'post',
-        //     url: 'https://healtheasy-o25g.onrender.com/user/login',
-        //     data: { "email": email, "password": password }
-        // }).then((res) => {
-        //     // console.log(res)
-        //     const encrypted = CryptoJS.AES.encrypt(JSON.stringify(res.data.Data), SECRET_KEY).toString();
-        //     localStorage.setItem('PatientLogin', encrypted)
-        //     // console.log(encrypted)
-        //     // toast(res.data.Message, { className: 'custom-toast-success' });
-        //     navigate('ambdashboard')
-        // }).catch(function (error) {
-        //     console.log(error);
-        //     toast(error.response.data.Message, { className: 'custom-toast-error' })
-        // }).finally(() => {
-        //     setloading(false)
-        // });
+        setloading(true)
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/ambulance/login',
+            data: { "email": email, "password": password }
+        }).then((res) => {
+            // console.log(res)
+            const encrypted = CryptoJS.AES.encrypt(JSON.stringify(res.data.Data), SECRET_KEY).toString();
+            localStorage.setItem('Ambulance', encrypted)
+            // console.log(encrypted)
+            // toast(res.data.Message, { className: 'custom-toast-success' });
+            navigate('ambdashboard')
+        }).catch(function (error) {
+            console.log(error);
+            toast(error.response.data.Message, { className: 'custom-toast-error' })
+        }).finally(() => {
+            setloading(false)
+        });
     }
     return (
         <>
@@ -87,7 +87,7 @@ const Amb_login = () => {
                                     </Button>
                                 </Form>
                                 <div className='form_bottom_div text-center mt-3'>
-                                    <p>Don't have an Account? <Link to={'/ambulance/ambregister'} className='form-link'>Sign Up</Link> </p>
+                                    <p>Don't have an Account? <Link to={'ambregister'} className='form-link'>Sign Up</Link> </p>
                                 </div>
                             </div>
                         </Col>
