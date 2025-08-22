@@ -78,7 +78,7 @@ const Amb_register = () => {
                 // Store the File object and optionally the file name
                 setFormData((prev) => ({
                     ...prev,
-                    [name]: e.target.value,               // Actual File object
+                    [name]: value,               // Actual File object
                 }));
             }
         } else {
@@ -90,16 +90,14 @@ const Amb_register = () => {
     };
 
     const ambulance_reg = () => {
-        console.log(formData)
+        var ambdata = formData;
+        console.log('local = ',ambdata)
         setloading(true)
         // console.log(frmdoctor)
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/ambulance/signup',
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-            data: formData
+            data: ambdata
         }).then((res) => {
             toast('OTP send to your Email...', { className: 'custom-toast-success' })
             setambreg(false);
