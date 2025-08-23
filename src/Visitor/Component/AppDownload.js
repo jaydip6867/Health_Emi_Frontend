@@ -5,34 +5,27 @@ import { FaGooglePlay } from 'react-icons/fa'
 const AppDownload = () => {
     return (
         <>
-            <section >
-                <Container className='border-top border-secondary-subtle py-5'>
-                    <Row className='align-items-center justify-content-center g-4'>
-                        <Col xs={12} sm={6} md={5}>
-                            <div className='text-center text-sm-start'>
-                                <img src={require('../../assets/image/call-patient-half.png')} className="img-fluid shadow-img" />
-                            </div>
-                        </Col>
-                        <Col xs={12} sm={6} md={5}>
-                            <h2>Download the Health app</h2>
-                            <p className='py-4'>
-                                Access video consultation with India’s top doctors on the Practo app. Connect with doctors online, available 24/7, from the comfort of your home.
-                            </p>
-                            <div>
-                                <p className='text-secondary'>Get the link to download the app</p>
-                                <Form className='d-flex mb-3'>
-                                    <div className="input-container">
-                                        <div className="country-code">+91</div>
-                                        <input type="tel" placeholder="Enter phone number" />
+            <section className='spacer-t'>
+                <Container>
+                    <div className='app-sec-bg radius-20 position-relative p-0 pe-lg-5'>
+                        <Row className='align-items-end g-4'>
+
+                            <Col xs={12} lg={6}>
+                                <div className='app-download-box'>
+                                    <h2 className='text-white mb-3'>Download the Health app</h2>
+                                    <div className='d-flex gap-4 '>
+                                        <img src={require('../assets/Google-play.png')} className='img-fluid' />
+                                        <img src={require('../assets/Google-play.png')} className='img-fluid' />
                                     </div>
-                                    <button className="button primary send-app-link-button">Send app link</button>
-                                </Form>
-                                <div className='app_btn d-flex'>
-                                    <a className='btn btn-dark'><FaGooglePlay /> Google Play</a>
                                 </div>
-                            </div>
-                        </Col>
-                    </Row>
+                            </Col>
+                            <Col xs={12} lg={6} className='position-relative'>
+                                <div className='position-absolute bottom-0 w-100'>
+                                    <img src={require('../assets/App-download-screenshot.png')} className="img-fluid" />
+                                </div>
+                            </Col>
+                        </Row>
+                    </div>
                 </Container>
             </section>
         </>

@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom'
 
 const NavBar = () => {
     return (
-        <header>
-            <Navbar expand="lg" className="bg-white border-bottom">
+        <header className='header_bg'>
+            <Navbar expand="lg">
                 <Container>
                     <div>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -18,12 +18,12 @@ const NavBar = () => {
                         <Link to="#link" className='nav-link'><FaFacebookF /></Link>
                         <Link to="#link" className='nav-link'><FaLinkedinIn /></Link>
                     </div>
-                    <NavDropdown title="Login/Signup" id="basic-nav-dropdown" align="end" className='border py-1 px-2 rounded-1 ms-3 order-lg-last'>
+                    <NavDropdown title="Login/Signup" id="basic-nav-dropdown" align="end" className='menubar border py-1 px-2 rounded-1 ms-3 order-lg-last'>
                         <Link to={'/doctor'} className='dropdown-item'>Doctor</Link>
                         <Link to={'/patient'} className='dropdown-item'>Patient</Link>
                     </NavDropdown>
                     <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className='ms-auto text-center'>
+                        <Nav className='ms-auto text-center menubar'>
                             <Link to="/about" className='nav-link'>About</Link>
                             <Link to="/services" className='nav-link'>Services</Link>
                             <Link to="/contact" className='nav-link'>Contact</Link>

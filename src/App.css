@@ -121,26 +121,7 @@
   filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.3));
 }
 
-/* search box css */
-.searchbox .input-group:not(.has-validation)>.dropdown-toggle:nth-last-child(n+3) {
-  border-radius: 0;
-}
 
-.searchbox .form-control:focus {
-  box-shadow: none !important;
-  border-color: #222;
-}
-
-.searchbox .input-group>:not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
-  border-radius: 0;
-}
-.searchbox input{
-  border-radius: 0;
-}
-
-.searchbox .form-select:focus{
-  box-shadow: none;
-}
 /* speciality section css */
 .sec_head {
   margin-bottom: 30px;

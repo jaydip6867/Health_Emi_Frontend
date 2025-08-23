@@ -30,6 +30,8 @@ import Surgerydoctorlist from './Visitor/Surgerydoctorlist';
 import Amb_register from './Ambulance/Amb_register';
 import Amb_login from './Ambulance/Amb_login';
 import Amb_dashboard from './Ambulance/Amb_dashboard';
+import Amb_Forgot from './Ambulance/Amb_Forgot';
+import Amb_Profile from './Ambulance/Amb_Profile';
 
 function App() {
   return (
@@ -57,7 +59,7 @@ function App() {
         <Route path='/patientregister' element={<PatientRegister />}></Route>
         <Route path='/patient'>
           <Route path='' index element={<PatientLogin />}></Route>
-          <Route path='forgotpatient' index element={<PatientForgotps />}></Route>
+          <Route path='forgotpatient'  element={<PatientForgotps />}></Route>
           <Route path='patientdahsboard' element={<PatientDashboard />}></Route>
           <Route path='patientdoctorappointment' element={<P_DoctorAppointment />}></Route>
           <Route path='appointment' element={<P_Appointment />}></Route>
@@ -67,8 +69,10 @@ function App() {
         </Route>
         <Route path='/ambulance'>
           <Route path='' index element={<Amb_login />}></Route>
-          <Route path='ambregister' index element={<Amb_register />}></Route>
-          <Route path='ambdashboard' index element={<Amb_dashboard />}></Route>
+          <Route path='ambregister'  element={<Amb_register />}></Route>
+          <Route path='ambdashboard'  element={<Amb_dashboard />}></Route>
+          <Route path='forgotambulance'  element={<Amb_Forgot />}></Route>
+          <Route path='profileambulance'  element={<Amb_Profile />}></Route>
         </Route>
         <Route path='*' element={<NotFound />} />
       </Routes>

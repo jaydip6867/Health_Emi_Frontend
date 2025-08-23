@@ -41,9 +41,9 @@ const Amb_login = () => {
             url: 'https://healtheasy-o25g.onrender.com/ambulance/login',
             data: { "email": email, "password": password }
         }).then((res) => {
-            // console.log(res)
+            console.log(res)
             const encrypted = CryptoJS.AES.encrypt(JSON.stringify(res.data.Data), SECRET_KEY).toString();
-            localStorage.setItem('Ambulance', encrypted)
+            localStorage.setItem('healthambulance', encrypted)
             // console.log(encrypted)
             // toast(res.data.Message, { className: 'custom-toast-success' });
             navigate('ambdashboard')

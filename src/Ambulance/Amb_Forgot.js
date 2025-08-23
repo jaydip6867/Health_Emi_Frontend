@@ -1,25 +1,22 @@
 import React, { useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import { Col, Container, Row, Button, Form } from 'react-bootstrap';
-import './css/doctor.css';
+// import './css/doctor.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { CiLock } from 'react-icons/ci';
 import { FaRegEnvelope } from 'react-icons/fa';
-import DoctorTestimonial from './DoctorTestimonial';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import Loader from '../Loader';
 
-const DoctorForgot = () => {
+const Amb_Forgot = () => {
 
     var navigate = useNavigate();
     const [loading,setloading] = useState(false);
 
-    const [doc_email, setdoc_email] = useState(true);
-    const [doc_forgt_otp, setdoc_forgt_otp] = useState(false);
-    const [doc_reset_ps, setdoc_rest_ps] = useState(false);
+    const [amb_email, setamb_email] = useState(true);
+    const [amb_forgt_otp, setamb_forgt_otp] = useState(false);
+    const [amb_reset_ps, setamb_rest_ps] = useState(false);
 
     const [email, setemail] = useState('')
     const [otp, setotp] = useState('')
@@ -30,15 +27,15 @@ const DoctorForgot = () => {
         setloading(true)
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/forgetpassword',
+            url: 'https://healtheasy-o25g.onrender.com/ambulance/forgetpassword',
             data: {
                 "email": email,
             }
         }).then((res) => {
             toast('OTP sent To your email...', { className: 'custom-toast-success' })
             // console.log(res)
-            setdoc_email(false);
-            setdoc_forgt_otp(true);
+            setamb_email(false);
+            setamb_forgt_otp(true);
         }).catch(function (error) {
             console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
@@ -51,7 +48,7 @@ const DoctorForgot = () => {
     function otpverifydone() {
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/forgetpassword/verifyotp',
+            url: 'https://healtheasy-o25g.onrender.com/ambulance/forgetpassword/verifyotp',
             data: {
                 "email": email,
                 "otp": otp
@@ -59,8 +56,8 @@ const DoctorForgot = () => {
         }).then((res) => {
             toast('OTP Verify Successfully...', { className: 'custom-toast-success' })
             console.log(res)
-            setdoc_forgt_otp(false);
-            setdoc_rest_ps(true);
+            setamb_forgt_otp(false);
+            setamb_rest_ps(true);
         }).catch(function (error) {
             // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
@@ -70,7 +67,7 @@ const DoctorForgot = () => {
     function resetps() {
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/forgetpassword/setpassword',
+            url: 'https://healtheasy-o25g.onrender.com/ambulance/forgetpassword/setpassword',
             data: {
                 "email": email,
                 "password": newps
@@ -78,7 +75,7 @@ const DoctorForgot = () => {
         }).then((res) => {
             toast('Password Reset Successfully...', { className: 'custom-toast-success' })
             // console.log(res)
-            navigate('/doctor')
+            navigate('/ambulance')
         }).catch(function (error) {
             // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
@@ -88,13 +85,12 @@ const DoctorForgot = () => {
     return (
         <div className='min-vh-100 d-flex align-items-center panel'>
             <Container className='py-3'>
-                <Row className='align-items-center'>
-                    <DoctorTestimonial />
+                <Row className='align-items-center justify-content-center'>
                     {
-                        doc_email === true ? <Col md={5}>
+                        amb_email === true ? <Col md={5}>
                             <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
                                 <div className='text-center'>
-                                    <h3>Forgot Password</h3>
+                                    <h3>Forgot Password - Ambulance</h3>
                                     <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
                                 </div>
                                 <Form>
@@ -113,7 +109,7 @@ const DoctorForgot = () => {
                         </Col> : ''
                     }
                     {
-                        doc_forgt_otp === true ? <Col md={5}>
+                        amb_forgt_otp === true ? <Col md={5}>
                             <div className='register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100'>
                                 <div className='text-center'>
                                     <h3>OTP Verification</h3>
@@ -135,10 +131,10 @@ const DoctorForgot = () => {
                         </Col> : ''
                     }
                     {
-                        doc_reset_ps === true ? <Col md={5}>
+                        amb_reset_ps === true ? <Col md={5}>
                             <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
                                 <div className='text-center'>
-                                    <h3>New Password</h3>
+                                    <h3>New Password - Ambulance</h3>
                                     <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
                                 </div>
                                 <Form>
@@ -165,4 +161,4 @@ const DoctorForgot = () => {
     )
 }
 
-export default DoctorForgot
+export default Amb_Forgot;

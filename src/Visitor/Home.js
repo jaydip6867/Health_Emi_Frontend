@@ -7,6 +7,8 @@ import AppDownload from './Component/AppDownload'
 import Loader from '../Loader'
 import { City, Country, State } from 'country-state-city';
 import axios from 'axios'
+import './css/visitor.css'
+import { FiArrowUpRight, FiMapPin, FiSearch } from 'react-icons/fi'
 
 const Home = () => {
   const [loading, setloading] = useState(false)
@@ -14,7 +16,7 @@ const Home = () => {
   useEffect(() => {
     document.title = "Health Easy EMI - Keep Life Healthy"
     getcitiesname();
-    getsuggestion();
+    // getsuggestion();
   }, []);
   function getcitiesname() {
     const india = Country.getCountryByCode("IN");
@@ -67,17 +69,23 @@ const Home = () => {
         <Container>
 
           <Row className='justify-content-center searchbox'>
-            <Col xs={12} md={8}>
+            <Col xs={12} md={7}>
               <InputGroup className="mb-3">
-                <Form.Select className='frm-select city rounded-0' value={searchinputcity} onChange={(e) => setsearchinputcity(e.target.value)} name='city' style={{ 'maxWidth': '150px' }}>
-                  {
-                    cities && cities.map((city, vi) => {
-                      return (<option key={vi} value={city.name} >{city.name}</option>)
-                    })
-                  }
-                </Form.Select>
+                <div className='position-relative'>
+                  <FiMapPin className='position-absolute icon' />
+                  <Form.Select className='frm-select city' value={searchinputcity} onChange={(e) => setsearchinputcity(e.target.value)} name='city' style={{ 'maxWidth': '150px' }}>
+                    <option>Location</option>
+                    {
+                      cities && cities.map((city, vi) => {
+                        return (<option key={vi} value={city.name} >{city.name}</option>)
+                      })
+                    }
+                  </Form.Select>
+                </div>
+
                 <div className='flex-grow-1 position-relative'>
-                  <Form.Control placeholder='Hospital, Speciality, Surgery, Procedure' autoComplete="off" value={inputValue} onChange={handleInputChange} onFocus={() => setShowList(true)} onBlur={() => setTimeout(() => setShowList(false), 50)} name='name' />
+                  <FiSearch className='position-absolute icon' />
+                  <Form.Control placeholder='Search doctor & Surgery here ' autoComplete="off" value={inputValue} onChange={handleInputChange} onFocus={() => setShowList(true)} onBlur={() => setTimeout(() => setShowList(false), 50)} name='name' />
                   {showList && recordlist.length > 0 && (
                     <ul style={{
                       position: 'absolute',
@@ -103,7 +111,7 @@ const Home = () => {
                           }}
                           onMouseDown={(e) => e.preventDefault()} // Prevent input blur before click
                         >
-                          {item.type === 'surgery' ? <Link to={`/surgery/${encodeURIComponent(btoa(item.id))}`} className='text-decoration-none d-flex justify-content-between px-3'><span>{item.name}</span> <span className='text-muted'>{item.type}</span> </Link> : <Link to={`/doctorprofile/${encodeURIComponent(btoa(item.id))}`}className='text-decoration-none d-flex justify-content-between px-3'><span>{item.name}</span> <span className='text-muted'>{item.type}</span></Link>}
+                          {item.type === 'surgery' ? <Link to={`/surgery/${encodeURIComponent(btoa(item.id))}`} className='text-decoration-none d-flex justify-content-between px-3'><span>{item.name}</span> <span className='text-muted'>{item.type}</span> </Link> : <Link to={`/doctorprofile/${encodeURIComponent(btoa(item.id))}`} className='text-decoration-none d-flex justify-content-between px-3'><span>{item.name}</span> <span className='text-muted'>{item.type}</span></Link>}
                         </li>
                       ))}
                     </ul>
@@ -117,56 +125,76 @@ const Home = () => {
           </Row>
         </Container>
       </section>
-      <section className='py-5'>
+      <section>
         <Container>
-          <Row className='justify-content-center g-4 px-5 p-sm-0'>
-            <Col xs={12} sm={6} md={4} lg={3}>
-              <Card className='h-100 rounded-5 shadow'>
-                <div className='rounded-5 overflow-hidden'>
-                  <div className='text-center'>
-                    <Card.Img variant="top" src={require('../assets/image/doctor1.png')} alt='video consultant' />
+          <div className='banner_sec radius-20'>
+            <Row className='align-items-center'>
+              <Col xs={12} md={6}>
+                <div className='pe-5'>
+                  <h1>Neighbors with <span className=''>Talent</span>, right next door!</h1>
+                  <p>Choose the best deal among 50,000 people and pros by requesting a service!</p>
+                  <Button className="banner_btn">Get a Service</Button>
+                  <div className='d-flex gap-5 mt-3 text-dark'>
+                    <div><h6>50,000</h6>Clients</div>
+                    <div><h6>15,000</h6>Reviews</div>
                   </div>
-                  <Card.Body>
-                    <Card.Title>Instant Video Consultation</Card.Title>
-                    <Card.Text>
-                      <span style={{ 'fontSize': '14px' }}>Connect Within 60 seconds</span>
-                      <Link to={'/consult'} className='stretched-link'></Link>
-                    </Card.Text>
-                  </Card.Body>
                 </div>
+              </Col>
+              <Col xs={12} md={6}>
+                <img src={require('./assets/banner-img.png')} alt='banner image of health easy emi' />
+              </Col>
+            </Row>
+          </div>
+        </Container>
+      </section>
+      <section className='spacer-y'>
+        <Container>
+          <Row className='justify-content-center g-4'>
+            <Col xs={12} sm={6} lg={3}>
+              <Card className='functionality_box'>
+                <Card.Img src={require('./assets/book-ambulance-image.png')} alt='video consultant' />
+                <Card.Body>
+                  <Card.Title>Book Ambulance <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
+                </Card.Body>
               </Card>
             </Col>
-            <Col xs={12} sm={6} md={4} lg={3}>
-              <Card className='rounded-5  h-100 shadow'>
-                <div className='rounded-5 overflow-hidden'>
-                  <div className='text-center'>
-                    <Card.Img variant="top" src={require('../assets/image/doctor2.png')} alt='find doctor' />
-                  </div>
-                  <Card.Body>
-                    <Card.Title>Find Doctors Near You</Card.Title>
-                    <Card.Text>
-                      <span style={{ 'fontSize': '14px' }}>Confirmed Appointments</span>
-                      <Link to={'/doctorfind'} className='stretched-link'></Link>
-                    </Card.Text>
-                  </Card.Body>
-                </div>
+            <Col xs={12} sm={6} lg={3}>
+              <Card className='functionality_box'>
+                <Card.Img src={require('./assets/video-consultant-image.png')} alt='video consultant' />
+                <Card.Body>
+                  <Card.Title>Video Consultant <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
+                </Card.Body>
               </Card>
             </Col>
-            <Col xs={12} sm={6} md={4} lg={3}>
-              <Card className='rounded-5  h-100 shadow'>
-                <div className='rounded-5 overflow-hidden'>
-                  <div className='text-center'>
-                    <Card.Img variant="top" src={require('../assets/image/doctor3.png')} alt='find surgeries' />
-                  </div>
-                  <Card.Body>
-                    <Card.Title>Surgeries</Card.Title>
-                    <Card.Text>
-                      <span style={{ 'fontSize': '14px' }}>Safe and trusted surgery centers</span>
-                      <Link to={'/surgery'} className='stretched-link'></Link>
-                    </Card.Text>
-                  </Card.Body>
-                </div>
+            <Col xs={12} sm={6} lg={3}>
+              <Card className='functionality_box'>
+                <Card.Img src={require('./assets/find-doctor-image.png')} alt='video consultant' />
+                <Card.Body>
+                  <Card.Title>Find Doctor <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
+                </Card.Body>
               </Card>
+            </Col>
+            <Col xs={12} sm={6} lg={3}>
+              <Card className='functionality_box'>
+                <Card.Img variant="top" src={require('./assets/surgeries-image.png')} alt='video consultant' />
+                <Card.Body>
+                  <Card.Title>Surgeries <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </section>
+      {/* testimonial section */}
+      <section className='spacer-t'>
+        <Container>
+          <Row className='align-items-center'>
+            <Col md={7}></Col>
+            <Col md={5}>
+              <div className='sec_head'>
+                <span className='fs-6'>Testimonial</span>
+                <p className='h2'>Client’s Success <br />Stories</p>
+              </div>
             </Col>
           </Row>
         </Container>
@@ -226,6 +254,17 @@ const Home = () => {
       </section>
       {/* App Download Section  */}
       <AppDownload />
+      {/* Popular Search Section */}
+      <section className='spacer-y'>
+        <Container>
+          <h2 className='text-center'>Popular Search in India</h2>
+          <div className='d-flex justify-content-center mt-4 flex-wrap'>
+            {['Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels'].map((v, i) => (
+              <a href="" className='px-3 py-2' key={i}>{v}</a>
+            ))}
+          </div>
+        </Container>
+      </section>
       <FooterBar />
       {loading ? <Loader /> : ''}
     </>
