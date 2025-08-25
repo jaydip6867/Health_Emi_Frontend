@@ -7,21 +7,21 @@ const AppDownload = () => {
         <>
             <section className='spacer-t'>
                 <Container>
-                    <div className='app-sec-bg radius-20 position-relative p-0 pe-lg-5'>
+                    <div className='app-sec-bg radius-20 p-0 pe-lg-5'>
                         <Row className='align-items-end g-4'>
 
                             <Col xs={12} lg={6}>
-                                <div className='app-download-box'>
+                                <div className='app-download-box text-center text-lg-start'>
                                     <h2 className='text-white mb-3'>Download the Health app</h2>
-                                    <div className='d-flex gap-4 '>
+                                    <div className='d-flex gap-4 justify-content-center justify-content-lg-start'>
                                         <img src={require('../assets/Google-play.png')} className='img-fluid' />
                                         <img src={require('../assets/Google-play.png')} className='img-fluid' />
                                     </div>
                                 </div>
                             </Col>
-                            <Col xs={12} lg={6} className='position-relative'>
-                                <div className='position-absolute bottom-0 w-100'>
-                                    <img src={require('../assets/App-download-screenshot.png')} className="img-fluid" />
+                            <Col xs={12} lg={5} className='position-relative'>
+                                <div className='app-download-img-div bottom-0 w-100'>
+                                    <img src={require('../assets/App-download-screenshot.png')} className="w-100" />
                                 </div>
                             </Col>
                         </Row>

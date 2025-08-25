@@ -32,6 +32,7 @@ import Amb_login from './Ambulance/Amb_login';
 import Amb_dashboard from './Ambulance/Amb_dashboard';
 import Amb_Forgot from './Ambulance/Amb_Forgot';
 import Amb_Profile from './Ambulance/Amb_Profile';
+import D_Consultation from './doctor/D_Consultation';
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
           <Route path='doctorappointment' element={<D_Appointment />}></Route>
           <Route path='doctorblog' element={<D_Blog />}></Route>
           <Route path='doctorsurgery' element={<D_Surgery />}></Route>
+          <Route path='doctorconsultation' element={<D_Consultation />}></Route>
           <Route path='calender' element={<D_Calender />}></Route>
         </Route>
         <Route path='/patientregister' element={<PatientRegister />}></Route>

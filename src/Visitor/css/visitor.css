@@ -244,8 +244,20 @@ h6 {
 .app-download-box img{
     max-width: 130px;
 }
+@media screen and (min-width: 991.98px){
+
+    .app-download-img-div{
+        position: absolute;
+        bottom: 0;       
+    }
+}
 
 /* testimonial section CSS */
+.testimonial-bg{
+    background-image: url(../assets/testimonial-bg.png);
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+}
 .sec_head span{
     text-transform: uppercase;
     color: var(--primary-color);

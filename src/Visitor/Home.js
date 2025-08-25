@@ -65,12 +65,12 @@ const Home = () => {
       <NavBar />
       {/* search by city and doctor name or surgery */}
 
-      <section className='pt-5'>
+      <section className='py-5'>
         <Container>
 
           <Row className='justify-content-center searchbox'>
             <Col xs={12} md={7}>
-              <InputGroup className="mb-3">
+              <InputGroup>
                 <div className='position-relative'>
                   <FiMapPin className='position-absolute icon' />
                   <Form.Select className='frm-select city' value={searchinputcity} onChange={(e) => setsearchinputcity(e.target.value)} name='city' style={{ 'maxWidth': '150px' }}>
@@ -188,19 +188,23 @@ const Home = () => {
       {/* testimonial section */}
       <section className='spacer-t'>
         <Container>
-          <Row className='align-items-center'>
-            <Col md={7}></Col>
-            <Col md={5}>
-              <div className='sec_head'>
-                <span className='fs-6'>Testimonial</span>
-                <p className='h2'>Client’s Success <br />Stories</p>
-              </div>
-            </Col>
-          </Row>
+          <div className='testimonial-bg py-5 radius-20'>
+            <Row className='align-items-center'>
+              <Col md={7}>
+
+              </Col>
+              <Col md={5}>
+                <div className='sec_head'>
+                  <span className='fs-6'>Testimonial</span>
+                  <p className='h2'>Client’s Success <br />Stories</p>
+                </div>
+              </Col>
+            </Row>
+          </div>
         </Container>
       </section>
       {/* speciality section */}
-      <section className='py-5'>
+      {/* <section className='py-5'>
         <Container>
           <div className='text-center sec_head'>
             <h2>Consult top doctors online for any health concern</h2>
@@ -251,7 +255,7 @@ const Home = () => {
             </Col>
           </Row>
         </Container>
-      </section>
+      </section> */}
       {/* App Download Section  */}
       <AppDownload />
       {/* Popular Search Section */}

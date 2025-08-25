@@ -5,6 +5,7 @@
 .slider_doctor img {
     display: block;
     margin: auto;
+    width: 60%;
 }
 
 .doctor_testi_content h4 {

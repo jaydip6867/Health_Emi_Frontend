@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Col, Container, Dropdown, Form, Modal, Row, Table } from 'react-bootstrap'
+import { Button, Col, Container, Dropdown, Form, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
 import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'
@@ -8,8 +8,9 @@ import Loader from '../Loader'
 import CryptoJS from "crypto-js";
 import Swal from 'sweetalert2'
 import DataTable from 'react-data-table-component'
-import { MdOutlineRemoveRedEye } from 'react-icons/md'
+import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye } from 'react-icons/md'
 import DatePicker from 'react-datepicker'
+import { format } from 'date-fns'
 
 const D_Appointment = () => {
     const SECRET_KEY = "health-emi";
@@ -54,7 +55,7 @@ const D_Appointment = () => {
                 Authorization: token
             }
         }).then((res) => {
-            console.log(res.data.Data)
+            // console.log(res.data.Data)
             setappointment(res.data.Data)
         }).catch(function (error) {
             console.log(error);
@@ -114,26 +115,64 @@ const D_Appointment = () => {
     const handlerescheduleClose = () => setrescheduleShow(false);
     const handlerescheduleShow = () => setrescheduleShow(true);
 
-    const reschedule_modal = (id) =>{
-        var data = appointment.filter((v)=>{
+    const reschedule_modal = (id) => {
+        var data = appointment.filter((v) => {
             return v._id === id
         })
         setschedule_data(data)
-        console.log(data)
+        // console.log(data)
         handlerescheduleShow()
     }
 
-    const reschedule_appointment = () =>{
-        handlerescheduleClose()
+    const formattedDateTime = selectedDate
+        ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
+        : '';
+    const reschedule_appointment = (date) => {
+        // Split at the space before the time
+        const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
+        // Combine time + meridiem
+        const timeWithMeridiem = `${timePart} ${meridiem}`;
+        // console.log(apt_data, datePart, timeWithMeridiem )
+        // console.log(schedule_data)
+
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/reschedule',
+            headers: {
+                Authorization: token
+            },
+            data: {
+                appointmentid: schedule_data[0]._id,
+                date: datePart,
+                time: timeWithMeridiem
+            }
+        }).then((res) => {
+            // console.log('doctor ', res.data.Data)
+            Swal.fire({
+                title: "Appointment Rescheduled Done...",
+                icon: "success",
+            });
+            appointmentlist()
+            handlerescheduleClose()
+        }).catch(function (error) {
+            console.log(error);
+        }).finally(() => {
+            setloading(false)
+        });
+
     }
+
+    const renderTooltip = (label) => (props) => (
+        <Tooltip id="button-tooltip" {...props}>
+            {label} Appointment
+        </Tooltip>
+    );
 
     // table data
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
         sortable: true,
-        maxWidth: '80px',
-        minWidth: '80px',
         width: '80px'
     }, {
         name: 'Patient Name',
@@ -167,24 +206,39 @@ const D_Appointment = () => {
     {
         name: 'View',
         cell: row => <MdOutlineRemoveRedEye onClick={() => btnview(row._id)} className='text-primary fs-5' />,
-        maxWidth: '80px',
-        minWidth: '80px',
         width: '80px'
     }, {
         name: 'Action',
         cell: row =>
             row.status === "Pending" ?
-                <Dropdown>
-                    <Dropdown.Toggle variant="secondary" size='sm' id="dropdown-basic">
-                        Edit
-                    </Dropdown.Toggle>
+                <>
+                    <div className='d-flex flex-wrap gap-2'>
+                        <OverlayTrigger placement="top" delay={{ show: 100, hide: 50 }} overlay={renderTooltip('Accept')}>
+                            <Button variant='success' size='sm'><MdDone onClick={() => appointmentbtn(row._id, 'Accept')} className='fs-5' /></Button>
+                        </OverlayTrigger>
+                        <OverlayTrigger placement="top" delay={{ show: 100, hide: 50 }} overlay={renderTooltip('Cancel')}>
+                            <Button variant='danger' size='sm'><MdClose onClick={() => appointmentbtn(row._id, 'Cancel')} className='fs-5' /></Button>
+                        </OverlayTrigger>
+                        <OverlayTrigger placement="top" delay={{ show: 100, hide: 50 }} overlay={renderTooltip('Reschedule')}>
+                            <Button variant='secondary' size='sm'><MdOutlineAutorenew onClick={() => reschedule_modal(row._id)} className='fs-5' /></Button>
+                        </OverlayTrigger>
+                    </div>
 
-                    <Dropdown.Menu>
-                        <Dropdown.Item href="#/action-1" onClick={() => appointmentbtn(row._id, 'Accept')}>Accept</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2" onClick={() => appointmentbtn(row._id, 'Cancel')}>Cancel</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2" onClick={() => reschedule_modal(row._id)}>Reschedule</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown> : ''
+
+
+                </>
+                // <Dropdown>
+                //     <Dropdown.Toggle variant="secondary" size='sm' id="dropdown-basic" >
+                //         Edit
+                //     </Dropdown.Toggle>
+
+                //     <Dropdown.Menu>
+                //         <Dropdown.Item href="#/action-1" onClick={() => appointmentbtn(row._id, 'Accept')}>Accept</Dropdown.Item>
+                //         <Dropdown.Item href="#/action-2" onClick={() => appointmentbtn(row._id, 'Cancel')}>Cancel</Dropdown.Item>
+                //         <Dropdown.Item href="#/action-2" onClick={() => reschedule_modal(row._id)}>Reschedule</Dropdown.Item>
+                //     </Dropdown.Menu>
+                // </Dropdown>
+                : ''
     }]
 
 
@@ -273,14 +327,14 @@ const D_Appointment = () => {
                                 </Modal.Header>
                                 <Modal.Body>
                                     <Form.Label>New Appointment Date</Form.Label><br />
-                                            <DatePicker selected={selectedDate}
-                                                onChange={(date) => setSelectedDate(date)}
-                                                showTimeSelect
-                                                timeFormat="hh:mm a"
-                                                timeIntervals={15}
-                                                dateFormat="dd-MM-yyyy hh:mm a"
-                                                placeholderText="Select date and time"
-                                                minDate={new Date()} />
+                                    <DatePicker selected={selectedDate}
+                                        onChange={(date) => setSelectedDate(date)}
+                                        showTimeSelect
+                                        timeFormat="hh:mm a"
+                                        timeIntervals={15}
+                                        dateFormat="dd-MM-yyyy hh:mm a"
+                                        placeholderText="Select date and time"
+                                        minDate={new Date()} />
                                 </Modal.Body>
                                 <Modal.Footer>
                                     <Button onClick={reschedule_appointment}>Reschedule Date</Button>
