@@ -41,9 +41,11 @@ const FooterBar = () => {
                             </ul>
                         </Col>
                     </Row>
-
+                    <div className='text-center'>
+                        <Link to={'/'}><img src={require('../assets/health-easy-emi-logo-white.png')} className='logo-img' /></Link>
+                    </div>
+                <div className='text-center py-3'>Copyright © 2025, CodeZil technologies. All rights reserved.</div>
                 </Container>
-                <div className='text-center py-3 footer_bg border-top border-opacity-25 border-light'>Copyright © 2025, CodeZil technologies. All rights reserved.</div>
             </footer>
         </>
     )

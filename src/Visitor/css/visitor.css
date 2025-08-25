@@ -45,8 +45,50 @@
 :root {
     --primary-font: 'Roboto';
     --white: #fff;
-    --primary-color: #263077;
-    --secondary-color: #8C8C8C;
+    --primary-color-950: #00233D;
+    --primary-color-900: #003E6D;
+    --primary-color-800: #005493;
+    --primary-color-700: #006CBE;
+    --primary-color-600: #0084E9;
+    --primary-color-500: #149AFF;
+    --primary-color-400: #3FACFF;
+    --primary-color-300: #6ABFFF;
+    --primary-color-200: #AADAFF;
+    --primary-color-100: #C0E4FF;
+    --primary-color-50: #EBF6FF;
+    --secondary-color-950: #02313B;
+    --secondary-color-900: #035365;
+    --secondary-color-800: #04758E;
+    --secondary-color-700: #0697B8;
+    --secondary-color-600: #07BAE2;
+    --secondary-color-500: #1DD0F8;
+    --secondary-color-400: #45D8F9;
+    --secondary-color-300: #6FE1FB;
+    --secondary-color-200: #98EAFC;
+    --secondary-color-100: #C2F2FD;
+    --secondary-color-50: #EBFBFE;
+    --tertary-color-950: #07362E;
+    --tertary-color-900: #0C5C4F;
+    --tertary-color-800: #11826F;
+    --tertary-color-700: #16A88F;
+    --tertary-color-600: #1BCEB0;
+    --tertary-color-500: #2FE4C6;
+    --tertary-color-400: #5CEAD2;
+    --tertary-color-300: #7BEEDB;
+    --tertary-color-200: #A1F3E5;
+    --tertary-color-100: #C7F8F0;
+    --tertary-color-50: #EDFDFA;
+    --grayscale-color-950: #152029;
+    --grayscale-color-900: #253948;
+    --grayscale-color-800: #314D62;
+    --grayscale-color-700: #40637E;
+    --grayscale-color-600: #4E7A9B;
+    --grayscale-color-500: #638FB0;
+    --grayscale-color-400: #7FA3BF;
+    --grayscale-color-300: #9CB8CD;
+    --grayscale-color-200: #B8CCDB;
+    --grayscale-color-100: #D5E1EA;
+    --grayscale-color-50: #F1F5F8;
     --primary-text: #666666;
     --dark-text: #333333;
     --section-spacer: 96px;
@@ -70,10 +112,12 @@ a {
 
 img {
     display: block;
-    width: 100%;
+    max-width: 100%;
     height: auto;
 }
-
+.logo-img{
+    max-width: 200px;
+}
 ul,
 ol {
     list-style-type: none;
@@ -162,26 +206,35 @@ h6 {
 .searchbox .form-select:focus {
     box-shadow: none;
 }
+.theme-btn-outline{
+    background-color: transparent;
+    color: var(--primary-color-600);
+    padding: 10px 30px;
+    border-radius: 12px;
+    border: 1px solid var(--primary-color-600);
+}
 
 /* --------------------------- banner section css ------------------------- */
 .banner_sec {
-    background-color: #E5F5F9;
+    background-color: var(--primary-color-50);
     padding: 40px;
 }
 
-.banner_sec h1 span {
-    color: #2CB7DF;
+.head_sec h1 span, .head_sec h2 span {
+    color: var(--primary-color-500);
 }
 
 .banner_sec p {
     font-size: 22px;
+    color: var(--grayscale-color-500);
 }
 
 .banner_btn {
-    padding: 16px 30px;
-    background-color: #2CB7DF;
+    padding: 12px 30px;
+    background-color: var(--primary-color-600);
     font-size: 20px;
     border: 0;
+    border-radius: 12px;
 }
 
 .banner_btn:hover {
@@ -191,6 +244,7 @@ h6 {
 .banner_sec h6 {
     margin: 0;
     font-weight: 800;
+    color: var(--grayscale-color-800);
 }
 
 /* -------------------------- Functionality section ---------------------------- */

@@ -7,7 +7,6 @@ import AppDownload from './Component/AppDownload'
 import Loader from '../Loader'
 import { City, Country, State } from 'country-state-city';
 import axios from 'axios'
-import './css/visitor.css'
 import { FiArrowUpRight, FiMapPin, FiSearch } from 'react-icons/fi'
 
 const Home = () => {
@@ -130,13 +129,13 @@ const Home = () => {
           <div className='banner_sec radius-20'>
             <Row className='align-items-center'>
               <Col xs={12} md={6}>
-                <div className='pe-5'>
-                  <h1>Neighbors with <span className=''>Talent</span>, right next door!</h1>
+                <div className='pe-5 head_sec'>
+                  <h1><span>Book an Appointment</span> <br/> for a consultation</h1>
                   <p>Choose the best deal among 50,000 people and pros by requesting a service!</p>
-                  <Button className="banner_btn">Get a Service</Button>
+                  <Button className="banner_btn">Book Appointment</Button>
                   <div className='d-flex gap-5 mt-3 text-dark'>
-                    <div><h6>50,000</h6>Clients</div>
-                    <div><h6>15,000</h6>Reviews</div>
+                    <div><h6>1,00,000+</h6>Doctors</div>
+                    <div><h6>20,000+</h6>Surgeries</div>
                   </div>
                 </div>
               </Col>
@@ -206,10 +205,10 @@ const Home = () => {
       {/* speciality section */}
       {/* <section className='py-5'>
         <Container>
-          <div className='text-center sec_head'>
-            <h2>Consult top doctors online for any health concern</h2>
-            <p>Private online consultations with verified doctors in all specialists</p>
-          </div>
+          <Row className='justify-content-between head_sec'>
+            <Col xs={'auto'}><h2><span>Top</span> Specialities</h2></Col>
+            <Col xs={'auto'}><button className='theme-btn-outline'>View All Specialities</button></Col>
+          </Row>
           <Row>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>

@@ -146,16 +146,18 @@ const P_DoctorAppointment = () => {
                                             return (
                                                 <Col xs={12} sm={6} md={4} key={i}>
                                                     <Card className="shadow-sm rounded-4" style={{ maxWidth: '420px' }}>
-                                                        <Row className="g-0 align-items-center">
+                                                        <Row className="g-0 align-items-center m-2">
                                                             <Col xs={4}>
-                                                                {v.identityproof == '' ? <Image src={require('../assets/image/doctor_img.jpg')} roundedCircle fluid className="m-3" width={80} /> : <Image src={v.identityproof} roundedCircle fluid width={80} className="m-3" />}
+                                                                <div>
+                                                                    {v.identityproof == '' ? <Image src={require('../assets/image/doctor_img.jpg')} roundedCircle fluid width={80} /> : <Image src={v.identityproof} roundedCircle fluid width={80}  />}
+                                                                </div>
                                                             </Col>
                                                             <Col xs={8}>
                                                                 <Card.Body className="p-2">
                                                                     {/* Doctor Name & Favorite Icon */}
                                                                     <div className="d-flex justify-content-between align-items-center">
                                                                         <Card.Title className="mb-1 fs-6 fw-bold">Dr. {v.name}</Card.Title>
-                                                                        <BsHeart className="text-muted" />
+                                                                        {/* <BsHeart className="text-muted" /> */}
                                                                     </div>
 
                                                                     {/* Specialty */}
@@ -174,7 +176,7 @@ const P_DoctorAppointment = () => {
                                                                         <span className="fw-semibold me-1">5</span>
                                                                         <span className="text-muted">(1,245 Reviews)</span>
                                                                     </div>
-                                                                    <Link to={`/patient/doctor_ap/${encodeURIComponent(btoa(v._id))}`} className="stretched-link"></Link>
+                                                                    <Link to={`/patient/doctor_ap/${encodeURIComponent(btoa(v._id))}`} className="stretched-link d-inline"></Link>
                                                                 </Card.Body>
                                                             </Col>
                                                         </Row>
