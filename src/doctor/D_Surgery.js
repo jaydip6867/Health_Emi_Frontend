@@ -530,7 +530,6 @@ const D_Surgery = () => {
                                         <Form.Group controlId="description" className='mb-3 col-12 col-md-6'>
                                             <div className='position-relative'>
                                                 <Form.Label>Inclusive</Form.Label>
-                                                {/* <Form.Control as="textarea" placeholder="Enter inclusive deatils" name="inclusive" value={surgery.inclusive} onChange={selsurgery} rows={5} /> */}
                                                 {incl_items.map((item, incl_index) => (
                                                     <Form.Check
                                                         key={incl_index}
@@ -547,7 +546,6 @@ const D_Surgery = () => {
                                         <Form.Group controlId="description" className='mb-3 col-12 col-md-6'>
                                             <div className='position-relative'>
                                                 <Form.Label>Exclusive</Form.Label>
-                                                {/* <Form.Control as="textarea" placeholder="Enter exclusive deatils" name="exclusive" value={surgery.exclusive} onChange={selsurgery} rows={5} /> */}
                                                 {excl_items.map((item, excl_index) => (
                                                     <Form.Check
                                                         key={excl_index}
@@ -654,7 +652,6 @@ const D_Surgery = () => {
                                 <Form.Group controlId="days" className='mb-3 col-3'>
                                     <div className='position-relative'>
                                         <Form.Label>Days</Form.Label>
-                                        {/* <Form.Control placeholder="Ex:- 1" name="days" value={edit_record.days} onChange={seleditsurgery} /> */}
                                         <Form.Select name="days" value={edit_record.days} onChange={seleditsurgery}>
                                             <option value={''} selected disabled>Select Experiance</option>
                                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, '10+', '15+', '20+', '25+', '30+', '45+'].map((level) => (
