@@ -13,6 +13,7 @@ const DoctorSidebar = () => {
                     <NavLink to={'/doctor/doctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}><MdDifference />Appointment</NavLink>
                     <NavLink to={'/doctor/doctorsurgery'} className={({ isActive }) => (isActive ? 'active' : '')} ><MdDiversity1 />Surgery</NavLink>
                     <NavLink to={'/doctor/doctorblog'} className={({ isActive }) => (isActive ? 'active' : '')} ><MdCardGiftcard />Blog</NavLink>
+                    <NavLink to={'/doctor/doctorconsultation'} className={({ isActive }) => (isActive ? 'active' : '')}><MdCalendarMonth /> Consultation</NavLink>
                     <NavLink to={'/doctor/calender'} className={({ isActive }) => (isActive ? 'active' : '')}><MdCalendarMonth /> Calender</NavLink>
                 </div>
             </div>

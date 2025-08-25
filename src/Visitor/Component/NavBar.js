@@ -2,6 +2,7 @@ import React from 'react'
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import { FaFacebookF, FaGooglePlusG, FaInstagram, FaLinkedinIn } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
+import '../css/visitor.css'
 
 const NavBar = () => {
     return (
@@ -10,7 +11,7 @@ const NavBar = () => {
                 <Container>
                     <div>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                        <Link to={'/'} className='me-5 ms-3 navbar-brand'>CodeZil</Link>
+                        <Link to={'/'} className='me-5 ms-3 navbar-brand'><img src={require('../assets/health-easy-emi-logo-dark.png')} className='logo-img' /></Link>
                     </div>
                     <div className='d-flex gap-2'>
                         <Link to="#link" className='nav-link'><FaInstagram /></Link>

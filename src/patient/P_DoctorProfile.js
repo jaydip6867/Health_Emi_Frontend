@@ -67,7 +67,7 @@ const P_DoctorProfile = () => {
             }
         }).then((res) => {
             setdocprofile(res.data.Data)
-            // console.log('doctor ', res.data.Data)
+            console.log('doctor ', res.data.Data)
         }).catch(function (error) {
             console.log(error);
         }).finally(() => {

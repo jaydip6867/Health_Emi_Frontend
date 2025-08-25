@@ -217,9 +217,8 @@ const PatientProfile = () => {
                                         <div className='text-center border-top'>
                                             {IsDisable ? <Button type="button" className='theme_btn col-3 mt-3' onClick={() => setdisabled(false)}>
                                                 Edit Profile
-                                            </Button> : <Button type="button" className='theme_btn col-3 mt-3' onClick={() => updateprofiledata(profile._id)}>
-                                                Update
-                                            </Button>}
+                                            </Button> : <><Button type="button" className='theme_btn col-3 mt-3' onClick={() => updateprofiledata(profile._id)}>
+                                                Update </Button> <Button className='theme_btn bg-danger border-danger col-3 mt-3 ms-2' onClick={()=>setdisabled(true)}>Cancel</Button> </>}
                                         </div>
                                     </Form>
                                 </div> : ''
