@@ -332,7 +332,7 @@ h6 {
 
 /* -------------------- App Download Section CSS ------------------------ */
 .app-sec-bg{
-    background-color: rgba(38, 48, 119, 1);
+    background-color: var(--secondary-color-900);
 }
 .app-download-box{
     padding: 60px 40px 40px 40px;
@@ -373,7 +373,7 @@ h6 {
 }
 
 .login-signup-btn:hover {
-  background-color: rgba(0, 132, 233, 0.05);
+  background-color: rgba(0, 121, 213, 0.212);
   color: var(--primary-color-600);
   border-color: var(--primary-color-600);
 }
@@ -406,7 +406,7 @@ h6 {
   
   .login-signup-btn {
     display: block;
-    margin: 0.5rem 1rem;
+    /* margin: 0.5rem 1rem; */
     text-align: left;
     padding: 0.5rem 1rem !important;
     border: 1px solid var(--primary-color-600) !important;
@@ -435,4 +435,226 @@ h6 {
 .dropdown-item:focus {
   background-color: var(--grayscale-color-50);
   color: var(--primary-color-600);
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #00233D;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-top {
+    padding: 70px 0 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer h4 {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.footer h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 40px;
+    height: 2px;
+    background: #0084E9;
+}
+
+.footer-about .footer-logo {
+    margin-bottom: 20px;
+    max-width: 180px;
+}
+
+.footer-about .footer-text {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+    margin-bottom: 25px;
+}
+
+/* Social Icons */
+.social-links {
+    display: flex;
+    gap: 12px;
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.social-icon:hover {
+    background: #0084E9;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 132, 233, 0.3);
+}
+
+/* Footer Links */
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 10px;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+    position: relative;
+    padding-left: 0;
+}
+
+.footer-links a::before {
+    content: '→';
+    position: absolute;
+    left: -20px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    color: #0084E9;
+}
+
+.footer-links a:hover {
+    color: #fff;
+    padding-left: 20px;
+}
+
+.footer-links a:hover::before {
+    opacity: 1;
+    left: 0;
+}
+
+/* Contact Info */
+.contact-info p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+    line-height: 1.6;
+}
+
+.contact-info svg {
+    color: #0084E9;
+    margin-right: 10px;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+/* Footer Bottom */
+.footer-bottom {
+    padding: 20px 0;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.footer-bottom .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.copyright {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+}
+
+.footer-legal {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.footer-legal a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.footer-legal a:hover {
+    color: #fff;
+}
+
+.footer-legal span {
+    color: rgba(255, 255, 255, 0.3);
+}
+.text-sky-500{
+    color: var(--primary-color-500);
+}
+
+/* Responsive Styles */
+@media (max-width: 991px) {
+    .footer-top {
+        padding: 50px 0 20px;
+    }
+    
+    .footer-about, .footer-links, .footer-contact {
+        margin-bottom: 30px;
+    }
+    
+    .footer h4 {
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 767px) {
+    .footer-bottom .container {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .footer-legal {
+        margin-top: 10px;
+    }
+}
+
+/* Animation for Social Icons */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.social-icon:hover {
+    animation: bounce 0.6s ease;
+}
+
+/* Custom Scrollbar for Webkit Browsers */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #0084E9;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #006cbe;
 }
