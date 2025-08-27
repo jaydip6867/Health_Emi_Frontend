@@ -11,7 +11,7 @@ const FooterBar = () => {
                     <Row>
                         <Col xs={12} md={6}>
                             <div className='footer_logo'>
-                                <h4>CodeZil</h4>
+                                <h4 className='text-white'>CodeZil</h4>
                             </div>
                             <p className='py-3'>Crafting exceptional digital experiences through thoughtful design and innovative solutions that elevate your brand presence.</p>
                             <div className='py-2'>
@@ -21,7 +21,7 @@ const FooterBar = () => {
                             </div>
                         </Col>
                         <Col xs={12} md={3}>
-                            <h5>Menus</h5>
+                            <h5 className='text-white'>Menus</h5>
                             <ul className='list-unstyled'>
                                 <li><Link to={'/about'} className='nav-link'>About</Link></li>
                                 <li><Link to={'/contact'} className='nav-link'>Contact</Link></li>
@@ -31,7 +31,7 @@ const FooterBar = () => {
                             </ul>
                         </Col>
                         <Col xs={12} md={3}>
-                            <h5>Menus</h5>
+                            <h5 className='text-white'>Menus</h5>
                             <ul className='list-unstyled'>
                                 <li><Link className='nav-link'>About</Link></li>
                                 <li><Link className='nav-link'>Contact</Link></li>

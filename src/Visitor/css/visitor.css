@@ -164,11 +164,53 @@ h6 {
 }
 
 .menubar a.nav-link {
-    color: var(--secondary-color);
+    color: var(--grayscale-color-600) !important; /* #4E7A9B */
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.3s ease;
+    position: relative;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.menubar a.nav-link:hover,
+.menubar a.nav-link:focus {
+    color: var(--primary-color-700) !important; /* #006CBE */
 }
 
 .menubar a.nav-link.active {
-    color: var(--primary-color);
+    color: var(--primary-color-800) !important; /* #005493 */
+    font-weight: 800;
+}
+
+.menubar a.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 2px;
+    background-color: var(--primary-color-800);
+    border-radius: 2px;
+}
+
+/* Responsive styles */
+@media (max-width: 991.98px) {
+    .menubar a.nav-link {
+        text-align: left;
+        padding: 0.75rem 1.5rem !important;
+        border-radius: 4px;
+        margin: 0.25rem 0;
+    }
+    
+    .menubar a.nav-link.active::after {
+        display: none;
+    }
+    
+    .menubar a.nav-link.active {
+        background-color: rgba(0, 84, 147, 0.05);
+    }
 }
 
 /* search box css */
@@ -316,4 +358,81 @@ h6 {
     text-transform: uppercase;
     color: var(--primary-color);
     font-weight: 500;
+}
+
+/* Login/Signup Button Styles */
+.login-signup-btn {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--primary-color-600);
+  border-radius: 6px;
+  color: var(--primary-color-600);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.login-signup-btn:hover {
+  background-color: rgba(0, 132, 233, 0.05);
+  color: var(--primary-color-600);
+  border-color: var(--primary-color-600);
+}
+
+/* Dropdown Styles */
+.navbar .dropdown-toggle::after {
+  display: none;
+}
+
+.navbar .dropdown-menu {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  margin-top: 0.5rem;
+}
+
+/* Make dropdown full width on mobile */
+@media (max-width: 991.98px) {
+  .navbar .dropdown-menu {
+    width: 100%;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0.5rem 0;
+  }
+  
+  .navbar .dropdown-item {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0;
+  }
+  
+  .login-signup-btn {
+    display: block;
+    margin: 0.5rem 1rem;
+    text-align: left;
+    padding: 0.5rem 1rem !important;
+    border: 1px solid var(--primary-color-600) !important;
+  }
+  
+  .navbar .dropdown.show .dropdown-menu {
+    display: block;
+    position: static;
+    float: none;
+  }
+}
+
+/* Improve dropdown toggle button on mobile */
+.navbar .dropdown-toggle {
+  cursor: pointer;
+}
+
+/* Ensure dropdown items are properly spaced */
+.dropdown-item {
+  padding: 0.5rem 1.5rem;
+  color: var(--grayscale-color-800);
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--grayscale-color-50);
+  color: var(--primary-color-600);
 }

@@ -1,39 +1,127 @@
-import React from 'react'
-import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
-import { FaFacebookF, FaGooglePlusG, FaInstagram, FaLinkedinIn } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
-import '../css/visitor.css'
+import React, { useState, useEffect } from "react";
+import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { FaBars, FaTimes } from "react-icons/fa";
+import { Link, useLocation } from "react-router-dom";
+import "../css/visitor.css";
 
 const NavBar = () => {
-    return (
-        <header className='header_bg'>
-            <Navbar expand="lg">
-                <Container>
-                    <div>
-                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                        <Link to={'/'} className='me-5 ms-3 navbar-brand'><img src={require('../assets/health-easy-emi-logo-dark.png')} className='logo-img' /></Link>
-                    </div>
-                    <div className='d-flex gap-2'>
-                        <Link to="#link" className='nav-link'><FaInstagram /></Link>
-                        <Link to="#link" className='nav-link'><FaGooglePlusG /></Link>
-                        <Link to="#link" className='nav-link'><FaFacebookF /></Link>
-                        <Link to="#link" className='nav-link'><FaLinkedinIn /></Link>
-                    </div>
-                    <NavDropdown title="Login/Signup" id="basic-nav-dropdown" align="end" className='menubar border py-1 px-2 rounded-1 ms-3 order-lg-last'>
-                        <Link to={'/doctor'} className='dropdown-item'>Doctor</Link>
-                        <Link to={'/patient'} className='dropdown-item'>Patient</Link>
-                    </NavDropdown>
-                    <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className='ms-auto text-center menubar'>
-                            <Link to="/about" className='nav-link'>About</Link>
-                            <Link to="/services" className='nav-link'>Services</Link>
-                            <Link to="/contact" className='nav-link'>Contact</Link>
-                        </Nav>
-                    </Navbar.Collapse>
-                </Container>
-            </Navbar>
-        </header>
-    )
-}
+  const [expanded, setExpanded] = useState(false);
+  const location = useLocation();
+  const [activeLink, setActiveLink] = useState("");
+  const [activeDropdown, setActiveDropdown] = useState(false);
 
-export default NavBar
+  useEffect(() => {
+    // Set active link based on current path
+    const path = location.pathname;
+    setActiveLink(path);
+  }, [location]);
+
+  const closeNav = () => setExpanded(false);
+
+  const isActive = (path) => {
+    // Set home ('/') as active when no path matches or when at root
+    if (path === '/' && (activeLink === '/' || activeLink === '')) {
+      return 'active';
+    }
+    return activeLink === path ? "active" : "";
+  };
+
+  const toggleDropdown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setActiveDropdown(!activeDropdown);
+  };
+
+  return (
+    <header className="header_bg">
+      <Navbar expanded={expanded} expand="lg" className="py-3">
+        <Container fluid className="px-3 px-md-5">
+          <Link to={"/"} className="navbar-brand me-5">
+            <img
+              src={require("../assets/health-easy-emi-logo-dark.png")}
+              className="logo-img"
+              alt="Health Easy EMI Logo"
+            />
+          </Link>
+          
+          <Navbar.Toggle 
+            aria-controls="basic-navbar-nav" 
+            onClick={() => setExpanded(expanded ? false : true)}
+            className="border-0"
+          >
+            {expanded ? <FaTimes /> : <FaBars />}
+          </Navbar.Toggle>
+          
+          <Navbar.Collapse className="menubar" id="basic-navbar-nav">
+            <Nav className="ms-auto">
+              <Link 
+                to="/" 
+                className={`nav-link ${isActive('/')}`} 
+                onClick={closeNav}
+              >
+                Home
+              </Link>
+              <Link 
+                to="/about" 
+                className={`nav-link ${isActive('/about')}`} 
+                onClick={closeNav}
+              >
+                About Us
+              </Link>
+              <Link 
+                to="/services" 
+                className={`nav-link ${isActive('/services')}`} 
+                onClick={closeNav}
+              >
+                Services
+              </Link>
+              <Link 
+                to="/contact" 
+                className={`nav-link ${isActive('/contact')}`} 
+                onClick={closeNav}
+              >
+                Contact
+              </Link>
+            </Nav>
+            
+            <NavDropdown
+              title={
+                <span className="login-signup-btn" onClick={toggleDropdown}>
+                  Login/Signup
+                </span>
+              }
+              id="basic-nav-dropdown"
+              align="end"
+              className="ms-lg-3 mt-3 mt-lg-0"
+              show={activeDropdown}
+              onToggle={(isOpen) => setActiveDropdown(isOpen)}
+            >
+              <Link 
+                to={"/doctor"} 
+                className={`dropdown-item ${isActive('/doctor')}`} 
+                onClick={() => {
+                  closeNav();
+                  setActiveDropdown(false);
+                }}
+              >
+                Doctor
+              </Link>
+              <Link 
+                to={"/patient"} 
+                className={`dropdown-item ${isActive('/patient')}`} 
+                onClick={() => {
+                  closeNav();
+                  setActiveDropdown(false);
+                }}
+              >
+                Patient
+              </Link>
+            </NavDropdown>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+    </header>
+  );
+};
+
+export default NavBar;
