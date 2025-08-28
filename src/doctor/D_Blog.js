@@ -84,29 +84,35 @@ const D_Blog = () => {
         data.expirydate = formattedDate.replace(/\//g, "-");
         // setblog(data)
 
-        setloading(true)
-        axios({
-            method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/blogs/save',
-            headers: {
-                Authorization: token,
-            },
-            data: data
-        }).then((res) => {
-            // toast('Surgery added...', { className: 'custom-toast-success' })
-            Swal.fire({
-                title: "Blog Added...",
-                icon: "success",
-            });
-            getblog()
-            setblog({ title: '', description: '', showto_doctor: false, showto_patient: true, expirydate: null });
-            handleblogClose()
-        }).catch(function (error) {
-            console.log(error);
-            toast(error.message, { className: 'custom-toast-error' })
-        }).finally(() => {
-            setloading(false)
-        });
+        if(data.expirydate === '01-01-1970'){
+            data.expirydate = ''
+        }
+
+        console.log(data)
+
+        // setloading(true)
+        // axios({
+        //     method: 'post',
+        //     url: 'https://healtheasy-o25g.onrender.com/doctor/blogs/save',
+        //     headers: {
+        //         Authorization: token,
+        //     },
+        //     data: data
+        // }).then((res) => {
+        //     // toast('Surgery added...', { className: 'custom-toast-success' })
+        //     Swal.fire({
+        //         title: "Blog Added...",
+        //         icon: "success",
+        //     });
+        //     getblog()
+        //     setblog({ title: '', description: '', showto_doctor: false, showto_patient: true, expirydate: null });
+        //     handleblogClose()
+        // }).catch(function (error) {
+        //     console.log(error);
+        //     toast(error.message, { className: 'custom-toast-error' })
+        // }).finally(() => {
+        //     setloading(false)
+        // });
     }
 
     // delete blog
@@ -319,6 +325,7 @@ const D_Blog = () => {
                                                 dateFormat="dd-MM-y"
                                                 placeholderText="Select date"
                                                 locale={enGB}
+                                                value={blog.expirydate}
                                                 minDate={new Date()} />
                                         </div>
                                     </Form.Group>
@@ -336,9 +343,6 @@ const D_Blog = () => {
                         <Form.Group >
                             <Form.Control type='button' value={'Add Blog'} onClick={addblog} className='theme_btn' />
                         </Form.Group>
-                        <Button variant="secondary" onClick={handleblogClose}>
-                            Close
-                        </Button>
                     </Modal.Footer>
                 </Modal>
                 {/* view blog modal */}
