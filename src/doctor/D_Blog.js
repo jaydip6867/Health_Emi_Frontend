@@ -231,8 +231,6 @@ const D_Blog = () => {
         name: 'No',
         selector: (row, index) => index + 1,
         sortable: true,
-        maxWidth: '80px',
-        minWidth: '80px',
         width: '80px'
     }, {
         name: 'Title',
@@ -249,8 +247,6 @@ const D_Blog = () => {
             <MdOutlineRemoveRedEye onClick={() => btnview(row._id)} className='text-primary fs-5' />
             <MdDelete onClick={() => deleteblog(row._id)} className='text-danger fs-5' />
         </div>,
-        maxWidth: '150px',
-        minWidth: '150px',
         width: '150px'
     }]
 
@@ -355,8 +351,8 @@ const D_Blog = () => {
                                 </Modal.Header>
                                 <Modal.Body>
                                     <div>
-                                        <h3 className='text-center'>{v.title}</h3>
-                                        <p>{v.description}</p>
+                                        <h3 className='text-center'>{v?.title}</h3>
+                                        <p>{v?.description}</p>
                                     </div>
                                 </Modal.Body>
                                 <Modal.Footer>

@@ -51,7 +51,7 @@ const D_Consultation = () => {
                 "doctorid": doctor._id
             }
         }).then((res) => {
-            console.log(res.data.Data)
+            // console.log(res.data.Data)
             setconsultdata(res.data.Data.consultationsDetails)
             if(res.data.Data.consultationsDetails){
                 const c_data = { home_visit_price: res.data.Data.consultationsDetails.home_visit_price, clinic_visit_price: res.data.Data.consultationsDetails.clinic_visit_price, eopd_price: res.data.Data.consultationsDetails.eopd_price }

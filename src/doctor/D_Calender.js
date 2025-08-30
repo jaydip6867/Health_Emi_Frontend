@@ -47,7 +47,7 @@ const D_Calender = () => {
             setTimeout(() => {
                 appointmentlist()
             }, 200);
-            console.log(appointment)
+            // console.log(appointment)
         }
     }, [token])
 
@@ -74,7 +74,7 @@ const D_Calender = () => {
                     start,                   // This is what FullCalendar needs
                 };
             });
-            console.log(formattedAppointments)
+            // console.log(formattedAppointments)
             setappointment(formattedAppointments);
         }).catch(function (error) {
             console.log(error);

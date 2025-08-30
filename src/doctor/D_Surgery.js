@@ -223,6 +223,10 @@ const D_Surgery = () => {
             surgerytypeid: datasingle[0].surgerytypeid._id,
             // doctorcategory: datasingle[0].doctorcategory._id,
             // specialty: datasingle[0].specialty,
+            general_price:datasingle[0].general_price,
+            semiprivate_price:datasingle[0].semiprivate_price,
+            private_price:datasingle[0].private_price,
+            delux_price:datasingle[0].delux_price,
             inclusive: datasingle[0].inclusive,
             exclusive: datasingle[0].exclusive,
             yearsof_experience: datasingle[0].yearsof_experience,
@@ -240,6 +244,7 @@ const D_Surgery = () => {
 
         // console.log(ed_incl_items, ed_excl_items)
         // console.log(incl_items, excl_items)
+        console.log(surgeryobj)
     }
     // state tos store edit selected items
     const [selectededitinclItems, setSelectededitinclItems] = useState([]);
@@ -377,16 +382,14 @@ const D_Surgery = () => {
         name: 'No',
         selector: (row, index) => index + 1,
         sortable: true,
-        maxWidth: '80px',
-        minWidth: '80px',
         width: '80px'
     }, {
         name: 'Surgery Name',
-        cell: row => row.name
+        cell: row => row?.name
     },
     {
         name: 'Price',
-        cell: row => row.price
+        cell: row => row?.price
     },
     {
         name: 'Action',
@@ -395,8 +398,6 @@ const D_Surgery = () => {
             <MdOutlineRemoveRedEye onClick={() => btnview(row._id)} className='text-primary fs-5' />
             <MdDelete onClick={() => deletesurgery(row._id)} className='text-danger fs-5' />
         </div>,
-        maxWidth: '150px',
-        minWidth: '150px',
         width: '150px'
     }]
 

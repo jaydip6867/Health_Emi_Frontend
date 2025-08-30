@@ -61,7 +61,7 @@ const PatientLogin = () => {
             <div className='min-vh-100 d-flex align-items-center panel'>
                 <Container className='py-3'>
                     <Row className='justify-content-center'>
-                        <Col xs={5}>
+                        <Col md={8} lg={5}>
                             <div className='register_doctor bg-white p-3 py-3 px-4 rounded-4 shadow'>
                                 <div className='text-center'>
                                     <h3>Patient - Sign In</h3>

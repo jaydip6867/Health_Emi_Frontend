@@ -306,11 +306,11 @@ const D_Appointment = () => {
                                 </Modal.Header>
                                 <Modal.Body>
                                     <div>
-                                        <p><b>Patient Name :- </b><span>{v.patientname}</span></p>
-                                        <p><b>Mobile No :- </b><span>{v.mobile}</span></p>
-                                        <p><b>Surgery Name :- </b><span>{v.surgerydetails?.name}</span></p>
-                                        <p><b>Date & Time :- </b><span>{v.date} , {v.time}</span></p>
-                                        <p><b>Price :- </b><span>{v.surgerydetails?.price}</span></p>
+                                        <p><b>Patient Name :- </b><span>{v?.patientname}</span></p>
+                                        <p><b>Mobile No :- </b><span>{v?.mobile}</span></p>
+                                        <p><b>Surgery Name :- </b><span>{v?.surgerydetails?.name}</span></p>
+                                        <p><b>Date & Time :- </b><span>{v?.date} , {v?.time}</span></p>
+                                        <p><b>Price :- </b><span>{v?.surgerydetails?.price}</span></p>
                                     </div>
                                 </Modal.Body>
                             </Modal>
