@@ -359,6 +359,14 @@ h6 {
     color: var(--primary-color);
     font-weight: 500;
 }
+.btn-next,.btn-prev{
+    position: absolute;
+    bottom: 0;
+    right: -120px;
+}
+.btn-prev{
+    right: -60px;
+}
 
 /* Login/Signup Button Styles */
 .login-signup-btn {

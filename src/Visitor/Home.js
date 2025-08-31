@@ -8,6 +8,7 @@ import Loader from '../Loader'
 import { City, Country, State } from 'country-state-city';
 import axios from 'axios'
 import { FiArrowUpRight, FiMapPin, FiSearch } from 'react-icons/fi'
+import Testimonial from './Component/Testimonial'
 
 const Home = () => {
   const [loading, setloading] = useState(false)
@@ -15,7 +16,7 @@ const Home = () => {
   useEffect(() => {
     document.title = "Health Easy EMI - Keep Life Healthy"
     getcitiesname();
-    // getsuggestion();
+    getsuggestion();
   }, []);
   function getcitiesname() {
     const india = Country.getCountryByCode("IN");
@@ -72,7 +73,7 @@ const Home = () => {
               <InputGroup>
                 <div className='position-relative'>
                   <FiMapPin className='position-absolute icon' />
-                  <Form.Select className='frm-select city' value={searchinputcity} onChange={(e) => setsearchinputcity(e.target.value)} name='city' style={{ 'maxWidth': '150px' }}>
+                  <Form.Select className='frm-select city' value={searchinputcity} onChange={(e) => setsearchinputcity(e.target.value)} onFocus={() => setShowList(true)} name='city' style={{ 'maxWidth': '150px' }}>
                     <option>Location</option>
                     {
                       cities && cities.map((city, vi) => {
@@ -90,7 +91,7 @@ const Home = () => {
                       position: 'absolute',
                       top: '40px',
                       width: '100%',
-                      border: '1px solid #ccc',
+                      border: '1px solid #221a1aff',
                       backgroundColor: 'white',
                       listStyle: 'none',
                       padding: '0',
@@ -186,11 +187,11 @@ const Home = () => {
       </section>
       {/* testimonial section */}
       <section className='spacer-t'>
-        <Container>
+        <Testimonial/>
+        {/* <Container>
           <div className='testimonial-bg py-5 radius-20'>
             <Row className='align-items-center'>
               <Col md={7}>
-
               </Col>
               <Col md={5}>
                 <div className='sec_head'>
@@ -200,7 +201,7 @@ const Home = () => {
               </Col>
             </Row>
           </div>
-        </Container>
+        </Container> */}
       </section>
       {/* speciality section */}
       {/* <section className='py-5'>
