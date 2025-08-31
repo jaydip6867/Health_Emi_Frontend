@@ -204,7 +204,7 @@ const Home = () => {
         </Container> */}
       </section>
       {/* speciality section */}
-      {/* <section className='py-5'>
+      <section className='py-5'>
         <Container>
           <Row className='justify-content-between head_sec'>
             <Col xs={'auto'}><h2><span>Top</span> Specialities</h2></Col>
@@ -255,7 +255,7 @@ const Home = () => {
             </Col>
           </Row>
         </Container>
-      </section> */}
+      </section>
       {/* App Download Section  */}
       <AppDownload />
       {/* Popular Search Section */}
