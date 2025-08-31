@@ -100,6 +100,7 @@ const D_Consultation = () => {
             });
             // getsurgery()
             setconsult(obj);
+            getconsultant();
             handleClose()
         }).catch(function (error) {
             // console.log(error);
@@ -166,7 +167,7 @@ const D_Consultation = () => {
                                         </Form.Group>
 
                                         <Form.Group className='col-12'>
-                                            <Form.Control type='button' value={'Add Consultation'} onClick={addconsultant} className='theme_btn' />
+                                            <Form.Control type='button' value={consult?.home_visit_price=='' && consult?.clinic_visit_price=='' && consult?.eopd_price=='' ? 'Add Consultation' : 'Edit Consultation'} onClick={addconsultant} className='theme_btn' />
                                         </Form.Group>
                                     </Form>
                                 </div>

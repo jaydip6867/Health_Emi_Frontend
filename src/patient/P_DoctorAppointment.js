@@ -89,20 +89,24 @@ const P_DoctorAppointment = () => {
         typingTimeoutRef.current = setTimeout(() => {
             // getdoctordata(value);
             setdispdoctorlist(doctorlist)
-            console.log(doctorlist)
+            // console.log(doctorlist)
         }, 500);
     }
 
     const catfilterdoctor = (s) => {
-        if (s !== 'All') {
-            var filter_data = doctorlist.filter((v)=>{
-                return v.specialty == s
-            })
-            setdispdoctorlist(filter_data)
-        }
-        else{
-            setdispdoctorlist(doctorlist)
-        }
+        setloading(true)
+        setTimeout(() => {
+            if (s !== 'All') {
+                var filter_data = doctorlist.filter((v)=>{
+                    return v?.specialty == s
+                })
+                setdispdoctorlist(filter_data)
+            }
+            else{
+                setdispdoctorlist(doctorlist)
+            }
+            setloading(false)
+        }, 200);
         // console.log(filter_data)
     }
 
@@ -114,17 +118,17 @@ const P_DoctorAppointment = () => {
                     <Col xs={12} sm={9} lg={10} className='p-3'>
                         <P_nav patientname={patient && patient.name} />
                         <div className='bg-white rounded p-3 mb-3'>
-                            <h5>Search Doctor</h5>
+                            <h5>Filter Doctor Category</h5>
                             <div className='py-2'>
                                 {/* <Form.Label htmlFor="inputPassword5">Search Docotor</Form.Label> */}
-                                <Form.Control type="email" list="doctor_data" onChange={(e) => doclistdata(e)} placeholder="Ex:- Dr. mahesh" />
-                                <datalist id='doctor_data'>
+                                {/* <Form.Control type="email" list="doctor_data" onChange={(e) => doclistdata(e)} placeholder="Ex:- Dr. mahesh" /> */}
+                                {/* <datalist id='doctor_data'>
                                     {searchdoctorlist && searchdoctorlist.map((v, i) => {
                                         return (
                                             <option key={i} value={v}></option>
                                         )
                                     })}
-                                </datalist>
+                                </datalist> */}
                             </div>
                             <div className='mt-2 d-flex gap-2 w-100 overflow-x-auto'>
                                 <Button variant="outline-dark rounded-pill px-4 btn-sm" onClick={() => catfilterdoctor('All')}>All</Button>
@@ -148,26 +152,27 @@ const P_DoctorAppointment = () => {
                                                     <Card className="shadow-sm rounded-4" style={{ maxWidth: '420px' }}>
                                                         <Row className="g-0 align-items-center m-2">
                                                             <Col xs={4}>
+                                                            
                                                                 <div>
-                                                                    {v.identityproof == '' ? <Image src={require('../assets/image/doctor_img.jpg')} roundedCircle fluid width={80} /> : <Image src={v.identityproof} roundedCircle fluid width={80}  />}
+                                                                    {v?.identityproof === '' || v?.identityproof === null || v?.identityproof === undefined ? <Image src={require('../assets/image/doctor_img.jpg')} roundedCircle fluid width={80} /> : <Image src={v?.identityproof} roundedCircle fluid width={80}  />}
                                                                 </div>
                                                             </Col>
                                                             <Col xs={8}>
                                                                 <Card.Body className="p-2">
                                                                     {/* Doctor Name & Favorite Icon */}
                                                                     <div className="d-flex justify-content-between align-items-center">
-                                                                        <Card.Title className="mb-1 fs-6 fw-bold">Dr. {v.name}</Card.Title>
+                                                                        <Card.Title className="mb-1 fs-6 fw-bold">Dr. {v?.name}</Card.Title>
                                                                         {/* <BsHeart className="text-muted" /> */}
                                                                     </div>
 
                                                                     {/* Specialty */}
                                                                     <Card.Text className="mb-1 text-secondary" style={{ fontSize: '0.9rem' }}>
-                                                                        {v.specialty}
+                                                                        {v?.specialty || 'N/A'}
                                                                     </Card.Text>
 
                                                                     {/* Location */}
-                                                                    <Card.Text className="d-flex align-items-center mb-1 text-secondary" style={{ fontSize: '0.85rem' }}>
-                                                                        <BsGeoAltFill className="me-1" /> {v.hospital_address}
+                                                                    <Card.Text className="d-flex align-items-center mb-1 text-secondary text-truncate" style={{ fontSize: '0.85rem' }}>
+                                                                        <BsGeoAltFill className="me-1" /> {v?.hospital_address || 'N/A'}
                                                                     </Card.Text>
 
                                                                     {/* Rating */}
@@ -176,7 +181,7 @@ const P_DoctorAppointment = () => {
                                                                         <span className="fw-semibold me-1">5</span>
                                                                         <span className="text-muted">(1,245 Reviews)</span>
                                                                     </div>
-                                                                    <Link to={`/patient/doctor_ap/${encodeURIComponent(btoa(v._id))}`} className="stretched-link d-inline"></Link>
+                                                                    <Link to={`/patient/doctor_ap/${encodeURIComponent(btoa(v?._id))}`} className="stretched-link d-inline"></Link>
                                                                 </Card.Body>
                                                             </Col>
                                                         </Row>

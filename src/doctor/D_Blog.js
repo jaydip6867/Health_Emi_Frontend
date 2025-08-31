@@ -90,29 +90,29 @@ const D_Blog = () => {
 
         console.log(data)
 
-        // setloading(true)
-        // axios({
-        //     method: 'post',
-        //     url: 'https://healtheasy-o25g.onrender.com/doctor/blogs/save',
-        //     headers: {
-        //         Authorization: token,
-        //     },
-        //     data: data
-        // }).then((res) => {
-        //     // toast('Surgery added...', { className: 'custom-toast-success' })
-        //     Swal.fire({
-        //         title: "Blog Added...",
-        //         icon: "success",
-        //     });
-        //     getblog()
-        //     setblog({ title: '', description: '', showto_doctor: false, showto_patient: true, expirydate: null });
-        //     handleblogClose()
-        // }).catch(function (error) {
-        //     console.log(error);
-        //     toast(error.message, { className: 'custom-toast-error' })
-        // }).finally(() => {
-        //     setloading(false)
-        // });
+        setloading(true)
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/blogs/save',
+            headers: {
+                Authorization: token,
+            },
+            data: data
+        }).then((res) => {
+            // toast('Surgery added...', { className: 'custom-toast-success' })
+            Swal.fire({
+                title: "Blog Added...",
+                icon: "success",
+            });
+            getblog()
+            setblog({ title: '', description: '', showto_doctor: false, showto_patient: true, expirydate: null });
+            handleblogClose()
+        }).catch(function (error) {
+            console.log(error);
+            toast(error.message, { className: 'custom-toast-error' })
+        }).finally(() => {
+            setloading(false)
+        });
     }
 
     // delete blog
@@ -183,8 +183,8 @@ const D_Blog = () => {
 
     function editblog() {
         const data = { ...edit_record, expirydate: startDate }
-        const date = new Date(data.expirydate);
-        const formattedDate = date.toLocaleDateString("en-GB"); // Gives dd/mm/yyyy
+        const date = new Date(data?.expirydate);
+        const formattedDate = date?.toLocaleDateString("en-GB"); // Gives dd/mm/yyyy
         // Replace slashes with dashes
         data.expirydate = formattedDate.replace(/\//g, "-");
 
@@ -197,12 +197,12 @@ const D_Blog = () => {
                 Authorization: token,
             },
             data: {
-                blogid: data._id,
-                title: data.title,
-                description: data.description,
-                showto_doctor: data.showto_doctor,
-                showto_patient: data.showto_patient,
-                expirydate: data.expirydate
+                blogid: data?._id,
+                title: data?.title,
+                description: data?.description,
+                showto_doctor: data?.showto_doctor,
+                showto_patient: data?.showto_patient,
+                expirydate: data?.expirydate
             }
         }).then((res) => {
             // toast('Surgery added...', { className: 'custom-toast-success' })
@@ -238,7 +238,7 @@ const D_Blog = () => {
     },
     {
         name: 'Expiry Date',
-        cell: row => row.expirydate
+        cell: row => <>{row.expirydate==='' ? 'Not Defined' : row.expirydate}</>
     },
     {
         name: 'Action',
@@ -278,7 +278,7 @@ const D_Blog = () => {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col xs={4}>
+                                {/* <Col xs={4}>
                                     <input
                                         type="text"
                                         placeholder="Search by title or author"
@@ -286,7 +286,7 @@ const D_Blog = () => {
                                         onChange={searchbox}
                                         style={{ marginBottom: '10px', padding: '8px', width: '300px' }}
                                     />
-                                </Col>
+                                </Col> */}
                             </Row>
                             <DataTable columns={columns} data={displist ? displist : ''} pagination />
                         </div>

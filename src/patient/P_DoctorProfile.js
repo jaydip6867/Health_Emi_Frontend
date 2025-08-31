@@ -253,7 +253,10 @@ const P_DoctorProfile = () => {
                                             }
                                         </Form.Select></Col>
                                         <Col xs={4}><Form.Label>Reason</Form.Label><Form.Control value={apt_data.appointment_reason} name='appointment_reason' onChange={appchangedata} placeholder='Appointment Reason' ></Form.Control></Col>
-                                        <Col xs={4}><Form.Label>Reports</Form.Label><Form.Control type='file' value={apt_data.report} name='report' onChange={appchangedata}></Form.Control></Col>
+                                        <Col xs={4}><Form.Label>Reports</Form.Label>
+                                            {/* <Form.Control type='file' value={apt_data.report} name='report' onChange={appchangedata}></Form.Control> */}
+                                            <p className='text-secondary'>Under Maintenance</p>
+                                        </Col>
                                         <Col xs={12} md={4}>
                                             <Form.Check label="Home Visit" type='radio' name='visit_types' value={'home_visit'} onChange={appchangedata} />
                                             <Form.Check label="Clinic Visit" type='radio' name='visit_types' value={'clinic_visit'} onChange={appchangedata} />
