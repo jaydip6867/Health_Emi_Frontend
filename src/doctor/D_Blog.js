@@ -214,7 +214,7 @@ const D_Blog = () => {
             seteditrecord(null)
             edithandleClose()
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
             toast(error.message, { className: 'custom-toast-error' })
         }).finally(() => {
             setloading(false)
