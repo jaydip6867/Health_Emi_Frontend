@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap'
+import NavBar from '../Visitor/Component/NavBar'
+import FooterBar from '../Visitor/Component/FooterBar'
 import { CiLock } from 'react-icons/ci'
 import { FaRegEnvelope } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
@@ -27,6 +29,13 @@ const PatientRegister = () => {
       [name]: value
     }))
   };
+
+  useEffect(() => {
+    var getlocaldata = localStorage.getItem('PatientLogin');
+    if (getlocaldata) {
+      navigate('/patient')
+    }
+  }, [navigate])
 
   function patientsignup() {
     console.log(patient)
@@ -78,7 +87,8 @@ const PatientRegister = () => {
 
   return (
     <>
-      <div className='min-vh-100 d-flex align-items-center panel'>
+      <NavBar />
+      <div className='spacer-y d-flex align-items-center panel'>
         <Container className='py-3'>
           <Row className='justify-content-center'>
             {
@@ -176,6 +186,7 @@ const PatientRegister = () => {
         <ToastContainer />
         {loading ? <Loader /> : ''}
       </div>
+      <FooterBar />
     </>
   )
 }

@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Button, Card, Col, Container, Form, Image, Row, Table } from 'react-bootstrap';
 import P_Sidebar from './P_Sidebar';
 import P_nav from './P_nav';
+import NavBar from '../Visitor/Component/NavBar'
+import FooterBar from '../Visitor/Component/FooterBar'
 import Loader from '../Loader';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -112,11 +114,12 @@ const P_DoctorAppointment = () => {
 
     return (
         <>
+        <NavBar logindata={patient} />
             <Container fluid className='p-0 panel'>
                 <Row className='g-0'>
                     <P_Sidebar />
                     <Col xs={12} sm={9} lg={10} className='p-3'>
-                        <P_nav patientname={patient && patient.name} />
+                        {/* <P_nav patientname={patient && patient.name} /> */}
                         <div className='bg-white rounded p-3 mb-3'>
                             <h5>Filter Doctor Category</h5>
                             <div className='py-2'>
@@ -196,6 +199,7 @@ const P_DoctorAppointment = () => {
                 </Row>
             </Container>
             {loading ? <Loader /> : ''}
+            <FooterBar />
         </>
     )
 }

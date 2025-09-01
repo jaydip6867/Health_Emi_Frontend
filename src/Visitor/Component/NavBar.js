@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Button, Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { FaBars, FaTimes } from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import "../css/visitor.css";
 
-const NavBar = () => {
+const NavBar = ({ logindata }) => {
+
+  var navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const location = useLocation();
   const [activeLink, setActiveLink] = useState("");
@@ -32,6 +34,7 @@ const NavBar = () => {
     setActiveDropdown(!activeDropdown);
   };
 
+
   return (
     <header className="header_bg">
       <Navbar expanded={expanded} expand="lg" className="py-3">
@@ -43,51 +46,52 @@ const NavBar = () => {
               alt="Health Easy EMI Logo"
             />
           </Link>
-          
-          <Navbar.Toggle 
-            aria-controls="basic-navbar-nav" 
+
+          <Navbar.Toggle
+            aria-controls="basic-navbar-nav"
             onClick={() => setExpanded(expanded ? false : true)}
             className="border-0"
           >
             {expanded ? <FaTimes /> : <FaBars />}
           </Navbar.Toggle>
-          
+
           <Navbar.Collapse className="menubar" id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Link 
-                to="/" 
-                className={`nav-link ${isActive('/')}`} 
+              <Link
+                to="/"
+                className={`nav-link ${isActive('/')}`}
                 onClick={closeNav}
               >
                 Home
               </Link>
-              <Link 
-                to="/about" 
-                className={`nav-link ${isActive('/about')}`} 
+              <Link
+                to="/about"
+                className={`nav-link ${isActive('/about')}`}
                 onClick={closeNav}
               >
                 About Us
               </Link>
-              <Link 
-                to="/services" 
-                className={`nav-link ${isActive('/services')}`} 
+              <Link
+                to="/services"
+                className={`nav-link ${isActive('/services')}`}
                 onClick={closeNav}
               >
                 Services
               </Link>
-              <Link 
-                to="/contact" 
-                className={`nav-link ${isActive('/contact')}`} 
+              <Link
+                to="/contact"
+                className={`nav-link ${isActive('/contact')}`}
                 onClick={closeNav}
               >
                 Contact
               </Link>
             </Nav>
-            
+
             <NavDropdown
               title={
                 <span className="login-signup-btn" onClick={toggleDropdown}>
-                  Login/Signup
+                  {logindata ? logindata.name : "Login/Signup"}
+                  {/* Login/Signup */}
                 </span>
               }
               id="basic-nav-dropdown"
@@ -96,26 +100,21 @@ const NavBar = () => {
               show={activeDropdown}
               onToggle={(isOpen) => setActiveDropdown(isOpen)}
             >
-              <Link 
-                to={"/doctor"} 
-                className={`dropdown-item ${isActive('/doctor')}`} 
-                onClick={() => {
-                  closeNav();
-                  setActiveDropdown(false);
-                }}
-              >
-                Doctor
-              </Link>
-              <Link 
-                to={"/patient"} 
-                className={`dropdown-item ${isActive('/patient')}`} 
-                onClick={() => {
-                  closeNav();
-                  setActiveDropdown(false);
-                }}
-              >
-                Patient
-              </Link>
+              {logindata ? (
+                <>
+                  <NavDropdown.Item as={Link} to={'/patient/patientprofile'} className='text-decoration-none d-block text-center p-2 profile_nav'>Profile</NavDropdown.Item>
+                  <NavDropdown.Item as={Button} className="text-center text-danger" onClick={() => (localStorage.removeItem('PatientLogin'), navigate('/'))}>Logout</NavDropdown.Item>
+                </>
+              ) : (
+                <>
+                  <NavDropdown.Item as={Link} to="/doctor">
+                    Doctor
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/patient">
+                    Patient
+                  </NavDropdown.Item>
+                </>
+              )}
             </NavDropdown>
           </Navbar.Collapse>
         </Container>
