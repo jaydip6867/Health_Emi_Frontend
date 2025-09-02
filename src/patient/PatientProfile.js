@@ -4,8 +4,8 @@ import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import P_nav from './P_nav';
 import P_Sidebar from './P_Sidebar';
-import NavBar from '../Visitor/Component/NavBar'
-import FooterBar from '../Visitor/Component/FooterBar'
+// import NavBar from '../Visitor/Component/NavBar'
+// import FooterBar from '../Visitor/Component/FooterBar'
 import Swal from 'sweetalert2';
 import { AiOutlinePhone, AiOutlineUser } from 'react-icons/ai';
 import { FaRegEnvelope } from 'react-icons/fa';
@@ -152,12 +152,12 @@ const PatientProfile = () => {
 
     return (
         <>
-        <NavBar logindata={patient} />
+        {/* <NavBar logindata={patient} /> */}
             <Container fluid className='p-0 panel'>
                 <Row className='g-0'>
                     <P_Sidebar />
                     <Col xs={12} sm={9} lg={10} className='p-3'>
-                        {/* <P_nav patientname={patient && patient.name} /> */}
+                        <P_nav patientname={patient && patient.name} />
                         <div className='bg-white rounded p-3'>
                             <h4>Patient Profile</h4>
 
@@ -233,7 +233,7 @@ const PatientProfile = () => {
             </Container>
             {loading ? <Loader /> : ''}
 
-             <FooterBar />
+             {/* <FooterBar /> */}
         </>
     )
 }

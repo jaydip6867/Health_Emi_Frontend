@@ -42,6 +42,7 @@
   top: 0;
   left: 0;
   background-color: rgba(0, 0, 0, .7);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -60,12 +61,12 @@
     radial-gradient(farthest-side, #0000 calc(100% - var(--b) - 1px), #000 calc(100% - var(--b)));
   -webkit-mask-composite: destination-in;
   mask-composite: intersect;
-  animation: l4 1s infinite steps(10);
+  animation: loader_content 1s infinite steps(10);
 }
 
-@keyframes l4 {
+@keyframes loader_content {
   to {
-    transform: rotate(1turn)
+    transform: rotate(1turn);
   }
 }
 

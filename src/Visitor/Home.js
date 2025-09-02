@@ -186,7 +186,7 @@ const Home = () => {
         </Container>
       </section>
       {/* testimonial section */}
-      <section className='spacer-t'>
+      <section className='spacer-t position-relative'>
         <Testimonial/>
         {/* <Container>
           <div className='testimonial-bg py-5 radius-20'>
@@ -263,7 +263,7 @@ const Home = () => {
         <Container>
           <h2 className='text-center'>Popular Search in <span className='text-sky-500'>India</span></h2>
           <div className='d-flex justify-content-center mt-4 flex-wrap'>
-            {['Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels'].map((v, i) => (
+            {['Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels','Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels', 'Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels'].map((v, i) => (
               <a href="" className='px-3 py-2' key={i}>{v}</a>
             ))}
           </div>

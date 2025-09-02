@@ -3,8 +3,8 @@ import Loader from '../Loader'
 import { Col, Container, Modal, Row, Table } from 'react-bootstrap'
 import P_Sidebar from './P_Sidebar'
 import P_nav from './P_nav'
-import NavBar from '../Visitor/Component/NavBar'
-import FooterBar from '../Visitor/Component/FooterBar'
+// import NavBar from '../Visitor/Component/NavBar'
+// import FooterBar from '../Visitor/Component/FooterBar'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -128,12 +128,12 @@ const P_Appointment = () => {
     }]
     return (
         <>
-            <NavBar logindata={patient} />
+            {/* <NavBar logindata={patient} /> */}
             <Container fluid className='p-0 panel'>
                 <Row className='g-0'>
                     <P_Sidebar />
                     <Col xs={12} sm={9} lg={10} className='p-3'>
-                        {/* <P_nav patientname={patient && patient.name} /> */}
+                        <P_nav patientname={patient && patient.name} />
                         <div className='bg-white rounded p-3 mb-3'>
                             <h5 className='mb-3'>All Appointments</h5>
                             <DataTable columns={columns} data={appoint_data ? appoint_data : ''} pagination />
@@ -191,7 +191,7 @@ const P_Appointment = () => {
                 }
             </Container>
             {loading ? <Loader /> : ''}
-            <FooterBar />
+            {/* <FooterBar /> */}
         </>
     )
 }

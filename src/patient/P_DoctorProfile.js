@@ -5,6 +5,8 @@ import Loader from '../Loader';
 import { Button, Card, Col, Container, Form, Image, ListGroup, Modal, Row } from 'react-bootstrap';
 import P_Sidebar from './P_Sidebar';
 import P_nav from './P_nav';
+// import NavBar from '../Visitor/Component/NavBar'
+// import FooterBar from '../Visitor/Component/FooterBar'
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { FaEnvelope, FaPhone, FaStar, } from 'react-icons/fa6';
 import CryptoJS from "crypto-js";
@@ -141,6 +143,7 @@ const P_DoctorProfile = () => {
         : '';
     return (
         <>
+        {/* <NavBar logindata={patient} /> */}
             <Container fluid className='p-0 panel'>
                 <Row className='g-0'>
                     <P_Sidebar />
@@ -298,6 +301,7 @@ const P_DoctorProfile = () => {
                 </Modal>
             }
             {loading ? <Loader /> : ''}
+            {/* <FooterBar /> */}
         </>
     )
 }

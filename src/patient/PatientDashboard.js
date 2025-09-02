@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import P_Sidebar from './P_Sidebar';
 import P_nav from './P_nav';
-import NavBar from '../Visitor/Component/NavBar'
-import FooterBar from '../Visitor/Component/FooterBar'
+// import NavBar from '../Visitor/Component/NavBar'
+// import FooterBar from '../Visitor/Component/FooterBar'
 import { Col, Container, Row } from 'react-bootstrap';
 import CryptoJS from "crypto-js";
 
@@ -33,7 +33,7 @@ const PatientDashboard = () => {
 
   return (
     <>
-    <NavBar logindata={patient} />
+    {/* <NavBar logindata={patient} /> */}
       <Container fluid className='p-0 panel spacer-y'>
         <Row className='g-0'>
           <P_Sidebar />
@@ -51,7 +51,7 @@ const PatientDashboard = () => {
           </Col>
         </Row>
       </Container>
-      <FooterBar />
+      {/* <FooterBar /> */}
     </>
   )
 }

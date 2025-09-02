@@ -90,8 +90,8 @@ const NavBar = ({ logindata }) => {
             <NavDropdown
               title={
                 <span className="login-signup-btn" onClick={toggleDropdown}>
-                  {logindata ? logindata.name : "Login/Signup"}
-                  {/* Login/Signup */}
+                  {/* {logindata ? logindata.name : "Login/Signup"} */}
+                  Login/Signup
                 </span>
               }
               id="basic-nav-dropdown"
@@ -100,7 +100,7 @@ const NavBar = ({ logindata }) => {
               show={activeDropdown}
               onToggle={(isOpen) => setActiveDropdown(isOpen)}
             >
-              {logindata ? (
+              {/* {logindata ? (
                 <>
                   <NavDropdown.Item as={Link} to={'/patient/patientprofile'} className='text-decoration-none d-block text-center p-2 profile_nav'>Profile</NavDropdown.Item>
                   <NavDropdown.Item as={Button} className="text-center text-danger" onClick={() => (localStorage.removeItem('PatientLogin'), navigate('/'))}>Logout</NavDropdown.Item>
@@ -114,7 +114,13 @@ const NavBar = ({ logindata }) => {
                     Patient
                   </NavDropdown.Item>
                 </>
-              )}
+              )} */}
+              <NavDropdown.Item as={Link} to="/doctor">
+                Doctor
+              </NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/patient">
+                Patient
+              </NavDropdown.Item>
             </NavDropdown>
           </Navbar.Collapse>
         </Container>
