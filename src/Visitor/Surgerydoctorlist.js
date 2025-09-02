@@ -5,8 +5,28 @@ import Loader from '../Loader'
 import FooterBar from './Component/FooterBar'
 import axios from 'axios'
 import { Link, useParams } from 'react-router-dom'
+import CryptoJS from "crypto-js";
+import { useNavigate } from 'react-router-dom';
 
 const Surgerydoctorlist = () => {
+    const SECRET_KEY = "health-emi";
+    var navigate = useNavigate();
+
+    const [patient, setpatient] = useState(null)
+    const [token, settoken] = useState(null)
+
+    useEffect(() => {
+        var getlocaldata = localStorage.getItem('PatientLogin');
+        if (getlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+        }
+        if (data) {
+            setpatient(data.userData);
+            settoken(`Bearer ${data.accessToken}`)
+        }
+    }, [navigate])
     const [loading, setloading] = useState(false)
     var { id } = useParams()
     const d_id = atob(decodeURIComponent(id))
@@ -39,7 +59,7 @@ const Surgerydoctorlist = () => {
 
     return (
         <>
-            <NavBar />
+            <NavBar logindata={patient} />
             {/* doctor list section */}
             <section className='py-5'>
                 <Container>
@@ -69,12 +89,12 @@ const Surgerydoctorlist = () => {
                                                 <Col md={8}>
                                                     <Card.Body>
                                                         <Card.Title>Dr. {doc.name}</Card.Title>
-                                                            <span>{doc.specialty}</span><br/>
-                                                            <span>{doc.experience} years experience overall</span>
-                                                            <p><b>{doc.hospital_address}</b>. {doc.hospital_name}</p>
-                                                      
-                                                            <Link to={`/doctorprofile/${encodeURIComponent(btoa(doc._id))}`} className="text-body-primary text-decoration-none">View Profile</Link>
-                                                        
+                                                        <span>{doc.specialty}</span><br />
+                                                        <span>{doc.experience} years experience overall</span>
+                                                        <p><b>{doc.hospital_address}</b>. {doc.hospital_name}</p>
+
+                                                        <Link to={`/doctorprofile/${encodeURIComponent(btoa(doc._id))}`} className="text-body-primary text-decoration-none">View Profile</Link>
+
                                                     </Card.Body>
                                                 </Col>
                                             </Row>

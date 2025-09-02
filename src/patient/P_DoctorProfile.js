@@ -5,8 +5,8 @@ import Loader from '../Loader';
 import { Button, Card, Col, Container, Form, Image, ListGroup, Modal, Row } from 'react-bootstrap';
 import P_Sidebar from './P_Sidebar';
 import P_nav from './P_nav';
-// import NavBar from '../Visitor/Component/NavBar'
-// import FooterBar from '../Visitor/Component/FooterBar'
+import NavBar from '../Visitor/Component/NavBar'
+import FooterBar from '../Visitor/Component/FooterBar'
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { FaEnvelope, FaPhone, FaStar, } from 'react-icons/fa6';
 import CryptoJS from "crypto-js";
@@ -143,12 +143,12 @@ const P_DoctorProfile = () => {
         : '';
     return (
         <>
-        {/* <NavBar logindata={patient} /> */}
+        <NavBar logindata={patient} />
             <Container fluid className='p-0 panel'>
                 <Row className='g-0'>
                     <P_Sidebar />
                     <Col xs={12} sm={9} lg={10} className='p-3'>
-                        <P_nav patientname={patient && patient.name} />
+                        {/* <P_nav patientname={patient && patient.name} /> */}
                         <Card className="p-4 shadow border-0">
                             {
                                 doctor_profile === null ? <Col>No Doctor Found</Col> : <Row>
@@ -301,7 +301,7 @@ const P_DoctorProfile = () => {
                 </Modal>
             }
             {loading ? <Loader /> : ''}
-            {/* <FooterBar /> */}
+            <FooterBar />
         </>
     )
 }

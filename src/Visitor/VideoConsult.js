@@ -9,8 +9,28 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from 'react-slick'
 import AppDownload from './Component/AppDownload'
+import CryptoJS from "crypto-js";
+import { useNavigate } from 'react-router-dom';
 
 const VideoConsult = () => {
+    const SECRET_KEY = "health-emi";
+    var navigate = useNavigate();
+
+    const [patient, setpatient] = useState(null)
+    const [token, settoken] = useState(null)
+
+    useEffect(() => {
+        var getlocaldata = localStorage.getItem('PatientLogin');
+        if (getlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+        }
+        if (data) {
+            setpatient(data.userData);
+            settoken(`Bearer ${data.accessToken}`)
+        }
+    }, [navigate])
     var settings = {
         infinite: true,
         speed: 500,
@@ -66,7 +86,7 @@ const VideoConsult = () => {
 
     return (
         <>
-            <NavBar />
+            <NavBar logindata={patient} />
             {/* offers section */}
             <section className='py-5'>
                 <Container>
@@ -186,7 +206,7 @@ const VideoConsult = () => {
                 </Container>
             </section>
             {/* App Download Section */}
-            <AppDownload/>
+            <AppDownload />
             <FooterBar />
             {loading ? <Loader /> : ''}
         </>

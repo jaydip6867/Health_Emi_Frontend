@@ -9,8 +9,30 @@ import { City, Country, State } from 'country-state-city';
 import axios from 'axios'
 import { FiArrowUpRight, FiMapPin, FiSearch } from 'react-icons/fi'
 import Testimonial from './Component/Testimonial'
+import CryptoJS from "crypto-js";
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+
+  const SECRET_KEY = "health-emi";
+  var navigate = useNavigate();
+
+  const [patient, setpatient] = useState(null)
+  const [token, settoken] = useState(null)
+
+  useEffect(() => {
+    var getlocaldata = localStorage.getItem('PatientLogin');
+    if (getlocaldata != null) {
+      const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+      var data = JSON.parse(decrypted);
+    }
+    if (data) {
+      setpatient(data.userData);
+      settoken(`Bearer ${data.accessToken}`)
+  }
+  }, [navigate])
+
   const [loading, setloading] = useState(false)
   const [cities, setCities] = useState([]);
   useEffect(() => {
@@ -62,7 +84,7 @@ const Home = () => {
 
   return (
     <>
-      <NavBar />
+      <NavBar logindata={patient} />
       {/* search by city and doctor name or surgery */}
 
       <section className='py-5'>
@@ -131,7 +153,7 @@ const Home = () => {
             <Row className='align-items-center'>
               <Col xs={12} md={6}>
                 <div className='pe-5 head_sec'>
-                  <h1><span>Book an Appointment</span> <br/> for a consultation</h1>
+                  <h1><span>Book an Appointment</span> <br /> for a consultation</h1>
                   <p>Choose the best deal among 50,000 people and pros by requesting a service!</p>
                   <Button className="banner_btn">Book Appointment</Button>
                   <div className='d-flex gap-5 mt-3 text-dark'>
@@ -187,7 +209,7 @@ const Home = () => {
       </section>
       {/* testimonial section */}
       <section className='spacer-t position-relative'>
-        <Testimonial/>
+        <Testimonial />
         {/* <Container>
           <div className='testimonial-bg py-5 radius-20'>
             <Row className='align-items-center'>
@@ -263,7 +285,7 @@ const Home = () => {
         <Container>
           <h2 className='text-center'>Popular Search in <span className='text-sky-500'>India</span></h2>
           <div className='d-flex justify-content-center mt-4 flex-wrap'>
-            {['Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels','Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels', 'Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels'].map((v, i) => (
+            {['Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels', 'Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels', 'Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels'].map((v, i) => (
               <a href="" className='px-3 py-2' key={i}>{v}</a>
             ))}
           </div>
