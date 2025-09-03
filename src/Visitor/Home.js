@@ -38,6 +38,7 @@ const Home = () => {
   useEffect(() => {
     document.title = "Health Easy EMI - Keep Life Healthy"
     getcitiesname();
+    setloading(true)
     getsuggestion();
   }, []);
   function getcitiesname() {
@@ -54,7 +55,7 @@ const Home = () => {
   const [inputValue, setInputValue] = useState('');
   const [showList, setShowList] = useState(false);
   const getsuggestion = async (n) => {
-    setloading(true)
+    
     await axios({
       method: 'post',
       url: 'https://healtheasy-o25g.onrender.com/user/suggestions',

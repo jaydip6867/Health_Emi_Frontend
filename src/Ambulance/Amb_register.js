@@ -1,451 +1,1501 @@
-import React, { useEffect, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import { toast, ToastContainer } from "react-toastify";
-import Loader from "../Loader";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { City, State } from "country-state-city";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Card, Form, Button, Alert } from "react-bootstrap";
+import { Country, State, City } from "country-state-city";
 import axios from "axios";
+import "../Visitor/css/visitor.css";
 
 const Amb_register = () => {
-  var navigate = useNavigate();
-  const [loading, setloading] = useState(false);
-
-  const [states, setStates] = useState([]);
-  const [selectedState, setSelectedState] = useState("");
-  const [cities, setCities] = useState([]);
-  const [selectedCity, setSelectedCity] = useState("");
-
-  useEffect(() => {
-    var ambdata = JSON.parse(localStorage.getItem("ambulancedetail"));
-    if (ambdata) {
-      setambreg(false);
-      setambotp(true);
-    }
-    // Load all states of India
-    const indianStates = State.getStatesOfCountry("IN");
-    setStates(indianStates);
-  }, []);
-
-  useEffect(() => {
-    // When state changes, fetch cities
-    if (selectedState) {
-      const citiesList = City.getCitiesOfState("IN", selectedState);
-      setCities(citiesList);
-      setSelectedCity(""); // Reset city selection
-      var sel_state = states.filter((v, i) => {
-        return v.isoCode === selectedState;
-      });
-      setFormData((formData) => ({
-        ...formData,
-        state: sel_state[0].name,
-      }));
-    } else {
-      setCities([]);
-      setSelectedCity("");
-    }
-  }, [selectedState]);
-
-  // Form fields state
   const [formData, setFormData] = useState({
     fullname: "",
     email: "",
     mobile: "",
     password: "",
+    gender: "",
     state: "",
     city: "",
-    profilepic: null,
+    address: "",
+    ambulance_type: "",
     rc_no: "",
     rc_pic: null,
-    aadhar_no: "",
-    aadhar_pic: null,
-    address: "",
+    blood_group: "",
+    dob: "",
+    insurance_expiry: "",
+    insurance_pic: null,
+    insurance_holder: "",
+    polution_expiry: "",
+    polution_pic: null,
+    vehicle_no: "",
+    driver_pic: null,
+    experience: "",
+    driving_licence_pic: null,
+    ambulance_front_pic: null,
+    ambulance_back_pic: null,
+    ambulance_fitness_pic: null,
+    ambulance_fitness_expiry: ""
   });
 
-  const [amb_reg, setambreg] = useState(true);
-  const [amb_otp, setambotp] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAlert, setShowAlert] = useState({ show: false, message: "", type: "" });
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [selectedStateCode, setSelectedStateCode] = useState("");
+  const [filePreviews, setFilePreviews] = useState({
+    rc_pic: null,
+    insurance_pic: null,
+    polution_pic: null,
+    driver_pic: null,
+    driving_licence_pic: null,
+    ambulance_front_pic: null,
+    ambulance_back_pic: null,
+    ambulance_fitness_pic: null
+  });
+  
+  // OTP verification states
+  const [showOtpForm, setShowOtpForm] = useState(false);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otpErrors, setOtpErrors] = useState('');
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [canResendOtp, setCanResendOtp] = useState(false);
+  const [resendTimer, setResendTimer] = useState(30);
+  const [uploadProgress, setUploadProgress] = useState({});
+  const [uploadedFiles, setUploadedFiles] = useState({});
 
-  // handle change
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    // if (files) {
-    //     setFormData((prev) => ({ ...prev, [name]: files[0] }));
-    // } else {
-    //     setFormData((prev) => ({ ...prev, [name]: value }));
-    // }
+  // Blood group options
+  const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+  
+  // Experience options
+  const experienceOptions = [
+    "Less than 1 year",
+    "1-2 years",
+    "2-5 years",
+    "5-10 years",
+    "More than 10 years"
+  ];
 
-    if (e.target.type === "file") {
-      const file = e.target.files[0];
-      console.log(file);
-      if (file) {
-        // Store the File object and optionally the file name
-        setFormData((prev) => ({
-          ...prev,
-          [name]: file, // Actual File object
-        }));
-      }
+  // Load Indian states on component mount
+  useEffect(() => {
+    const indianStates = State.getStatesOfCountry("IN");
+    setStates(indianStates);
+  }, []);
+
+  // Load cities when state changes
+  useEffect(() => {
+    if (selectedStateCode) {
+      const stateCities = City.getCitiesOfState("IN", selectedStateCode);
+      setCities(stateCities);
     } else {
-      setFormData((prev) => ({
+      setCities([]);
+    }
+  }, [selectedStateCode]);
+
+  // OTP resend timer
+  useEffect(() => {
+    let interval;
+    if (showOtpForm && !canResendOtp && resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer(prev => {
+          if (prev <= 1) {
+            setCanResendOtp(true);
+            return 30;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [showOtpForm, canResendOtp, resendTimer]);
+
+  const handleInputChange = (e) => {
+    const { name, value, files } = e.target;
+    
+    // Handle file uploads for all image fields
+    const imageFields = ['rc_pic', 'insurance_pic', 'polution_pic', 'driver_pic', 'driving_licence_pic', 'ambulance_front_pic', 'ambulance_back_pic', 'ambulance_fitness_pic'];
+    
+    if (imageFields.includes(name) && files && files[0]) {
+      const file = files[0];
+      setFormData(prev => ({
+        ...prev,
+        [name]: file
+      }));
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFilePreviews(prev => ({
+          ...prev,
+          [name]: e.target.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+    // Handle state selection
+    else if (name === "state") {
+      const selectedState = states.find(state => state.name === value);
+      setSelectedStateCode(selectedState ? selectedState.isoCode : "");
+      setFormData(prev => ({
         ...prev,
         [name]: value,
+        city: "" // Reset city when state changes
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ""
       }));
     }
   };
 
-  const img_upload_fn = async (file) => {
-    try {
-      const response = await axios.post(
-        "https://healtheasy-o25g.onrender.com/user/upload",
-        { file: file },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+  const handleRemoveFile = (fieldName) => {
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: null
+    }));
+    setFilePreviews(prev => ({
+      ...prev,
+      [fieldName]: null
+    }));
+    // Reset file input
+    const fileInput = document.querySelector(`input[name="${fieldName}"]`);
+    if (fileInput) fileInput.value = '';
+  };
 
-      console.log("✅ Upload Success:", response.data.Data);
-      return response.data.Data.url;
-    } catch (error) {
-      console.error("❌ Upload Error:", error.response?.data || error.message);
+  // OTP input handler
+  const handleOtpChange = (index, value) => {
+    if (value.length > 1) return; // Only allow single digit
+    
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+    
+    // Auto focus next input
+    if (value && index < 5) {
+      const nextInput = document.querySelector(`input[name="otp-${index + 1}"]`);
+      if (nextInput) nextInput.focus();
+    }
+    
+    // Clear error when user types
+    if (otpErrors) setOtpErrors('');
+  };
+
+  // Handle backspace in OTP
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      const prevInput = document.querySelector(`input[name="otp-${index - 1}"]`);
+      if (prevInput) prevInput.focus();
     }
   };
 
-  const ambulance_reg = async () => {
-    setloading(true);
-
-    var ambdata = {
-      ...formData,
-      profilepic: await img_upload_fn(formData.profilepic),
-      rc_pic: await img_upload_fn(formData.rc_pic),
-      aadhar_pic: await img_upload_fn(formData.aadhar_pic),
-    };
-    console.log(ambdata);
-    // console.log('local = ',ambdata)
-    // // console.log(frmdoctor)
-    axios({
-      method: "post",
-      url: "https://healtheasy-o25g.onrender.com/ambulance/signup",
-      data: ambdata,
-    })
-      .then((res) => {
-        toast("OTP send to your Email...", {
-          className: "custom-toast-success",
-        });
-        setambreg(false);
-        setambotp(true);
-        console.log(res);
-        localStorage.setItem("ambulancedetail", JSON.stringify(res));
-      })
-      .catch(function (error) {
-        console.log(error);
-        // toast(error.response.data.Message, { className: 'custom-toast-error' })
-      })
-      .finally(() => {
-        setloading(false);
+  // File upload function
+  const uploadFile = async (file, fieldName) => {
+    if (!file) return null;
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const response = await axios.post('https://healtheasy-o25g.onrender.com/user/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
+      
+      // Extract URL from response data
+      return response.data?.Data?.url || null;
+    } catch (error) {
+      console.error(`Upload failed for ${fieldName}:`, error);
+      throw new Error(`Failed to upload ${fieldName}: ${error.message}`);
+    }
   };
 
-  const [otp, setotp] = useState("");
+  // Upload all files
+  const uploadAllFiles = async () => {
+    const fileFields = [
+      'rc_pic', 'insurance_pic', 'polution_pic', 'driver_pic', 
+      'driving_licence_pic', 'ambulance_front_pic', 'ambulance_back_pic', 'ambulance_fitness_pic'
+    ];
+    
+    const uploadPromises = fileFields.map(async (fieldName) => {
+      const file = formData[fieldName];
+      if (file) {
+        try {
+          const url = await uploadFile(file, fieldName);
+          return { fieldName, url };
+        } catch (error) {
+          throw error;
+        }
+      }
+      return { fieldName, url: null };
+    });
+    
+    const results = await Promise.all(uploadPromises);
+    
+    // Store uploaded file URLs
+    const uploadedData = {};
+    results.forEach(({ fieldName, url }) => {
+      if (url) {
+        uploadedData[fieldName] = url;
+      }
+    });
+    
+    return uploadedData;
+  };
 
-  function otpverifydone() {
-    console.log(formData);
-    setloading(true);
-    axios({
-      method: "post",
-      url: "https://healtheasy-o25g.onrender.com/ambulance/signup/otpverification",
-      data: {
-        email: formData.email,
-        otp: otp,
-      },
-    })
-      .then((res) => {
-        toast("OTP verify successfully...", {
-          className: "custom-toast-success",
-        });
-        console.log(res);
-        localStorage.removeItem("ambulancedetail");
-        Navigate("ambulance");
-      })
-      .catch(function (error) {
-        console.log(error);
-        toast(error, { className: "custom-toast-error" });
-      })
-      .finally(() => {
-        setloading(false);
+  // Registration API call
+  const registerAmbulance = async (registrationData) => {
+    try {
+      const response = await axios.post('https://healtheasy-o25g.onrender.com/ambulance/signup', registrationData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
-  }
+      
+      return response.data;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      throw new Error(`Registration failed: ${error.response?.data?.message || error.message}`);
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Full name validation
+    if (!formData.fullname.trim()) {
+      newErrors.fullname = "Full name is required";
+    } else if (formData.fullname.trim().length < 2) {
+      newErrors.fullname = "Full name must be at least 2 characters";
+    } else if (!/^[a-zA-Z\s]+$/.test(formData.fullname.trim())) {
+      newErrors.fullname = "Full name should only contain letters and spaces";
+    }
+
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Mobile validation
+    if (!formData.mobile.trim()) {
+      newErrors.mobile = "Mobile number is required";
+    } else if (!/^[6-9]\d{9}$/.test(formData.mobile)) {
+      newErrors.mobile = "Please enter a valid 10-digit mobile number";
+    }
+
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 3) {
+      newErrors.password = "Password must be at least 3 characters long";
+    }
+
+    // Gender validation
+    if (!formData.gender) {
+      newErrors.gender = "Please select your gender";
+    }
+
+    // State validation
+    if (!formData.state) {
+      newErrors.state = "Please select your state";
+    }
+
+    // City validation
+    if (!formData.city.trim()) {
+      newErrors.city = "City is required";
+    } else if (formData.city.trim().length < 2) {
+      newErrors.city = "City name must be at least 2 characters";
+    }
+
+    // Address validation
+    if (!formData.address.trim()) {
+      newErrors.address = "Address is required";
+    } else if (formData.address.trim().length < 10) {
+      newErrors.address = "Please provide a complete address (minimum 10 characters)";
+    }
+
+    // Ambulance type validation
+    if (!formData.ambulance_type) {
+      newErrors.ambulance_type = "Please select ambulance type";
+    }
+
+    // RC number validation
+    if (!formData.rc_no.trim()) {
+      newErrors.rc_no = "RC number is required";
+    } else if (formData.rc_no.trim().length < 5) {
+      newErrors.rc_no = "Please enter a valid RC number";
+    }
+
+    // RC picture validation
+    if (!formData.rc_pic) {
+      newErrors.rc_pic = "RC picture is required";
+    }
+
+    // Blood group validation
+    if (!formData.blood_group) {
+      newErrors.blood_group = "Please select your blood group";
+    }
+
+    // Date of birth validation
+    if (!formData.dob) {
+      newErrors.dob = "Date of birth is required";
+    } else {
+      const today = new Date();
+      const birthDate = new Date(formData.dob);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      if (age < 20 || age > 45) {
+        newErrors.dob = "Age must be between 20 and 45 years";
+      }
+    }
+
+    // Insurance validation
+    if (!formData.insurance_expiry) {
+      newErrors.insurance_expiry = "Insurance expiry date is required";
+    } else {
+      const today = new Date();
+      const insuranceDate = new Date(formData.insurance_expiry);
+      if (insuranceDate <= today) {
+        newErrors.insurance_expiry = "Insurance must be valid (future date)";
+      }
+    }
+
+    if (!formData.insurance_pic) {
+      newErrors.insurance_pic = "Insurance document is required";
+    }
+
+    if (!formData.insurance_holder.trim()) {
+      newErrors.insurance_holder = "Insurance holder name is required";
+    }
+
+    // polution validation
+    if (!formData.polution_expiry) {
+      newErrors.polution_expiry = "polution certificate expiry is required";
+    } else {
+      const today = new Date();
+      const polutionDate = new Date(formData.polution_expiry);
+      if (polutionDate <= today) {
+        newErrors.polution_expiry = "polution certificate must be valid (future date)";
+      }
+    }
+
+    if (!formData.polution_pic) {
+      newErrors.polution_pic = "polution certificate is required";
+    }
+
+    // Vehicle number validation
+    if (!formData.vehicle_no.trim()) {
+      newErrors.vehicle_no = "Vehicle number is required";
+    } else if (!/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/.test(formData.vehicle_no.replace(/\s/g, '').toUpperCase())) {
+      newErrors.vehicle_no = "Please enter a valid vehicle number (e.g., MH12AB1234)";
+    }
+
+    // Driver and license validation
+    if (!formData.driver_pic) {
+      newErrors.driver_pic = "Driver photo is required";
+    }
+
+    if (!formData.experience) {
+      newErrors.experience = "Please select your driving experience";
+    }
+
+    if (!formData.driving_licence_pic) {
+      newErrors.driving_licence_pic = "Driving license photo is required";
+    }
+
+    // Ambulance photos validation
+    if (!formData.ambulance_front_pic) {
+      newErrors.ambulance_front_pic = "Ambulance front photo is required";
+    }
+
+    if (!formData.ambulance_back_pic) {
+      newErrors.ambulance_back_pic = "Ambulance back photo is required";
+    }
+
+    if (!formData.ambulance_fitness_pic) {
+      newErrors.ambulance_fitness_pic = "Ambulance fitness certificate is required";
+    }
+
+    // Ambulance fitness expiry validation
+    if (!formData.ambulance_fitness_expiry) {
+      newErrors.ambulance_fitness_expiry = "Fitness certificate expiry is required";
+    } else {
+      const today = new Date();
+      const fitnessDate = new Date(formData.ambulance_fitness_expiry);
+      if (fitnessDate <= today) {
+        newErrors.ambulance_fitness_expiry = "Fitness certificate must be valid (future date)";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      setShowAlert({
+        show: true,
+        message: "Please correct the errors in the form",
+        type: "danger"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      // Step 1: Upload all files first
+      setShowAlert({
+        show: true,
+        message: "Uploading files... Please wait.",
+        type: "info"
+      });
+      
+      const uploadedData = await uploadAllFiles();
+      
+      // Step 2: Prepare registration data with uploaded file responses
+      const registrationData = { ...formData };
+      Object.keys(uploadedData).forEach(fieldName => {
+        if (uploadedData[fieldName]) {
+          registrationData[fieldName] = uploadedData[fieldName];
+        }
+      });
+      
+      // Step 3: Call registration API
+      setShowAlert({
+        show: true,
+        message: "Processing registration... Please wait.",
+        type: "info"
+      });
+      
+      const registrationResponse = await registerAmbulance(registrationData);
+      
+      // Step 4: Store response in localStorage
+      localStorage.setItem('ambulanceRegistration', JSON.stringify(registrationResponse));
+      
+      // Step 5: Show OTP form
+      setShowOtpForm(true);
+      setShowAlert({
+        show: true,
+        message: `Registration successful! OTP sent to ${formData.mobile}. Please verify to complete registration.`,
+        type: "success"
+      });
+      setCanResendOtp(false);
+      setResendTimer(30);
+      
+    } catch (error) {
+      setShowAlert({
+        show: true,
+        message: error.message || "Registration failed. Please try again.",
+        type: "danger"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // OTP verification handler
+  const handleOtpVerification = async (e) => {
+    e.preventDefault();
+    
+    const otpString = otp.join('');
+    if (otpString.length !== 6) {
+      setOtpErrors('Please enter complete 6-digit OTP');
+      return;
+    }
+    
+    setIsVerifyingOtp(true);
+    
+    try {
+      // Simulate OTP verification API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // For demo purposes, accept any 6-digit OTP
+      setShowAlert({
+        show: true,
+        message: "Registration successful! Welcome to Health Easy EMI Ambulance Services.",
+        type: "success"
+      });
+      
+      // Reset all forms
+      setShowOtpForm(false);
+      setFormData({
+        fullname: "",
+        email: "",
+        mobile: "",
+        password: "",
+        gender: "",
+        state: "",
+        city: "",
+        address: "",
+        ambulance_type: "",
+        rc_no: "",
+        rc_pic: null,
+        blood_group: "",
+        dob: "",
+        insurance_expiry: "",
+        insurance_pic: null,
+        insurance_holder: "",
+        polution_expiry: "",
+        polution_pic: null,
+        vehicle_no: "",
+        driver_pic: null,
+        experience: "",
+        driving_licence_pic: null,
+        ambulance_front_pic: null,
+        ambulance_back_pic: null,
+        ambulance_fitness_pic: null,
+        ambulance_fitness_expiry: ""
+      });
+      setFilePreviews({
+        rc_pic: null,
+        insurance_pic: null,
+        polution_pic: null,
+        driver_pic: null,
+        driving_licence_pic: null,
+        ambulance_front_pic: null,
+        ambulance_back_pic: null,
+        ambulance_fitness_pic: null
+      });
+      setSelectedStateCode("");
+      setOtp(['', '', '', '', '', '']);
+      
+    } catch (error) {
+      setOtpErrors('Invalid OTP. Please try again.');
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  // Resend OTP handler
+  const handleResendOtp = async () => {
+    try {
+      // Simulate resend OTP API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setShowAlert({
+        show: true,
+        message: `New OTP sent to ${formData.mobile}`,
+        type: "info"
+      });
+      setCanResendOtp(false);
+      setResendTimer(30);
+      setOtp(['', '', '', '', '', '']);
+      
+    } catch (error) {
+      setShowAlert({
+        show: true,
+        message: "Failed to resend OTP. Please try again.",
+        type: "danger"
+      });
+    }
+  };
 
   return (
     <>
-      <div className="min-vh-100 d-flex align-items-center panel">
-        <Container className="py-3">
+      <div className="min-vh-100 d-flex align-items-center" style={{ backgroundColor: "#F5FDFF", paddingTop: "2rem", paddingBottom: "2rem" }}>
+        <Container className="py-4">
           <Row className="justify-content-center">
-            {amb_reg === true ? (
-              <Col xs={5}>
-                <div className="register_doctor bg-white p-3 py-3 px-4 rounded-4 shadow">
-                  <div className="text-center">
-                    <h3>Ambulance - Register</h3>
-                    <p className="w-75 mx-auto">
-                      Lorem Ipsum is simply dummy text of the printing and
-                      typesetting industry
-                    </p>
+            <Col lg={12} xl={10}>
+              <Card className="shadow-lg border-0 radius-20">
+                <Card.Header className="text-center py-4" style={{ backgroundColor: "var(--primary-color-600)", borderRadius: "20px 20px 0 0" }}>
+                  <div className="d-flex align-items-center justify-content-center mb-3">
+                    <h2 className="text-white mb-0 fw-bold">Ambulance Registration</h2>
                   </div>
-                  <Form
-                    as={Row}
-                    autoComplete="off"
-                    encType="multipart/form-data"
-                  >
-                    <Form.Group
-                      controlId="fullname"
-                      className="position-relative mb-3"
+                  <p className="text-white mb-0 opacity-75">Join our emergency medical services network</p>
+                </Card.Header>
+                
+                <Card.Body className="p-4 p-md-5">
+                  {showAlert.show && (
+                    <Alert 
+                      variant={showAlert.type} 
+                      dismissible 
+                      onClose={() => setShowAlert({ show: false, message: "", type: "" })}
+                      className="mb-4"
                     >
-                      <Form.Label>Fullname</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="fullname"
-                        value={formData.fullname}
-                        onChange={handleChange}
-                      />
-                    </Form.Group>
+                      {showAlert.message}
+                    </Alert>
+                  )}
 
-                    <Form.Group
-                      controlId="email"
-                      className="position-relative mb-3"
-                    >
-                      <Form.Label>Email</Form.Label>
-                      <Form.Control
-                        placeholder="Enter Email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                      />
-                    </Form.Group>
+                  {!showOtpForm ? (
+                    <Form onSubmit={handleSubmit}>
+                    <Row>
+                      {/* Full Name */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">
+                            Full Name *
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            name="fullname"
+                            value={formData.fullname}
+                            onChange={handleInputChange}
+                            placeholder="Enter your full name"
+                            isInvalid={!!errors.fullname}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.fullname}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
 
-                    <Form.Group
-                      controlId="password"
-                      className="position-relative mb-3"
-                    >
-                      <Form.Label>Password</Form.Label>
-                      <Form.Control
-                        type="password"
-                        placeholder="Enter Password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                      />
-                    </Form.Group>
+                      {/* Email */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">
+                            Email Address *
+                          </Form.Label>
+                          <Form.Control
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            placeholder="Enter your email"
+                            isInvalid={!!errors.email}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.email}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
 
-                    <Form.Group
-                      controlId="mobile"
-                      className="position-relative mb-3 col-6"
-                    >
-                      <Form.Label>Mobile</Form.Label>
-                      <Form.Control
-                        type="tel"
-                        placeholder="Enter Mobile"
-                        name="mobile"
-                        value={formData.mobile}
-                        onChange={handleChange}
-                      />
-                    </Form.Group>
+                      {/* Mobile */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">
+                            Mobile Number *
+                          </Form.Label>
+                          <Form.Control
+                            type="tel"
+                            name="mobile"
+                            value={formData.mobile}
+                            onChange={handleInputChange}
+                            placeholder="Enter 10-digit mobile number"
+                            isInvalid={!!errors.mobile}
+                            className="py-2"
+                            maxLength="10"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.mobile}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
 
-                    <Form.Group
-                      controlId="profilepic"
-                      className="position-relative mb-3 col-6"
-                    >
-                      <Form.Label>Profile Photo:</Form.Label>
-                      <Form.Control
-                        type="file"
-                        name="profilepic"
-                        accept=".jpg,.png"
-                        onChange={handleChange}
-                      />
-                    </Form.Group>
+                      {/* Password */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">
+                            Password *
+                          </Form.Label>
+                          <Form.Control
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            placeholder="Create a strong password"
+                            isInvalid={!!errors.password}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.password}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
 
-                    <Form.Group
-                      controlId="state"
-                      className="position-relative mb-3 col-6"
-                    >
-                      <Form.Label>State</Form.Label>
-                      <Form.Select
-                        name="state"
-                        value={selectedState}
-                        onChange={(e) => setSelectedState(e.target.value)}
+                      {/* Gender */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Gender *</Form.Label>
+                          <div className="d-flex gap-4 mt-2">
+                            <Form.Check
+                              type="radio"
+                              id="Male"
+                              name="gender"
+                              value="Male"
+                              label="Male"
+                              checked={formData.gender === "Male"}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.gender}
+                            />
+                            <Form.Check
+                              type="radio"
+                              id="Female"
+                              name="gender"
+                              value="Female"
+                              label="Female"
+                              checked={formData.gender === "Female"}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.gender}
+                            />
+                          </div>
+                          {errors.gender && (
+                            <div className="invalid-feedback d-block">
+                              {errors.gender}
+                            </div>
+                          )}
+                        </Form.Group>
+                      </Col>
+
+                      {/* Date of Birth */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Date of Birth *</Form.Label>
+                          <Form.Control
+                            type="date"
+                            name="dob"
+                            value={formData.dob}
+                            onChange={handleInputChange}
+                            isInvalid={!!errors.dob}
+                            className="py-2"
+                            max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.dob}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      {/* Blood Group */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Blood Group *</Form.Label>
+                          <Form.Select
+                            name="blood_group"
+                            value={formData.blood_group}
+                            onChange={handleInputChange}
+                            isInvalid={!!errors.blood_group}
+                            className="py-2"
+                          >
+                            <option value="">Select your blood group</option>
+                            {bloodGroups.map((group) => (
+                              <option key={group} value={group}>
+                                {group}
+                              </option>
+                            ))}
+                          </Form.Select>
+                          <Form.Control.Feedback type="invalid">
+                            {errors.blood_group}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      {/* Ambulance Type */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Ambulance Type *</Form.Label>
+                          <div className="d-flex gap-4 mt-2">
+                            <Form.Check
+                              type="radio"
+                              id="advance"
+                              name="ambulance_type"
+                              value="Advance"
+                              label="Advance"
+                              checked={formData.ambulance_type === "Advance"}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.ambulance_type}
+                            />
+                            <Form.Check
+                              type="radio"
+                              id="basic"
+                              name="ambulance_type"
+                              value="Basic"
+                              label="Basic"
+                              checked={formData.ambulance_type === "Basic"}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.ambulance_type}
+                            />
+                          </div>
+                          {errors.ambulance_type && (
+                            <div className="invalid-feedback d-block">
+                              {errors.ambulance_type}
+                            </div>
+                          )}
+                        </Form.Group>
+                      </Col>
+
+                      {/* State */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">
+                            State *
+                          </Form.Label>
+                          <Form.Select
+                            name="state"
+                            value={formData.state}
+                            onChange={handleInputChange}
+                            isInvalid={!!errors.state}
+                            className="py-2"
+                          >
+                            <option value="">Select your state</option>
+                            {states.map((state) => (
+                              <option key={state.isoCode} value={state.name}>
+                                {state.name}
+                              </option>
+                            ))}
+                          </Form.Select>
+                          <Form.Control.Feedback type="invalid">
+                            {errors.state}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      {/* City */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">
+                            City *
+                          </Form.Label>
+                          <Form.Select
+                            name="city"
+                            value={formData.city}
+                            onChange={handleInputChange}
+                            isInvalid={!!errors.city}
+                            className="py-2"
+                            disabled={!selectedStateCode}
+                          >
+                            <option value="">
+                              {selectedStateCode ? "Select your city" : "Please select a state first"}
+                            </option>
+                            {cities.map((city) => (
+                              <option key={city.name} value={city.name}>
+                                {city.name}
+                              </option>
+                            ))}
+                          </Form.Select>
+                          <Form.Control.Feedback type="invalid">
+                            {errors.city}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      {/* Address */}
+                      <Col md={12} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">
+                            Complete Address *
+                          </Form.Label>
+                          <Form.Control
+                            as="textarea"
+                            rows={3}
+                            name="address"
+                            value={formData.address}
+                            onChange={handleInputChange}
+                            placeholder="Enter your complete address"
+                            isInvalid={!!errors.address}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.address}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      {/* Ambulance Details Section */}
+                      <Col md={12} className="mb-4">
+                        <h4 className="text-center mb-4 bg-primary-subtle py-2 rounded" style={{ color: "var(--primary-color-600)", fontWeight: "bold" }}>
+                          Vehicle & Driver Details
+                        </h4>
+                      </Col>
+
+                      {/* RC Number */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">RC Number *</Form.Label>
+                          <Form.Control
+                            type="text"
+                            name="rc_no"
+                            value={formData.rc_no}
+                            onChange={handleInputChange}
+                            placeholder="Enter RC number"
+                            isInvalid={!!errors.rc_no}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.rc_no}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      {/* RC Picture Upload */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">RC Picture *</Form.Label>
+                          <Form.Control
+                            type="file"
+                            name="rc_pic"
+                            onChange={handleInputChange}
+                            accept="image/*"
+                            isInvalid={!!errors.rc_pic}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.rc_pic}
+                          </Form.Control.Feedback>
+                          
+                          {/* Image Preview */}
+                          {filePreviews.rc_pic && (
+                            <div className="mt-3 position-relative">
+                              <img
+                                src={filePreviews.rc_pic}
+                                alt="RC Preview"
+                                className="img-thumbnail"
+                                style={{ maxWidth: "200px", maxHeight: "150px" }}
+                              />
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                className="position-absolute top-0 end-0 rounded-circle"
+                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
+                                onClick={() => handleRemoveFile('rc_pic')}
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          )}
+                        </Form.Group>
+                      </Col>
+
+                      {/* Vehicle Number */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Vehicle Number *</Form.Label>
+                          <Form.Control
+                            type="text"
+                            name="vehicle_no"
+                            value={formData.vehicle_no}
+                            onChange={handleInputChange}
+                            placeholder="Enter vehicle number (e.g., MH12AB1234)"
+                            isInvalid={!!errors.vehicle_no}
+                            className="py-2"
+                            style={{ textTransform: 'uppercase' }}
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.vehicle_no}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      {/* Experience */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Driving Experience *</Form.Label>
+                          <Form.Select
+                            name="experience"
+                            value={formData.experience}
+                            onChange={handleInputChange}
+                            isInvalid={!!errors.experience}
+                            className="py-2"
+                          >
+                            <option value="">Select your experience</option>
+                            {experienceOptions.map((exp) => (
+                              <option key={exp} value={exp}>
+                                {exp}
+                              </option>
+                            ))}
+                          </Form.Select>
+                          <Form.Control.Feedback type="invalid">
+                            {errors.experience}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      {/* Insurance Holder */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Insurance Holder Name *</Form.Label>
+                          <Form.Control
+                            type="text"
+                            name="insurance_holder"
+                            value={formData.insurance_holder}
+                            onChange={handleInputChange}
+                            placeholder="Enter insurance holder name"
+                            isInvalid={!!errors.insurance_holder}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.insurance_holder}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      {/* Insurance Expiry */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Insurance Expiry Date *</Form.Label>
+                          <Form.Control
+                            type="date"
+                            name="insurance_expiry"
+                            value={formData.insurance_expiry}
+                            onChange={handleInputChange}
+                            isInvalid={!!errors.insurance_expiry}
+                            className="py-2"
+                            min={new Date().toISOString().split('T')[0]}
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.insurance_expiry}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      {/* Insurance Picture */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Insurance Document *</Form.Label>
+                          <Form.Control
+                            type="file"
+                            name="insurance_pic"
+                            onChange={handleInputChange}
+                            accept="image/*"
+                            isInvalid={!!errors.insurance_pic}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.insurance_pic}
+                          </Form.Control.Feedback>
+                          
+                          {filePreviews.insurance_pic && (
+                            <div className="mt-3 position-relative">
+                              <img
+                                src={filePreviews.insurance_pic}
+                                alt="Insurance Preview"
+                                className="img-thumbnail"
+                                style={{ maxWidth: "200px", maxHeight: "150px" }}
+                              />
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                className="position-absolute top-0 end-0 rounded-circle"
+                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
+                                onClick={() => handleRemoveFile('insurance_pic')}
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          )}
+                        </Form.Group>
+                      </Col>
+
+                      {/* polution Expiry */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">polution Certificate Expiry *</Form.Label>
+                          <Form.Control
+                            type="date"
+                            name="polution_expiry"
+                            value={formData.polution_expiry}
+                            onChange={handleInputChange}
+                            isInvalid={!!errors.polution_expiry}
+                            className="py-2"
+                            min={new Date().toISOString().split('T')[0]}
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.polution_expiry}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      {/* polution Picture */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">polution Certificate *</Form.Label>
+                          <Form.Control
+                            type="file"
+                            name="polution_pic"
+                            onChange={handleInputChange}
+                            accept="image/*"
+                            isInvalid={!!errors.polution_pic}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.polution_pic}
+                          </Form.Control.Feedback>
+                          
+                          {filePreviews.polution_pic && (
+                            <div className="mt-3 position-relative">
+                              <img
+                                src={filePreviews.polution_pic}
+                                alt="polution Certificate Preview"
+                                className="img-thumbnail"
+                                style={{ maxWidth: "200px", maxHeight: "150px" }}
+                              />
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                className="position-absolute top-0 end-0 rounded-circle"
+                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
+                                onClick={() => handleRemoveFile('polution_pic')}
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          )}
+                        </Form.Group>
+                      </Col>
+
+                      {/* Driver Picture */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Driver Photo *</Form.Label>
+                          <Form.Control
+                            type="file"
+                            name="driver_pic"
+                            onChange={handleInputChange}
+                            accept="image/*"
+                            isInvalid={!!errors.driver_pic}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.driver_pic}
+                          </Form.Control.Feedback>
+                          
+                          {filePreviews.driver_pic && (
+                            <div className="mt-3 position-relative">
+                              <img
+                                src={filePreviews.driver_pic}
+                                alt="Driver Photo Preview"
+                                className="img-thumbnail"
+                                style={{ maxWidth: "200px", maxHeight: "150px" }}
+                              />
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                className="position-absolute top-0 end-0 rounded-circle"
+                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
+                                onClick={() => handleRemoveFile('driver_pic')}
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          )}
+                        </Form.Group>
+                      </Col>
+
+                      {/* Driving License Picture */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Driving License *</Form.Label>
+                          <Form.Control
+                            type="file"
+                            name="driving_licence_pic"
+                            onChange={handleInputChange}
+                            accept="image/*"
+                            isInvalid={!!errors.driving_licence_pic}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.driving_licence_pic}
+                          </Form.Control.Feedback>
+                          
+                          {filePreviews.driving_licence_pic && (
+                            <div className="mt-3 position-relative">
+                              <img
+                                src={filePreviews.driving_licence_pic}
+                                alt="Driving License Preview"
+                                className="img-thumbnail"
+                                style={{ maxWidth: "200px", maxHeight: "150px" }}
+                              />
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                className="position-absolute top-0 end-0 rounded-circle"
+                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
+                                onClick={() => handleRemoveFile('driving_licence_pic')}
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          )}
+                        </Form.Group>
+                      </Col>
+
+                      {/* Ambulance Front Picture */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Ambulance Front Photo *</Form.Label>
+                          <Form.Control
+                            type="file"
+                            name="ambulance_front_pic"
+                            onChange={handleInputChange}
+                            accept="image/*"
+                            isInvalid={!!errors.ambulance_front_pic}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.ambulance_front_pic}
+                          </Form.Control.Feedback>
+                          
+                          {filePreviews.ambulance_front_pic && (
+                            <div className="mt-3 position-relative">
+                              <img
+                                src={filePreviews.ambulance_front_pic}
+                                alt="Ambulance Front Preview"
+                                className="img-thumbnail"
+                                style={{ maxWidth: "200px", maxHeight: "150px" }}
+                              />
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                className="position-absolute top-0 end-0 rounded-circle"
+                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
+                                onClick={() => handleRemoveFile('ambulance_front_pic')}
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          )}
+                        </Form.Group>
+                      </Col>
+
+                      {/* Ambulance Back Picture */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Ambulance Back Photo *</Form.Label>
+                          <Form.Control
+                            type="file"
+                            name="ambulance_back_pic"
+                            onChange={handleInputChange}
+                            accept="image/*"
+                            isInvalid={!!errors.ambulance_back_pic}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.ambulance_back_pic}
+                          </Form.Control.Feedback>
+                          
+                          {filePreviews.ambulance_back_pic && (
+                            <div className="mt-3 position-relative">
+                              <img
+                                src={filePreviews.ambulance_back_pic}
+                                alt="Ambulance Back Preview"
+                                className="img-thumbnail"
+                                style={{ maxWidth: "200px", maxHeight: "150px" }}
+                              />
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                className="position-absolute top-0 end-0 rounded-circle"
+                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
+                                onClick={() => handleRemoveFile('ambulance_back_pic')}
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          )}
+                        </Form.Group>
+                      </Col>
+
+                      {/* Ambulance Fitness Expiry */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Fitness Certificate Expiry *</Form.Label>
+                          <Form.Control
+                            type="date"
+                            name="ambulance_fitness_expiry"
+                            value={formData.ambulance_fitness_expiry}
+                            onChange={handleInputChange}
+                            isInvalid={!!errors.ambulance_fitness_expiry}
+                            className="py-2"
+                            min={new Date().toISOString().split('T')[0]}
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.ambulance_fitness_expiry}
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      {/* Ambulance Fitness Picture */}
+                      <Col md={6} className="mb-3">
+                        <Form.Group>
+                          <Form.Label className="fw-semibold text-dark">Fitness Certificate *</Form.Label>
+                          <Form.Control
+                            type="file"
+                            name="ambulance_fitness_pic"
+                            onChange={handleInputChange}
+                            accept="image/*"
+                            isInvalid={!!errors.ambulance_fitness_pic}
+                            className="py-2"
+                          />
+                          <Form.Control.Feedback type="invalid">
+                            {errors.ambulance_fitness_pic}
+                          </Form.Control.Feedback>
+                          
+                          {filePreviews.ambulance_fitness_pic && (
+                            <div className="mt-3 position-relative">
+                              <img
+                                src={filePreviews.ambulance_fitness_pic}
+                                alt="Fitness Certificate Preview"
+                                className="img-thumbnail"
+                                style={{ maxWidth: "200px", maxHeight: "150px" }}
+                              />
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                className="position-absolute top-0 end-0 rounded-circle"
+                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
+                                onClick={() => handleRemoveFile('ambulance_fitness_pic')}
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          )}
+                        </Form.Group>
+                      </Col>
+
+                      
+                    </Row>
+
+                    <div className="d-grid gap-2 mt-4">
+                      <Button
+                        type="submit"
+                        size="lg"
+                        disabled={isSubmitting}
+                        className="py-3 fw-semibold"
+                        style={{
+                          backgroundColor: "var(--primary-color-600)",
+                          border: "none",
+                          borderRadius: "12px"
+                        }}
                       >
-                        <option value="">--Select State--</option>
-                        {states.map((state) => (
-                          <option key={state.isoCode} value={state.isoCode}>
-                            {state.name}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
+                        {isSubmitting ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Registering...
+                          </>
+                        ) : (
+                          <>
+                            Register Ambulance
+                          </>
+                        )}
+                      </Button>
+                    </div>
 
-                    <Form.Group
-                      controlId="city"
-                      className="position-relative mb-3 col-6"
-                    >
-                      <Form.Label>City</Form.Label>
-                      <Form.Select
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
-                        disabled={cities.length === 0}
-                      >
-                        <option value="">--Select City--</option>
-                        {cities.map((city) => (
-                          <option key={city.name} value={city.name}>
-                            {city.name}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-
-                    <Form.Group
-                      controlId="rc_no"
-                      className="position-relative mb-3 col-6"
-                    >
-                      <Form.Label>RC Book No:</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="rc_no"
-                        value={formData.rc_no}
-                        onChange={handleChange}
-                      />
-                    </Form.Group>
-
-                    <Form.Group
-                      controlId="rc_pic"
-                      className="position-relative mb-3 col-6"
-                    >
-                      <Form.Label>RC Book Photo:</Form.Label>
-                      <Form.Control
-                        type="file"
-                        name="rc_pic"
-                        accept=".jpg,.png"
-                        onChange={handleChange}
-                      />
-                    </Form.Group>
-
-                    <Form.Group
-                      controlId="aadhar_no"
-                      className="position-relative mb-3 col-6"
-                    >
-                      <Form.Label>Aadhar No:</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="aadhar_no"
-                        value={formData.aadhar_no}
-                        onChange={handleChange}
-                      />
-                    </Form.Group>
-
-                    <Form.Group
-                      controlId="aadhar_pic"
-                      className="position-relative mb-3 col-6"
-                    >
-                      <Form.Label>Aadhar Photo:</Form.Label>
-                      <Form.Control
-                        type="file"
-                        name="aadhar_pic"
-                        accept=".jpg,.png"
-                        onChange={handleChange}
-                      />
-                    </Form.Group>
-
-                    <Form.Group
-                      controlId="password"
-                      className="position-relative mb-3"
-                    >
-                      <Form.Label>Address</Form.Label>
-                      <Form.Control
-                        as={"textarea"}
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        rows={3}
-                      />
-                    </Form.Group>
-
-                    <Button
-                      type="button"
-                      onClick={ambulance_reg}
-                      className="btn btn-primary d-block w-100 theme_btn mt-4"
-                    >
-                      Register
-                    </Button>
-                  </Form>
-
-                  <div style={{ marginTop: 20 }}>
-                    Already have an account?{" "}
-                    <button
-                      onClick={() => {
-                        navigate("/ambulance");
-                      }}
-                      style={{
-                        color: "blue",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Login here
-                    </button>
-                  </div>
-                </div>
-              </Col>
-            ) : (
-              ""
-            )}
-            {amb_otp === true ? (
-              <Col md={5}>
-                <div className="register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100">
-                  <div className="text-center">
-                    <h3>OTP Verification</h3>
-                    <p className="w-75 mx-auto">
-                      Lorem Ipsum is simply dummy text of the printing and
-                      typesetting industry
-                    </p>
-                    <Form>
-                      <Form.Group
-                        as={Col}
-                        controlId="otp"
-                        className="position-relative my-3"
-                      >
-                        <Form.Control
-                          type="text"
-                          name="otp"
-                          value={otp}
-                          onChange={(e) => setotp(e.target.value)}
-                          placeholder="Ex:- 1234"
-                          className="otpfield"
-                          pattern="[0-9]{4}"
-                        />
-                      </Form.Group>
-                    </Form>
-                    <div className="form_bottom_div text-end mt-3">
-                      <p>
-                        <Link className="form-link">Resend OTP ?</Link>{" "}
+                    <div className="text-center mt-4">
+                      <p className="text-muted mb-0">
+                        Already have an account?{" "}
+                        <a href="/ambulance" className="text-decoration-none fw-semibold" style={{ color: "var(--primary-color-600)" }}>
+                          Sign in here
+                        </a>
                       </p>
                     </div>
-                  </div>
+                  </Form>
+                  ) : (
+                    /* OTP Verification Form */
+                    <div className="text-center">
+                      <div className="mb-4">
+                        <div className="mx-auto mb-3" style={{ width: "80px", height: "80px", backgroundColor: "var(--primary-color-100)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <span style={{ fontSize: "2rem", color: "var(--primary-color-600)" }}>📱</span>
+                        </div>
+                        <h4 className="mb-2" style={{ color: "var(--primary-color-600)" }}>Verify Your Mobile Number</h4>
+                        <p className="text-muted mb-4">
+                          We've sent a 6-digit verification code to<br />
+                          <strong>{formData.mobile}</strong>
+                        </p>
+                      </div>
 
-                  <Button
-                    type="button"
-                    onClick={otpverifydone}
-                    className="d-block w-100 theme_btn my-3"
-                  >
-                    Verify OTP
-                  </Button>
-                </div>
-              </Col>
-            ) : (
-              ""
-            )}
+                      <Form onSubmit={handleOtpVerification}>
+                        <div className="d-flex justify-content-center gap-2 mb-4">
+                          {otp.map((digit, index) => (
+                            <Form.Control
+                              key={index}
+                              type="text"
+                              name={`otp-${index}`}
+                              value={digit}
+                              onChange={(e) => handleOtpChange(index, e.target.value)}
+                              onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                              className="text-center fw-bold"
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                fontSize: "1.2rem",
+                                border: "2px solid var(--primary-color-300)",
+                                borderRadius: "8px"
+                              }}
+                              maxLength="1"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                            />
+                          ))}
+                        </div>
+
+                        {otpErrors && (
+                          <Alert variant="danger" className="mb-3">
+                            {otpErrors}
+                          </Alert>
+                        )}
+
+                        <div className="d-grid gap-2 mb-4">
+                          <Button
+                            type="submit"
+                            size="lg"
+                            disabled={isVerifyingOtp}
+                            className="py-3 fw-semibold"
+                            style={{
+                              backgroundColor: "var(--primary-color-600)",
+                              border: "none",
+                              borderRadius: "12px"
+                            }}
+                          >
+                            {isVerifyingOtp ? (
+                              <>
+                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Verifying...
+                              </>
+                            ) : (
+                              "Verify OTP"
+                            )}
+                          </Button>
+                        </div>
+
+                        <div className="text-center">
+                          <p className="text-muted mb-2">Didn't receive the code?</p>
+                          {canResendOtp ? (
+                            <Button
+                              variant="link"
+                              onClick={handleResendOtp}
+                              className="p-0 fw-semibold"
+                              style={{ color: "var(--primary-color-600)" }}
+                            >
+                              Resend OTP
+                            </Button>
+                          ) : (
+                            <span className="text-muted">
+                              Resend OTP in {resendTimer}s
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="text-center mt-4">
+                          <Button
+                            variant="outline-secondary"
+                            onClick={() => {
+                              setShowOtpForm(false);
+                              setOtp(['', '', '', '', '', '']);
+                              setOtpErrors('');
+                            }}
+                          >
+                            ← Back to Registration
+                          </Button>
+                        </div>
+                      </Form>
+                    </div>
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
           </Row>
         </Container>
-        <ToastContainer />
-        {loading ? <Loader /> : ""}
       </div>
     </>
   );
