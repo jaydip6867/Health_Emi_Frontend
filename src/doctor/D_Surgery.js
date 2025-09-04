@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { MdDelete, MdEditDocument, MdOutlineRemoveRedEye } from 'react-icons/md';
 import CryptoJS from "crypto-js";
 import DataTable from 'react-data-table-component';
+import { FiChevronsRight, FiPlus, FiX } from 'react-icons/fi';
 
 const D_Surgery = () => {
     const SECRET_KEY = "health-emi";
@@ -61,7 +62,56 @@ const D_Surgery = () => {
         }
     };
 
-    var surgeryobj = { name: '', price: '', days: '', additional_features: '', description: '', surgerytypeid: '', inclusive: incl, exclusive: excl, yearsof_experience: '', completed_surgery: '', features: 'Blade-free laser',general_price:'',semiprivate_price:'',private_price:'',delux_price:'' }
+    // State for inclusive/exclusive inputs
+    const [inclusiveInput, setInclusiveInput] = useState('');
+    const [exclusiveInput, setExclusiveInput] = useState('');
+    const [inclusiveItems, setInclusiveItems] = useState([]);
+    const [exclusiveItems, setExclusiveItems] = useState([]);
+
+    // Handle adding inclusive/exclusive items with duplicate check
+    const handleAddInclusive = () => {
+        const trimmedInput = inclusiveInput.trim();
+        if (trimmedInput && !inclusiveItems.some(item => item.toLowerCase() === trimmedInput.toLowerCase())) {
+            setInclusiveItems([...inclusiveItems, trimmedInput]);
+            setInclusiveInput('');
+        } else if (inclusiveItems.some(item => item.toLowerCase() === trimmedInput.toLowerCase())) {
+            toast.warning('This item already exists in the list');
+        }
+    };
+
+    const handleAddExclusive = () => {
+        const trimmedInput = exclusiveInput.trim();
+        if (trimmedInput && !exclusiveItems.some(item => item.toLowerCase() === trimmedInput.toLowerCase())) {
+            setExclusiveItems([...exclusiveItems, trimmedInput]);
+            setExclusiveInput('');
+        } else if (exclusiveItems.some(item => item.toLowerCase() === trimmedInput.toLowerCase())) {
+            toast.warning('This item already exists in the list');
+        }
+    };
+
+    // Handle removing items
+    const handleRemoveInclusive = (index) => {
+        const newItems = [...inclusiveItems];
+        newItems.splice(index, 1);
+        setInclusiveItems(newItems);
+    };
+
+    const handleRemoveExclusive = (index) => {
+        const newItems = [...exclusiveItems];
+        newItems.splice(index, 1);
+        setExclusiveItems(newItems);
+    };
+
+    // Update surgery data with the lists when form is submitted
+    const updateSurgeryWithLists = () => {
+        setsurgery(prev => ({
+            ...prev,
+            inclusive: inclusiveItems.join(', '),
+            exclusive: exclusiveItems.join(', ')
+        }));
+    };
+
+    var surgeryobj = { name: '', price: '', days: '', additional_features: '', description: '', surgerytypeid: '', inclusive: incl, exclusive: excl, yearsof_experience: '', completed_surgery: '', features: 'Blade-free laser',general_price:'',semiprivate_price:'',private_price:'',delux_price:'', surgery_photo: '' }
     const [surgery, setsurgery] = useState(surgeryobj)
     const [surgerylist, setsurgerylist] = useState(null)
 
@@ -119,38 +169,89 @@ const D_Surgery = () => {
         });
     }
 
-    function addsurgery() {
-        var surgerydata = { ...surgery };
-        surgerydata.inclusive = selectedinclItems.join(', ')
-        surgerydata.exclusive = selectedexclItems.join(', ')
-        setsurgery(surgerydata)
-        console.log(surgerydata)
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState('');
 
-        setloading(true)
-        axios({
-            method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/surgeries/save',
-            headers: {
-                Authorization: token,
-            },
-            // data: surgery
-            data: surgerydata
-        }).then((res) => {
-            // toast('Surgery added...', { className: 'custom-toast-success' })
+    // Handle file selection with preview close
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+            setPreviewUrl(URL.createObjectURL(file));
+        }
+    };
+
+    // Function to remove preview
+    const removePreview = () => {
+        setSelectedFile(null);
+        setPreviewUrl('');
+        // Clear the file input
+        document.getElementById('surgery_photo').value = '';
+    };
+
+    // Function to upload file
+    const uploadFile = async () => {
+        if (!selectedFile) return '';
+        
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        try {
+            const response = await axios.post('https://healtheasy-o25g.onrender.com/user/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data.Data.url;
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            toast.error('Failed to upload image');
+            throw error;
+        }
+    };
+
+    async function addsurgery() {
+        try {
+            setloading(true);
+            
+            // Upload the file first
+            let photoUrl = '';
+            if (selectedFile) {
+                photoUrl = await uploadFile();
+            }
+
+            var surgerydata = { 
+                ...surgery,
+                inclusive: inclusiveItems.join(', '),
+                exclusive: exclusiveItems.join(', '),
+                surgery_photo: photoUrl
+            };
+
+            const response = await axios({
+                method: 'post',
+                url: 'https://healtheasy-o25g.onrender.com/doctor/surgeries/save',
+                headers: {
+                    Authorization: token,
+                },
+                data: surgerydata
+            });
+
             Swal.fire({
                 title: "Surgery Added...",
                 icon: "success",
             });
-            getsurgery()
+            
+            getsurgery();
             setsurgery(surgeryobj);
-            handlesurClose()
-        }).catch(function (error) {
-            // console.log(error);
-            toast(error.response.data.Message, { className: 'custom-toast-error' })
-        }).finally(() => {
-            setloading(false)
-        });
-        // console.log(surgery)
+            setSelectedFile(null);
+            setPreviewUrl('');
+            handlesurClose();
+        } catch (error) {
+            console.error('Error:', error);
+            toast.error(error.response?.data?.Message || 'An error occurred');
+        } finally {
+            setloading(false);
+        }
     }
 
     function deletesurgery(sid) {
@@ -232,6 +333,7 @@ const D_Surgery = () => {
             yearsof_experience: datasingle[0].yearsof_experience,
             completed_surgery: datasingle[0].completed_surgery,
             features: datasingle[0].features,
+            surgery_photo: datasingle[0].surgery_photo
         };
         const ed_incl_items = surgeryobj.inclusive.split(',').map(item => item.trim());
         const ed_excl_items = surgeryobj.exclusive.split(',').map(item => item.trim());
@@ -259,34 +361,46 @@ const D_Surgery = () => {
         // console.log(edit_record)
     };
 
-    function editsurgery() {
-        var editsurgerydata = { ...edit_record };
-        editsurgerydata.inclusive = selectededitinclItems.join(', ')
-        editsurgerydata.exclusive = selectededitexclItems.join(', ')
-        seteditrecord(editsurgerydata)
-        // console.log(edit_record)
-        setloading(true)
-        axios({
-            method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/surgeries/save',
-            headers: {
-                Authorization: token,
-            },
-            data: editsurgerydata
-        }).then((res) => {
+    async function editsurgery() {
+        try {
+            setloading(true);
+            
+            // Upload the file first
+            let photoUrl = '';
+            if (selectedFile) {
+                photoUrl = await uploadFile();
+            }
+
+            var editsurgerydata = { 
+                ...edit_record,
+                inclusive: selectededitinclItems.join(', '),
+                exclusive: selectededitexclItems.join(', '),
+                surgery_photo: photoUrl
+            };
+
+            const response = await axios({
+                method: 'post',
+                url: 'https://healtheasy-o25g.onrender.com/doctor/surgeries/save',
+                headers: {
+                    Authorization: token,
+                },
+                data: editsurgerydata
+            });
+
             Swal.fire({
                 title: "Surgery Updated...",
                 icon: "success",
             });
-            getsurgery()
+            
+            getsurgery();
             seteditrecord(null)
-            edithandleClose()
-        }).catch(function (error) {
-            console.log(error);
-            toast(error.response.data.Message, { className: 'custom-toast-error' })
-        }).finally(() => {
-            setloading(false)
-        });
+            edithandleClose();
+        } catch (error) {
+            console.error('Error:', error);
+            toast.error(error.response?.data?.Message || 'An error occurred');
+        } finally {
+            setloading(false);
+        }
     }
 
     // show add surgery model 
@@ -455,17 +569,41 @@ const D_Surgery = () => {
                                                 </Form.Select>
                                             </div>
                                         </Form.Group> */}
-                                        <Form.Group controlId="name" className='mb-3 col-md-3'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Surgery Name</Form.Label>
-                                                <Form.Control placeholder="Ex:- Cataract Surgery" name="name" value={surgery.name} onChange={selsurgery} />
-                                            </div>
+                                        <Form.Group className="mb-3 col-12 col-md-6">
+                                            <Form.Label>Surgery Name</Form.Label>
+                                            <Form.Control type="text" placeholder="Enter Surgery Name" name="name" value={surgery.name} onChange={selsurgery} />
                                         </Form.Group>
-                                        
+
+                                        <Form.Group controlId="surgery_photo" className='mb-3 col-12 col-md-6'>
+                                            <Form.Label>Surgery Photo</Form.Label>
+                                            <Form.Control 
+                                                type="file" 
+                                                accept="image/*" 
+                                                onChange={handleFileChange} 
+                                                className="mb-2"
+                                            />
+                                            {previewUrl && (
+                                                <div className="mt-2 position-relative" style={{ display: 'inline-block' }}>
+                                                    <img 
+                                                        src={previewUrl} 
+                                                        alt="Preview" 
+                                                        style={{ maxWidth: '200px', maxHeight: '200px' }} 
+                                                        className="img-thumbnail"
+                                                    />
+                                                    <button 
+                                                        type="button" 
+                                                        className="btn-close position-absolute" 
+                                                        style={{ top: '5px', right: '5px', backgroundColor: 'white', padding: '5px' }}
+                                                        onClick={removePreview}
+                                                        aria-label="Remove preview"
+                                                    ></button>
+                                                </div>
+                                            )}
+                                        </Form.Group>
+
                                         <Form.Group controlId="days" className='mb-3 col-6 col-md-3'>
                                             <div className='position-relative'>
                                                 <Form.Label>Days Of Surgery</Form.Label>
-                                                {/* <Form.Control placeholder="Ex:- 1" name="days" value={surgery.days} onChange={selsurgery} /> */}
                                                 <Form.Select name="days" value={surgery.days} onChange={selsurgery}>
                                                     <option value={''} selected disabled>Select Days</option>
                                                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, '10+', '15+', '20+', '25+', '30+', '45+'].map((level) => (
@@ -554,39 +692,112 @@ const D_Surgery = () => {
                                             </div>
                                         </Form.Group> */}
 
-                                        <div></div>
-                                        <Form.Group controlId="description" className='mb-3 col-12 col-md-6'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Inclusive</Form.Label>
-                                                {incl_items.map((item, incl_index) => (
-                                                    <Form.Check
-                                                        key={incl_index}
-                                                        type="checkbox"
-                                                        value={item}
-                                                        id={incl_index + 'i'}
-                                                        checked={selectedinclItems?.includes(item)}
-                                                        onChange={() => handleinclChange(item)}
-                                                        label={item}
-                                                    />
-                                                ))}
+                                        {/* Inclusive Section */}
+                                        <Form.Group className='mb-4 col-12'>
+                                            <div className="card shadow-sm">
+                                                <div className="card-header bg-light">
+                                                    <h6 className="mb-0 fw-bold">
+                                                        <i className="fas fa-check-circle text-success me-2"></i>
+                                                        Inclusive Items
+                                                    </h6>
+                                                </div>
+                                                <div className="card-body">
+                                                    <div className="d-flex mb-3">
+                                                        <Form.Control 
+                                                            type="text" 
+                                                            value={inclusiveInput}
+                                                            onChange={(e) => setInclusiveInput(e.target.value)}
+                                                            placeholder="Type and press Enter to add item"
+                                                            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddInclusive())}
+                                                            className="form-control"
+                                                            style={{ fontSize: '0.95rem' }}
+                                                        />
+                                                        <Button 
+                                                            variant="success" 
+                                                            className="ms-2 px-4 d-flex align-items-center"
+                                                            onClick={handleAddInclusive}
+                                                        >
+                                                               <FiPlus className="me-2 text-white"/> <div className=''>Add</div>
+                                                        </Button>
+                                                    </div>
+                                                    {inclusiveItems.length > 0 && (
+                                                        <ul className="list-group" style={{ fontSize: '0.95rem' }}>
+                                                            {inclusiveItems.map((item, index) => (
+                                                                <li key={index} className="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2">
+                                                                    <span>
+                                                                    <FiChevronsRight className="me-2 text-success"/>
+                                                                        {item}
+                                                                    </span>
+                                                                    <Button 
+                                                                        variant="danger" 
+                                                                        size="sm"
+                                                                        onClick={(e) => { e.stopPropagation(); handleRemoveInclusive(index); }}
+                                                                        className="rounded-circle"
+                                                                        style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                                    >
+                                                                       <FiX className="text-white" />
+                                                                    </Button>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    )}
+                                                </div>
                                             </div>
                                         </Form.Group>
-                                        <Form.Group controlId="description" className='mb-3 col-12 col-md-6'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Exclusive</Form.Label>
-                                                {excl_items.map((item, excl_index) => (
-                                                    <Form.Check
-                                                        key={excl_index}
-                                                        type="checkbox"
-                                                        value={item}
-                                                        id={excl_index + 'e'}
-                                                        checked={selectedexclItems?.includes(item)}
-                                                        onChange={() => handleexclChange(item)}
-                                                        label={item}
-                                                    />
-                                                ))}
+
+                                        {/* Exclusive Section */}
+                                        <Form.Group className='mb-4 col-12'>
+                                            <div className="card shadow-sm">
+                                                <div className="card-header bg-light">
+                                                    <h6 className="mb-0 fw-bold">
+                                                        <i className="fas fa-times-circle text-danger me-2"></i>
+                                                        Exclusive Items
+                                                    </h6>
+                                                </div>
+                                                <div className="card-body">
+                                                    <div className="d-flex mb-3">
+                                                        <Form.Control 
+                                                            type="text" 
+                                                            value={exclusiveInput}
+                                                            onChange={(e) => setExclusiveInput(e.target.value)}
+                                                            placeholder="Type and press Enter to add item"
+                                                            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddExclusive())}
+                                                            className="form-control"
+                                                            style={{ fontSize: '0.95rem' }}
+                                                        />
+                                                        <Button 
+                                                            variant="danger" 
+                                                            className="ms-2 px-4 d-flex align-items-center"
+                                                            onClick={handleAddExclusive}
+                                                        >
+                                                            <FiPlus className="me-2 text-white"/> <div className=''>Add</div>
+                                                        </Button>
+                                                    </div>
+                                                    {exclusiveItems.length > 0 && (
+                                                        <ul className="list-group" style={{ fontSize: '0.95rem' }}>
+                                                            {exclusiveItems.map((item, index) => (
+                                                                <li key={index} className="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2">
+                                                                    <span>
+                                                                    <FiChevronsRight className="me-2 text-danger"/>
+                                                                        {item}
+                                                                    </span>
+                                                                    <Button 
+                                                                        variant="danger" 
+                                                                        size="sm"
+                                                                        onClick={(e) => { e.stopPropagation(); handleRemoveExclusive(index); }}
+                                                                        className="rounded-circle"
+                                                                        style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                                    >
+                                                                         <FiX className="text-white" />
+                                                                    </Button>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    )}
+                                                </div>
                                             </div>
                                         </Form.Group>
+
                                         <Form.Group controlId="additional_features" className='mb-3 col-12 col-md-6'>
                                             <div className='position-relative'>
                                                 <Form.Label>additional_features</Form.Label>
@@ -602,7 +813,7 @@ const D_Surgery = () => {
                                         </Form.Group>
 
                                         <Form.Group className='col-12'>
-                                            <Form.Control type='button' value={'Add Surgery Deatil'} onClick={addsurgery} className='theme_btn' />
+                                            <Form.Control type='button' value={'Add Surgery Deatil'} onClick={() => {updateSurgeryWithLists(); addsurgery()}} className='theme_btn' />
                                         </Form.Group>
                                     </Form>
                                 </div>
@@ -632,6 +843,7 @@ const D_Surgery = () => {
                                         <p><b>Surgery Description :- </b><span>{v?.description}</span></p>
                                         <p><b>Inclusive :- </b><span>{v?.inclusive}</span></p>
                                         <p><b>Exclusive :- </b><span>{v?.exclusive}</span></p>
+                                        <p><b>Surgery Photo :- </b><span><img src={v?.surgery_photo} alt="Surgery Photo" style={{ maxWidth: '200px', maxHeight: '200px' }} className="img-thumbnail" /></span></p>
                                     </div>
                                 </Modal.Body>
                             </Modal>
@@ -668,11 +880,45 @@ const D_Surgery = () => {
                                         </Form.Select>
                                     </div>
                                 </Form.Group> */}
-                                <Form.Group controlId="name" className='mb-3 col-md-3'>
-                                    <div className='position-relative'>
-                                        <Form.Label>Surgery Name</Form.Label>
-                                        <Form.Control placeholder="Ex:- Cataract Surgery" name="name" value={edit_record.name} onChange={seleditsurgery} />
-                                    </div>
+                                <Form.Group className="mb-3 col-12 col-md-6">
+                                    <Form.Label>Surgery Name</Form.Label>
+                                    <Form.Control type="text" placeholder="Enter Surgery Name" name="name" value={edit_record?.name || ''} onChange={seleditsurgery} />
+                                </Form.Group>
+
+                                <Form.Group controlId="edit_surgery_photo" className='mb-3 col-12 col-md-6'>
+                                    <Form.Label>Surgery Photo</Form.Label>
+                                    <Form.Control 
+                                        type="file" 
+                                        accept="image/*" 
+                                        onChange={handleFileChange} 
+                                        className="mb-2"
+                                    />
+                                    {previewUrl ? (
+                                        <div className="mt-2 position-relative" style={{ display: 'inline-block' }}>
+                                            <img 
+                                                src={previewUrl} 
+                                                alt="New Preview" 
+                                                style={{ maxWidth: '200px', maxHeight: '200px' }} 
+                                                className="img-thumbnail"
+                                            />
+                                            <button 
+                                                type="button" 
+                                                className="btn-close position-absolute" 
+                                                style={{ top: '5px', right: '5px', backgroundColor: 'white', padding: '5px' }}
+                                                onClick={removePreview}
+                                                aria-label="Remove preview"
+                                            ></button>
+                                        </div>
+                                    ) : edit_record?.surgery_photo ? (
+                                        <div className="mt-2 position-relative" style={{ display: 'inline-block' }}>
+                                            <img 
+                                                src={edit_record.surgery_photo} 
+                                                alt="Current Surgery" 
+                                                style={{ maxWidth: '200px', maxHeight: '200px' }} 
+                                                className="img-thumbnail"
+                                            />
+                                        </div>
+                                    ) : null}
                                 </Form.Group>
 
                                 <Form.Group controlId="days" className='mb-3 col-3'>
@@ -813,8 +1059,9 @@ const D_Surgery = () => {
                                         <Form.Control as="textarea" placeholder="Ex:- Cataract surgery involves removing ...." name="description" value={edit_record.description} onChange={seleditsurgery} />
                                     </div>
                                 </Form.Group>
+
                                 <Form.Group className='mb-3 col-12'>
-                                    <Form.Control type='button' value={'Update Surgery'} onClick={editsurgery} className='theme_btn' />
+                                    <Form.Control type='button' value={'Update Surgery'} onClick={() => {updateSurgeryWithLists(); editsurgery()}} className='theme_btn' />
                                 </Form.Group>
                             </Form>
                         </Modal.Body>
