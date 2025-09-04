@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import NavBar from './Component/NavBar'
-import { Card, Col, Container, Row } from 'react-bootstrap'
+import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap'
 import Loader from '../Loader'
 import FooterBar from './Component/FooterBar'
 import axios from 'axios'
 import { Link, useParams } from 'react-router-dom'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom';
+import SearchBox from './Component/SearchBox'
+import { MdFilterListAlt } from 'react-icons/md'
 
 const Surgerydoctorlist = () => {
     const SECRET_KEY = "health-emi";
@@ -60,6 +62,55 @@ const Surgerydoctorlist = () => {
     return (
         <>
             <NavBar logindata={patient} />
+            {/* search box */}
+            <SearchBox />
+
+            {/* filter by below list */}
+            <Container>
+                <Row className='justify-content-center'>
+                    <Col xs='auto'>
+                        <Button variant='secondary' className='rounded-pill'><MdFilterListAlt className='fs-5' />Filter</Button>
+                    </Col>
+                    <Col xs='auto'>
+                        <Form.Select className='rounded-pill outline-secondary'>
+                            <option>Gender</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                        </Form.Select>
+                    </Col>
+                    <Col xs='auto'>
+                        <Form.Select className='rounded-pill outline-secondary'>
+                            <option>Fees</option>
+                            <option>0 - 1000</option>
+                            <option>1000 - 2000</option>
+                            <option>2000 - 5000</option>
+                            <option>5000 - 15000</option>
+                            <option>15000 up</option>
+                        </Form.Select>
+                    </Col>
+                    <Col xs='auto'>
+                        <Form.Select className='rounded-pill outline-secondary'>
+                            <option>Availability</option>
+                        </Form.Select>
+                    </Col>
+                    <Col xs='auto'>
+                        <Form.Select className='rounded-pill outline-secondary'>
+                            <option>Consult Type</option>
+                        </Form.Select>
+                    </Col>
+                    <Col xs='auto'>
+                        <Form.Select className='rounded-pill outline-secondary'>
+                            <option>Experience</option>
+                            {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
+                                <option key={level} value={level}>
+                                    {level} years
+                                </option>
+                            ))}
+                        </Form.Select>
+                    </Col>
+                </Row>
+            </Container>
             {/* doctor list section */}
             <section className='py-5'>
                 <Container>

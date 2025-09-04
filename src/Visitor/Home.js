@@ -67,9 +67,9 @@ const Home = () => {
           <Row className='justify-content-center g-4'>
             <Col xs={12} sm={6} lg={3}>
               <Card className='functionality_box'>
-                <Card.Img src={require('./assets/book-ambulance-image.png')} alt='video consultant' />
+                <Card.Img src={require('./assets/find-doctor-image.png')} alt='video consultant' />
                 <Card.Body>
-                  <Card.Title>Book Ambulance <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
+                  <Card.Title>Find Doctor <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
                 </Card.Body>
               </Card>
             </Col>
@@ -83,17 +83,17 @@ const Home = () => {
             </Col>
             <Col xs={12} sm={6} lg={3}>
               <Card className='functionality_box'>
-                <Card.Img src={require('./assets/find-doctor-image.png')} alt='video consultant' />
+                <Card.Img variant="top" src={require('./assets/surgeries-image.png')} alt='video consultant' />
                 <Card.Body>
-                  <Card.Title>Find Doctor <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
+                  <Card.Title>Surgeries <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
                 </Card.Body>
               </Card>
             </Col>
             <Col xs={12} sm={6} lg={3}>
               <Card className='functionality_box'>
-                <Card.Img variant="top" src={require('./assets/surgeries-image.png')} alt='video consultant' />
+                <Card.Img src={require('./assets/book-ambulance-image.png')} alt='video consultant' />
                 <Card.Body>
-                  <Card.Title>Surgeries <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
+                  <Card.Title>Book Ambulance <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
                 </Card.Body>
               </Card>
             </Col>
@@ -119,53 +119,53 @@ const Home = () => {
         </Container> */}
       </section>
       {/* speciality section */}
-      <section className='py-5'>
+      <section className='spacer-y'>
         <Container>
           <Row className='justify-content-between head_sec'>
             <Col xs={'auto'}><h2><span>Top</span> Specialities</h2></Col>
             <Col xs={'auto'}><button className='theme-btn-outline'>View All Specialities</button></Col>
           </Row>
-          <Row>
+          <Row className='flex-nowrap overflow-x-auto'>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('../assets/image/period.png')} className='img-fluid' alt='period' />
-                <h6 className='mb-1'>Period doubts or Pregnancy </h6>
-                <Link className='stretched-link'>Consult Now</Link>
+                <img src={require('./assets/gyanecology.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+                <h6 className='mt-3'>gyanecology</h6>
               </div>
             </Col>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('../assets/image/period.png')} className='img-fluid' alt='period' />
-                <h6 className='mb-1'>Period doubts or Pregnancy </h6>
-                <Link className='stretched-link'>Consult Now</Link>
+                <img src={require('./assets/sexology.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+                <h6 className='mt-3'>Sexology</h6>
               </div>
             </Col>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('../assets/image/period.png')} className='img-fluid' alt='period' />
-                <h6 className='mb-1'>Period doubts or Pregnancy </h6>
-                <Link className='stretched-link'>Consult Now</Link>
+                <img src={require('./assets/general-physiciann.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+                <h6 className='mt-3'>general-physiciann</h6>
               </div>
             </Col>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('../assets/image/period.png')} className='img-fluid' alt='period' />
-                <h6 className='mb-1'>Period doubts or Pregnancy </h6>
-                <Link className='stretched-link'>Consult Now</Link>
+                <img src={require('./assets/dermatology.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+                <h6 className='mt-3'>Dermatology</h6>
               </div>
             </Col>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('../assets/image/period.png')} className='img-fluid' alt='period' />
-                <h6 className='mb-1'>Period doubts or Pregnancy </h6>
-                <Link className='stretched-link'>Consult Now</Link>
+                <img src={require('./assets/psychiatry.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+                <h6 className='mt-3'>Psychiatry</h6>
               </div>
             </Col>
             <Col>
               <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('../assets/image/period.png')} className='img-fluid' alt='period' />
-                <h6 className='mb-1'>Period doubts or Pregnancy </h6>
-                <Link className='stretched-link'>Consult Now</Link>
+                <img src={require('./assets/urology.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+                <h6 className='mt-3'>Urology</h6>
+              </div>
+            </Col>
+            <Col>
+              <div className='card border-0 speciality_box_item text-center'>
+                <img src={require('./assets/stomachdigestion.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+                <h6 className='mt-3'>Stomach & Digestion</h6>
               </div>
             </Col>
           </Row>
