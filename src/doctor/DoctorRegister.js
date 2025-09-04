@@ -60,6 +60,14 @@ const DoctorRegister = () => {
         setStates(filteredStates);
         setCities([]);
         setSelectedStateCode("");
+        
+        // Clear validation error for country
+        if (profileValidationErrors.country) {
+            setProfileValidationErrors(prev => ({
+                ...prev,
+                country: ''
+            }));
+        }
     };
 
     // When user selects a state
@@ -75,6 +83,14 @@ const DoctorRegister = () => {
 
         const filteredCities = City.getCitiesOfState(selectedCountryCode, stateCode);
         setCities(filteredCities);
+        
+        // Clear validation error for state
+        if (profileValidationErrors.state) {
+            setProfileValidationErrors(prev => ({
+                ...prev,
+                state: ''
+            }));
+        }
     };
 
 
@@ -94,6 +110,193 @@ const DoctorRegister = () => {
         password: '',
     }
 
+    // Validation errors state
+    const [validationErrors, setValidationErrors] = useState({
+        name: '',
+        email: '',
+        mobile: '',
+        pincode: '',
+        gender: ''
+    });
+
+    // Profile validation errors state
+    const [profileValidationErrors, setProfileValidationErrors] = useState({
+        specialty: '',
+        sub_specialty: '',
+        degree_registration_no: '',
+        qualification: '',
+        experience: '',
+        hospital_name: '',
+        hospital_address: '',
+        country: '',
+        state: '',
+        city: ''
+    });
+
+    // Validation functions
+    const validateName = (name) => {
+        const nameRegex = /^[A-Za-z\s]+$/;
+        if (!name.trim()) {
+            return 'Name is required';
+        }
+        if (!nameRegex.test(name)) {
+            return 'Name should contain only letters and spaces';
+        }
+        return '';
+    };
+
+    const validateMobile = (mobile) => {
+        const mobileRegex = /^[0-9]+$/;
+        if (!mobile.trim()) {
+            return 'Mobile number is required';
+        }
+        if (!mobileRegex.test(mobile)) {
+            return 'Mobile number should contain only numeric digits';
+        }
+        if (mobile.length !== 10) {
+            return 'Mobile number should be exactly 10 digits';
+        }
+        return '';
+    };
+
+    const validatePincode = (pincode) => {
+        const pincodeRegex = /^[0-9]{6}$/;
+        if (!pincode.trim()) {
+            return 'Pincode is required';
+        }
+        if (!pincodeRegex.test(pincode)) {
+            return 'Pincode should be exactly 6 numeric digits';
+        }
+        return '';
+    };
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email.trim()) {
+            return 'Email is required';
+        }
+        if (!emailRegex.test(email)) {
+            return 'Please enter a valid email address';
+        }
+        return '';
+    };
+
+    const validateGender = (gender) => {
+        if (!gender) {
+            return 'Please select a gender';
+        }
+        return '';
+    };
+
+    const validateQualification = (qualification) => {
+        const qualificationRegex = /^[A-Za-z\s.,]+$/;
+        if (!qualification.trim()) {
+            return 'Qualification is required';
+        }
+        if (!qualificationRegex.test(qualification)) {
+            return 'Qualification should contain only letters, spaces, commas and periods';
+        }
+        return '';
+    };
+
+    const validateSpecialty = (specialty) => {
+        if (!specialty || !specialty.trim()) {
+            return 'Specialty is required';
+        }
+        return '';
+    };
+
+    const validateSubSpecialty = (sub_specialty) => {
+        if (!sub_specialty || !sub_specialty.trim()) {
+            return 'Sub specialty is required';
+        }
+        return '';
+    };
+
+    const validateDegreeRegistrationNo = (degree_registration_no) => {
+        if (!degree_registration_no || !degree_registration_no.trim()) {
+            return 'Degree registration number is required';
+        }
+        return '';
+    };
+
+    const validateExperience = (experience) => {
+        if (!experience || !experience.trim()) {
+            return 'Experience is required';
+        }
+        return '';
+    };
+
+    const validateHospitalName = (hospital_name) => {
+        if (!hospital_name || !hospital_name.trim()) {
+            return 'Hospital name is required';
+        }
+        return '';
+    };
+
+    const validateHospitalAddress = (hospital_address) => {
+        if (!hospital_address || !hospital_address.trim()) {
+            return 'Hospital address is required';
+        }
+        return '';
+    };
+
+    const validateCountry = (country) => {
+        if (!country || !country.trim()) {
+            return 'Country is required';
+        }
+        return '';
+    };
+
+    const validateState = (state) => {
+        if (!state || !state.trim()) {
+            return 'State is required';
+        }
+        return '';
+    };
+
+    const validateCity = (city) => {
+        if (!city || !city.trim()) {
+            return 'City is required';
+        }
+        return '';
+    };
+
+    const validateForm = () => {
+        const errors = {
+            name: validateName(frmdoctor.name),
+            email: validateEmail(frmdoctor.email),
+            mobile: validateMobile(frmdoctor.mobile),
+            pincode: validatePincode(frmdoctor.pincode),
+            gender: validateGender(frmdoctor.gender)
+        };
+        
+        setValidationErrors(errors);
+        
+        // Check if there are any errors
+        return !Object.values(errors).some(error => error !== '');
+    };
+
+    const validateProfileForm = () => {
+        const errors = {
+            specialty: validateSpecialty(frmdocprofile.specialty),
+            sub_specialty: validateSubSpecialty(frmdocprofile.sub_specialty),
+            degree_registration_no: validateDegreeRegistrationNo(frmdocprofile.degree_registration_no),
+            qualification: validateQualification(frmdocprofile.qualification),
+            experience: validateExperience(frmdocprofile.experience),
+            hospital_name: validateHospitalName(frmdocprofile.hospital_name),
+            hospital_address: validateHospitalAddress(frmdocprofile.hospital_address),
+            country: validateCountry(frmdocprofile.country),
+            state: validateState(frmdocprofile.state),
+            city: validateCity(frmdocprofile.city)
+        };
+        
+        setProfileValidationErrors(errors);
+        
+        // Check if there are any errors
+        return !Object.values(errors).some(error => error !== '');
+    };
+
     var profile_data = {
         specialty: '',
         sub_specialty: '',
@@ -105,24 +308,50 @@ const DoctorRegister = () => {
         country: '',
         state: '',
         city: '',
-        identityproof: ''
+        identityproof: 'https://res.cloudinary.com/dyta12cyq/image/upload/v1757002869/uploads/ib1e4zdjx0hlqlron7zx.jpg'
     }
     const [frmdoctor, setfrmdoctor] = useState(frmdata);
     const [frmdocprofile, setdocprofile] = useState(profile_data);
 
     const selfrmdata = (e) => {
         const { name, value } = e.target;
-        doc_reg ?
+        
+        if (doc_reg) {
             setfrmdoctor(frmdoctor => ({
                 ...frmdoctor,
                 [name]: value
-            })) : setdocprofile(frmdocprofile => ({
+            }));
+            
+            // Clear validation error for this field when user starts typing
+            if (validationErrors[name]) {
+                setValidationErrors(prev => ({
+                    ...prev,
+                    [name]: ''
+                }));
+            }
+        } else {
+            setdocprofile(frmdocprofile => ({
                 ...frmdocprofile,
                 [name]: value
-            }))
+            }));
+            
+            // Clear profile validation error for this field when user starts typing
+            if (profileValidationErrors[name]) {
+                setProfileValidationErrors(prev => ({
+                    ...prev,
+                    [name]: ''
+                }));
+            }
+        }
     };
 
     function send_doctor_otp() {
+        // Validate form before sending OTP
+        if (!validateForm()) {
+            toast('Please fix the validation errors before proceeding', { className: 'custom-toast-error' });
+            return;
+        }
+        
         setloading(true)
         // console.log(frmdoctor)
         axios({
@@ -142,6 +371,44 @@ const DoctorRegister = () => {
     }
 
     const [otp, setotp] = useState('');
+    const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
+
+    // Handle OTP input change
+    const handleOtpChange = (index, value) => {
+        // Only allow single digit
+        if (value.length > 1) return;
+        
+        // Only allow numbers
+        if (value && !/^[0-9]$/.test(value)) return;
+        
+        const newOtpDigits = [...otpDigits];
+        newOtpDigits[index] = value;
+        setOtpDigits(newOtpDigits);
+        
+        // Update the main otp variable
+        const otpString = newOtpDigits.join('');
+        setotp(otpString);
+        
+        // Auto focus to next input
+        if (value && index < 5) {
+            const nextInput = document.getElementById(`otp-${index + 1}`);
+            if (nextInput) nextInput.focus();
+        }
+    };
+
+    // Handle backspace
+    const handleOtpKeyDown = (index, e) => {
+        if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+            const prevInput = document.getElementById(`otp-${index - 1}`);
+            if (prevInput) {
+                prevInput.focus();
+                const newOtpDigits = [...otpDigits];
+                newOtpDigits[index - 1] = '';
+                setOtpDigits(newOtpDigits);
+                setotp(newOtpDigits.join(''));
+            }
+        }
+    };
 
     function otpverifydone() {
         console.log(frmdoctor)
@@ -177,6 +444,12 @@ const DoctorRegister = () => {
     }
 
     function profileadd() {
+        // Validate profile form before submission
+        if (!validateProfileForm()) {
+            toast('Please fix the validation errors before proceeding', { className: 'custom-toast-error' });
+            return;
+        }
+        
         console.log(frmdocprofile)
         var doctordata = JSON.parse(localStorage.getItem('doctordetail'));
         var token = doctordata.data.Data.accessToken
@@ -263,6 +536,14 @@ const DoctorRegister = () => {
         })
         setdselcat(d_data);
         console.log(e.target.value, d_data, frmdocprofile)
+        
+        // Clear validation error for specialty
+        if (profileValidationErrors.specialty) {
+            setProfileValidationErrors(prev => ({
+                ...prev,
+                specialty: ''
+            }));
+        }
     }
 
     const subchange = (e) => {
@@ -272,6 +553,14 @@ const DoctorRegister = () => {
         setsubname(sub_name[0].categoryname)
         // console.log(sub_name[0].categoryname)
         setdocprofile({ ...frmdocprofile, sub_specialty: sub_name[0].categoryname })
+        
+        // Clear validation error for sub_specialty
+        if (profileValidationErrors.sub_specialty) {
+            setProfileValidationErrors(prev => ({
+                ...prev,
+                sub_specialty: ''
+            }));
+        }
     }
 
 
@@ -288,42 +577,92 @@ const DoctorRegister = () => {
                                     <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
                                 </div>
                                 <Form autoComplete='off'>
-                                    <Form.Group as={Col} controlId="fullname" className='position-relative mb-3'>
+                                    <Form.Group as={Col} controlId="fullname" className='mb-3'>
                                         <Form.Label>Full Name</Form.Label>
-                                        <Form.Control type="text" placeholder="Full Name" className='frm_input' name="name" value={frmdoctor.name} onChange={selfrmdata} />
-                                        <AiOutlineUser className='icon_input' />
+                                        <Form.Control 
+                                            type="text" 
+                                            placeholder="Full Name" 
+                                            className={`frm_input ${validationErrors.name ? 'is-invalid' : ''}`} 
+                                            name="name" 
+                                            value={frmdoctor.name} 
+                                            onChange={selfrmdata} 
+                                        />
+                                        {validationErrors.name && (
+                                            <div className="invalid-feedback">
+                                                {validationErrors.name}
+                                            </div>
+                                        )}
                                     </Form.Group>
 
-                                    <Form.Group as={Col} controlId="email" className='position-relative mb-3'>
+                                    <Form.Group as={Col} controlId="email" className='mb-3'>
                                         <Form.Label>Email</Form.Label>
-                                        <Form.Control type="email" placeholder="Email" autoComplete='off' className='frm_input' name="email" value={frmdoctor.email} onChange={selfrmdata} />
-                                        <FaRegEnvelope className='icon_input' />
+                                        <Form.Control 
+                                            type="email" 
+                                            placeholder="Email" 
+                                            autoComplete='off' 
+                                            className={`frm_input ${validationErrors.email ? 'is-invalid' : ''}`} 
+                                            name="email" 
+                                            value={frmdoctor.email} 
+                                            onChange={selfrmdata} 
+                                        />
+                                        {validationErrors.email && (
+                                            <div className="invalid-feedback">
+                                                {validationErrors.email}
+                                            </div>
+                                        )}
                                     </Form.Group>
 
-                                    <Form.Group controlId="mobile" className='position-relative mb-3'>
+                                    <Form.Group controlId="mobile" className='mb-3'>
                                         <Form.Label>Mobile No.</Form.Label>
-                                        <Form.Control placeholder="Mobile No." className='frm_input' name='mobile' value={frmdoctor.mobile} onChange={selfrmdata} />
-                                        <AiOutlinePhone className='icon_input' />
+                                        <Form.Control 
+                                            placeholder="Mobile No." 
+                                            className={`frm_input ${validationErrors.mobile ? 'is-invalid' : ''}`} 
+                                            name='mobile' 
+                                            value={frmdoctor.mobile} 
+                                            onChange={selfrmdata} 
+                                            maxLength="10"
+                                        />
+                                        {validationErrors.mobile && (
+                                            <div className="invalid-feedback">
+                                                {validationErrors.mobile}
+                                            </div>
+                                        )}
                                     </Form.Group>
 
-                                    <Form.Group className='position-relative mb-3'>
+                                    <Form.Group className='mb-3'>
                                         <Form.Label>Gender </Form.Label>
                                         <div className='d-flex gap-3'>
-                                            <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' onChange={selfrmdata} /> Male</label>
-                                            <label><Form.Check type='radio' name='gender' value={'Female'} className='d-inline-block me-2' onChange={selfrmdata} /> Female</label>
+                                            <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' onChange={selfrmdata} checked={frmdoctor.gender === 'Male'} /> Male</label>
+                                            <label><Form.Check type='radio' name='gender' value={'Female'} className='d-inline-block me-2' onChange={selfrmdata} checked={frmdoctor.gender === 'Female'} /> Female</label>
+                                            <label><Form.Check type='radio' name='gender' value={'Other'} className='d-inline-block me-2' onChange={selfrmdata} checked={frmdoctor.gender === 'Other'} /> Other</label>
                                         </div>
+                                        {validationErrors.gender && (
+                                            <div className="text-danger small mt-1">
+                                                {validationErrors.gender}
+                                            </div>
+                                        )}
                                     </Form.Group>
 
-                                    <Form.Group controlId="pincode" className='position-relative mb-3'>
+                                    <Form.Group controlId="pincode" className='mb-3'>
                                         <Form.Label>Pincode</Form.Label>
-                                        <Form.Control placeholder="Pincode" className='frm_input' name='pincode' value={frmdoctor.pincode} onChange={selfrmdata} />
-                                        <CiLocationOn className='icon_input' />
+                                        <Form.Control 
+                                            placeholder="Pincode" 
+                                            className={`frm_input ${validationErrors.pincode ? 'is-invalid' : ''}`} 
+                                            name='pincode' 
+                                            value={frmdoctor.pincode} 
+                                            onChange={selfrmdata} 
+                                            maxLength="6"
+                                        />
+                                        {validationErrors.pincode && (
+                                            <div className="invalid-feedback">
+                                                {validationErrors.pincode}
+                                            </div>
+                                        )}
                                     </Form.Group>
 
-                                    <Form.Group controlId="password" className='position-relative mb-3'>
+                                    <Form.Group controlId="password" className='mb-3'>
                                         <Form.Label>Password</Form.Label>
                                         <Form.Control type='password' placeholder="Password" autoComplete='off' className='frm_input' name='password' value={frmdoctor.password} onChange={selfrmdata} />
-                                        <CiLock className='icon_input' />
                                     </Form.Group>
 
                                     {/* <Form.Group controlId="password" className='position-relative mb-3'>
@@ -349,17 +688,43 @@ const DoctorRegister = () => {
                                     <h3>OTP Verification</h3>
                                     <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
                                     <Form>
-                                        <Form.Group as={Col} controlId="fullname" className='position-relative my-3'>
-                                            <Form.Control type="text" name='otp' value={otp} onChange={(e) => setotp(e.target.value)} placeholder="Ex:- 1234" className='otpfield' pattern='[0-9]{4}' />
-                                        </Form.Group>
+                                        <div className='my-4'>
+                                            <Form.Label className='d-block text-center mb-3 fw-bold'>Enter 6-Digit OTP</Form.Label>
+                                            <div className='d-flex justify-content-center gap-2'>
+                                                {otpDigits.map((digit, index) => (
+                                                    <Form.Control
+                                                        key={index}
+                                                        id={`otp-${index}`}
+                                                        type="text"
+                                                        value={digit}
+                                                        onChange={(e) => handleOtpChange(index, e.target.value)}
+                                                        onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                                                        className='text-center fw-bold border-2'
+                                                        style={{
+                                                            width: '50px',
+                                                            height: '50px',
+                                                            fontSize: '20px',
+                                                            borderRadius: '8px'
+                                                        }}
+                                                        maxLength="1"
+                                                    />
+                                                ))}
+                                            </div>
+                                            <small className='d-block text-center text-muted mt-2'>Enter the 6-digit code sent to your email</small>
+                                        </div>
                                     </Form>
                                     <div className='form_bottom_div text-end mt-3'>
                                         <p><Link className='form-link'>Resend OTP ?</Link> </p>
                                     </div>
                                 </div>
 
-                                <Button type="button" onClick={otpverifydone} className='d-block w-100 theme_btn my-3'>
-                                    Verify OTP
+                                <Button 
+                                    type="button" 
+                                    onClick={otpverifydone} 
+                                    className='d-block w-100 theme_btn my-3'
+                                    disabled={otp.length !== 6}
+                                >
+                                    {otp.length === 6 ? 'Verify OTP' : `Enter ${6 - otp.length} more digit${6 - otp.length > 1 ? 's' : ''}`}
                                 </Button>
                             </div>
                         </Col> : ''
@@ -375,13 +740,23 @@ const DoctorRegister = () => {
                                     <Form.Group as={Col} controlId="Speciality" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Speciality</Form.Label>
-                                            <Form.Select name="specialty" value={s_type_name} onChange={schange}>
+                                            <Form.Select 
+                                                name="specialty" 
+                                                value={s_type_name} 
+                                                onChange={schange}
+                                                className={`${profileValidationErrors.specialty ? 'is-invalid' : ''}`}
+                                            >
                                                 {/* <Form.Control type="text" placeholder="Ex:- Cardiology" className='frm_input' name="specialty" value={frmdocprofile.specialty} onChange={selfrmdata} /> */}
                                                 <option value={''}>Select Surgery Type</option>
                                                 {s_type?.map((v, i) => {
                                                     return (<option key={i} value={v._id}>{v.surgerytypename}</option>)
                                                 })}
                                             </Form.Select>
+                                            {profileValidationErrors.specialty && (
+                                                <div className="invalid-feedback">
+                                                    {profileValidationErrors.specialty}
+                                                </div>
+                                            )}
                                         </div>
                                     </Form.Group>
 
@@ -389,35 +764,70 @@ const DoctorRegister = () => {
                                         <div className='position-relative'>
                                             <Form.Label>Sub Speciality</Form.Label>
                                             {/* <Form.Control type="email" placeholder="Ex:- Echocardiography" className='frm_input' name="sub_specialty" value={frmdocprofile.sub_specialty} onChange={selfrmdata} /> */}
-                                            <Form.Select name="sub_specialty" value={sub_type_name} onChange={subchange}>
+                                            <Form.Select 
+                                                name="sub_specialty" 
+                                                value={sub_type_name} 
+                                                onChange={subchange}
+                                                className={`${profileValidationErrors.sub_specialty ? 'is-invalid' : ''}`}
+                                            >
                                                 <option value={''} selected disabled>Doctor Category</option>
                                                 {d_sel_cat?.map((v, i) => {
                                                     return (<option key={i} value={v._id}>{v.categoryname}</option>)
                                                 })}
                                             </Form.Select>
+                                            {profileValidationErrors.sub_specialty && (
+                                                <div className="invalid-feedback">
+                                                    {profileValidationErrors.sub_specialty}
+                                                </div>
+                                            )}
                                         </div>
                                     </Form.Group>
 
                                     <Form.Group controlId="Degree" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Degree Registration No.</Form.Label>
-                                            <Form.Control placeholder="Ex:- Dk4567" className='frm_input' name="degree_registration_no" value={frmdocprofile.degree_registration_no} onChange={selfrmdata} />
-                                            <AiOutlinePhone className='icon_input' />
+                                            <Form.Control 
+                                                placeholder="Ex:- Dk4567" 
+                                                className={`frm_input ${profileValidationErrors.degree_registration_no ? 'is-invalid' : ''}`} 
+                                                name="degree_registration_no" 
+                                                value={frmdocprofile.degree_registration_no} 
+                                                onChange={selfrmdata} 
+                                            />
+                                            {profileValidationErrors.degree_registration_no && (
+                                                <div className="invalid-feedback">
+                                                    {profileValidationErrors.degree_registration_no}
+                                                </div>
+                                            )}
                                         </div>
                                     </Form.Group>
 
                                     <Form.Group controlId="Qualification" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Qualification</Form.Label>
-                                            <Form.Control placeholder="Ex:- D.H.M.S, MD" className='frm_input' name="qualification" value={frmdocprofile.qualification} onChange={selfrmdata} />
-                                            <CiLock className='icon_input' />
+                                            <Form.Control 
+                                                placeholder="Ex:- D.H.M.S, MD" 
+                                                className={`frm_input ${profileValidationErrors.qualification ? 'is-invalid' : ''}`} 
+                                                name="qualification" 
+                                                value={frmdocprofile.qualification} 
+                                                onChange={selfrmdata} 
+                                            />
+                                            {profileValidationErrors.qualification && (
+                                                <div className="invalid-feedback">
+                                                    {profileValidationErrors.qualification}
+                                                </div>
+                                            )}
                                         </div>
                                     </Form.Group>
 
                                     <Form.Group controlId="Experience" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Experience</Form.Label>
-                                            <Form.Select className='frm_input text-dark' name="experience" value={frmdocprofile.experience} onChange={selfrmdata} >
+                                            <Form.Select 
+                                                className={`frm_input text-dark ${profileValidationErrors.experience ? 'is-invalid' : ''}`} 
+                                                name="experience" 
+                                                value={frmdocprofile.experience} 
+                                                onChange={selfrmdata} 
+                                            >
                                                 <option value={''} selected disabled>Select Experiance</option>
                                                 {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
                                                     <option key={level} value={level+' years'}>
@@ -425,67 +835,128 @@ const DoctorRegister = () => {
                                                     </option>
                                                 ))}
                                             </Form.Select>
+                                            {profileValidationErrors.experience && (
+                                                <div className="invalid-feedback">
+                                                    {profileValidationErrors.experience}
+                                                </div>
+                                            )}
                                         </div>
                                     </Form.Group>
 
                                     <Form.Group controlId="Hospitalname" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Hospital Name</Form.Label>
-                                            <Form.Control placeholder="Enter Hospital Name" className='frm_input' name="hospital_name" value={frmdocprofile.hospital_name} onChange={selfrmdata} />
-                                            <CiLock className='icon_input' />
+                                            <Form.Control 
+                                                placeholder="Enter Hospital Name" 
+                                                className={`frm_input ${profileValidationErrors.hospital_name ? 'is-invalid' : ''}`} 
+                                                name="hospital_name" 
+                                                value={frmdocprofile.hospital_name} 
+                                                onChange={selfrmdata} 
+                                            />
+                                            {profileValidationErrors.hospital_name && (
+                                                <div className="invalid-feedback">
+                                                    {profileValidationErrors.hospital_name}
+                                                </div>
+                                            )}
                                         </div>
                                     </Form.Group>
 
                                     <Form.Group controlId="Hospitaladdress" className='mb-3 col-12'>
                                         <div className='position-relative'>
                                             <Form.Label>Hospital Address</Form.Label>
-                                            <Form.Control as="textarea" placeholder="Enter Hospital Address" name="hospital_address" value={frmdocprofile.hospital_address} onChange={selfrmdata} />
+                                            <Form.Control 
+                                                as="textarea" 
+                                                placeholder="Enter Hospital Address" 
+                                                name="hospital_address" 
+                                                value={frmdocprofile.hospital_address} 
+                                                onChange={selfrmdata} 
+                                                className={`${profileValidationErrors.hospital_address ? 'is-invalid' : ''}`}
+                                            />
+                                            {profileValidationErrors.hospital_address && (
+                                                <div className="invalid-feedback">
+                                                    {profileValidationErrors.hospital_address}
+                                                </div>
+                                            )}
                                         </div>
                                     </Form.Group>
 
                                     <Form.Group as={Col} controlId="Country" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Country</Form.Label>
-                                            <Form.Select className='frm-select' name='country' onChange={handleCountryChange} value={selectedCountryCode}>
+                                            <Form.Select 
+                                                className={`frm-select ${profileValidationErrors.country ? 'is-invalid' : ''}`} 
+                                                name='country' 
+                                                onChange={handleCountryChange} 
+                                                value={selectedCountryCode}
+                                            >
+                                                <option value={''}>Select Country</option>
                                                 {countries.map((country) => (
                                                     <option key={country.isoCode} value={country.isoCode}>
                                                         {country.name}
                                                     </option>
                                                 ))}
                                             </Form.Select>
+                                            {profileValidationErrors.country && (
+                                                <div className="invalid-feedback">
+                                                    {profileValidationErrors.country}
+                                                </div>
+                                            )}
                                         </div>
                                     </Form.Group>
 
                                     <Form.Group as={Col} controlId="State" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>State</Form.Label>
-                                            <Form.Select className='frm-select' name='state' onChange={handleStateChange} value={selectedStateCode} disabled={!selectedCountryCode}>
+                                            <Form.Select 
+                                                className={`frm-select ${profileValidationErrors.state ? 'is-invalid' : ''}`} 
+                                                name='state' 
+                                                onChange={handleStateChange} 
+                                                value={selectedStateCode} 
+                                                disabled={!selectedCountryCode}
+                                            >
+                                                <option value={''}>Select State</option>
                                                 {states.map((state) => (
                                                     <option key={state.isoCode} value={state.isoCode}>
                                                         {state.name}
                                                     </option>
                                                 ))}
                                             </Form.Select>
+                                            {profileValidationErrors.state && (
+                                                <div className="invalid-feedback">
+                                                    {profileValidationErrors.state}
+                                                </div>
+                                            )}
                                         </div>
                                     </Form.Group>
 
                                     <Form.Group as={Col} controlId="City" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>City</Form.Label>
-                                            <Form.Select className='frm-select' name='city' onChange={selfrmdata} disabled={!selectedStateCode}>
+                                            <Form.Select 
+                                                className={`frm-select ${profileValidationErrors.city ? 'is-invalid' : ''}`} 
+                                                name='city' 
+                                                onChange={selfrmdata} 
+                                                disabled={!selectedStateCode}
+                                            >
+                                                <option value={''}>Select City</option>
                                                 {
                                                     cities.map((vc, vi) => {
                                                         return (<option key={vi} value={vc.name}>{vc.name}</option>)
                                                     })
                                                 }
                                             </Form.Select>
+                                            {profileValidationErrors.city && (
+                                                <div className="invalid-feedback">
+                                                    {profileValidationErrors.city}
+                                                </div>
+                                            )}
                                         </div>
                                     </Form.Group>
 
                                     <Form.Group controlId="password" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Upload Identify Document</Form.Label>
-                                            <Form.Control type="file" placeholder="Experience" className='upload_file_doc' />
+                                            <Form.Control type="file" className='upload_file_doc' />
                                         </div>
                                     </Form.Group>
 
