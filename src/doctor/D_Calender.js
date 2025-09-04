@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Col, Container, Dropdown, Modal, Row, Table } from 'react-bootstrap'
+import { Button, Col, Container, Dropdown, Modal, Row, Table, Card, Badge } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
 import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'
@@ -117,55 +117,249 @@ const D_Calender = () => {
                     <DoctorSidebar />
                     <Col xs={12} sm={9} lg={10} className='p-3'>
                         <DoctorNav doctorname={doctor && doctor.name} />
-                        <div className='bg-white rounded p-2'>
-                            {/* <h5 className='mb-4'>Calendar</h5> */}
-                            <FullCalendar
-                                eventDidMount={(info) => {
-                                    info.el.style.backgroundColor = '#003366';
-                                    info.el.style.color = '#fff';
-                                    info.el.style.borderRadius = '5px';
-                                    info.el.style.padding = '2px 5px';
-                                }}
-                                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                                initialView="dayGridMonth"
-                                headerToolbar={{
-                                    left: 'prev,next today',
-                                    center: 'title',
-                                    right: 'dayGridYear,dayGridMonth,timeGridWeek,timeGridDay' // Buttons for switching
-                                }}
-                                events={appointment}
-                                // dateClick={handleDateClick}
-                                eventClick={(info) => {
-                                    if (!info) {
-                                        setSelectedAppointment(null)
-                                    } {
-                                        setSelectedAppointment(info.event.extendedProps); // Store full object
-                                        setShowModal(true);
-                                    }
-                                    console.log(info.event.extendedProps)
-                                }}
+                        {/* Calendar Header */}
+                        <Card className='mb-4 border-0 shadow-sm'>
+                            <Card.Header className='bg-primary text-white py-3'>
+                                <div className='d-flex justify-content-between align-items-center'>
+                                    <h4 className='mb-0 text-white'>Appointment Calendar</h4>
+                                    <Badge bg='light' text='dark' className='px-3 py-2'>
+                                        {appointment ? appointment.length : 0} Appointments
+                                    </Badge>
+                                </div>
+                            </Card.Header>
+                        </Card>
 
-                                height="auto"
-                            />
-                        </div>
+                        {/* Calendar Container */}
+                        <Card className='border-0 shadow-sm'>
+                            <Card.Body className='p-4'>
+                                <style>
+                                    {`
+                                        .fc {
+                                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                        }
+                                        .fc-header-toolbar {
+                                            margin-bottom: 1.5rem !important;
+                                            padding: 1rem;
+                                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                            border-radius: 10px;
+                                            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                                        }
+                                        .fc-toolbar-title {
+                                            color: white !important;
+                                            font-size: 1.5rem !important;
+                                            font-weight: 600 !important;
+                                        }
+                                        .fc-button {
+                                            background: rgba(255,255,255,0.2) !important;
+                                            border: 1px solid rgba(255,255,255,0.3) !important;
+                                            color: white !important;
+                                            border-radius: 8px !important;
+                                            padding: 0.25rem 1rem !important;
+                                            margin: 0 0.25rem !important;
+                                            font-weight: 500 !important;
+                                            transition: all 0.3s ease !important;
+                                        }
+                                        .fc-button:hover {
+                                            background: rgba(255,255,255,0.3) !important;
+                                            transform: translateY(-2px);
+                                            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+                                        }
+                                        .fc-button-active {
+                                            background: rgba(255,255,255,0.4) !important;
+                                            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
+                                        }
+                                        .fc-daygrid-day {
+                                            transition: all 0.3s ease !important;
+                                            cursor: pointer !important;
+                                        }
+                                        .fc-daygrid-day:hover {
+                                            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
+                                            transform: translateY(-2px) !important;
+                                            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2) !important;
+                                            border-radius: 8px !important;
+                                        }
+                                        .fc-daygrid-day-number {
+                                            transition: all 0.3s ease !important;
+                                        }
+                                        .fc-daygrid-day:hover .fc-daygrid-day-number {
+                                            color: #1976d2 !important;
+                                            font-weight: 600 !important;
+                                            transform: scale(1.1) !important;
+                                        }
+                                        .fc-day-today {
+                                            background-color: #e3f2fd !important;
+                                            border: 2px solid #2196f3 !important;
+                                        }
+                                        .fc-col-header-cell {
+                                            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+                                            font-weight: 600 !important;
+                                            color: #333 !important;
+                                            padding: 1rem 0 !important;
+                                        }
+                                        .fc-scrollgrid {
+                                            border-radius: 12px !important;
+                                            overflow: hidden;
+                                            box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+                                        }
+                                        .fc-event {
+                                            border-radius: 8px !important;
+                                            border: none !important;
+                                            padding: 4px 8px !important;
+                                            font-weight: 500 !important;
+                                            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+                                            transition: all 0.2s ease !important;
+                                        }
+                                        .fc-event:hover {
+                                            transform: translateY(-2px) !important;
+                                            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+                                        }
+                                        .modal-header .btn-close {
+                                            filter: invert(1) grayscale(100%) brightness(200%) !important;
+                                        }
+                                    `}
+                                </style>
+                                <FullCalendar
+                                    eventDidMount={(info) => {
+                                        // Dynamic colors based on appointment status
+                                        const status = info.event.extendedProps.status;
+                                        let backgroundColor, textColor;
+                                        
+                                        switch(status?.toLowerCase()) {
+                                            case 'confirmed':
+                                                backgroundColor = '#28a745';
+                                                textColor = '#fff';
+                                                break;
+                                            case 'pending':
+                                                backgroundColor = '#ffc107';
+                                                textColor = '#000';
+                                                break;
+                                            case 'cancelled':
+                                                backgroundColor = '#dc3545';
+                                                textColor = '#fff';
+                                                break;
+                                            case 'completed':
+                                                backgroundColor = '#17a2b8';
+                                                textColor = '#fff';
+                                                break;
+                                            default:
+                                                backgroundColor = '#6f42c1';
+                                                textColor = '#fff';
+                                        }
+                                        
+                                        info.el.style.backgroundColor = backgroundColor;
+                                        info.el.style.color = textColor;
+                                        info.el.style.borderRadius = '8px';
+                                        info.el.style.padding = '4px 8px';
+                                        info.el.style.fontSize = '0.85rem';
+                                        info.el.style.fontWeight = '500';
+                                        info.el.style.cursor = 'pointer';
+                                    }}
+                                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                                    initialView="dayGridMonth"
+                                    headerToolbar={{
+                                        left: 'prev,next today',
+                                        center: 'title',
+                                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                                    }}
+                                    events={appointment}
+                                    eventClick={(info) => {
+                                        if (!info) {
+                                            setSelectedAppointment(null)
+                                        } else {
+                                            setSelectedAppointment(info.event.extendedProps);
+                                            setShowModal(true);
+                                        }
+                                        console.log(info.event.extendedProps)
+                                    }}
+                                    height="auto"
+                                    dayMaxEvents={3}
+                                    moreLinkClick="popover"
+                                    eventDisplay="block"
+                                    displayEventTime={true}
+                                    eventTimeFormat={{
+                                        hour: 'numeric',
+                                        minute: '2-digit',
+                                        meridiem: 'short'
+                                    }}
+                                />
+                            </Card.Body>
+                        </Card>
                     </Col>
                 </Row>
             </Container>
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Appointment Detail</Modal.Title>
+            <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered>
+                <Modal.Header closeButton className='bg-primary text-white'>
+                    <Modal.Title className='d-flex align-items-center'>
+                        Appointment Details
+                    </Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    <p><strong>Patient Name:</strong> {selectedAppointment?.patientname}</p>
-                    <p><strong>Mobile:</strong> {selectedAppointment?.mobile}</p>
-                    <p><strong>Time:</strong> {selectedAppointment?.time}</p>
-                    <p><strong>Reason:</strong> {selectedAppointment?.appointment_reason}</p>
-                    <p><strong>Status:</strong> {selectedAppointment?.status}</p>
-                    <p><strong>Surgery:</strong> {selectedAppointment?.surgerydetails?.name}</p>
+                <Modal.Body className='p-4'>
+                    <Row className='g-4'>
+                        <Col md={6}>
+                            <Card className='h-100 border-0 bg-light'>
+                                <Card.Body>
+                                    <h6 className='text-primary mb-3'>Patient Information</h6>
+                                    <div className='mb-2'>
+                                        <strong>Name:</strong>
+                                        <div className='text-muted'>{selectedAppointment?.patientname || 'N/A'}</div>
+                                    </div>
+                                    <div className='mb-2'>
+                                        <strong>Mobile:</strong>
+                                        <div className='text-muted'>{selectedAppointment?.mobile || 'N/A'}</div>
+                                    </div>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        <Col md={6}>
+                            <Card className='h-100 border-0 bg-light'>
+                                <Card.Body>
+                                    <h6 className='text-success mb-3'>Appointment Details</h6>
+                                    <div className='mb-2'>
+                                        <strong>Time:</strong>
+                                        <div className='text-muted'>{selectedAppointment?.time || 'N/A'}</div>
+                                    </div>
+                                    <div className='mb-2'>
+                                        <strong>Status:</strong>
+                                        <div>
+                                            <Badge 
+                                                bg={
+                                                    selectedAppointment?.status?.toLowerCase() === 'confirmed' ? 'success' :
+                                                    selectedAppointment?.status?.toLowerCase() === 'pending' ? 'warning' :
+                                                    selectedAppointment?.status?.toLowerCase() === 'cancelled' ? 'danger' :
+                                                    selectedAppointment?.status?.toLowerCase() === 'completed' ? 'info' : 'secondary'
+                                                }
+                                                className='px-3 py-2'
+                                            >
+                                                {selectedAppointment?.status || 'N/A'}
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        <Col md={12}>
+                            <Card className='border-0 bg-light'>
+                                <Card.Body>
+                                    <h6 className='text-info mb-3'>Additional Information</h6>
+                                    <div className='mb-3'>
+                                        <strong>Reason for Visit:</strong>
+                                        <div className='text-muted mt-1'>
+                                            {selectedAppointment?.appointment_reason || 'No reason specified'}
+                                        </div>
+                                    </div>
+                                    {selectedAppointment?.surgerydetails?.name && (
+                                        <div className='mb-2'>
+                                            <strong>Surgery:</strong>
+                                            <div className='text-muted mt-1'>
+                                                {selectedAppointment.surgerydetails.name}
+                                            </div>
+                                        </div>
+                                    )}
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    </Row>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
-                </Modal.Footer>
             </Modal>
             {loading ? <Loader /> : ''}
         </>

@@ -113,6 +113,9 @@ const NavBar = ({ logindata }) => {
                   <NavDropdown.Item as={Link} to="/patient">
                     Patient
                   </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/ambulance">
+                    Ambulance
+                  </NavDropdown.Item>
                 </>
               )}
               {/* <NavDropdown.Item as={Link} to="/doctor">

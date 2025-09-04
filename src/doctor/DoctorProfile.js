@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import DoctorSidebar from './DoctorSidebar'
 import DoctorNav from './DoctorNav'
-import { Button, Col, Container, Form, Row } from 'react-bootstrap'
+import { Button, Col, Container, Form, Row, Card } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import Loader from '../Loader'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
-import { AiOutlinePhone, AiOutlineUser } from 'react-icons/ai'
-import { FaRegEnvelope } from 'react-icons/fa'
-import { CiLocationOn, CiLock } from 'react-icons/ci'
 import { Country, State, City } from 'country-state-city';
 import CryptoJS from "crypto-js";
 
@@ -20,6 +17,7 @@ const DoctorProfile = () => {
     const [IsDisable, setdisabled] = useState(true)
 
     const [profile, setprofile] = useState(null)
+    const [profilePicPreview, setProfilePicPreview] = useState(null)
 
     // country , state , city
     const [countries, setCountries] = useState([])
@@ -33,6 +31,15 @@ const DoctorProfile = () => {
     useEffect(() => {
         setCountries(Country.getAllCountries());
     }, []);
+
+    // Cleanup preview URL on component unmount
+    useEffect(() => {
+        return () => {
+            if (profilePicPreview) {
+                URL.revokeObjectURL(profilePicPreview);
+            }
+        };
+    }, [profilePicPreview]);
 
     function getalldataofcsc() {
         setCountries(Country.getAllCountries());
@@ -115,7 +122,7 @@ const DoctorProfile = () => {
             }
         }).then((res) => {
             setprofile(res.data.Data)
-            // console.log('profile', res.data.Data)
+            console.log('profile', res.data.Data)
         }).catch(function (error) {
             console.log(error);
         }).finally(() => {
@@ -163,63 +170,137 @@ const DoctorProfile = () => {
     }
 
     function profiledata(e) {
-        const { name, value } = e.target;
-        setprofile(profile => ({
-            ...profile,
-            [name]: value
-        }))
-        // console.log(profile)
+        const { name, value, type, files } = e.target;
+
+        if (type === 'file' && files && files[0]) {
+            // Handle file upload
+            const file = files[0];
+
+            // Clean up previous preview URL to prevent memory leaks
+            if (profilePicPreview) {
+                URL.revokeObjectURL(profilePicPreview);
+            }
+
+            // Create preview URL
+            const previewUrl = URL.createObjectURL(file);
+            setProfilePicPreview(previewUrl);
+
+            // Update profile with file
+            setprofile(profile => ({
+                ...profile,
+                [name]: file
+            }))
+
+            // Log file details for debugging
+            console.log(`File selected for ${name}:`, {
+                fileName: file.name,
+                fileSize: file.size,
+                fileType: file.type,
+                fileObject: file
+            });
+        } else {
+            // Handle regular form inputs
+            setprofile(profile => ({
+                ...profile,
+                [name]: value
+            }))
+        }
+
+        // Log updated profile for debugging
+        console.log('Updated profile state:', profile);
     }
 
-    function updateprofiledata(id) {
+    async function updateprofiledata(id) {
+        console.log('update profile data = ', id, profile)
+        setloading(true)
 
-        // console.log('update profile data = ', id, profile)
-        // setloading(true)
-        axios({
-            method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/profile/edit',
-            headers: {
-                Authorization: token
-            },
-            data: {
-                "name": profile.name,
-                "email": profile.email,
-                "gender": profile.gender,
-                "mobile": profile.mobile,
-                "pincode": profile.pincode,
-                "specialty": profile.specialty,
-                "sub_specialty": profile.sub_specialty,
-                "qualification": profile.qualification,
-                "experience": profile.experience,
-                "hospital_name": profile.hospital_name,
-                "hospital_address": profile.hospital_address,
-                "country": profile.country,
-                "state": profile.state,
-                "city": profile.city,
-                "identityproof": profile.identityproof
+        try {
+            let updatedProfile = { ...profile };
+
+            // Check if there's a file to upload
+            if (profile.profile_pic && typeof profile.profile_pic === 'object' && profile.profile_pic.name) {
+                console.log('Uploading image first...');
+
+                // Create FormData for file upload
+                const formData = new FormData();
+                formData.append('file', profile.profile_pic);
+
+                // Upload image first
+                const uploadResponse = await axios({
+                    method: 'post',
+                    url: 'https://healtheasy-o25g.onrender.com/user/upload',
+                    headers: {
+                        Authorization: token,
+                        'Content-Type': 'multipart/form-data'
+                    },
+                    data: formData
+                });
+
+                console.log('Image upload response:', uploadResponse.data.Data.url);
+
+                // Update profile with the returned image URL
+                updatedProfile.profile_pic = uploadResponse.data.Data.url;
+                console.log('Updated profile with image URL:', updatedProfile.profile_pic);
             }
-        }).then((res) => {
-            // setprofile(res.data.Data)
+
+            // Now update the profile with all data including image URL
+            const profileResponse = await axios({
+                method: 'post',
+                url: 'https://healtheasy-o25g.onrender.com/doctor/profile/edit',
+                headers: {
+                    Authorization: token
+                },
+                data: {
+                    "name": updatedProfile.name,
+                    "email": updatedProfile.email,
+                    "gender": updatedProfile.gender,
+                    "mobile": updatedProfile.mobile,
+                    "pincode": updatedProfile.pincode,
+                    "specialty": updatedProfile.specialty,
+                    "sub_specialty": updatedProfile.sub_specialty,
+                    "qualification": updatedProfile.qualification,
+                    "experience": updatedProfile.experience,
+                    "hospital_name": updatedProfile.hospital_name,
+                    "hospital_address": updatedProfile.hospital_address,
+                    "country": updatedProfile.country,
+                    "state": updatedProfile.state,
+                    "city": updatedProfile.city,
+                    "profile_pic": updatedProfile.profile_pic
+                }
+            });
+
+            // console.log('Profile update response:', profileResponse.data);
+
+            // Success - refresh profile data and reset form
             getprofiledata()
             setdisabled(true)
             setSelectedCountryCode('')
             setSelectedStateCode('')
+
+            // Clear profile picture preview
+            if (profilePicPreview) {
+                URL.revokeObjectURL(profilePicPreview);
+                setProfilePicPreview(null);
+            }
+
             Swal.fire({
                 title: "Profile Update Successfully...",
                 icon: "success",
             });
-        }).catch(function (error) {
+
+        } catch (error) {
+            console.error('Error updating profile:', error);
             Swal.fire({
                 title: "Profile Not Update.",
-                text: "Something Is Missing. Please Check Details...",
+                text: "Something went wrong. Please check details and try again.",
                 icon: "error",
             });
-        }).finally(() => {
+        } finally {
             setloading(false)
-        });
+        }
     }
 
-    
+
     return (
         <>
             <Container fluid className='p-0 panel'>
@@ -227,177 +308,470 @@ const DoctorProfile = () => {
                     <DoctorSidebar />
                     <Col xs={12} sm={9} lg={10} className='p-3'>
                         <DoctorNav doctorname={doctor && doctor.name} />
-                        <div className='bg-white rounded p-3'>
-                            <h4>Doctor Profile</h4>
+                        <div className='bg-light p-4'>
+                            {/* Header */}
+                            <Card className='mb-4 border-0 shadow-sm'>
+                                <Card.Header className='bg-primary text-white py-3'>
+                                    <h4 className='mb-0 text-white'>Update your Doctor Profile</h4>
+                                </Card.Header>
+                            </Card>
 
-                            {
-                                profile !== null ? <div className='p-3 shadow'>
-                                    <Form className='register_doctor row g-4'>
-                                        <Form.Group as={Col} controlId="name" className='col-6 col-md-4 col-lg-3'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Full Name" className='frm_input' name="name" value={profile && profile.name} disabled={IsDisable} onChange={profiledata} />
-                                                <AiOutlineUser className='icon_input' />
-                                            </div>
-                                        </Form.Group>
+                            {profile !== null ? (
+                                <Form>
+                                    {/* Personal Information Section */}
+                                    <Card className='mb-4 border-0 shadow-sm'>
+                                        <Card.Header className='bg-light border-bottom'>
+                                            <h5 className='mb-0 text-primary'>Personal Information</h5>
+                                        </Card.Header>
+                                        <Card.Body className='p-4'>
+                                            <Row className='g-3'>
+                                                <Col md={6} lg={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Full Name</Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder="Enter your full name"
+                                                            name="name"
+                                                            value={profile?.name || ''}
+                                                            disabled={IsDisable}
+                                                            onChange={profiledata}
+                                                            className='form-control'
+                                                        />
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={6} lg={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Email Address</Form.Label>
+                                                        <Form.Control
+                                                            type="email"
+                                                            placeholder="Enter email address"
+                                                            name="email"
+                                                            value={profile?.email || ''}
+                                                            disabled
+                                                            onChange={profiledata}
+                                                            className='form-control'
+                                                        />
+                                                        <Form.Text className='text-muted'>
+                                                            Email cannot be changed for security reasons
+                                                        </Form.Text>
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={6} lg={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Mobile Number</Form.Label>
+                                                        <Form.Control
+                                                            type="tel"
+                                                            placeholder="Enter mobile number"
+                                                            name='mobile'
+                                                            value={profile?.mobile || ''}
+                                                            disabled
+                                                            onChange={profiledata}
+                                                            className='form-control'
+                                                        />
+                                                        <Form.Text className='text-muted'>
+                                                            Mobile cannot be changed for security reasons
+                                                        </Form.Text>
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={6} lg={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Gender</Form.Label>
+                                                        <div className='d-flex gap-4 mt-2'>
+                                                            <Form.Check
+                                                                type='radio'
+                                                                name='gender'
+                                                                value='Male'
+                                                                id='male'
+                                                                label='Male'
+                                                                checked={profile?.gender === "Male"}
+                                                                onChange={profiledata}
+                                                                disabled={IsDisable}
+                                                            />
+                                                            <Form.Check
+                                                                type='radio'
+                                                                name='gender'
+                                                                value='Female'
+                                                                id='female'
+                                                                label='Female'
+                                                                checked={profile?.gender === "Female"}
+                                                                onChange={profiledata}
+                                                                disabled={IsDisable}
+                                                            />
+                                                        </div>
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={6} lg={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Pincode</Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder="Enter pincode"
+                                                            name='pincode'
+                                                            value={profile?.pincode || ''}
+                                                            disabled={IsDisable}
+                                                            onChange={profiledata}
+                                                            className='form-control'
+                                                        />
+                                                    </Form.Group>
+                                                </Col>
+                                            </Row>
+                                        </Card.Body>
+                                    </Card>
 
-                                        <Form.Group as={Col} controlId="email" className='col-6 col-md-4 col-lg-3'>
-                                            <div className="position-relative">
-                                                <Form.Label>Email</Form.Label>
-                                                <Form.Control type="email" placeholder="Email" className='frm_input' name="email" value={profile && profile.email} disabled onChange={profiledata} />
-                                                <FaRegEnvelope className='icon_input' />
-                                            </div>
-                                        </Form.Group>
+                                    {/* Professional Information Section */}
+                                    <Card className='mb-4 border-0 shadow-sm'>
+                                        <Card.Header className='bg-light border-bottom'>
+                                            <h5 className='mb-0 text-success'>Professional Information</h5>
+                                        </Card.Header>
+                                        <Card.Body className='p-4'>
+                                            <Row className='g-3'>
+                                                <Col md={6} lg={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Specialty</Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder="e.g., Cardiology, Neurology"
+                                                            name="specialty"
+                                                            value={profile?.specialty || ''}
+                                                            disabled
+                                                            onChange={profiledata}
+                                                            className='form-control'
+                                                        />
+                                                        <Form.Text className='text-muted'>
+                                                            Specialty cannot be changed after verification
+                                                        </Form.Text>
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={6} lg={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Sub Specialty</Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder="e.g., Echocardiography"
+                                                            name="sub_specialty"
+                                                            value={profile?.sub_specialty || ''}
+                                                            disabled
+                                                            onChange={profiledata}
+                                                            className='form-control'
+                                                        />
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={6} lg={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Registration Number</Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder="e.g., DK4567"
+                                                            name="degree_registration_no"
+                                                            value={profile?.degree_registration_no || ''}
+                                                            disabled={IsDisable}
+                                                            onChange={profiledata}
+                                                            className='form-control'
+                                                        />
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={6} lg={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Qualification</Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder="e.g., MBBS, MD, MS"
+                                                            name="qualification"
+                                                            value={profile?.qualification || ''}
+                                                            disabled={IsDisable}
+                                                            onChange={profiledata}
+                                                            className='form-control'
+                                                        />
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={6} lg={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Experience</Form.Label>
+                                                        <Form.Select
+                                                            name="experience"
+                                                            value={profile?.experience || ''}
+                                                            disabled={IsDisable}
+                                                            onChange={profiledata}
+                                                            className='form-select'
+                                                        >
+                                                            <option value="">Select Experience</option>
+                                                            {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
+                                                                <option key={level} value={level + ' years'}>
+                                                                    {level} years
+                                                                </option>
+                                                            ))}
+                                                        </Form.Select>
+                                                    </Form.Group>
+                                                </Col>
+                                            </Row>
+                                        </Card.Body>
+                                    </Card>
 
-                                        <Form.Group controlId="mobile" className='col-6 col-md-4 col-lg-3'>
-                                            <div className="position-relative">
-                                                <Form.Label>Mobile No.</Form.Label>
-                                                <Form.Control placeholder="Mobile No." className='frm_input' name='mobile' value={profile && profile.mobile} disabled={IsDisable} onChange={profiledata} />
-                                                <AiOutlinePhone className='icon_input' />
-                                            </div>
-                                        </Form.Group>
+                                    {/* Hospital Information Section */}
+                                    <Card className='mb-4 border-0 shadow-sm'>
+                                        <Card.Header className='bg-light border-bottom'>
+                                            <h5 className='mb-0 text-info'>Hospital & Practice Information</h5>
+                                        </Card.Header>
+                                        <Card.Body className='p-4'>
+                                            <Row className='g-3'>
+                                                <Col md={6}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Hospital/Clinic Name</Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder="Enter hospital or clinic name"
+                                                            name="hospital_name"
+                                                            value={profile?.hospital_name || ''}
+                                                            disabled={IsDisable}
+                                                            onChange={profiledata}
+                                                            className='form-control'
+                                                        />
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={6}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Hospital Address</Form.Label>
+                                                        <Form.Control
+                                                            as="textarea"
+                                                            rows={3}
+                                                            placeholder="Enter complete hospital address"
+                                                            name="hospital_address"
+                                                            value={profile?.hospital_address || ''}
+                                                            disabled={IsDisable}
+                                                            onChange={profiledata}
+                                                            style={{ resize: 'vertical' }}
+                                                        />
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={6}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Profile Picture</Form.Label>
+                                                        <Form.Control
+                                                            type="file"
+                                                            accept="image/*"
+                                                            name='profile_pic'
+                                                            disabled={IsDisable}
+                                                            onChange={profiledata}
+                                                            className='form-control'
+                                                        />
+                                                        <Form.Text className='text-muted'>
+                                                            Upload a professional profile picture (JPG, PNG)
+                                                        </Form.Text>
+                                                        
+                                                        {/* Existing Profile Picture Display */}
+                                                        {profile?.profile_pic && !profilePicPreview && typeof profile.profile_pic === 'string' && (
+                                                            <div className='mt-3'>
+                                                                <div className='d-flex align-items-center gap-3'>
+                                                                    <div>
+                                                                        <img
+                                                                            src={profile.profile_pic}
+                                                                            alt="Current Profile Picture"
+                                                                            style={{
+                                                                                width: '100px',
+                                                                                height: '100px',
+                                                                                objectFit: 'cover',
+                                                                                borderRadius: '8px',
+                                                                                border: '2px solid #28a745'
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                    <div>
+                                                                        <small className='text-success fw-semibold'>✓ Current profile picture</small>
+                                                                        <br />
+                                                                        <small className='text-muted'>Your existing profile image</small>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
 
-                                        <Form.Group controlId="gender" className='col-6 col-md-4 col-lg-3'>
-                                            <Form.Label>Gender </Form.Label>
-                                            <div className='d-flex gap-3'>
-                                                <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' checked={profile && profile.gender === "Male" ? true : false} onChange={profiledata} disabled={IsDisable} /> Male</label>
-                                                <label><Form.Check type='radio' name='gender' value={'Female'} className='d-inline-block me-2' checked={profile && profile.gender === "Female" ? true : false} onChange={profiledata} disabled={IsDisable} /> Female</label>
-                                            </div>
-                                        </Form.Group>
+                                                        {/* Profile Picture Preview */}
+                                                        {profilePicPreview && (
+                                                            <div className='mt-3'>
+                                                                <div className='d-flex align-items-center gap-3'>
+                                                                    <div>
+                                                                        <img
+                                                                            src={profilePicPreview}
+                                                                            alt="Profile Preview"
+                                                                            style={{
+                                                                                width: '100px',
+                                                                                height: '100px',
+                                                                                objectFit: 'cover',
+                                                                                borderRadius: '8px',
+                                                                                border: '2px solid #dee2e6'
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                    <div>
+                                                                        <small className='text-success fw-semibold'>✓ Image selected</small>
+                                                                        <br />
+                                                                        <small className='text-muted'>Preview of your profile picture</small>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </Form.Group>
+                                                </Col>
+                                            </Row>
+                                        </Card.Body>
+                                    </Card>
 
-                                        <Form.Group controlId="mobile" className='col-6 col-md-4 col-lg-3'>
-                                            <div className="position-relative">
-                                                <Form.Label>Pincode</Form.Label>
-                                                <Form.Control placeholder="Pincode" className='frm_input' name='pincode' value={profile && profile.pincode} disabled={IsDisable} onChange={profiledata} />
-                                                <CiLocationOn className='icon_input' />
-                                            </div>
-                                        </Form.Group>
+                                    {/* Location Information Section */}
+                                    <Card className='mb-4 border-0 shadow-sm'>
+                                        <Card.Header className='bg-light border-bottom'>
+                                            <h5 className='mb-0 text-warning'>Location Information</h5>
+                                        </Card.Header>
+                                        <Card.Body className='p-4'>
+                                            <Row className='g-3'>
+                                                <Col md={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>Country</Form.Label>
+                                                        <Form.Select
+                                                            name='country'
+                                                            disabled={IsDisable}
+                                                            onChange={handleCountryChange}
+                                                            className='form-select'
+                                                        >
+                                                            <option value="">Select Country</option>
+                                                            {countries.map((country) => (
+                                                                <option
+                                                                    key={country.isoCode}
+                                                                    value={country.isoCode}
+                                                                    selected={profile?.country === country.name}
+                                                                >
+                                                                    {country.name}
+                                                                </option>
+                                                            ))}
+                                                        </Form.Select>
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>State</Form.Label>
+                                                        <Form.Select
+                                                            name='state'
+                                                            onChange={handleStateChange}
+                                                            value={selectedStateCode}
+                                                            disabled={!selectedCountryCode || IsDisable}
+                                                            className='form-select'
+                                                        >
+                                                            {!selectedCountryCode ? (
+                                                                <option>{profile?.state || 'Select State'}</option>
+                                                            ) : (
+                                                                <option value="">Select State</option>
+                                                            )}
+                                                            {states.map((state) => (
+                                                                <option
+                                                                    key={state.isoCode}
+                                                                    value={state.isoCode}
+                                                                    selected={profile?.state === state.name}
+                                                                >
+                                                                    {state.name}
+                                                                </option>
+                                                            ))}
+                                                        </Form.Select>
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={4}>
+                                                    <Form.Group>
+                                                        <Form.Label className='fw-semibold'>City</Form.Label>
+                                                        <Form.Select
+                                                            name='city'
+                                                            onChange={profiledata}
+                                                            disabled={!selectedStateCode || IsDisable}
+                                                            className='form-select'
+                                                        >
+                                                            {!selectedStateCode ? (
+                                                                <option>{profile?.city || 'Select City'}</option>
+                                                            ) : (
+                                                                <option value="">Select City</option>
+                                                            )}
+                                                            {cities?.map((city, vi) => (
+                                                                <option
+                                                                    key={vi}
+                                                                    value={city.name}
+                                                                    selected={profile?.city === city.name}
+                                                                >
+                                                                    {city.name}
+                                                                </option>
+                                                            ))}
+                                                        </Form.Select>
+                                                    </Form.Group>
+                                                </Col>
+                                            </Row>
+                                        </Card.Body>
+                                    </Card>
 
-                                        <Form.Group as={Col} controlId="Speciality" className='col-6 col-md-4 col-lg-3'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Speciality</Form.Label>
-                                                <Form.Control type="text" placeholder="Ex:- Cardiology" className='frm_input' name="specialty" value={profile && profile.specialty} disabled onChange={profiledata} />
-                                            </div>
-                                        </Form.Group>
+                                    {/* Action Buttons */}
+                                    <Card className='border-0 shadow-sm'>
+                                        <Card.Body className='p-4 text-center'>
+                                            {IsDisable ? (
+                                                <Button
+                                                    variant="primary"
 
-                                        <Form.Group as={Col} controlId="SubSpeciality" className='col-6 col-md-4 col-lg-3'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Sub Speciality</Form.Label>
-                                                <Form.Control type="email" placeholder="Ex:- Echocardiography" className='frm_input' name="sub_specialty" value={profile && profile.sub_specialty} disabled onChange={profiledata} />
-                                            </div>
-                                        </Form.Group>
-
-                                        <Form.Group controlId="Degree" className='col-6 col-md-4 col-lg-3'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Degree Registration No.</Form.Label>
-                                                <Form.Control placeholder="Ex:- Dk4567" className='frm_input' name="degree_registration_no" value={profile && profile.degree_registration_no} disabled={IsDisable} onChange={profiledata} />
-                                                <AiOutlinePhone className='icon_input' />
-                                            </div>
-                                        </Form.Group>
-
-                                        <Form.Group controlId="Qualification" className='col-6 col-md-4 col-lg-3'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Qualification</Form.Label>
-                                                <Form.Control placeholder="Ex:- D.H.M.S, MD" className='frm_input' name="qualification" value={profile && profile.qualification} disabled={IsDisable} onChange={profiledata} />
-                                                <CiLock className='icon_input' />
-                                            </div>
-                                        </Form.Group>
-
-                                        <Form.Group controlId="Experience" className='col-6 col-md-4 col-lg-3'>
-                                            <div className='position-relative'>
-                                                <Form.Label>Experience</Form.Label>
-                                                <Form.Select className='frm_input' name="experience" value={profile && profile.experience} disabled={IsDisable} onChange={profiledata}>
-                                                {/* <option value={''} selected disabled>Select Experiance</option> */}
-                                                {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
-                                                    <option key={level} value={level + ' years'} selected={profile.experience === level+' years' ? true : false}>
-                                                        {level} years
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group controlId="Hospitalname" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Hospital Name</Form.Label>
-                                            <Form.Control placeholder="Enter Hospital Name" className='frm_input' name="hospital_name" value={profile && profile.hospital_name} disabled={IsDisable} onChange={profiledata} />
-                                            <CiLock className='icon_input' />
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group controlId="Hospitaladdress" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Hospital Address</Form.Label>
-                                            <Form.Control as="textarea" placeholder="Enter Hospital Address" name="hospital_address" value={profile && profile.hospital_address} disabled={IsDisable} onChange={profiledata} />
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group controlId="Hospitaladdress" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Doctor Profile</Form.Label>
-                                            <Form.Control type="file" placeholder="Experience" name='identityproof' className='upload_file_doc' disabled={IsDisable} onChange={profiledata} />
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group as={Col} controlId="Country" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Country</Form.Label>
-                                            <Form.Select className='frm-select' name='country' disabled={IsDisable} onChange={handleCountryChange}  >
-                                                {countries.map((country) => (
-                                                    <option key={country.isoCode} value={country.isoCode} selected={profile && profile.country === country.name ? true : false}>
-                                                        {country.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group as={Col} controlId="State" className='col-6 col-md-4 col-lg-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>State</Form.Label>
-                                            <Form.Select className='frm-select' name='state' onChange={handleStateChange} value={selectedStateCode} disabled={!selectedCountryCode}>
-                                                {!selectedCountryCode ? <option>{profile && profile.state}</option> : ''}
-                                                {states.map((state) => {
-                                                    return (
-                                                        <option key={state.isoCode} value={state.isoCode} selected={profile && profile.state === state.name ? true : false}>
-                                                            {state.name}
-                                                        </option>
-                                                    )
-                                                })}
-                                            </Form.Select>
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group as={Col} controlId="City" className='mb-3 col-3'>
-                                        <div className='position-relative'>
-                                            <Form.Label>City</Form.Label>
-                                            <Form.Select className='frm-select' name='city' onChange={profiledata} disabled={!selectedStateCode}>
-                                                {!selectedStateCode ? <option>{profile && profile.city}</option> : ''}
-                                                {
-                                                    cities && cities.map((city, vi) => {
-                                                        return (<option key={vi} value={city.name} selected={profile && profile.city === city.name ? true : false}>{city.name}</option>)
-                                                    })
-                                                }
-                                            </Form.Select>
-                                        </div>
-                                    </Form.Group>
-
-                                    <div className='text-center border-top'>
-                                        {IsDisable ? <Button type="button" className='theme_btn col-3 mt-3' onClick={() => setdisabled(false)}>
-                                            Edit Profile
-                                        </Button> : <><Button type="button" className='theme_btn col-3 mt-3' onClick={() => updateprofiledata(profile._id)}>
-                                            Update </Button><Button className='theme_btn bg-danger border-danger col-3 mt-3 ms-2' onClick={()=>setdisabled(true)}>Cancel</Button> </>}
-                                    </div>
+                                                    className='px-5 me-3'
+                                                    onClick={() => setdisabled(false)}
+                                                >
+                                                    Edit Profile
+                                                </Button>
+                                            ) : (
+                                                <>
+                                                    <Button
+                                                        variant="success"
+                                                        className='px-5 me-3'
+                                                        onClick={() => updateprofiledata(profile._id)}
+                                                    >
+                                                        Update Profile
+                                                    </Button>
+                                                    <Button
+                                                        variant="secondary"
+                                                        className='px-4'
+                                                        onClick={() => {
+                                                            setdisabled(true);
+                                                            // Clear profile picture preview on cancel
+                                                            if (profilePicPreview) {
+                                                                URL.revokeObjectURL(profilePicPreview);
+                                                                setProfilePicPreview(null);
+                                                            }
+                                                        }}
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                </>
+                                            )}
+                                        </Card.Body>
+                                    </Card>
                                 </Form>
-                                </div> : ''
-                            }
-                        <Button variant='danger' className='mt-4' onClick={deletdoctor}>Delete Doctor</Button>
-                    </div>
-                </Col>
-            </Row>
-        </Container >
-            { loading?<Loader /> : ''
-}
+                            ) : (
+                                <Card className='text-center py-5'>
+                                    <Card.Body>
+                                        <h5>Loading profile information...</h5>
+                                    </Card.Body>
+                                </Card>
+                            )}
+
+                            {/* Delete Account Section */}
+                            <Card className='mt-4 border-danger'>
+                                <Card.Header className='text-bg-danger'>
+                                    <h6 className='mb-0 text-white'>Delete Doctor</h6>
+                                </Card.Header>
+                                <Card.Body className='p-4 text-center'>
+                                    <p className='text-muted mb-3'>
+                                        Once you delete your account, there is no going back. Please be certain.
+                                    </p>
+                                    <Button
+                                        variant='outline-danger'
+
+                                        onClick={deletdoctor}
+                                    >
+                                        Delete Doctor Account
+                                    </Button>
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    </Col>
+                </Row>
+            </Container>
+            {loading && <Loader />}
         </>
     )
 }

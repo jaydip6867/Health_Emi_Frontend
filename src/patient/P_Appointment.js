@@ -88,7 +88,7 @@ const P_Appointment = () => {
         width: '80px'
     }, {
         name: 'Doctor Name',
-        cell: row => row.doctorid.name
+        cell: row => row.doctorid?.name
     },
     {
         name: 'Surgery',

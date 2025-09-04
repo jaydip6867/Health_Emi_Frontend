@@ -666,3 +666,592 @@ h6 {
 ::-webkit-scrollbar-thumb:hover {
     background: #006cbe;
 }
+
+/* ======================== DOCTOR PROFILE SECTION CSS ======================== */
+
+/* Doctor Profile Main Container */
+.doctor-profile-section {
+    background: linear-gradient(135deg, #f8fffe 0%, #f0f9ff 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+/* Doctor Profile Card */
+.doctor-profile-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 35, 61, 0.08);
+    border: 1px solid rgba(0, 132, 233, 0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.doctor-profile-card:hover {
+    box-shadow: 0 15px 50px rgba(0, 35, 61, 0.12);
+    transform: translateY(-2px);
+}
+
+/* Doctor Avatar */
+.doctor-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid #ffffff;
+    box-shadow: 0 8px 25px rgba(0, 132, 233, 0.15);
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.doctor-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 35px rgba(0, 132, 233, 0.25);
+}
+
+/* Doctor Name and Title */
+.doctor-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.doctor-specialty {
+    font-size: 1rem;
+    color: var(--grayscale-color-600);
+    margin-bottom: 0.25rem;
+    line-height: 1.5;
+}
+
+.doctor-experience {
+    font-size: 0.9rem;
+    color: var(--primary-color-700);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* Profile Claimed Badge */
+.profile-claimed-badge {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Verification Badge */
+.verification-badge {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    padding: 0.75rem;
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.verification-badge .verification-icon {
+    width: 24px;
+    height: 24px;
+    filter: hue-rotate(120deg);
+}
+
+.verification-text {
+    color: #059669;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Rating Badge */
+.rating-badge {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 15px;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    margin-right: 0.75rem;
+}
+
+.rating-text {
+    color: var(--grayscale-color-600);
+    font-size: 0.9rem;
+}
+
+/* Doctor Description */
+.doctor-description {
+    color: var(--grayscale-color-700);
+    line-height: 1.7;
+    margin: 1.5rem 0;
+}
+
+.doctor-description h5 {
+    color: var(--dark-text);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.doctor-description p {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.doctor-description ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 1rem 0;
+}
+
+.doctor-description ul li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--grayscale-color-700);
+}
+
+.doctor-description ul li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--primary-color-600);
+    font-weight: bold;
+}
+
+/* View Toggle Button */
+.view-toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--primary-color-600);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.view-toggle-btn:hover {
+    color: var(--primary-color-700);
+    text-decoration-color: var(--primary-color-700);
+}
+
+.view-toggle-btn:focus {
+    outline: 2px solid var(--primary-color-600);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Share Story Link */
+.share-story-link {
+    color: var(--primary-color-600);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid transparent;
+    margin-left: 1rem;
+}
+
+.share-story-link:hover {
+    color: var(--primary-color-700);
+    border-bottom-color: var(--primary-color-700);
+}
+
+/* Tabs Styling */
+.doctor-profile-tabs .nav-tabs {
+    border-bottom: 2px solid #e5e7eb;
+    margin-top: 2rem;
+}
+
+.doctor-profile-tabs .nav-link {
+    color: var(--grayscale-color-600);
+    font-weight: 500;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: none;
+    transition: all 0.3s ease;
+}
+
+.doctor-profile-tabs .nav-link:hover {
+    color: var(--primary-color-600);
+    border-bottom-color: var(--primary-color-300);
+}
+
+.doctor-profile-tabs .nav-link.active {
+    color: var(--primary-color-700);
+    background: none;
+    border-bottom-color: var(--primary-color-600);
+    font-weight: 600;
+}
+
+.doctor-profile-tabs .tab-content {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    border-radius: 0 0 15px 15px;
+    padding: 2rem;
+}
+
+/* Clinic Info Styling */
+.clinic-info {
+    background: rgba(0, 132, 233, 0.05);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.clinic-info h5 {
+    color: var(--primary-color-700);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.clinic-rating {
+    color: #f59e0b;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.clinic-address {
+    color: var(--grayscale-color-700);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.clinic-timings {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+    border: 1px solid rgba(0, 132, 233, 0.1);
+}
+
+.clinic-fee {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color-700);
+    margin: 1rem 0;
+}
+
+/* ======================== APPOINTMENT BOOKING SECTION ======================== */
+
+/* Appointment Card */
+.appointment-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 35, 61, 0.08);
+    border: 1px solid rgba(0, 132, 233, 0.1);
+    position: sticky;
+    top: 2rem;
+    transition: all 0.3s ease;
+}
+
+.appointment-card:hover {
+    box-shadow: 0 15px 50px rgba(0, 35, 61, 0.12);
+}
+
+.appointment-card h5 {
+    color: var(--dark-text);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+}
+
+/* Appointment Type Radio Buttons */
+.appointment-type-option {
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.appointment-type-option:hover {
+    border-color: var(--primary-color-300);
+    background: rgba(0, 132, 233, 0.02);
+}
+
+.appointment-type-option.selected {
+    border-color: var(--primary-color-600);
+    background: rgba(0, 132, 233, 0.05);
+}
+
+.appointment-type-option .form-check-input {
+    margin-right: 0.75rem;
+}
+
+.appointment-type-option .form-check-label {
+    font-weight: 500;
+    color: var(--dark-text);
+    cursor: pointer;
+}
+
+/* Clinic Appointment Details */
+.clinic-appointment-details {
+    background: linear-gradient(135deg, rgba(0, 132, 233, 0.05) 0%, rgba(0, 132, 233, 0.02) 100%);
+    border: 2px solid var(--primary-color-200);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.clinic-appointment-details h6 {
+    color: var(--primary-color-700);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fee-badge {
+    background: var(--primary-color-600);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.clinic-details {
+    margin-bottom: 1.5rem;
+}
+
+.clinic-details h6 {
+    color: var(--dark-text);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.clinic-details small {
+    color: var(--grayscale-color-600);
+    line-height: 1.5;
+}
+
+/* Available Dates */
+.available-dates {
+    margin: 1.5rem 0;
+}
+
+.available-dates h6 {
+    color: var(--dark-text);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.date-slots {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.date-slot {
+    text-align: center;
+    flex: 1;
+    min-width: 80px;
+}
+
+.date-badge {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+    border: none;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.slots-available {
+    font-size: 0.75rem;
+    color: var(--grayscale-color-600);
+}
+
+/* Time Selection */
+.time-selection {
+    margin: 1.5rem 0;
+}
+
+.time-selection h6 {
+    color: var(--dark-text);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.time-select {
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.time-select:focus {
+    border-color: var(--primary-color-600);
+    box-shadow: 0 0 0 3px rgba(0, 132, 233, 0.1);
+}
+
+/* Book Appointment Button */
+.book-appointment-btn {
+    background: linear-gradient(135deg, var(--primary-color-600) 0%, var(--primary-color-700) 100%);
+    border: none;
+    border-radius: 15px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    width: 100%;
+    margin-top: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 132, 233, 0.3);
+}
+
+.book-appointment-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--primary-color-700) 0%, var(--primary-color-800) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(0, 132, 233, 0.4);
+}
+
+.book-appointment-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.instant-pay-text {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    margin-top: 0.25rem;
+}
+
+/* Advertisement Card */
+.advertisement-card {
+    margin-top: 2rem;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 35, 61, 0.08);
+    border: 1px solid rgba(0, 132, 233, 0.1);
+}
+
+.advertisement-card img {
+    transition: all 0.3s ease;
+}
+
+.advertisement-card:hover img {
+    transform: scale(1.02);
+}
+
+/* ======================== RESPONSIVE DESIGN ======================== */
+
+@media (max-width: 768px) {
+    .doctor-profile-section {
+        padding: 1rem 0;
+    }
+    
+    .doctor-avatar {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .doctor-name {
+        font-size: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .appointment-card {
+        position: static;
+        margin-top: 2rem;
+    }
+    
+    .date-slots {
+        justify-content: center;
+    }
+    
+    .date-slot {
+        min-width: 70px;
+    }
+    
+    .doctor-profile-tabs .nav-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .doctor-profile-tabs .tab-content {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .doctor-profile-card,
+    .appointment-card {
+        border-radius: 15px;
+        margin: 0 0.5rem;
+    }
+    
+    .doctor-name {
+        font-size: 1.3rem;
+    }
+    
+    .book-appointment-btn {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .date-badge {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* ======================== ANIMATION ENHANCEMENTS ======================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.doctor-profile-card,
+.appointment-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.doctor-avatar {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+/* Smooth transitions for interactive elements */
+.verification-badge,
+.clinic-appointment-details,
+.appointment-type-option {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus states for accessibility */
+.book-appointment-btn:focus,
+.time-select:focus,
+.appointment-type-option:focus-within {
+    outline: 2px solid var(--primary-color-600);
+    outline-offset: 2px;
+}

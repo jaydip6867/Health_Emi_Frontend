@@ -278,3 +278,157 @@ select.frm_input {
 .react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle{
     stroke: #00bfff !important;
 }
+
+/* ======================== DOCTOR CARD HOVER EFFECTS ======================== */
+
+/* Doctor Card Hover Animation */
+.hover-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.hover-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 132, 233, 0.1), transparent);
+    transition: left 0.6s ease;
+    z-index: 1;
+}
+
+.hover-card:hover::before {
+    left: 100%;
+}
+
+.hover-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 35, 61, 0.15);
+    border-color: rgba(0, 132, 233, 0.3);
+}
+
+/* Doctor Image Hover Effect */
+.hover-card:hover .rounded-circle {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+/* Badge Hover Animation */
+.hover-card:hover .badge {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+/* Button Hover Enhancement */
+.hover-card:hover .btn {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 132, 233, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* Card Body Content Animation */
+.hover-card .card-body {
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.hover-card:hover .card-body {
+    transform: translateY(-2px);
+}
+
+/* Specialty Badge Glow Effect */
+.hover-card:hover .badge-primary-subtle {
+    box-shadow: 0 0 15px rgba(0, 132, 233, 0.4);
+    transition: box-shadow 0.3s ease;
+}
+
+/* Text Color Animation on Hover */
+.hover-card:hover .card-title {
+    color: #0084E9 !important;
+    transition: color 0.3s ease;
+}
+
+/* Icon Animation */
+.hover-card:hover .text-muted {
+    color: #0084E9 !important;
+    transition: color 0.3s ease;
+}
+
+/* Verified Badge Pulse Animation */
+.hover-card:hover .position-absolute.badge {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(25%, 25%) scale(1);
+    }
+    50% {
+        transform: translate(25%, 25%) scale(1.1);
+    }
+    100% {
+        transform: translate(25%, 25%) scale(1);
+    }
+}
+
+/* Card Border Glow Effect */
+.hover-card:hover {
+    border: 1px solid rgba(0, 132, 233, 0.3);
+    background: linear-gradient(145deg, #ffffff 0%, #f8fbff 100%);
+}
+
+/* Smooth Transition for All Elements */
+.hover-card * {
+    transition: all 0.3s ease;
+}
+
+/* Mobile Hover Effects (Touch Devices) */
+@media (hover: none) and (pointer: coarse) {
+    .hover-card:active {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 30px rgba(0, 35, 61, 0.12);
+    }
+    
+    .hover-card:active .btn {
+        transform: translateY(-1px);
+    }
+}
+
+/* Accessibility - Focus States */
+.hover-card:focus-within {
+    outline: 2px solid #0084E9;
+    outline-offset: 2px;
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(0, 35, 61, 0.12);
+}
+
+/* Loading State Animation */
+.hover-card.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.hover-card.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #0084E9;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
