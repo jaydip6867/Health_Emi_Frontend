@@ -201,7 +201,7 @@ const P_DoctorAppointment = () => {
                                                             {/* Doctor Image */}
                                                             <div className="text-center pt-2 pb-3">
                                                                 <div className="position-relative d-inline-block">
-                                                                    {v?.identityproof === '' || v?.identityproof === null || v?.identityproof === undefined ? 
+                                                                    {v?.profile_pic === '' || v?.profile_pic === null || v?.profile_pic === undefined ? 
                                                                         <Image 
                                                                             src={require('../assets/image/doctor_img.jpg')} 
                                                                             roundedCircle 
@@ -211,7 +211,7 @@ const P_DoctorAppointment = () => {
                                                                         />
                                                                         :
                                                                         <Image 
-                                                                            src={`https://healtheasy-o25g.onrender.com/uploads/${v?.identityproof}`} 
+                                                                            src={`https://healtheasy-o25g.onrender.com/uploads/${v?.profile_pic}`} 
                                                                             roundedCircle 
                                                                             width={100} 
                                                                             height={100}

@@ -75,13 +75,11 @@ const PatientLogin = () => {
                                     <Form.Group controlId="mobile" className='position-relative mb-3'>
                                         <Form.Label>Email</Form.Label>
                                         <Form.Control placeholder="Enter Email" name='email' value={email} className='frm_input' onChange={(e) => setemail(e.target.value)} />
-                                        <FaRegEnvelope className='icon_input' />
                                     </Form.Group>
 
                                     <Form.Group controlId="password" className='position-relative mb-1'>
                                         <Form.Label>Password</Form.Label>
                                         <Form.Control type='password' placeholder="Enter Password" name='password' value={password} className='frm_input' onChange={(e) => setps(e.target.value)} />
-                                        <CiLock className='icon_input' />
                                     </Form.Group>
                                     <div className='form_bottom_div text-end'>
                                         <p><Link to={'forgotpatient'} className='form-link'>Forgotten Password ?</Link> </p>

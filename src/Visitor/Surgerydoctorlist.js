@@ -9,6 +9,7 @@ import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom';
 import SearchBox from './Component/SearchBox'
 import { MdFilterListAlt } from 'react-icons/md'
+import DoctorListComponents from './Component/DoctorListComponent'
 
 const Surgerydoctorlist = () => {
     const SECRET_KEY = "health-emi";
@@ -115,49 +116,9 @@ const Surgerydoctorlist = () => {
             <section className='py-5'>
                 <Container>
                     <h2 className='mb-5'>{doctor_list && doctor_list[0]?.surgerytypeid?.surgerytypename} Doctors List</h2>
-                    <Row>
-                        <Col xs={12} md={8}>
-                            <Row xs={1} className="g-4">
-                                {doctor_list.length <= 0 ? <Col>No Doctor Found...</Col> : doctor_list.map((doc, i) => (
-                                    <Col key={i}>
-                                        <Card className="mb-3 border-0 p-3 border-top rounded-0">
-                                            <Row className="g-0">
-                                                <Col md={4}>
-                                                    {
-                                                        doc.identityproof === '' ? <Card.Img
-                                                            variant="top"
-                                                            src={require('../assets/image/doctor_img.jpg')}
-                                                            alt={`Photo of ${doc.name}`}
-                                                            style={{ width: "150px", height: "150px", objectFit: "contain", borderRadius: "50%" }}
-                                                        /> : <Card.Img
-                                                            variant="top"
-                                                            src={doc.identityproof}
-                                                            alt={`Photo of ${doc.name}`}
-                                                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                                        />
-                                                    }
-                                                </Col>
-                                                <Col md={8}>
-                                                    <Card.Body>
-                                                        <Card.Title>Dr. {doc.name}</Card.Title>
-                                                        <span>{doc.specialty}</span><br />
-                                                        <span>{doc.experience} years experience overall</span>
-                                                        <p><b>{doc.hospital_address}</b>. {doc.hospital_name}</p>
-
-                                                        <Link to={`/doctorprofile/${encodeURIComponent(btoa(doc._id))}`} className="text-body-primary text-decoration-none">View Profile</Link>
-
-                                                    </Card.Body>
-                                                </Col>
-                                            </Row>
-                                        </Card>
-                                    </Col>
-                                ))}
-                            </Row>
-                        </Col>
-                        <Col className='position-sticky top-0'>
-                            lorem sd
-                        </Col>
-                    </Row>
+                    {doctor_list.length <= 0 ? <Col>No Doctor Found...</Col> : doctor_list.map((doc, i) => (
+                        <DoctorListComponents details={doc} />
+                    ))}
                 </Container>
             </section>
             <FooterBar />
@@ -167,3 +128,47 @@ const Surgerydoctorlist = () => {
 }
 
 export default Surgerydoctorlist
+
+// <Row>
+//     <Col xs={12} md={8}>
+//         <Row xs={1} className="g-4">
+//             {doctor_list.length <= 0 ? <Col>No Doctor Found...</Col> : doctor_list.map((doc, i) => (
+//                 <Col key={i}>
+//                     <Card className="mb-3 border-0 p-3 border-top rounded-0">
+//                         <Row className="g-0">
+//                             <Col md={4}>
+//                                 {
+//                                     doc.identityproof === '' ? <Card.Img
+//                                         variant="top"
+//                                         src={require('../assets/image/doctor_img.jpg')}
+//                                         alt={`Photo of ${doc.name}`}
+//                                         style={{ width: "150px", height: "150px", objectFit: "contain", borderRadius: "50%" }}
+//                                     /> : <Card.Img
+//                                         variant="top"
+//                                         src={doc.identityproof}
+//                                         alt={`Photo of ${doc.name}`}
+//                                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
+//                                     />
+//                                 }
+//                             </Col>
+//                             <Col md={8}>
+//                                 <Card.Body>
+//                                     <Card.Title>Dr. {doc.name}</Card.Title>
+//                                     <span>{doc.specialty}</span><br />
+//                                     <span>{doc.experience} years experience overall</span>
+//                                     <p><b>{doc.hospital_address}</b>. {doc.hospital_name}</p>
+
+//                                     <Link to={`/doctorprofile/${encodeURIComponent(btoa(doc._id))}`} className="text-body-primary text-decoration-none">View Profile</Link>
+
+//                                 </Card.Body>
+//                             </Col>
+//                         </Row>
+//                     </Card>
+//                 </Col>
+//             ))}
+//         </Row>
+//     </Col>
+//     <Col className='position-sticky top-0'>
+//         lorem sd
+//     </Col>
+// </Row>

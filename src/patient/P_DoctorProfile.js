@@ -165,9 +165,9 @@ const P_DoctorProfile = () => {
                                         <Row className="align-items-center">
                                             <Col md={3} className="text-center">
                                                 <div className="position-relative d-inline-block">
-                                                    {doctor_profile.identityproof === '' ? 
+                                                    {doctor_profile.profile_pic === '' ? 
                                                         <Image src={require('../assets/image/doctor_img.jpg')} roundedCircle className="border border-4 border-white shadow-lg" width={150} height={150} style={{objectFit: 'cover'}} /> : 
-                                                        <Image src={doctor_profile.identityproof} roundedCircle className="border border-4 border-white shadow-lg" width={150} height={150} style={{objectFit: 'cover'}} />
+                                                        <Image src={doctor_profile?.profile_pic} roundedCircle className="border border-4 border-white shadow-lg" width={150} height={150} style={{objectFit: 'cover'}} />
                                                     }
                                                     <div className="position-absolute bottom-0 end-0 bg-success rounded-circle p-2">
                                                         <FaUserMd className="text-white" size={20} />

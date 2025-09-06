@@ -168,7 +168,6 @@ const PatientProfile = () => {
                                             <div className='position-relative'>
                                                 <Form.Label>Name</Form.Label>
                                                 <Form.Control type="text" placeholder="Full Name" className='frm_input' name="name" value={profile && profile.name} disabled={IsDisable} onChange={profiledata} />
-                                                <AiOutlineUser className='icon_input' />
                                             </div>
                                         </Form.Group>
 
@@ -176,7 +175,6 @@ const PatientProfile = () => {
                                             <div className="position-relative">
                                                 <Form.Label>Email</Form.Label>
                                                 <Form.Control type="email" placeholder="Email" className='frm_input' name="email" value={profile && profile.email} disabled={IsDisable} onChange={profiledata} />
-                                                <FaRegEnvelope className='icon_input' />
                                             </div>
                                         </Form.Group>
 
@@ -184,7 +182,6 @@ const PatientProfile = () => {
                                             <div className="position-relative">
                                                 <Form.Label>Mobile No.</Form.Label>
                                                 <Form.Control placeholder="Mobile No." className='frm_input' name='mobile' value={profile && profile.mobile} disabled={IsDisable} onChange={profiledata} />
-                                                <AiOutlinePhone className='icon_input' />
                                             </div>
                                         </Form.Group>
 
@@ -200,7 +197,6 @@ const PatientProfile = () => {
                                             <div className="position-relative">
                                                 <Form.Label>Pincode</Form.Label>
                                                 <Form.Control placeholder="Pincode" className='frm_input' name='pincode' value={profile && profile.pincode} disabled={IsDisable} onChange={profiledata} />
-                                                <CiLocationOn className='icon_input' />
                                             </div>
                                         </Form.Group>
 
