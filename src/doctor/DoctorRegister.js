@@ -298,6 +298,7 @@ const DoctorRegister = () => {
     };
 
     var profile_data = {
+
         specialty: '',
         sub_specialty: '',
         degree_registration_no: '',
@@ -308,10 +309,95 @@ const DoctorRegister = () => {
         country: '',
         state: '',
         city: '',
-        identityproof: 'https://res.cloudinary.com/dyta12cyq/image/upload/v1757002869/uploads/ib1e4zdjx0hlqlron7zx.jpg'
+        identityproof: '',
+        profile_pic: ''
     }
     const [frmdoctor, setfrmdoctor] = useState(frmdata);
     const [frmdocprofile, setdocprofile] = useState(profile_data);
+
+    const [profilePic, setProfilePic] = useState(null);
+    const [identityProof, setIdentityProof] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    // Function to handle file upload
+    const handleFileUpload = async (file, type) => {
+        if (!file) return null;
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            setIsUploading(true);
+            const response = await axios.post('https://healtheasy-o25g.onrender.com/user/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            
+            if (response.data.Status === 200 && response.data.Data && response.data.Data.url) {
+                toast('File uploaded successfully!', { className: 'custom-toast-success' });
+                return response.data.Data.url;
+            } else {
+                throw new Error('Failed to upload file');
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            toast('Failed to upload file. Please try again.', { className: 'custom-toast-error' });
+            return null;
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    // Handle profile picture change
+    const handleProfilePicChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const url = await handleFileUpload(file, 'profile');
+        if (url) {
+            setProfilePic(url);
+            setdocprofile(prev => ({
+                ...prev,
+                profile_pic: url
+            }));
+        }
+    };
+
+    // Handle identity proof change
+    const handleIdentityProofChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const url = await handleFileUpload(file, 'identity');
+        if (url) {
+            setIdentityProof(url);
+            setdocprofile(prev => ({
+                ...prev,
+                identityproof: url
+            }));
+        }
+    };
+
+    // Handle remove profile picture
+    const handleRemoveProfilePic = (e) => {
+        e.stopPropagation();
+        setProfilePic(null);
+        setdocprofile(prev => ({
+            ...prev,
+            profile_pic: ''
+        }));
+    };
+
+    // Handle remove identity proof
+    const handleRemoveIdentityProof = (e) => {
+        e.stopPropagation();
+        setIdentityProof(null);
+        setdocprofile(prev => ({
+            ...prev,
+            identityproof: ''
+        }));
+    };
 
     const selfrmdata = (e) => {
         const { name, value } = e.target;
@@ -953,11 +1039,83 @@ const DoctorRegister = () => {
                                         </div>
                                     </Form.Group>
 
-                                    <Form.Group controlId="password" className='mb-3 col-6'>
+                                    <Form.Group controlId="profilePic" className='mb-3 col-6'>
+                                        <Form.Label>Upload Profile Picture</Form.Label>
                                         <div className='position-relative'>
-                                            <Form.Label>Upload Identify Document</Form.Label>
-                                            <Form.Control type="file" className='upload_file_doc' />
+                                            <input 
+                                                type="file" 
+                                                className="form-control" 
+                                                accept="image/*" 
+                                                onChange={handleProfilePicChange}
+                                                disabled={isUploading}
+                                                style={{ display: 'none' }}
+                                                id="profile-pic-upload"
+                                            />
+                                            <label 
+                                                htmlFor="profile-pic-upload" 
+                                                className="btn btn-outline-secondary w-100"
+                                                style={{ cursor: 'pointer', padding: '0.375rem 0.75rem' }}
+                                            >
+                                                {profilePic ? 'Change Profile Picture' : 'Choose Profile Picture'}
+                                            </label>
                                         </div>
+                                        {profilePic && (
+                                            <div style={{ position: 'relative', display: 'inline-block', marginTop: '10px' }}>
+                                                <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#ff4444', color: 'white', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} onClick={handleRemoveProfilePic}>
+                                                    ×
+                                                </div>
+                                                <img 
+                                                    src={profilePic} 
+                                                    alt="Profile Preview" 
+                                                    style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd', padding: '4px' }} 
+                                                />
+                                            </div>
+                                        )}
+                                    </Form.Group>
+
+                                    <Form.Group controlId="identityProof" className='mb-3 col-6'>
+                                        <Form.Label>Upload Identity Document</Form.Label>
+                                        <div className='position-relative'>
+                                            <input 
+                                                type="file" 
+                                                className="form-control" 
+                                                accept="image/*,.pdf" 
+                                                onChange={handleIdentityProofChange}
+                                                disabled={isUploading}
+                                                style={{ display: 'none' }}
+                                                id="identity-proof-upload"
+                                            />
+                                            <label 
+                                                htmlFor="identity-proof-upload" 
+                                                className="btn btn-outline-secondary w-100"
+                                                style={{ cursor: 'pointer', padding: '0.375rem 0.75rem' }}
+                                            >
+                                                {identityProof ? 'Change Identity Document' : 'Choose Identity Document'}
+                                            </label>
+                                        </div>
+                                        {identityProof && (
+                                            <div style={{ position: 'relative', display: 'inline-block', marginTop: '10px' }}>
+                                                <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#ff4444', color: 'white', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} onClick={handleRemoveIdentityProof}>
+                                                    ×
+                                                </div>
+                                                {identityProof.toLowerCase().endsWith('.pdf') ? (
+                                                    <div style={{ maxWidth: '200px', maxHeight: '200px', padding: '20px', textAlign: 'center', background: '#f8f9fa' }}>
+                                                        <i className="fas fa-file-pdf" style={{fontSize: '48px', color: '#dc3545'}}></i>
+                                                        <div style={{marginTop: '10px'}}>
+                                                            <a href={identityProof} target="_blank" rel="noopener noreferrer">
+                                                                View PDF
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <img 
+                                                        src={identityProof} 
+                                                        alt="Identity Proof Preview" 
+                                                        style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd', padding: '4px' }} 
+                                                    />
+                                                )}
+                                            </div>
+                                        )}
                                     </Form.Group>
 
                                     <Button type="button" onClick={profileadd} className='d-block w-100 theme_btn my-3'>
