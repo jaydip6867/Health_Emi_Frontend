@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import NavBar from './Component/NavBar'
-import { Card, Col, Container, Row, Badge, Button, Image, Form, Tab, Nav } from 'react-bootstrap'
+import { Card, Col, Container, Row, Badge, Button, Image, Form, Tab, Nav, Modal, ListGroup } from 'react-bootstrap'
 import FooterBar from './Component/FooterBar'
 import Loader from '../Loader'
 import { Link, useParams } from 'react-router-dom'
@@ -12,6 +12,7 @@ import { FaAward, FaCalendarAlt, FaEnvelope, FaEye, FaMapMarkerAlt, FaPhone, FaS
 import { FaLocationDot } from 'react-icons/fa6'
 import { format } from 'date-fns';
 import Swal from 'sweetalert2'
+import DatePicker from 'react-datepicker'
 
 const DoctorProfilePage = () => {
   const SECRET_KEY = "health-emi";
@@ -71,77 +72,84 @@ const DoctorProfilePage = () => {
 
 
   const [show, setShow] = useState(false);
-    const [showServiceModal, setShowServiceModal] = useState(false);
-    const [selectedService, setSelectedService] = useState(null);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-    
-    const handleServiceModalClose = () => setShowServiceModal(false);
-    const handleServiceModalShow = (service) => {
-        setSelectedService(service);
-        setShowServiceModal(true);
-    };
-
-    var app_obj = { alt_mobile: '', surgeryid: '', appointment_reason: '', report: '', visit_types: '' }
-    const [apt_data, setaptdata] = useState(app_obj)
-
-    function appchangedata(e) {
-        const { name, value } = e.target;
-        setaptdata(apt_data => ({
-            ...apt_data,
-            [name]: value
-        }))
+  const handleClose = () => setShow(false);
+  const handleShow = () => {
+    if (!patient) {
+      navigate('/patient')
     }
-
-
-    function appointmentbtn(id) {
-        // Split at the space before the time
-        const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
-        // Combine time + meridiem
-        const timeWithMeridiem = `${timePart} ${meridiem}`;
-        // console.log(apt_data, datePart, timeWithMeridiem )
-        setloading(true)
-        axios({
-            method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/appointments/save',
-            headers: {
-                Authorization: token
-            },
-            data: {
-                "patientname": patient.name,
-                "mobile": patient.mobile,
-                "alt_mobile": apt_data.alt_mobile,
-                "date": datePart,
-                "time": timeWithMeridiem,
-                "surgeryid": apt_data.surgeryid,
-                "appointment_reason": apt_data.appointment_reason,
-                "report": apt_data.report,
-                "doctorid": id,
-                "visit_types": apt_data.visit_types
-            }
-        }).then((res) => {
-            Swal.fire({
-                title: "Appointment Add Successfully...",
-                icon: "success",
-                confirmButtonText: 'Ok.'
-            }).then((result) => {
-                navigate('/patient/appointment');
-            });
-        }).catch(function (error) {
-            Swal.fire({
-                title: "Something Went Wrong.",
-                text: "Something Is Missing. Please Check Details...",
-                icon: "error",
-            });
-        }).finally(() => {
-            setloading(false)
-        });
+    else{
+      setShow(true)
     }
+  };
 
-    const formattedDateTime = selectedDate
-        ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
-        : '';
+  const handleServiceModalClose = () => setShowServiceModal(false);
+  const handleServiceModalShow = (service) => {
+    setSelectedService(service);
+    setShowServiceModal(true);
+  };
+
+  var app_obj = { alt_mobile: '', surgeryid: '', appointment_reason: '', report: '', visit_types: '' }
+  const [apt_data, setaptdata] = useState(app_obj)
+
+  function appchangedata(e) {
+    const { name, value } = e.target;
+    setaptdata(apt_data => ({
+      ...apt_data,
+      [name]: value
+    }))
+  }
+
+
+  function appointmentbtn(id) {
+    // Split at the space before the time
+    const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
+    // Combine time + meridiem
+    const timeWithMeridiem = `${timePart} ${meridiem}`;
+    // console.log(apt_data, datePart, timeWithMeridiem )
+    setloading(true)
+    axios({
+      method: 'post',
+      url: 'https://healtheasy-o25g.onrender.com/user/appointments/save',
+      headers: {
+        Authorization: token
+      },
+      data: {
+        "patientname": patient.name,
+        "mobile": patient.mobile,
+        "alt_mobile": apt_data.alt_mobile,
+        "date": datePart,
+        "time": timeWithMeridiem,
+        "surgeryid": apt_data.surgeryid,
+        "appointment_reason": apt_data.appointment_reason,
+        "report": apt_data.report,
+        "doctorid": id,
+        "visit_types": apt_data.visit_types
+      }
+    }).then((res) => {
+      Swal.fire({
+        title: "Appointment Add Successfully...",
+        icon: "success",
+        confirmButtonText: 'Ok.'
+      }).then((result) => {
+        navigate('/patient/appointment');
+      });
+    }).catch(function (error) {
+      Swal.fire({
+        title: "Something Went Wrong.",
+        text: "Something Is Missing. Please Check Details...",
+        icon: "error",
+      });
+    }).finally(() => {
+      setloading(false)
+    });
+  }
+
+  const formattedDateTime = selectedDate
+    ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
+    : '';
 
   return (
     <>
@@ -629,6 +637,256 @@ const DoctorProfilePage = () => {
               </Card>
             </Col>
           </Row>
+
+          {
+            patient && doctor_profile && <Modal show={show} size='lg' onHide={handleClose} centered>
+              <Modal.Header closeButton>
+                <Modal.Title>Book Appointment</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Row className='g-4'>
+                  <Col xs={12}>
+                    <Form>
+                      <Row className='g-4'>
+                        <Col xs={4}><Form.Label>Name</Form.Label><Form.Control value={patient.name} disabled></Form.Control></Col>
+                        <Col xs={4}><Form.Label>Phone Number</Form.Label><Form.Control value={patient.mobile} disabled></Form.Control></Col>
+                        <Col xs={4}><Form.Label>Alt Phone Number</Form.Label><Form.Control value={apt_data.alt_mobile} name='alt_mobile' onChange={appchangedata} placeholder='Alt. Phone Number'></Form.Control></Col>
+                        <Col xs={4}><Form.Label>Surgery</Form.Label><Form.Select name='surgeryid' onChange={appchangedata}>
+                          <option value=''>Select Surgery</option>
+                          {
+                            doctor_profile.surgeriesDetails.map((v, i) => {
+                              return (
+                                <option value={v._id} key={i}>{v.name}</option>
+                              )
+                            })
+                          }
+                        </Form.Select></Col>
+                        <Col xs={4}><Form.Label>Reason</Form.Label><Form.Control value={apt_data.appointment_reason} name='appointment_reason' onChange={appchangedata} placeholder='Appointment Reason' ></Form.Control></Col>
+                        <Col xs={4}><Form.Label>Reports</Form.Label>
+                          {/* <Form.Control type='file' value={apt_data.report} name='report' onChange={appchangedata}></Form.Control> */}
+                          <p className='text-secondary'>Under Maintenance</p>
+                        </Col>
+                        <Col xs={12} md={4}>
+                          <Form.Check label="Home Visit" type='radio' name='visit_types' value={'home_visit'} onChange={appchangedata} />
+                          <Form.Check label="Clinic Visit" type='radio' name='visit_types' value={'clinic_visit'} onChange={appchangedata} />
+                          <Form.Check label="EOPD" type='radio' name='visit_types' value={'eopd'} onChange={appchangedata} />
+                        </Col>
+                        <Col xs={6} md={6}>
+                          <Form.Label>Appointment Date</Form.Label><br />
+                          <DatePicker selected={selectedDate}
+                            onChange={(date) => setSelectedDate(date)}
+                            showTimeSelect
+                            timeFormat="hh:mm a"
+                            timeIntervals={15}
+                            dateFormat="dd-MM-yyyy hh:mm a"
+                            placeholderText="Select date and time"
+                            minDate={new Date()} /></Col>
+                      </Row>
+                    </Form>
+                  </Col>
+
+
+                  {/* <Col xs={12} md={6}>
+                                          <ToggleButtonGroup type="radio" name="options" defaultValue={1} className='btnradio-app flex-wrap gap-2'>
+                                              {
+                                                  time.map((v, i) => {
+                                                      return (
+                                                          <ToggleButton key={i} value={v} variant='outline-dark' id={`time-btn-${i}`} name='time' onClick={() => setchtime(v)}>{v}</ToggleButton>
+                                                      )
+                                                  })
+                                              }
+                                          </ToggleButtonGroup>
+                                      </Col> */}
+                </Row>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="primary" onClick={() => { appointmentbtn(doctor_profile._id); handleClose() }}>
+                  Save Changes
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          }
+          {/* Service Detail Modal */}
+          {selectedService && (
+            <Modal show={showServiceModal} size='xl' onHide={handleServiceModalClose} centered>
+              <Modal.Header closeButton>
+                <Modal.Title>Service Details - {selectedService.name}</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Container fluid>
+                  <Row className="g-4">
+                    {/* Service Image */}
+                    <Col md={4}>
+                      <Card className="h-100">
+                        <Card.Header>
+                          <h6 className="mb-0">Service Image</h6>
+                        </Card.Header>
+                        <Card.Body className="text-center">
+                          {selectedService.surgery_photo ? (
+                            <Image
+                              src={selectedService.surgery_photo}
+                              alt={selectedService.name}
+                              fluid
+                              rounded
+                              className="mb-3"
+                              style={{ maxHeight: '200px' }}
+                            />
+                          ) : (
+                            <div className="bg-light p-4 rounded mb-3" style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <span className="text-muted">No image available</span>
+                            </div>
+                          )}
+                          <p><strong>Surgery Type:</strong> {selectedService.surgery_type || 'Not specified'}</p>
+                          <p><strong>Duration:</strong> {selectedService.days || 'Not specified'} days</p>
+                          <p><strong>Completed Surgeries:</strong> {selectedService.completed_surgery || '0'}</p>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+
+                    {/* Service Details */}
+                    <Col md={8}>
+                      <Row className="g-3">
+                        {/* Basic Information */}
+                        <Col xs={12}>
+                          <Card>
+                            <Card.Header>
+                              <h6 className="mb-0">Basic Information</h6>
+                            </Card.Header>
+                            <Card.Body>
+                              <Row>
+                                <Col md={6}>
+                                  <p><strong>Name:</strong> {selectedService.name}</p>
+                                  <p><strong>Description:</strong> {selectedService.description || 'No description available'}</p>
+                                </Col>
+                                <Col md={6}>
+                                  <p><strong>Features:</strong></p>
+                                  <ul className="small">
+                                    {selectedService.features ? (
+                                      Array.isArray(selectedService.features) ?
+                                        selectedService.features.map((feature, idx) => (
+                                          <li key={idx}>{feature}</li>
+                                        )) :
+                                        <li>{selectedService.features}</li>
+                                    ) : (
+                                      <li className="text-muted">No features listed</li>
+                                    )}
+                                  </ul>
+                                </Col>
+                              </Row>
+                            </Card.Body>
+                          </Card>
+                        </Col>
+
+                        {/* Pricing Information */}
+                        <Col xs={12}>
+                          <Card>
+                            <Card.Header>
+                              <h6 className="mb-0">Pricing Details</h6>
+                            </Card.Header>
+                            <Card.Body>
+                              <Row>
+                                <Col md={6}>
+                                  <ListGroup variant="flush">
+                                    <ListGroup.Item className="d-flex justify-content-between">
+                                      <span>General Price:</span>
+                                      <strong>₹{selectedService.general_price || selectedService.price || 'N/A'}</strong>
+                                    </ListGroup.Item>
+                                    <ListGroup.Item className="d-flex justify-content-between">
+                                      <span>Private Price:</span>
+                                      <strong>₹{selectedService.private_price || 'N/A'}</strong>
+                                    </ListGroup.Item>
+                                    <ListGroup.Item className="d-flex justify-content-between">
+                                      <span>Semi-Private Price:</span>
+                                      <strong>₹{selectedService.semiprivate_price || 'N/A'}</strong>
+                                    </ListGroup.Item>
+                                    <ListGroup.Item className="d-flex justify-content-between">
+                                      <span>Deluxe Price:</span>
+                                      <strong>₹{selectedService.delux_price || 'N/A'}</strong>
+                                    </ListGroup.Item>
+                                  </ListGroup>
+                                </Col>
+                                <Col md={6}>
+                                  <h6>Additional Features</h6>
+                                  <ul className="small">
+                                    {selectedService.additional_features ? (
+                                      Array.isArray(selectedService.additional_features) ?
+                                        selectedService.additional_features.map((feature, idx) => (
+                                          <li key={idx}>{feature}</li>
+                                        )) :
+                                        <li>{selectedService.additional_features}</li>
+                                    ) : (
+                                      <li className="text-muted">No additional features</li>
+                                    )}
+                                  </ul>
+                                </Col>
+                              </Row>
+                            </Card.Body>
+                          </Card>
+                        </Col>
+
+                        {/* Inclusions and Exclusions */}
+                        <Col xs={12}>
+                          <Row>
+                            <Col md={6}>
+                              <Card className="h-100">
+                                <Card.Header className="bg-success text-white">
+                                  <h6 className="mb-0">What's Included</h6>
+                                </Card.Header>
+                                <Card.Body>
+                                  <ul className="small mb-0">
+                                    {selectedService.inclusive ? (
+                                      Array.isArray(selectedService.inclusive) ?
+                                        selectedService.inclusive.map((item, idx) => (
+                                          <li key={idx} className="text-success">✓ {item}</li>
+                                        )) :
+                                        <li className="text-success">✓ {selectedService.inclusive}</li>
+                                    ) : (
+                                      <li className="text-muted">No inclusions specified</li>
+                                    )}
+                                  </ul>
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                            <Col md={6}>
+                              <Card className="h-100">
+                                <Card.Header className="bg-danger text-white">
+                                  <h6 className="mb-0">What's Excluded</h6>
+                                </Card.Header>
+                                <Card.Body>
+                                  <ul className="small mb-0">
+                                    {selectedService.exclusive ? (
+                                      Array.isArray(selectedService.exclusive) ?
+                                        selectedService.exclusive.map((item, idx) => (
+                                          <li key={idx} className="text-danger">✗ {item}</li>
+                                        )) :
+                                        <li className="text-danger">✗ {selectedService.exclusive}</li>
+                                    ) : (
+                                      <li className="text-muted">No exclusions specified</li>
+                                    )}
+                                  </ul>
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                          </Row>
+                        </Col>
+                      </Row>
+                    </Col>
+                  </Row>
+                </Container>
+              </Modal.Body>
+              <Modal.Footer>
+                {/* <Button variant="primary" onClick={() => {
+                  handleServiceModalClose();
+                  handleShow();
+                }}>
+                  Book Appointment for this Service
+                </Button> */}
+                <Button variant="secondary" onClick={handleServiceModalClose}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          )}
         </Container>}
       </section>
       <FooterBar />
