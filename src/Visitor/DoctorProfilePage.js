@@ -8,10 +8,16 @@ import axios from 'axios'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom';
 import './css/visitor.css'
+import { FaAward, FaCalendarAlt, FaEnvelope, FaEye, FaMapMarkerAlt, FaPhone, FaStar, FaStethoscope, FaUserMd } from 'react-icons/fa'
+import { FaLocationDot } from 'react-icons/fa6'
+import { format } from 'date-fns';
+import Swal from 'sweetalert2'
 
 const DoctorProfilePage = () => {
   const SECRET_KEY = "health-emi";
   var navigate = useNavigate();
+
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const [patient, setpatient] = useState(null)
   const [token, settoken] = useState(null)
@@ -26,7 +32,7 @@ const DoctorProfilePage = () => {
     if (data) {
       setpatient(data.userData);
       settoken(`Bearer ${data.accessToken}`)
-  }
+    }
   }, [navigate])
   const [loading, setloading] = useState(false)
   var { id } = useParams()
@@ -63,6 +69,80 @@ const DoctorProfilePage = () => {
   const [clinicTime, setClinicTime] = useState("04:30 PM");
   const [showFullDescription, setShowFullDescription] = useState(false);
 
+
+  const [show, setShow] = useState(false);
+    const [showServiceModal, setShowServiceModal] = useState(false);
+    const [selectedService, setSelectedService] = useState(null);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+    
+    const handleServiceModalClose = () => setShowServiceModal(false);
+    const handleServiceModalShow = (service) => {
+        setSelectedService(service);
+        setShowServiceModal(true);
+    };
+
+    var app_obj = { alt_mobile: '', surgeryid: '', appointment_reason: '', report: '', visit_types: '' }
+    const [apt_data, setaptdata] = useState(app_obj)
+
+    function appchangedata(e) {
+        const { name, value } = e.target;
+        setaptdata(apt_data => ({
+            ...apt_data,
+            [name]: value
+        }))
+    }
+
+
+    function appointmentbtn(id) {
+        // Split at the space before the time
+        const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
+        // Combine time + meridiem
+        const timeWithMeridiem = `${timePart} ${meridiem}`;
+        // console.log(apt_data, datePart, timeWithMeridiem )
+        setloading(true)
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/user/appointments/save',
+            headers: {
+                Authorization: token
+            },
+            data: {
+                "patientname": patient.name,
+                "mobile": patient.mobile,
+                "alt_mobile": apt_data.alt_mobile,
+                "date": datePart,
+                "time": timeWithMeridiem,
+                "surgeryid": apt_data.surgeryid,
+                "appointment_reason": apt_data.appointment_reason,
+                "report": apt_data.report,
+                "doctorid": id,
+                "visit_types": apt_data.visit_types
+            }
+        }).then((res) => {
+            Swal.fire({
+                title: "Appointment Add Successfully...",
+                icon: "success",
+                confirmButtonText: 'Ok.'
+            }).then((result) => {
+                navigate('/patient/appointment');
+            });
+        }).catch(function (error) {
+            Swal.fire({
+                title: "Something Went Wrong.",
+                text: "Something Is Missing. Please Check Details...",
+                icon: "error",
+            });
+        }).finally(() => {
+            setloading(false)
+        });
+    }
+
+    const formattedDateTime = selectedDate
+        ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
+        : '';
+
   return (
     <>
       <NavBar logindata={patient} />
@@ -71,7 +151,7 @@ const DoctorProfilePage = () => {
         {doctor_profile && <Container className="my-4">
           <Row className='align-items-start'>
             {/* Left: Profile Section */}
-            <Col lg={8}>
+            {/* <Col lg={8}>
               <Card className="doctor-profile-card p-4">
                 <Row>
                   <Col xs={3}>
@@ -128,7 +208,7 @@ const DoctorProfilePage = () => {
                         commitment to comfortable and stress-free dentistry, she has
                         earned a reputation as a trusted name in the field.
                       </p>
-                      
+
                       {showFullDescription && (
                         <>
                           <p>
@@ -155,7 +235,7 @@ const DoctorProfilePage = () => {
                         </>
                       )}
 
-                      <button 
+                      <button
                         className="view-toggle-btn"
                         onClick={() => setShowFullDescription(!showFullDescription)}
                       >
@@ -166,7 +246,6 @@ const DoctorProfilePage = () => {
                   </Col>
                 </Row>
 
-                {/* Tabs Section */}
                 <div className="doctor-profile-tabs">
                   <Tab.Container defaultActiveKey="info">
                     <Nav variant="tabs" className="mt-4">
@@ -218,10 +297,10 @@ const DoctorProfilePage = () => {
                   </Tab.Container>
                 </div>
               </Card>
-            </Col>
+            </Col> */}
 
             {/* Right: Appointment Section */}
-            <Col lg={4}>
+            {/* <Col lg={4}>
               <Card className="appointment-card p-4">
                 <h5>Choose the type of appointment</h5>
                 <Form>
@@ -303,7 +382,7 @@ const DoctorProfilePage = () => {
 
                 <Button
                   className="book-appointment-btn"
-                  disabled={appointmentType !== "clinic"} // enable only for clinic for demo
+                  disabled={appointmentType !== "clinic"} 
                 >
                   Book Appointment
                   <div className="instant-pay-text">
@@ -311,7 +390,6 @@ const DoctorProfilePage = () => {
                   </div>
                 </Button>
 
-                {/* Advertisement placeholder */}
                 <Card className="advertisement-card">
                   <Image
                     src="https://cdn.docprime.com/media/ads/8a8a8bfb7aff81aa017b4d4bc4281975.webp"
@@ -319,6 +397,235 @@ const DoctorProfilePage = () => {
                     fluid
                   />
                 </Card>
+              </Card>
+            </Col> */}
+
+            {/* NEW CHANGES DESIGN */}
+
+            <Col xs={12} className='p-4'>
+              {/* <P_nav patientname={patient && patient.name} /> */}
+              <Card className="shadow-lg border-0" style={{ borderRadius: '20px', overflow: 'hidden' }}>
+                {
+                  doctor_profile === null ? <Col>No Doctor Found</Col> : <>
+                    {/* Hero Section */}
+                    <div className="position-relative pt-4">
+                      <Row className="align-items-center">
+                        <Col md={3} className="text-center">
+                          <div className="position-relative d-inline-block">
+                            {doctor_profile.profile_pic === '' ?
+                              <Image src={require('../assets/image/doctor_img.jpg')} roundedCircle className="border border-4 border-white shadow-lg" width={150} height={150} style={{ objectFit: 'cover' }} /> :
+                              <Image src={doctor_profile?.profile_pic} roundedCircle className="border border-4 border-white shadow-lg" width={150} height={150} style={{ objectFit: 'cover' }} />
+                            }
+                            <div className="position-absolute bottom-0 end-0 bg-success rounded-circle p-2">
+                              <FaUserMd className="text-white" size={20} />
+                            </div>
+                          </div>
+                        </Col>
+                        <Col md={6}>
+                          <h2 className="fw-bold mb-2">Dr. {doctor_profile.name}</h2>
+                          <h5 className="mb-3 opacity-90">
+                            <FaStethoscope className="me-2" />
+                            {doctor_profile.specialty}
+                          </h5>
+                          <div className="mb-2">
+                            <FaLocationDot className="me-2" />
+                            <span>{doctor_profile.hospital_address}</span>
+                          </div>
+                          <div className="mb-2">
+                            <FaEnvelope className="me-2" />
+                            <span>{doctor_profile.email}</span>
+                          </div>
+                          <div className="mb-3">
+                            <FaPhone className="me-2" />
+                            <span>{doctor_profile.mobile}</span>
+                          </div>
+                          <div className="d-flex align-items-center">
+                            <div className="text-warning me-3">
+                              {[...Array(5)].map((_, i) => (
+                                <FaStar key={i} size={18} />
+                              ))}
+                            </div>
+                            <span className="badge bg-light text-dark px-3 py-2 rounded-pill">
+                              <FaAward className="me-1" />
+                              Verified Doctor
+                            </span>
+                          </div>
+                        </Col>
+                        <Col md={3} className="text-center">
+                          <div className="bg-white bg-opacity-20 rounded-3 p-3 mb-3">
+                            <h3 className="fw-bold mb-1">{doctor_profile.experience}+</h3>
+                            <small>Years Experience</small>
+                          </div>
+                          <div className="bg-white bg-opacity-20 rounded-3 p-3">
+                            <h3 className="fw-bold mb-1">95%</h3>
+                            <small>Patient Satisfaction</small>
+                          </div>
+                        </Col>
+                      </Row>
+                    </div>
+
+                    <div className="p-4">
+                      <Row>
+                        {/* Main Content */}
+                        <Col md={8}>
+                          {/* Bio Section */}
+                          <Card className="mb-4 border-0 shadow-sm" style={{ borderRadius: '15px' }}>
+                            <Card.Header className="bg-gradient text-white" style={{ background: 'linear-gradient(45deg, #667eea, #764ba2)', borderRadius: '15px 15px 0 0' }}>
+                              <h6 className="mb-0 fw-bold">
+                                <FaUserMd className="me-2" />
+                                About Dr. {doctor_profile.name}
+                              </h6>
+                            </Card.Header>
+                            <Card.Body className="p-4">
+                              <div className="row g-3">
+                                <div className="col-md-6">
+                                  <div className="d-flex align-items-start mb-3">
+                                    <div className="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                      <FaStar className="text-success" />
+                                    </div>
+                                    <div>
+                                      <h6 className="fw-bold text-success mb-1">Positive Feedback</h6>
+                                      <p className="small text-muted mb-0">"Dr. {doctor_profile.name} was excellent at explaining my condition and treatment options clearly."</p>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-md-6">
+                                  <div className="d-flex align-items-start">
+                                    <div className="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                      <FaStethoscope className="text-info" />
+                                    </div>
+                                    <div>
+                                      <h6 className="fw-bold text-info mb-1">Professional Care</h6>
+                                      <p className="small text-muted mb-0">"Highly professional with modern treatment approaches and excellent patient care."</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </Card.Body>
+                          </Card>
+
+                          {/* Services Section */}
+                          <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
+                            <Card.Header className="bg-gradient text-white" style={{ background: 'linear-gradient(45deg, #667eea, #764ba2)', borderRadius: '15px 15px 0 0' }}>
+                              <h6 className="mb-0 fw-bold">
+                                <FaStethoscope className="me-2" />
+                                Services & Pricing
+                              </h6>
+                            </Card.Header>
+                            <Card.Body className="p-0">
+                              <div className="row g-3 p-4">
+                                {
+                                  doctor_profile && doctor_profile.surgeriesDetails.map((v, i) => {
+                                    return (
+                                      <div className="col-md-6" key={i}>
+                                        <Card className="h-100 border-0 shadow-sm service-card" style={{ borderRadius: '12px', transition: 'all 0.3s ease' }}>
+                                          <Card.Body className="p-3">
+                                            <div className="d-flex justify-content-between align-items-start mb-3">
+                                              <div className="flex-grow-1">
+                                                <h6 className="fw-bold text-dark mb-2">{v.name}</h6>
+                                                <div className="d-flex align-items-center justify-content-between">
+                                                  <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                                                    ₹{v.price}
+                                                  </span>
+                                                  <Button
+                                                    variant="outline-primary"
+                                                    size="sm"
+                                                    onClick={() => handleServiceModalShow(v)}
+                                                    className="rounded-pill px-3"
+                                                    style={{ transition: 'all 0.3s ease' }}
+                                                  >
+                                                    <FaEye className="me-1" />
+                                                    Details
+                                                  </Button>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </Card.Body>
+                                        </Card>
+                                      </div>
+                                    )
+                                  })
+                                }
+                              </div>
+                            </Card.Body>
+                          </Card>
+                        </Col>
+
+                        {/* Sidebar */}
+                        <Col md={4}>
+                          <Card className="border-0 shadow-sm sticky-top" style={{ borderRadius: '15px', top: '20px' }}>
+                            <Card.Header className="bg-gradient text-white text-center" style={{ background: 'linear-gradient(45deg, #667eea, #764ba2)', borderRadius: '15px 15px 0 0' }}>
+                              <h6 className="mb-0 fw-bold">
+                                <FaCalendarAlt className="me-2" />
+                                Quick Actions
+                              </h6>
+                            </Card.Header>
+                            <Card.Body className="p-4">
+                              <div className="text-center mb-4">
+                                <div className="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                                  <FaUserMd className="text-primary" size={30} />
+                                </div>
+                                <h6 className="fw-bold">Dr. {doctor_profile.name}</h6>
+                                <p className="text-muted small mb-0">{doctor_profile.specialty}</p>
+                              </div>
+
+                              <div className="row g-3 mb-4">
+                                <div className="col-6">
+                                  <div className="bg-success bg-opacity-10 rounded-3 p-3 text-center">
+                                    <h6 className="fw-bold text-success mb-1">{doctor_profile.experience}+</h6>
+                                    <small className="text-muted">Years Exp.</small>
+                                  </div>
+                                </div>
+                                <div className="col-6">
+                                  <div className="bg-warning bg-opacity-10 rounded-3 p-3 text-center">
+                                    <h6 className="fw-bold text-warning mb-1">95%</h6>
+                                    <small className="text-muted">Recommend</small>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="mb-4">
+                                <h6 className="fw-bold mb-3">Consultation Options</h6>
+                                <div className="d-flex align-items-center mb-2">
+                                  <div className="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                    <FaStethoscope className="text-info" size={14} />
+                                  </div>
+                                  <span className="small">In-person consultation</span>
+                                </div>
+                                <div className="d-flex align-items-center mb-2">
+                                  <div className="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                    <FaPhone className="text-success" size={14} />
+                                  </div>
+                                  <span className="small">Online consultation</span>
+                                </div>
+                                <div className="d-flex align-items-center">
+                                  <div className="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                    <FaMapMarkerAlt className="text-primary" size={14} />
+                                  </div>
+                                  <span className="small">Home visit available</span>
+                                </div>
+                              </div>
+
+                              <Button
+                                variant="primary"
+                                onClick={handleShow}
+                                className="w-100 rounded-pill py-3 fw-bold"
+                              // style={{
+                              //     background: 'linear-gradient(45deg, #667eea, #764ba2)',
+                              //     border: 'none',
+                              //     boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
+                              // }}
+                              >
+                                {/* <FaCalendarAlt className="me-2" /> */}
+                                Book Appointment
+                              </Button>
+                            </Card.Body>
+                          </Card>
+                        </Col>
+                      </Row>
+                    </div>
+                  </>
+                }
               </Card>
             </Col>
           </Row>
