@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import NavBar from './Component/NavBar'
-import { Card, Col, Container, Row, Badge, Button, Image, Form, Tab, Nav, Modal, ListGroup } from 'react-bootstrap'
+import { Card, Col, Container, Row, Button, Image, Form, Modal, ListGroup } from 'react-bootstrap'
 import FooterBar from './Component/FooterBar'
 import Loader from '../Loader'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom';

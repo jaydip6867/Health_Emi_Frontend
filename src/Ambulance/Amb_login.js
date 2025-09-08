@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap'
 import '../doctor/css/doctor.css'
 import { Link, useNavigate } from 'react-router-dom'
-import { CiLock } from 'react-icons/ci'
-import { FaRegEnvelope } from 'react-icons/fa'
 import Loader from '../Loader'
 import { toast, ToastContainer } from 'react-toastify'
 import axios from 'axios'
@@ -70,13 +68,11 @@ const Amb_login = () => {
                                     <Form.Group controlId="mobile" className='position-relative mb-3'>
                                         <Form.Label>Email</Form.Label>
                                         <Form.Control placeholder="Enter Email" name='email' value={email} className='frm_input' onChange={(e) => setemail(e.target.value)} />
-                                        <FaRegEnvelope className='icon_input' />
                                     </Form.Group>
 
                                     <Form.Group controlId="password" className='position-relative mb-1'>
                                         <Form.Label>Password</Form.Label>
                                         <Form.Control type='password' placeholder="Enter Password" name='password' value={password} className='frm_input' onChange={(e) => setps(e.target.value)} />
-                                        <CiLock className='icon_input' />
                                     </Form.Group>
                                     <div className='form_bottom_div text-end'>
                                         <p><Link to={'forgotambulance'} className='form-link'>Forgotten Password ?</Link> </p>
