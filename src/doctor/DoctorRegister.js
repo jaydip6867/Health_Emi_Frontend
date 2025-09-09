@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Col, Container, Row, Button, Form } from 'react-bootstrap';
+import { Col, Container, Row, Button, Form, InputGroup } from 'react-bootstrap';
 import './css/doctor.css';
 import { AiOutlinePhone, AiOutlineUser } from 'react-icons/ai';
 import { FaRegEnvelope } from 'react-icons/fa';
@@ -60,7 +60,7 @@ const DoctorRegister = () => {
         setStates(filteredStates);
         setCities([]);
         setSelectedStateCode("");
-        
+
         // Clear validation error for country
         if (profileValidationErrors.country) {
             setProfileValidationErrors(prev => ({
@@ -83,7 +83,7 @@ const DoctorRegister = () => {
 
         const filteredCities = City.getCitiesOfState(selectedCountryCode, stateCode);
         setCities(filteredCities);
-        
+
         // Clear validation error for state
         if (profileValidationErrors.state) {
             setProfileValidationErrors(prev => ({
@@ -92,7 +92,6 @@ const DoctorRegister = () => {
             }));
         }
     };
-
 
     const [loading, setloading] = useState(false);
 
@@ -126,8 +125,8 @@ const DoctorRegister = () => {
         degree_registration_no: '',
         qualification: '',
         experience: '',
-        hospital_name: '',
-        hospital_address: '',
+        // hospital_name: '',
+        // hospital_address: '',
         country: '',
         state: '',
         city: ''
@@ -227,19 +226,19 @@ const DoctorRegister = () => {
         return '';
     };
 
-    const validateHospitalName = (hospital_name) => {
-        if (!hospital_name || !hospital_name.trim()) {
-            return 'Hospital name is required';
-        }
-        return '';
-    };
+    // const validateHospitalName = (hospital_name) => {
+    //     if (!hospital_name || !hospital_name.trim()) {
+    //         return 'Hospital name is required';
+    //     }
+    //     return '';
+    // };
 
-    const validateHospitalAddress = (hospital_address) => {
-        if (!hospital_address || !hospital_address.trim()) {
-            return 'Hospital address is required';
-        }
-        return '';
-    };
+    // const validateHospitalAddress = (hospital_address) => {
+    //     if (!hospital_address || !hospital_address.trim()) {
+    //         return 'Hospital address is required';
+    //     }
+    //     return '';
+    // };
 
     const validateCountry = (country) => {
         if (!country || !country.trim()) {
@@ -270,9 +269,9 @@ const DoctorRegister = () => {
             pincode: validatePincode(frmdoctor.pincode),
             gender: validateGender(frmdoctor.gender)
         };
-        
+
         setValidationErrors(errors);
-        
+
         // Check if there are any errors
         return !Object.values(errors).some(error => error !== '');
     };
@@ -284,15 +283,15 @@ const DoctorRegister = () => {
             degree_registration_no: validateDegreeRegistrationNo(frmdocprofile.degree_registration_no),
             qualification: validateQualification(frmdocprofile.qualification),
             experience: validateExperience(frmdocprofile.experience),
-            hospital_name: validateHospitalName(frmdocprofile.hospital_name),
-            hospital_address: validateHospitalAddress(frmdocprofile.hospital_address),
+            // hospital_name: validateHospitalName(frmdocprofile.hospital_name),
+            // hospital_address: validateHospitalAddress(frmdocprofile.hospital_address),
             country: validateCountry(frmdocprofile.country),
             state: validateState(frmdocprofile.state),
             city: validateCity(frmdocprofile.city)
         };
-        
+
         setProfileValidationErrors(errors);
-        
+
         // Check if there are any errors
         return !Object.values(errors).some(error => error !== '');
     };
@@ -304,8 +303,9 @@ const DoctorRegister = () => {
         degree_registration_no: '',
         qualification: '',
         experience: '',
-        hospital_name: '',
-        hospital_address: '',
+        hospitals: [],
+        // hospital_name: '',
+        // hospital_address: '',
         country: '',
         state: '',
         city: '',
@@ -322,10 +322,10 @@ const DoctorRegister = () => {
     // Function to handle file upload
     const handleFileUpload = async (file, type) => {
         if (!file) return null;
-        
+
         const formData = new FormData();
         formData.append('file', file);
-        
+
         try {
             setIsUploading(true);
             const response = await axios.post('https://healtheasy-o25g.onrender.com/user/upload', formData, {
@@ -333,7 +333,7 @@ const DoctorRegister = () => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            
+
             if (response.data.Status === 200 && response.data.Data && response.data.Data.url) {
                 toast('File uploaded successfully!', { className: 'custom-toast-success' });
                 return response.data.Data.url;
@@ -353,7 +353,7 @@ const DoctorRegister = () => {
     const handleProfilePicChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        
+
         const url = await handleFileUpload(file, 'profile');
         if (url) {
             setProfilePic(url);
@@ -368,7 +368,7 @@ const DoctorRegister = () => {
     const handleIdentityProofChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        
+
         const url = await handleFileUpload(file, 'identity');
         if (url) {
             setIdentityProof(url);
@@ -401,13 +401,13 @@ const DoctorRegister = () => {
 
     const selfrmdata = (e) => {
         const { name, value } = e.target;
-        
+
         if (doc_reg) {
             setfrmdoctor(frmdoctor => ({
                 ...frmdoctor,
                 [name]: value
             }));
-            
+
             // Clear validation error for this field when user starts typing
             if (validationErrors[name]) {
                 setValidationErrors(prev => ({
@@ -420,7 +420,7 @@ const DoctorRegister = () => {
                 ...frmdocprofile,
                 [name]: value
             }));
-            
+
             // Clear profile validation error for this field when user starts typing
             if (profileValidationErrors[name]) {
                 setProfileValidationErrors(prev => ({
@@ -437,7 +437,7 @@ const DoctorRegister = () => {
             toast('Please fix the validation errors before proceeding', { className: 'custom-toast-error' });
             return;
         }
-        
+
         setloading(true)
         // console.log(frmdoctor)
         axios({
@@ -463,18 +463,18 @@ const DoctorRegister = () => {
     const handleOtpChange = (index, value) => {
         // Only allow single digit
         if (value.length > 1) return;
-        
+
         // Only allow numbers
         if (value && !/^[0-9]$/.test(value)) return;
-        
+
         const newOtpDigits = [...otpDigits];
         newOtpDigits[index] = value;
         setOtpDigits(newOtpDigits);
-        
+
         // Update the main otp variable
         const otpString = newOtpDigits.join('');
         setotp(otpString);
-        
+
         // Auto focus to next input
         if (value && index < 5) {
             const nextInput = document.getElementById(`otp-${index + 1}`);
@@ -535,11 +535,13 @@ const DoctorRegister = () => {
             toast('Please fix the validation errors before proceeding', { className: 'custom-toast-error' });
             return;
         }
-        
-        console.log(frmdocprofile)
+        var data = {...frmdocprofile};
+        data.hospitals =  hospitallist;
+        setdocprofile(data);
+        // console.log(frmdocprofile)
         var doctordata = JSON.parse(localStorage.getItem('doctordetail'));
         var token = doctordata.data.Data.accessToken
-        // console.log('token= ',doctordata.data.Data.accessToken)
+        console.log('token= ',doctordata.data.Data.accessToken)
         setloading(true)
         axios({
             method: 'post',
@@ -547,7 +549,7 @@ const DoctorRegister = () => {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
-            data: frmdocprofile
+            data: data
         }).then((res) => {
             toast('Profile create successfully...', { className: 'custom-toast-success' })
             navigate('/doctor')
@@ -558,8 +560,8 @@ const DoctorRegister = () => {
         }).finally(() => {
             setloading(false)
         });
-        // setdocreg2(false);
-        // setdocnext1(true);
+        setdocreg2(false);
+        setdocnext1(true);
     }
 
     // get specialty and category
@@ -622,7 +624,7 @@ const DoctorRegister = () => {
         })
         setdselcat(d_data);
         console.log(e.target.value, d_data, frmdocprofile)
-        
+
         // Clear validation error for specialty
         if (profileValidationErrors.specialty) {
             setProfileValidationErrors(prev => ({
@@ -639,7 +641,7 @@ const DoctorRegister = () => {
         setsubname(sub_name[0].categoryname)
         // console.log(sub_name[0].categoryname)
         setdocprofile({ ...frmdocprofile, sub_specialty: sub_name[0].categoryname })
-        
+
         // Clear validation error for sub_specialty
         if (profileValidationErrors.sub_specialty) {
             setProfileValidationErrors(prev => ({
@@ -648,6 +650,36 @@ const DoctorRegister = () => {
             }));
         }
     }
+
+    // add multiple hospital in profile form
+    const hospital_obj = { name: '', address: '' };
+    const [hospital_st, sethospital] = useState(hospital_obj);
+    const [hospitallist, sethospitallist] = useState([]);
+
+    // Handle input change
+    const handlehospitalChange = (e) => {
+        const { name, value } = e.target;
+        sethospital({
+            ...hospital_st,
+            [name]: value,
+        });
+    };
+
+    // Add hospital to list
+    const addHospital = () => {
+        if (hospital_st.name.trim() && hospital_st.address.trim()) {
+            sethospitallist([...hospitallist, hospital_st]);
+            sethospital(hospital_obj); // reset input fields
+        } else {
+            alert('Please enter both name and address');
+        }
+    };
+
+    // Delete a hospital (optional)
+    const deleteHospital = (index) => {
+        const newList = hospitallist.filter((_, i) => i !== index);
+        sethospitallist(newList);
+    };
 
 
     return (
@@ -665,13 +697,13 @@ const DoctorRegister = () => {
                                 <Form autoComplete='off'>
                                     <Form.Group as={Col} controlId="fullname" className='mb-3'>
                                         <Form.Label>Full Name</Form.Label>
-                                        <Form.Control 
-                                            type="text" 
-                                            placeholder="Full Name" 
-                                            className={`frm_input ${validationErrors.name ? 'is-invalid' : ''}`} 
-                                            name="name" 
-                                            value={frmdoctor.name} 
-                                            onChange={selfrmdata} 
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Full Name"
+                                            className={`frm_input ${validationErrors.name ? 'is-invalid' : ''}`}
+                                            name="name"
+                                            value={frmdoctor.name}
+                                            onChange={selfrmdata}
                                         />
                                         {validationErrors.name && (
                                             <div className="invalid-feedback">
@@ -682,14 +714,14 @@ const DoctorRegister = () => {
 
                                     <Form.Group as={Col} controlId="email" className='mb-3'>
                                         <Form.Label>Email</Form.Label>
-                                        <Form.Control 
-                                            type="email" 
-                                            placeholder="Email" 
-                                            autoComplete='off' 
-                                            className={`frm_input ${validationErrors.email ? 'is-invalid' : ''}`} 
-                                            name="email" 
-                                            value={frmdoctor.email} 
-                                            onChange={selfrmdata} 
+                                        <Form.Control
+                                            type="email"
+                                            placeholder="Email"
+                                            autoComplete='off'
+                                            className={`frm_input ${validationErrors.email ? 'is-invalid' : ''}`}
+                                            name="email"
+                                            value={frmdoctor.email}
+                                            onChange={selfrmdata}
                                         />
                                         {validationErrors.email && (
                                             <div className="invalid-feedback">
@@ -700,12 +732,12 @@ const DoctorRegister = () => {
 
                                     <Form.Group controlId="mobile" className='mb-3'>
                                         <Form.Label>Mobile No.</Form.Label>
-                                        <Form.Control 
-                                            placeholder="Mobile No." 
-                                            className={`frm_input ${validationErrors.mobile ? 'is-invalid' : ''}`} 
-                                            name='mobile' 
-                                            value={frmdoctor.mobile} 
-                                            onChange={selfrmdata} 
+                                        <Form.Control
+                                            placeholder="Mobile No."
+                                            className={`frm_input ${validationErrors.mobile ? 'is-invalid' : ''}`}
+                                            name='mobile'
+                                            value={frmdoctor.mobile}
+                                            onChange={selfrmdata}
                                             maxLength="10"
                                         />
                                         {validationErrors.mobile && (
@@ -731,12 +763,12 @@ const DoctorRegister = () => {
 
                                     <Form.Group controlId="pincode" className='mb-3'>
                                         <Form.Label>Pincode</Form.Label>
-                                        <Form.Control 
-                                            placeholder="Pincode" 
-                                            className={`frm_input ${validationErrors.pincode ? 'is-invalid' : ''}`} 
-                                            name='pincode' 
-                                            value={frmdoctor.pincode} 
-                                            onChange={selfrmdata} 
+                                        <Form.Control
+                                            placeholder="Pincode"
+                                            className={`frm_input ${validationErrors.pincode ? 'is-invalid' : ''}`}
+                                            name='pincode'
+                                            value={frmdoctor.pincode}
+                                            onChange={selfrmdata}
                                             maxLength="6"
                                         />
                                         {validationErrors.pincode && (
@@ -804,9 +836,9 @@ const DoctorRegister = () => {
                                     </div>
                                 </div>
 
-                                <Button 
-                                    type="button" 
-                                    onClick={otpverifydone} 
+                                <Button
+                                    type="button"
+                                    onClick={otpverifydone}
                                     className='d-block w-100 theme_btn my-3'
                                     disabled={otp.length !== 6}
                                 >
@@ -826,9 +858,9 @@ const DoctorRegister = () => {
                                     <Form.Group as={Col} controlId="Speciality" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Speciality</Form.Label>
-                                            <Form.Select 
-                                                name="specialty" 
-                                                value={s_type_name} 
+                                            <Form.Select
+                                                name="specialty"
+                                                value={s_type_name}
                                                 onChange={schange}
                                                 className={`${profileValidationErrors.specialty ? 'is-invalid' : ''}`}
                                             >
@@ -850,9 +882,9 @@ const DoctorRegister = () => {
                                         <div className='position-relative'>
                                             <Form.Label>Sub Speciality</Form.Label>
                                             {/* <Form.Control type="email" placeholder="Ex:- Echocardiography" className='frm_input' name="sub_specialty" value={frmdocprofile.sub_specialty} onChange={selfrmdata} /> */}
-                                            <Form.Select 
-                                                name="sub_specialty" 
-                                                value={sub_type_name} 
+                                            <Form.Select
+                                                name="sub_specialty"
+                                                value={sub_type_name}
                                                 onChange={subchange}
                                                 className={`${profileValidationErrors.sub_specialty ? 'is-invalid' : ''}`}
                                             >
@@ -872,12 +904,12 @@ const DoctorRegister = () => {
                                     <Form.Group controlId="Degree" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Degree Registration No.</Form.Label>
-                                            <Form.Control 
-                                                placeholder="Ex:- Dk4567" 
-                                                className={`frm_input ${profileValidationErrors.degree_registration_no ? 'is-invalid' : ''}`} 
-                                                name="degree_registration_no" 
-                                                value={frmdocprofile.degree_registration_no} 
-                                                onChange={selfrmdata} 
+                                            <Form.Control
+                                                placeholder="Ex:- Dk4567"
+                                                className={`frm_input ${profileValidationErrors.degree_registration_no ? 'is-invalid' : ''}`}
+                                                name="degree_registration_no"
+                                                value={frmdocprofile.degree_registration_no}
+                                                onChange={selfrmdata}
                                             />
                                             {profileValidationErrors.degree_registration_no && (
                                                 <div className="invalid-feedback">
@@ -890,12 +922,12 @@ const DoctorRegister = () => {
                                     <Form.Group controlId="Qualification" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Qualification</Form.Label>
-                                            <Form.Control 
-                                                placeholder="Ex:- D.H.M.S, MD" 
-                                                className={`frm_input ${profileValidationErrors.qualification ? 'is-invalid' : ''}`} 
-                                                name="qualification" 
-                                                value={frmdocprofile.qualification} 
-                                                onChange={selfrmdata} 
+                                            <Form.Control
+                                                placeholder="Ex:- D.H.M.S, MD"
+                                                className={`frm_input ${profileValidationErrors.qualification ? 'is-invalid' : ''}`}
+                                                name="qualification"
+                                                value={frmdocprofile.qualification}
+                                                onChange={selfrmdata}
                                             />
                                             {profileValidationErrors.qualification && (
                                                 <div className="invalid-feedback">
@@ -908,15 +940,15 @@ const DoctorRegister = () => {
                                     <Form.Group controlId="Experience" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Experience</Form.Label>
-                                            <Form.Select 
-                                                className={`frm_input text-dark ${profileValidationErrors.experience ? 'is-invalid' : ''}`} 
-                                                name="experience" 
-                                                value={frmdocprofile.experience} 
-                                                onChange={selfrmdata} 
+                                            <Form.Select
+                                                className={`frm_input text-dark ${profileValidationErrors.experience ? 'is-invalid' : ''}`}
+                                                name="experience"
+                                                value={frmdocprofile.experience}
+                                                onChange={selfrmdata}
                                             >
                                                 <option value={''} selected disabled>Select Experiance</option>
                                                 {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
-                                                    <option key={level} value={level+' years'}>
+                                                    <option key={level} value={level + ' years'}>
                                                         {level} years
                                                     </option>
                                                 ))}
@@ -929,7 +961,7 @@ const DoctorRegister = () => {
                                         </div>
                                     </Form.Group>
 
-                                    <Form.Group controlId="Hospitalname" className='mb-3 col-6'>
+                                    {/* <Form.Group controlId="Hospitalname" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Hospital Name</Form.Label>
                                             <Form.Control 
@@ -964,15 +996,15 @@ const DoctorRegister = () => {
                                                 </div>
                                             )}
                                         </div>
-                                    </Form.Group>
+                                    </Form.Group> */}
 
                                     <Form.Group as={Col} controlId="Country" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>Country</Form.Label>
-                                            <Form.Select 
-                                                className={`frm-select ${profileValidationErrors.country ? 'is-invalid' : ''}`} 
-                                                name='country' 
-                                                onChange={handleCountryChange} 
+                                            <Form.Select
+                                                className={`frm-select ${profileValidationErrors.country ? 'is-invalid' : ''}`}
+                                                name='country'
+                                                onChange={handleCountryChange}
                                                 value={selectedCountryCode}
                                             >
                                                 <option value={''}>Select Country</option>
@@ -993,11 +1025,11 @@ const DoctorRegister = () => {
                                     <Form.Group as={Col} controlId="State" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>State</Form.Label>
-                                            <Form.Select 
-                                                className={`frm-select ${profileValidationErrors.state ? 'is-invalid' : ''}`} 
-                                                name='state' 
-                                                onChange={handleStateChange} 
-                                                value={selectedStateCode} 
+                                            <Form.Select
+                                                className={`frm-select ${profileValidationErrors.state ? 'is-invalid' : ''}`}
+                                                name='state'
+                                                onChange={handleStateChange}
+                                                value={selectedStateCode}
                                                 disabled={!selectedCountryCode}
                                             >
                                                 <option value={''}>Select State</option>
@@ -1018,10 +1050,10 @@ const DoctorRegister = () => {
                                     <Form.Group as={Col} controlId="City" className='mb-3 col-6'>
                                         <div className='position-relative'>
                                             <Form.Label>City</Form.Label>
-                                            <Form.Select 
-                                                className={`frm-select ${profileValidationErrors.city ? 'is-invalid' : ''}`} 
-                                                name='city' 
-                                                onChange={selfrmdata} 
+                                            <Form.Select
+                                                className={`frm-select ${profileValidationErrors.city ? 'is-invalid' : ''}`}
+                                                name='city'
+                                                onChange={selfrmdata}
                                                 disabled={!selectedStateCode}
                                             >
                                                 <option value={''}>Select City</option>
@@ -1042,17 +1074,17 @@ const DoctorRegister = () => {
                                     <Form.Group controlId="profilePic" className='mb-3 col-6'>
                                         <Form.Label>Upload Profile Picture</Form.Label>
                                         <div className='position-relative'>
-                                            <input 
-                                                type="file" 
-                                                className="form-control" 
-                                                accept="image/*" 
+                                            <input
+                                                type="file"
+                                                className="form-control"
+                                                accept="image/*"
                                                 onChange={handleProfilePicChange}
                                                 disabled={isUploading}
                                                 style={{ display: 'none' }}
                                                 id="profile-pic-upload"
                                             />
-                                            <label 
-                                                htmlFor="profile-pic-upload" 
+                                            <label
+                                                htmlFor="profile-pic-upload"
                                                 className="btn btn-outline-secondary w-100"
                                                 style={{ cursor: 'pointer', padding: '0.375rem 0.75rem' }}
                                             >
@@ -1064,10 +1096,10 @@ const DoctorRegister = () => {
                                                 <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#ff4444', color: 'white', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} onClick={handleRemoveProfilePic}>
                                                     ×
                                                 </div>
-                                                <img 
-                                                    src={profilePic} 
-                                                    alt="Profile Preview" 
-                                                    style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd', padding: '4px' }} 
+                                                <img
+                                                    src={profilePic}
+                                                    alt="Profile Preview"
+                                                    style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd', padding: '4px' }}
                                                 />
                                             </div>
                                         )}
@@ -1076,17 +1108,17 @@ const DoctorRegister = () => {
                                     <Form.Group controlId="identityProof" className='mb-3 col-6'>
                                         <Form.Label>Upload Identity Document</Form.Label>
                                         <div className='position-relative'>
-                                            <input 
-                                                type="file" 
-                                                className="form-control" 
-                                                accept="image/*,.pdf" 
+                                            <input
+                                                type="file"
+                                                className="form-control"
+                                                accept="image/*,.pdf"
                                                 onChange={handleIdentityProofChange}
                                                 disabled={isUploading}
                                                 style={{ display: 'none' }}
                                                 id="identity-proof-upload"
                                             />
-                                            <label 
-                                                htmlFor="identity-proof-upload" 
+                                            <label
+                                                htmlFor="identity-proof-upload"
                                                 className="btn btn-outline-secondary w-100"
                                                 style={{ cursor: 'pointer', padding: '0.375rem 0.75rem' }}
                                             >
@@ -1100,22 +1132,68 @@ const DoctorRegister = () => {
                                                 </div>
                                                 {identityProof.toLowerCase().endsWith('.pdf') ? (
                                                     <div style={{ maxWidth: '200px', maxHeight: '200px', padding: '20px', textAlign: 'center', background: '#f8f9fa' }}>
-                                                        <i className="fas fa-file-pdf" style={{fontSize: '48px', color: '#dc3545'}}></i>
-                                                        <div style={{marginTop: '10px'}}>
+                                                        <i className="fas fa-file-pdf" style={{ fontSize: '48px', color: '#dc3545' }}></i>
+                                                        <div style={{ marginTop: '10px' }}>
                                                             <a href={identityProof} target="_blank" rel="noopener noreferrer">
                                                                 View PDF
                                                             </a>
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <img 
-                                                        src={identityProof} 
-                                                        alt="Identity Proof Preview" 
-                                                        style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd', padding: '4px' }} 
+                                                    <img
+                                                        src={identityProof}
+                                                        alt="Identity Proof Preview"
+                                                        style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd', padding: '4px' }}
                                                     />
                                                 )}
                                             </div>
                                         )}
+                                    </Form.Group>
+
+                                    <Form.Group>
+                                        <Form.Label>Add Hospital Details</Form.Label>
+                                        <div className='position-relative row g-1'>
+                                            <div className='col-5'>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="name"
+                                                    placeholder="Hospital Name"
+                                                    value={hospital_st.name}
+                                                    onChange={handlehospitalChange}
+                                                    style={{ marginRight: '10px' }}
+                                                />
+                                            </div>
+                                            <div className='col-5'>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="address"
+                                                    placeholder="Address"
+                                                    value={hospital_st.address}
+                                                    onChange={handlehospitalChange}
+                                                    style={{ marginRight: '10px' }}
+                                                />
+                                            </div>
+                                            <div className='col-2'>
+                                                <Button className='d-block w-100 theme_btn' onClick={addHospital}>Add</Button>
+                                            </div>
+                                        </div>
+                                        <ul style={{ marginTop: '20px', listStyleType:'1', marginLeft: 25 }}>
+                                            {
+                                                hospitallist && hospitallist.map((hospital, index) => (
+                                                    <li key={index} style={{ marginBottom: '10px' }}>
+                                                        <strong>{hospital.name}</strong> - {hospital.address}
+                                                        <Button 
+                                                        variant='danger'
+                                                        size='sm'
+                                                            onClick={() => deleteHospital(index)}
+                                                            style={{ marginLeft: '10px'}}
+                                                        >
+                                                            Delete
+                                                        </Button>
+                                                    </li>
+                                                ))
+                                            }
+                                        </ul>
                                     </Form.Group>
 
                                     <Button type="button" onClick={profileadd} className='d-block w-100 theme_btn my-3'>
