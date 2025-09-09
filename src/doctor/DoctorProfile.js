@@ -352,9 +352,44 @@ const DoctorProfile = () => {
                   {/* Personal Information Section */}
                   <Card className="mb-4 border-0 shadow-sm">
                     <Card.Header className="bg-light border-bottom">
-                      <h5 className="mb-0 text-primary">
-                        Personal Information
-                      </h5>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <h5 className="mb-0 text-primary">
+                          Personal Information
+                        </h5>
+                        {IsDisable ? (
+                          <Button
+                            variant="primary"
+                            className="px-5 me-3"
+                            onClick={() => setdisabled(false)}
+                          >
+                            Edit Profile
+                          </Button>
+                        ) : (
+                          <div className="d-flex">
+                            <Button
+                              variant="success"
+                              className="px-5 me-3"
+                              onClick={() => updateprofiledata(profile._id)}
+                            >
+                              Update Profile
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              className="px-4"
+                              onClick={() => {
+                                setdisabled(true);
+                                // Clear profile picture preview on cancel
+                                if (profilePicPreview) {
+                                  URL.revokeObjectURL(profilePicPreview);
+                                  setProfilePicPreview(null);
+                                }
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </Card.Header>
                     <Card.Body className="p-4">
                       <Row className="g-3">
@@ -574,45 +609,59 @@ const DoctorProfile = () => {
                   {/* Hospital Information Section */}
                   <Card className="mb-4 border-0 shadow-sm">
                     <Card.Header className="bg-light border-bottom">
+                      <h5 className="mb-0 text-success">
+                        <i className="fas fa-hospital me-2"></i>
+                        Hospital Affiliations
+                      </h5>
+                    </Card.Header>
+                    <Card.Body className="p-4">
+                      <Row className="g-4">
+                        {profile?.hospitals?.length > 0 ? (
+                          profile.hospitals.map((hospital, index) => (
+                            <Col md={6} key={index}>
+                              <Card className="h-100 border-0 shadow-sm">
+                                <Card.Body>
+                                  <div className="d-flex align-items-start">
+                                    <div className="me-3 text-primary">
+                                      <i className="fas fa-hospital-alt fa-2x"></i>
+                                    </div>
+                                    <div className="flex-grow-1">
+                                      <h6 className="mb-1 fw-bold text-primary">
+                                        {hospital.name}
+                                      </h6>
+                                      <div className="text-muted small">
+                                        <div className="mb-1">
+                                          <i className="fas fa-map-marker-alt me-1"></i>
+                                          {hospital.address}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                          ))
+                        ) : (
+                          <Col xs={12} className="text-center py-4">
+                            <i className="fas fa-hospital text-muted fa-3x mb-3"></i>
+                            <p className="text-muted mb-0">
+                              No hospital information available
+                            </p>
+                          </Col>
+                        )}
+                      </Row>
+                    </Card.Body>
+                  </Card>
+
+                  {/* Doctor & Identity Proof Section */}
+                  <Card className="mb-4 border-0 shadow-sm">
+                    <Card.Header className="bg-light border-bottom">
                       <h5 className="mb-0 text-info">
-                        Hospital & Practice Information
+                        Doctor & Identity Proof
                       </h5>
                     </Card.Header>
                     <Card.Body className="p-4">
                       <Row className="g-3">
-                        <Col md={6}>
-                          <Form.Group>
-                            <Form.Label className="fw-semibold">
-                              Hospital/Clinic Name
-                            </Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder="Enter hospital or clinic name"
-                              name="hospital_name"
-                              value={profile?.hospital_name || ""}
-                              disabled={IsDisable}
-                              onChange={handleChange}
-                              className="form-control"
-                            />
-                          </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                          <Form.Group>
-                            <Form.Label className="fw-semibold">
-                              Hospital Address
-                            </Form.Label>
-                            <Form.Control
-                              as="textarea"
-                              rows={3}
-                              placeholder="Enter complete hospital address"
-                              name="hospital_address"
-                              value={profile?.hospital_address || ""}
-                              disabled={IsDisable}
-                              onChange={handleChange}
-                              style={{ resize: "vertical" }}
-                            />
-                          </Form.Group>
-                        </Col>
                         <Col md={6}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">
