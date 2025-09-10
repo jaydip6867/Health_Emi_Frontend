@@ -677,6 +677,12 @@ h6 {
 .doctor_card:hover .btn{
     background-color: var(--white);
 }
+.doctor_card img{
+    max-height: 200px;
+    width: 200px;
+    max-width: 200px;
+    object-fit: cover;
+}
 .doctor_img img{
     height: 200px;
     width: 200px;

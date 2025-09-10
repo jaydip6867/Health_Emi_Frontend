@@ -59,18 +59,13 @@ const DoctorProfilePage = () => {
       }
     }).then((res) => {
       setdocprofile(res.data.Data)
-      // console.log('doctor ', res.data.Data)
+      console.log('doctor ', res.data.Data)
     }).catch(function (error) {
       console.log(error);
     }).finally(() => {
       setloading(false)
     });
   }
-
-  const [appointmentType, setAppointmentType] = useState("clinic");
-  const [clinicTime, setClinicTime] = useState("04:30 PM");
-  const [showFullDescription, setShowFullDescription] = useState(false);
-
 
   const [show, setShow] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
@@ -550,26 +545,26 @@ const DoctorProfilePage = () => {
                         </Col>
                         <Col xs={4}>
                           <Form.Label>Reports</Form.Label>
-                          {/* <Form.Control type='file' value={apt_data.report} name='report' onChange={appchangedata}></Form.Control> */}
-                          <p className="text-secondary">Under Maintenance</p>
+                          <Form.Control type='file' value={apt_data.report} name='report' onChange={appchangedata}></Form.Control>
+                          {/* <p className="text-secondary">Under Maintenance</p> */}
                         </Col>
                         <Col xs={12} md={4}>
                           <Form.Check
-                            label="Home Visit"
+                            label={`Home Visit - ${doctor_profile.consultationsDetails.home_visit_price}`}
                             type="radio"
                             name="visit_types"
                             value={"home_visit"}
                             onChange={appchangedata}
                           />
                           <Form.Check
-                            label="Clinic Visit"
+                            label={`Clinic Visit - ${doctor_profile.consultationsDetails.clinic_visit_price}`}
                             type="radio"
                             name="visit_types"
                             value={"clinic_visit"}
                             onChange={appchangedata}
                           />
                           <Form.Check
-                            label="EOPD"
+                            label={`EOPD - ${doctor_profile.consultationsDetails.eopd_price}`}
                             type="radio"
                             name="visit_types"
                             value={"eopd"}
