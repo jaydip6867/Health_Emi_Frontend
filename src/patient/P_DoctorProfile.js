@@ -198,30 +198,24 @@ const P_DoctorProfile = () => {
                   <div className="position-relative pt-4">
                     <Row className="align-items-center">
                       <Col md={3} className="text-center">
-                        <div className="position-relative d-inline-block">
+                        <div className="position-relative d-inline-block doctor_img">
                           {doctor_profile.profile_pic === "" ? (
                             <Image
                               src={require("../assets/image/doctor_img.jpg")}
                               roundedCircle
                               className="border border-4 border-white shadow-lg"
-                              width={150}
-                              height={150}
-                              style={{ objectFit: "cover" }}
                             />
                           ) : (
                             <Image
                               src={doctor_profile?.profile_pic}
                               roundedCircle
                               className="border border-4 border-white shadow-lg"
-                              width={150}
-                              height={150}
                               alt={doctor_profile?.name}
                               title={doctor_profile?.name}
                               loading="lazy"
                               onError={(e) => {
                                 e.target.src = require("../assets/image/doctor_img.jpg");
                               }}
-                              style={{ objectFit: "cover" }}
                             />
                           )}
                           <div className="position-absolute bottom-0 end-0 bg-success rounded-circle p-2">
@@ -500,11 +494,11 @@ const P_DoctorProfile = () => {
                               variant="primary"
                               onClick={handleShow}
                               className="w-100 rounded-pill py-3 fw-bold"
-                              // style={{
-                              //     background: 'linear-gradient(45deg, #667eea, #764ba2)',
-                              //     border: 'none',
-                              //     boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
-                              // }}
+                            // style={{
+                            //     background: 'linear-gradient(45deg, #667eea, #764ba2)',
+                            //     border: 'none',
+                            //     boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
+                            // }}
                             >
                               {/* <FaCalendarAlt className="me-2" /> */}
                               Book Appointment

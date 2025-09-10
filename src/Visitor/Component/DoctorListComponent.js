@@ -1,6 +1,7 @@
 import { Button, Card, Col, Row } from "react-bootstrap"
 import { MdArrowOutward, MdLocationOn } from "react-icons/md"
 import { PiStethoscopeBold } from "react-icons/pi"
+import { Link } from "react-router-dom"
 
 const DoctorListComponents = ({ details }) => {
     console.log(details)
@@ -8,7 +9,7 @@ const DoctorListComponents = ({ details }) => {
         <>
             <Card
                 text="secondary"
-                className="p-4 rounded-4"
+                className="p-4 rounded-4 doctor_card"
             >
                 <Row className="g-3">
                     <Col xs={12} md={2}>
@@ -38,12 +39,13 @@ const DoctorListComponents = ({ details }) => {
                     <Col xs={12} md={'auto'} className=" d-flex align-items-center  ms-auto">
                         <Button
                             variant="light"
-                            className="d-flex align-items-center gap-2"
+                            className="d-flex align-items-center gap-5"
                             style={{ borderRadius: "20px", whiteSpace: "nowrap" }}
                         >
                             See More <span style={{ width: 30, height: 30 }} className="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white"><MdArrowOutward size={20} /></span>
                         </Button>
                     </Col>
+                    <Link to={`/doctorprofile/${encodeURIComponent(btoa(details._id))}`} className="text-body-primary text-decoration-none stretched-link"></Link>
                 </Row>
             </Card>
         </>

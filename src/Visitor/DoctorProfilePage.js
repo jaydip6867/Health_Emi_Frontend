@@ -13,6 +13,7 @@ import { FaLocationDot } from 'react-icons/fa6'
 import { format } from 'date-fns';
 import Swal from 'sweetalert2'
 import DatePicker from 'react-datepicker'
+import { TbArrowBadgeRight } from 'react-icons/tb'
 
 const DoctorProfilePage = () => {
   const SECRET_KEY = "health-emi";
@@ -80,7 +81,7 @@ const DoctorProfilePage = () => {
     if (!patient) {
       navigate('/patient')
     }
-    else{
+    else {
       setShow(true)
     }
   };
@@ -159,278 +160,52 @@ const DoctorProfilePage = () => {
         {doctor_profile && <Container className="my-4">
           <Row className='align-items-start'>
             {/* Left: Profile Section */}
-            {/* <Col lg={8}>
-              <Card className="doctor-profile-card p-4">
-                <Row>
-                  <Col xs={3}>
-                    <Image
-                      src={doctor_profile?.profile_pic === '' ? require('../assets/image/doctor_img.jpg') : doctor_profile?.profile_pic}
-                      className="doctor-avatar"
-                      alt={`Dr. ${doctor_profile?.name}`}
-                    />
-                  </Col>
-                  <Col xs={9}>
-                    <h4 className="doctor-name">
-                      Dr. {doctor_profile?.name}
-                      <Badge className="profile-claimed-badge">
-                        Profile is claimed
-                      </Badge>
-                    </h4>
-                    <div className="doctor-specialty">
-                      {doctor_profile?.specialty}, {doctor_profile?.surgeriesDetails.map((surg, i) => {
-                        return (
-                          <span key={i}>{surg?.name}, </span>
-                        )
-                      })}
-                      etc...
-                    </div>
-                    <div className="doctor-experience">
-                      <strong>{doctor_profile?.experience} Experience Overall</strong>
-                    </div>
-
-                    <div className="verification-badge">
-                      <Image
-                        src="https://cdn.docprime.com/media/verified_icons/medical_registration_verified.png"
-                        alt="Medical Registration Verified"
-                        className="verification-icon"
-                      />
-                      <span className="verification-text">
-                        Medical Registration Verified
-                      </span>
-                    </div>
-
-                    <div className="d-flex align-items-center mb-3">
-                      <Badge className="rating-badge">
-                        99% <small> (431 patients) </small>
-                      </Badge>
-                      <span className="rating-text">Rating</span>
-                    </div>
-
-                    <div className="doctor-description">
-                      <h5>Dr. {doctor_profile?.name} - Transforming Smiles with Comfort & Expertise</h5>
-
-                      <p>
-                        With over a decade of experience in creating bright, comfort
-                        smiles, Dr. Komal Prakash Kamble has built a one-stop
-                        destination for advanced dental care. Known for her
-                        commitment to comfortable and stress-free dentistry, she has
-                        earned a reputation as a trusted name in the field.
-                      </p>
-
-                      {showFullDescription && (
-                        <>
-                          <p>
-                            After completing her dental education in Mumbai, Dr. Komal
-                            pursued an Advanced Course in Aesthetic Dentistry from the
-                            University of Los Angeles (UCLA). Her expertise, combined with
-                            state-of-the-art dental technology, allows her to handle
-                            dental phobia with ease, ensuring every patient has a pleasant
-                            and pain-free experience.
-                          </p>
-                          <p>
-                            She specializes in:
-                            <ul>
-                              <li>Painless Root Canals using advanced techniques</li>
-                              <li>Precision Implant Placements for seamless tooth replacement</li>
-                              <li>Smile Makeovers & Invisalign for perfectly aligned teeth</li>
-                            </ul>
-                          </p>
-                          <p>
-                            From smile transformations to advanced dental procedures,
-                            Dr. Komal is dedicated to making every dental visit a
-                            memorable and pain-free experience!
-                          </p>
-                        </>
-                      )}
-
-                      <button
-                        className="view-toggle-btn"
-                        onClick={() => setShowFullDescription(!showFullDescription)}
-                      >
-                        {showFullDescription ? 'View Less' : 'View More'}
-                      </button>
-
-                    </div>
-                  </Col>
-                </Row>
-
-                <div className="doctor-profile-tabs">
-                  <Tab.Container defaultActiveKey="info">
-                    <Nav variant="tabs" className="mt-4">
-                      <Nav.Item>
-                        <Nav.Link eventKey="info">Info</Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                        <Nav.Link eventKey="stories">
-                          Stories <Badge bg="secondary">431</Badge>
-                        </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                        <Nav.Link eventKey="consult">Consult Q&amp;A</Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                        <Nav.Link eventKey="healthfeed">Healthfeed</Nav.Link>
-                      </Nav.Item>
-                    </Nav>
-                    <Tab.Content>
-                      <Tab.Pane eventKey="info">
-                        <div className="clinic-info">
-                          <h5>DENTAL SOLUTIONS</h5>
-                          <div className="clinic-rating">
-                            <strong>★★★★★ 5.0</strong> from 431 reviews
-                          </div>
-                          <div className="clinic-address">
-                            Baner pashan link road, Landmark: Above Jockey Showroom,
-                            Pune{" "}
-                            <a href="#" className="share-story-link">
-                              Get Directions
-                            </a>
-                          </div>
-                          <div className="clinic-timings">
-                            <strong>Mon - Sat:</strong> 10:00 AM - 01:00 PM, 04:00 PM -
-                            08:00 PM
-                            <br />
-                            <strong>Sun:</strong> 11:00 AM - 01:00 PM
-                          </div>
-                          <div className="clinic-fee">₹400 (Online Payment Available)</div>
-                          <p>
-                            <strong>Prime</strong> Max. 15 mins wait + Verified details
-                          </p>
-                        </div>
-                      </Tab.Pane>
-                      <Tab.Pane eventKey="stories">Patient Stories will be here...</Tab.Pane>
-                      <Tab.Pane eventKey="consult">Consult Q&A content goes here...</Tab.Pane>
-                      <Tab.Pane eventKey="healthfeed">Healthfeed content here...</Tab.Pane>
-                    </Tab.Content>
-                  </Tab.Container>
-                </div>
-              </Card>
-            </Col> */}
-
-            {/* Right: Appointment Section */}
-            {/* <Col lg={4}>
-              <Card className="appointment-card p-4">
-                <h5>Choose the type of appointment</h5>
-                <Form>
-                  <div className={`appointment-type-option ${appointmentType === "clinic" ? "selected" : ""}`}>
-                    <Form.Check
-                      type="radio"
-                      label="Clinic Visit"
-                      name="appointmentType"
-                      id="clinicVisit"
-                      value="clinic"
-                      checked={appointmentType === "clinic"}
-                      onChange={(e) => setAppointmentType(e.target.value)}
-                    />
-                  </div>
-                  <div className={`appointment-type-option ${appointmentType === "video" ? "selected" : ""}`}>
-                    <Form.Check
-                      type="radio"
-                      label="Video Consult"
-                      name="appointmentType"
-                      id="videoConsult"
-                      value="video"
-                      checked={appointmentType === "video"}
-                      onChange={(e) => setAppointmentType(e.target.value)}
-                    />
-                  </div>
-                </Form>
-
-                {appointmentType === "clinic" && (
-                  <div className="clinic-appointment-details">
-                    <h6>
-                      Clinic Appointment
-                      <Badge className="fee-badge">
-                        ₹400 fee
-                      </Badge>
-                    </h6>
-                    <hr />
-
-                    <div className="clinic-details">
-                      <h6>DENTAL SOLUTIONS</h6>
-                      <small>
-                        ₹400 fee | Max 15 min wait
-                        <br />
-                        Baner Pashan Link Road
-                      </small>
-                    </div>
-
-                    <div className="available-dates">
-                      <h6>Available Dates</h6>
-                      <div className="date-slots">
-                        <div className="date-slot">
-                          <Badge className="date-badge">Today</Badge>
-                          <small className="slots-available">2 Slots Available</small>
-                        </div>
-                        <div className="date-slot">
-                          <Badge className="date-badge">Tomorrow</Badge>
-                          <small className="slots-available">15 Slots Available</small>
-                        </div>
-                        <div className="date-slot">
-                          <Badge className="date-badge">Wed, 20 Aug</Badge>
-                          <small className="slots-available">12 Slots Available</small>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="time-selection">
-                      <h6>Evening (2 slots)</h6>
-                      <Form.Select
-                        className="time-select"
-                        aria-label="Select appointment time"
-                        value={clinicTime}
-                        onChange={(e) => setClinicTime(e.target.value)}
-                      >
-                        <option>04:30 PM</option>
-                        <option>05:30 PM</option>
-                      </Form.Select>
-                    </div>
-                  </div>
-                )}
-
-                <Button
-                  className="book-appointment-btn"
-                  disabled={appointmentType !== "clinic"} 
-                >
-                  Book Appointment
-                  <div className="instant-pay-text">
-                    Instant Pay Available
-                  </div>
-                </Button>
-
-                <Card className="advertisement-card">
-                  <Image
-                    src="https://cdn.docprime.com/media/ads/8a8a8bfb7aff81aa017b4d4bc4281975.webp"
-                    alt="Advertisement"
-                    fluid
-                  />
-                </Card>
-              </Card>
-            </Col> */}
 
             {/* NEW CHANGES DESIGN */}
 
-            <Col xs={12} className='p-4'>
+            <Col xs={12} className="p-4">
               {/* <P_nav patientname={patient && patient.name} /> */}
-              <Card className="shadow-lg border-0" style={{ borderRadius: '20px', overflow: 'hidden' }}>
-                {
-                  doctor_profile === null ? <Col>No Doctor Found</Col> : <>
+              <Card
+                className="shadow-lg border-0"
+                style={{ borderRadius: "20px", overflow: "hidden" }}
+              >
+                {doctor_profile === null ? (
+                  <Col>No Doctor Found</Col>
+                ) : (
+                  <>
                     {/* Hero Section */}
                     <div className="position-relative pt-4">
                       <Row className="align-items-center">
                         <Col md={3} className="text-center">
-                          <div className="position-relative d-inline-block">
-                            {doctor_profile.profile_pic === '' ?
-                              <Image src={require('../assets/image/doctor_img.jpg')} roundedCircle className="border border-4 border-white shadow-lg" width={150} height={150} style={{ objectFit: 'cover' }} /> :
-                              <Image src={doctor_profile?.profile_pic} roundedCircle className="border border-4 border-white shadow-lg" width={150} height={150} style={{ objectFit: 'cover' }} />
-                            }
+                          <div className="position-relative d-inline-block doctor_img">
+                            {doctor_profile.profile_pic === "" ? (
+                              <Image
+                                src={require("../assets/image/doctor_img.jpg")}
+                                roundedCircle
+                                className="border border-4 border-white shadow-lg"
+                              />
+                            ) : (
+                              <Image
+                                src={doctor_profile?.profile_pic}
+                                roundedCircle
+                                className="border border-4 border-white shadow-lg"
+                                alt={doctor_profile?.name}
+                                title={doctor_profile?.name}
+                                loading="lazy"
+                                onError={(e) => {
+                                  e.target.src = require("../assets/image/doctor_img.jpg");
+                                }}
+                              />
+                            )}
                             <div className="position-absolute bottom-0 end-0 bg-success rounded-circle p-2">
                               <FaUserMd className="text-white" size={20} />
                             </div>
                           </div>
                         </Col>
                         <Col md={6}>
-                          <h2 className="fw-bold mb-2">Dr. {doctor_profile.name}</h2>
+                          <h2 className="fw-bold mb-2">
+                            Dr. {doctor_profile.name}
+                          </h2>
                           <h5 className="mb-3 opacity-90">
                             <FaStethoscope className="me-2" />
                             {doctor_profile.specialty}
@@ -461,7 +236,9 @@ const DoctorProfilePage = () => {
                         </Col>
                         <Col md={3} className="text-center">
                           <div className="bg-white bg-opacity-20 rounded-3 p-3 mb-3">
-                            <h3 className="fw-bold mb-1">{doctor_profile.experience}+</h3>
+                            <h3 className="fw-bold mb-1">
+                              {doctor_profile.experience}+
+                            </h3>
                             <small>Years Experience</small>
                           </div>
                           <div className="bg-white bg-opacity-20 rounded-3 p-3">
@@ -477,8 +254,18 @@ const DoctorProfilePage = () => {
                         {/* Main Content */}
                         <Col md={8}>
                           {/* Bio Section */}
-                          <Card className="mb-4 border-0 shadow-sm" style={{ borderRadius: '15px' }}>
-                            <Card.Header className="bg-gradient text-white" style={{ background: 'linear-gradient(45deg, #667eea, #764ba2)', borderRadius: '15px 15px 0 0' }}>
+                          <Card
+                            className="mb-4 border-0 shadow-sm"
+                            style={{ borderRadius: "15px" }}
+                          >
+                            <Card.Header
+                              className="bg-gradient text-white"
+                              style={{
+                                background:
+                                  "linear-gradient(45deg, #667eea, #764ba2)",
+                                borderRadius: "15px 15px 0 0",
+                              }}
+                            >
                               <h6 className="mb-0 fw-bold">
                                 <FaUserMd className="me-2" />
                                 About Dr. {doctor_profile.name}
@@ -492,8 +279,14 @@ const DoctorProfilePage = () => {
                                       <FaStar className="text-success" />
                                     </div>
                                     <div>
-                                      <h6 className="fw-bold text-success mb-1">Positive Feedback</h6>
-                                      <p className="small text-muted mb-0">"Dr. {doctor_profile.name} was excellent at explaining my condition and treatment options clearly."</p>
+                                      <h6 className="fw-bold text-success mb-1">
+                                        Positive Feedback
+                                      </h6>
+                                      <p className="small text-muted mb-0">
+                                        "Dr. {doctor_profile.name} was excellent
+                                        at explaining my condition and treatment
+                                        options clearly."
+                                      </p>
                                     </div>
                                   </div>
                                 </div>
@@ -503,8 +296,13 @@ const DoctorProfilePage = () => {
                                       <FaStethoscope className="text-info" />
                                     </div>
                                     <div>
-                                      <h6 className="fw-bold text-info mb-1">Professional Care</h6>
-                                      <p className="small text-muted mb-0">"Highly professional with modern treatment approaches and excellent patient care."</p>
+                                      <h6 className="fw-bold text-info mb-1">
+                                        Professional Care
+                                      </h6>
+                                      <p className="small text-muted mb-0">
+                                        "Highly professional with modern treatment
+                                        approaches and excellent patient care."
+                                      </p>
                                     </div>
                                   </div>
                                 </div>
@@ -513,8 +311,18 @@ const DoctorProfilePage = () => {
                           </Card>
 
                           {/* Services Section */}
-                          <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
-                            <Card.Header className="bg-gradient text-white" style={{ background: 'linear-gradient(45deg, #667eea, #764ba2)', borderRadius: '15px 15px 0 0' }}>
+                          <Card
+                            className="border-0 shadow-sm"
+                            style={{ borderRadius: "15px" }}
+                          >
+                            <Card.Header
+                              className="bg-gradient text-white"
+                              style={{
+                                background:
+                                  "linear-gradient(45deg, #667eea, #764ba2)",
+                                borderRadius: "15px 15px 0 0",
+                              }}
+                            >
                               <h6 className="mb-0 fw-bold">
                                 <FaStethoscope className="me-2" />
                                 Services & Pricing
@@ -522,15 +330,23 @@ const DoctorProfilePage = () => {
                             </Card.Header>
                             <Card.Body className="p-0">
                               <div className="row g-3 p-4">
-                                {
-                                  doctor_profile && doctor_profile.surgeriesDetails.map((v, i) => {
+                                {doctor_profile &&
+                                  doctor_profile.surgeriesDetails.map((v, i) => {
                                     return (
                                       <div className="col-md-6" key={i}>
-                                        <Card className="h-100 border-0 shadow-sm service-card" style={{ borderRadius: '12px', transition: 'all 0.3s ease' }}>
+                                        <Card
+                                          className="h-100 border-0 shadow-sm service-card"
+                                          style={{
+                                            borderRadius: "12px",
+                                            transition: "all 0.3s ease",
+                                          }}
+                                        >
                                           <Card.Body className="p-3">
                                             <div className="d-flex justify-content-between align-items-start mb-3">
                                               <div className="flex-grow-1">
-                                                <h6 className="fw-bold text-dark mb-2">{v.name}</h6>
+                                                <h6 className="fw-bold text-dark mb-2">
+                                                  {v.name}
+                                                </h6>
                                                 <div className="d-flex align-items-center justify-content-between">
                                                   <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
                                                     ₹{v.price}
@@ -538,9 +354,13 @@ const DoctorProfilePage = () => {
                                                   <Button
                                                     variant="outline-primary"
                                                     size="sm"
-                                                    onClick={() => handleServiceModalShow(v)}
+                                                    onClick={() =>
+                                                      handleServiceModalShow(v)
+                                                    }
                                                     className="rounded-pill px-3"
-                                                    style={{ transition: 'all 0.3s ease' }}
+                                                    style={{
+                                                      transition: "all 0.3s ease",
+                                                    }}
                                                   >
                                                     <FaEye className="me-1" />
                                                     Details
@@ -551,9 +371,8 @@ const DoctorProfilePage = () => {
                                           </Card.Body>
                                         </Card>
                                       </div>
-                                    )
-                                  })
-                                }
+                                    );
+                                  })}
                               </div>
                             </Card.Body>
                           </Card>
@@ -561,8 +380,18 @@ const DoctorProfilePage = () => {
 
                         {/* Sidebar */}
                         <Col md={4}>
-                          <Card className="border-0 shadow-sm sticky-top" style={{ borderRadius: '15px', top: '20px' }}>
-                            <Card.Header className="bg-gradient text-white text-center" style={{ background: 'linear-gradient(45deg, #667eea, #764ba2)', borderRadius: '15px 15px 0 0' }}>
+                          <Card
+                            className="border-0 shadow-sm sticky-top"
+                            style={{ borderRadius: "15px", top: "20px" }}
+                          >
+                            <Card.Header
+                              className="bg-gradient text-white text-center"
+                              style={{
+                                background:
+                                  "linear-gradient(45deg, #667eea, #764ba2)",
+                                borderRadius: "15px 15px 0 0",
+                              }}
+                            >
                               <h6 className="mb-0 fw-bold">
                                 <FaCalendarAlt className="me-2" />
                                 Quick Actions
@@ -573,44 +402,70 @@ const DoctorProfilePage = () => {
                                 <div className="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
                                   <FaUserMd className="text-primary" size={30} />
                                 </div>
-                                <h6 className="fw-bold">Dr. {doctor_profile.name}</h6>
-                                <p className="text-muted small mb-0">{doctor_profile.specialty}</p>
+                                <h6 className="fw-bold">
+                                  Dr. {doctor_profile.name}
+                                </h6>
+                                <p className="text-muted small mb-0">
+                                  {doctor_profile.specialty}
+                                </p>
                               </div>
 
                               <div className="row g-3 mb-4">
                                 <div className="col-6">
                                   <div className="bg-success bg-opacity-10 rounded-3 p-3 text-center">
-                                    <h6 className="fw-bold text-success mb-1">{doctor_profile.experience}+</h6>
-                                    <small className="text-muted">Years Exp.</small>
+                                    <h6 className="fw-bold text-success mb-1">
+                                      {doctor_profile.experience}+
+                                    </h6>
+                                    <small className="text-muted">
+                                      Years Exp.
+                                    </small>
                                   </div>
                                 </div>
                                 <div className="col-6">
                                   <div className="bg-warning bg-opacity-10 rounded-3 p-3 text-center">
-                                    <h6 className="fw-bold text-warning mb-1">95%</h6>
-                                    <small className="text-muted">Recommend</small>
+                                    <h6 className="fw-bold text-warning mb-1">
+                                      95%
+                                    </h6>
+                                    <small className="text-muted">
+                                      Recommend
+                                    </small>
                                   </div>
                                 </div>
                               </div>
 
                               <div className="mb-4">
-                                <h6 className="fw-bold mb-3">Consultation Options</h6>
+                                <h6 className="fw-bold mb-3">
+                                  Consultation Options
+                                </h6>
                                 <div className="d-flex align-items-center mb-2">
                                   <div className="bg-info bg-opacity-10 rounded-circle p-2 me-3">
-                                    <FaStethoscope className="text-info" size={14} />
+                                    <FaStethoscope
+                                      className="text-info"
+                                      size={14}
+                                    />
                                   </div>
-                                  <span className="small">In-person consultation</span>
+                                  <span className="small">
+                                    In-person consultation
+                                  </span>
                                 </div>
                                 <div className="d-flex align-items-center mb-2">
                                   <div className="bg-success bg-opacity-10 rounded-circle p-2 me-3">
                                     <FaPhone className="text-success" size={14} />
                                   </div>
-                                  <span className="small">Online consultation</span>
+                                  <span className="small">
+                                    Online consultation
+                                  </span>
                                 </div>
                                 <div className="d-flex align-items-center">
                                   <div className="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
-                                    <FaMapMarkerAlt className="text-primary" size={14} />
+                                    <FaMapMarkerAlt
+                                      className="text-primary"
+                                      size={14}
+                                    />
                                   </div>
-                                  <span className="small">Home visit available</span>
+                                  <span className="small">
+                                    Home visit available
+                                  </span>
                                 </div>
                               </div>
 
@@ -633,58 +488,111 @@ const DoctorProfilePage = () => {
                       </Row>
                     </div>
                   </>
-                }
+                )}
               </Card>
             </Col>
           </Row>
 
-          {
-            patient && doctor_profile && <Modal show={show} size='lg' onHide={handleClose} centered>
+          {patient && doctor_profile && (
+            <Modal show={show} size="lg" onHide={handleClose} centered>
               <Modal.Header closeButton>
                 <Modal.Title>Book Appointment</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                <Row className='g-4'>
+                <Row className="g-4">
                   <Col xs={12}>
                     <Form>
-                      <Row className='g-4'>
-                        <Col xs={4}><Form.Label>Name</Form.Label><Form.Control value={patient.name} disabled></Form.Control></Col>
-                        <Col xs={4}><Form.Label>Phone Number</Form.Label><Form.Control value={patient.mobile} disabled></Form.Control></Col>
-                        <Col xs={4}><Form.Label>Alt Phone Number</Form.Label><Form.Control value={apt_data.alt_mobile} name='alt_mobile' onChange={appchangedata} placeholder='Alt. Phone Number'></Form.Control></Col>
-                        <Col xs={4}><Form.Label>Surgery</Form.Label><Form.Select name='surgeryid' onChange={appchangedata}>
-                          <option value=''>Select Surgery</option>
-                          {
-                            doctor_profile.surgeriesDetails.map((v, i) => {
+                      <Row className="g-4">
+                        <Col xs={4}>
+                          <Form.Label>Name</Form.Label>
+                          <Form.Control
+                            value={patient.name}
+                            disabled
+                          ></Form.Control>
+                        </Col>
+                        <Col xs={4}>
+                          <Form.Label>Phone Number</Form.Label>
+                          <Form.Control
+                            value={patient.mobile}
+                            disabled
+                          ></Form.Control>
+                        </Col>
+                        <Col xs={4}>
+                          <Form.Label>Alt Phone Number</Form.Label>
+                          <Form.Control
+                            value={apt_data.alt_mobile}
+                            name="alt_mobile"
+                            onChange={appchangedata}
+                            placeholder="Alt. Phone Number"
+                          ></Form.Control>
+                        </Col>
+                        <Col xs={4}>
+                          <Form.Label>Surgery</Form.Label>
+                          <Form.Select name="surgeryid" onChange={appchangedata}>
+                            <option value="">Select Surgery</option>
+                            {doctor_profile.surgeriesDetails.map((v, i) => {
                               return (
-                                <option value={v._id} key={i}>{v.name}</option>
-                              )
-                            })
-                          }
-                        </Form.Select></Col>
-                        <Col xs={4}><Form.Label>Reason</Form.Label><Form.Control value={apt_data.appointment_reason} name='appointment_reason' onChange={appchangedata} placeholder='Appointment Reason' ></Form.Control></Col>
-                        <Col xs={4}><Form.Label>Reports</Form.Label>
+                                <option value={v._id} key={i}>
+                                  {v.name}
+                                </option>
+                              );
+                            })}
+                          </Form.Select>
+                        </Col>
+                        <Col xs={4}>
+                          <Form.Label>Reason</Form.Label>
+                          <Form.Control
+                            value={apt_data.appointment_reason}
+                            name="appointment_reason"
+                            onChange={appchangedata}
+                            placeholder="Appointment Reason"
+                          ></Form.Control>
+                        </Col>
+                        <Col xs={4}>
+                          <Form.Label>Reports</Form.Label>
                           {/* <Form.Control type='file' value={apt_data.report} name='report' onChange={appchangedata}></Form.Control> */}
-                          <p className='text-secondary'>Under Maintenance</p>
+                          <p className="text-secondary">Under Maintenance</p>
                         </Col>
                         <Col xs={12} md={4}>
-                          <Form.Check label="Home Visit" type='radio' name='visit_types' value={'home_visit'} onChange={appchangedata} />
-                          <Form.Check label="Clinic Visit" type='radio' name='visit_types' value={'clinic_visit'} onChange={appchangedata} />
-                          <Form.Check label="EOPD" type='radio' name='visit_types' value={'eopd'} onChange={appchangedata} />
+                          <Form.Check
+                            label="Home Visit"
+                            type="radio"
+                            name="visit_types"
+                            value={"home_visit"}
+                            onChange={appchangedata}
+                          />
+                          <Form.Check
+                            label="Clinic Visit"
+                            type="radio"
+                            name="visit_types"
+                            value={"clinic_visit"}
+                            onChange={appchangedata}
+                          />
+                          <Form.Check
+                            label="EOPD"
+                            type="radio"
+                            name="visit_types"
+                            value={"eopd"}
+                            onChange={appchangedata}
+                          />
                         </Col>
                         <Col xs={6} md={6}>
-                          <Form.Label>Appointment Date</Form.Label><br />
-                          <DatePicker selected={selectedDate}
+                          <Form.Label>Appointment Date</Form.Label>
+                          <br />
+                          <DatePicker
+                            selected={selectedDate}
                             onChange={(date) => setSelectedDate(date)}
                             showTimeSelect
                             timeFormat="hh:mm a"
                             timeIntervals={15}
                             dateFormat="dd-MM-yyyy hh:mm a"
                             placeholderText="Select date and time"
-                            minDate={new Date()} /></Col>
+                            minDate={new Date()}
+                          />
+                        </Col>
                       </Row>
                     </Form>
                   </Col>
-
 
                   {/* <Col xs={12} md={6}>
                                           <ToggleButtonGroup type="radio" name="options" defaultValue={1} className='btnradio-app flex-wrap gap-2'>
@@ -700,15 +608,27 @@ const DoctorProfilePage = () => {
                 </Row>
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="primary" onClick={() => { appointmentbtn(doctor_profile._id); handleClose() }}>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    appointmentbtn(doctor_profile._id);
+                    handleClose();
+                  }}
+                >
                   Save Changes
                 </Button>
               </Modal.Footer>
             </Modal>
-          }
+          )}
+
           {/* Service Detail Modal */}
           {selectedService && (
-            <Modal show={showServiceModal} size='xl' onHide={handleServiceModalClose} centered>
+            <Modal
+              show={showServiceModal}
+              size="xl"
+              onHide={handleServiceModalClose}
+              centered
+            >
               <Modal.Header closeButton>
                 <Modal.Title>Service Details - {selectedService.name}</Modal.Title>
               </Modal.Header>
@@ -721,24 +641,56 @@ const DoctorProfilePage = () => {
                         <Card.Header>
                           <h6 className="mb-0">Service Image</h6>
                         </Card.Header>
-                        <Card.Body className="text-center">
-                          {selectedService.surgery_photo ? (
-                            <Image
-                              src={selectedService.surgery_photo}
-                              alt={selectedService.name}
-                              fluid
-                              rounded
-                              className="mb-3"
-                              style={{ maxHeight: '200px' }}
-                            />
-                          ) : (
-                            <div className="bg-light p-4 rounded mb-3" style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <span className="text-muted">No image available</span>
-                            </div>
-                          )}
-                          <p><strong>Surgery Type:</strong> {selectedService.surgery_type || 'Not specified'}</p>
-                          <p><strong>Duration:</strong> {selectedService.days || 'Not specified'} days</p>
-                          <p><strong>Completed Surgeries:</strong> {selectedService.completed_surgery || '0'}</p>
+                        <Card.Body className=" flex-column d-flex justify-content-around">
+                          <div className="text-center">
+                            {selectedService.surgery_photo ? (
+                              <Image
+                                src={selectedService.surgery_photo}
+                                alt={selectedService.name}
+                                fluid
+                                rounded
+                                className="mb-3"
+                                style={{ maxHeight: "200px" }}
+                              />
+                            ) : (
+                              <div
+                                className="bg-light p-4 rounded mb-3"
+                                style={{
+                                  height: "200px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <span className="text-muted">
+                                  No image available
+                                </span>
+                              </div>
+                            )}
+                            <p>
+                              <strong>Surgery Type:</strong>{" "}
+                              {selectedService.surgery_type || "Not specified"}
+                            </p>
+                            <p>
+                              <strong>Duration:</strong>{" "}
+                              {selectedService.days || "Not specified"} days
+                            </p>
+                            <p>
+                              <strong>Completed Surgeries:</strong>{" "}
+                              {selectedService.completed_surgery || "0"}
+                            </p>
+                          </div>
+                          <div className="d-flex justify-content-center">
+                            <Button
+                              variant="primary"
+                              // onClick={() => {
+                              //   handleServiceModalClose();
+                              //   handleShow();
+                              // }}
+                            >
+                              Book Appointment for this Service
+                            </Button>
+                          </div>
                         </Card.Body>
                       </Card>
                     </Col>
@@ -755,20 +707,34 @@ const DoctorProfilePage = () => {
                             <Card.Body>
                               <Row>
                                 <Col md={6}>
-                                  <p><strong>Name:</strong> {selectedService.name}</p>
-                                  <p><strong>Description:</strong> {selectedService.description || 'No description available'}</p>
+                                  <p>
+                                    <strong>Name:</strong> {selectedService.name}
+                                  </p>
+                                  <p>
+                                    <strong>Description:</strong>{" "}
+                                    {selectedService.description ||
+                                      "No description available"}
+                                  </p>
                                 </Col>
                                 <Col md={6}>
-                                  <p><strong>Features:</strong></p>
+                                  <p>
+                                    <strong>Features:</strong>
+                                  </p>
                                   <ul className="small">
                                     {selectedService.features ? (
-                                      Array.isArray(selectedService.features) ?
-                                        selectedService.features.map((feature, idx) => (
-                                          <li key={idx}>{feature}</li>
-                                        )) :
+                                      Array.isArray(selectedService.features) ? (
+                                        selectedService.features.map(
+                                          (feature, idx) => (
+                                            <li key={idx}>{feature}</li>
+                                          )
+                                        )
+                                      ) : (
                                         <li>{selectedService.features}</li>
+                                      )
                                     ) : (
-                                      <li className="text-muted">No features listed</li>
+                                      <li className="text-muted">
+                                        No features listed
+                                      </li>
                                     )}
                                   </ul>
                                 </Col>
@@ -789,35 +755,67 @@ const DoctorProfilePage = () => {
                                   <ListGroup variant="flush">
                                     <ListGroup.Item className="d-flex justify-content-between">
                                       <span>General Price:</span>
-                                      <strong>₹{selectedService.general_price || selectedService.price || 'N/A'}</strong>
+                                      <strong>
+                                        ₹
+                                        {selectedService.general_price ||
+                                          selectedService.price ||
+                                          "N/A"}
+                                      </strong>
                                     </ListGroup.Item>
                                     <ListGroup.Item className="d-flex justify-content-between">
                                       <span>Private Price:</span>
-                                      <strong>₹{selectedService.private_price || 'N/A'}</strong>
+                                      <strong>
+                                        ₹{selectedService.private_price || "N/A"}
+                                      </strong>
                                     </ListGroup.Item>
                                     <ListGroup.Item className="d-flex justify-content-between">
                                       <span>Semi-Private Price:</span>
-                                      <strong>₹{selectedService.semiprivate_price || 'N/A'}</strong>
+                                      <strong>
+                                        ₹
+                                        {selectedService.semiprivate_price || "N/A"}
+                                      </strong>
                                     </ListGroup.Item>
                                     <ListGroup.Item className="d-flex justify-content-between">
                                       <span>Deluxe Price:</span>
-                                      <strong>₹{selectedService.delux_price || 'N/A'}</strong>
+                                      <strong>
+                                        ₹{selectedService.delux_price || "N/A"}
+                                      </strong>
                                     </ListGroup.Item>
                                   </ListGroup>
                                 </Col>
                                 <Col md={6}>
                                   <h6>Additional Features</h6>
-                                  <ul className="small">
+                                  <div className="d-flex flex-wrap gap-2">
                                     {selectedService.additional_features ? (
-                                      Array.isArray(selectedService.additional_features) ?
-                                        selectedService.additional_features.map((feature, idx) => (
-                                          <li key={idx}>{feature}</li>
-                                        )) :
-                                        <li>{selectedService.additional_features}</li>
+                                      selectedService.additional_features
+                                        .split(",")
+                                        .map((feature, idx) => {
+                                          const colors = [
+                                            'bg-primary bg-opacity-10 text-primary border-primary',
+                                            'bg-success bg-opacity-10 text-success border-success',
+                                            'bg-info bg-opacity-10 text-info border-info',
+                                            'bg-warning bg-opacity-10 text-warning border-warning',
+                                            'bg-danger bg-opacity-10 text-danger border-danger',
+                                            'bg-purple bg-opacity-10 text-purple border-purple',
+                                            'bg-pink bg-opacity-10 text-pink border-pink'
+                                          ];
+                                          const colorClass = colors[idx % colors.length];
+                                          return (
+                                            <span
+                                              key={idx}
+                                              className={`badge d-flex align-items-center border rounded-pill px-3 py-2 ${colorClass} fw-medium`}
+                                            >
+                                              {feature.trim()}
+                                            </span>
+                                          );
+                                        })
                                     ) : (
-                                      <li className="text-muted">No additional features</li>
+                                      <span className="text-muted small">
+                                        <i className="fas fa-info-circle me-1"></i>
+                                        No additional features
+                                      </span>
                                     )}
-                                  </ul>
+                                  </div>
                                 </Col>
                               </Row>
                             </Card.Body>
@@ -830,40 +828,62 @@ const DoctorProfilePage = () => {
                             <Col md={6}>
                               <Card className="h-100">
                                 <Card.Header className="bg-success text-white">
-                                  <h6 className="mb-0">What's Included</h6>
+                                  <h6 className="mb-0 text-white">What's Included</h6>
                                 </Card.Header>
-                                <Card.Body>
-                                  <ul className="small mb-0">
-                                    {selectedService.inclusive ? (
-                                      Array.isArray(selectedService.inclusive) ?
-                                        selectedService.inclusive.map((item, idx) => (
-                                          <li key={idx} className="text-success">✓ {item}</li>
-                                        )) :
-                                        <li className="text-success">✓ {selectedService.inclusive}</li>
-                                    ) : (
-                                      <li className="text-muted">No inclusions specified</li>
-                                    )}
-                                  </ul>
+                                <Card.Body
+                                  style={{ maxHeight: "250px", overflowY: "auto" }}
+                                >
+                                  {selectedService.inclusive ? (
+                                    selectedService.inclusive
+                                      .split(",")
+                                      .map((item, idx) => (
+                                        <div
+                                          key={idx}
+                                          className="d-flex align-items-center"
+                                        >
+                                          <TbArrowBadgeRight className="me-2" />
+                                          <span className="text-dark">
+                                            {item.trim()}
+                                          </span>
+                                        </div>
+                                      ))
+                                  ) : (
+                                    <div className="text-muted">
+                                      <i className="fas fa-info-circle me-2"></i>
+                                      No inclusions specified
+                                    </div>
+                                  )}
                                 </Card.Body>
                               </Card>
                             </Col>
                             <Col md={6}>
                               <Card className="h-100">
                                 <Card.Header className="bg-danger text-white">
-                                  <h6 className="mb-0">What's Excluded</h6>
+                                  <h6 className="mb-0 text-white">What's Excluded</h6>
                                 </Card.Header>
-                                <Card.Body>
-                                  <ul className="small mb-0">
-                                    {selectedService.exclusive ? (
-                                      Array.isArray(selectedService.exclusive) ?
-                                        selectedService.exclusive.map((item, idx) => (
-                                          <li key={idx} className="text-danger">✗ {item}</li>
-                                        )) :
-                                        <li className="text-danger">✗ {selectedService.exclusive}</li>
-                                    ) : (
-                                      <li className="text-muted">No exclusions specified</li>
-                                    )}
-                                  </ul>
+                                <Card.Body
+                                  style={{ maxHeight: "250px", overflowY: "auto" }}
+                                >
+                                  {selectedService.exclusive ? (
+                                    selectedService.exclusive
+                                      .split(",")
+                                      .map((item, idx) => (
+                                        <div
+                                          key={idx}
+                                          className="d-flex align-items-center"
+                                        >
+                                          <TbArrowBadgeRight className="me-2" />
+                                          <span className="text-dark">
+                                            {item.trim()}
+                                          </span>
+                                        </div>
+                                      ))
+                                  ) : (
+                                    <div className="text-muted">
+                                      <i className="fas fa-info-circle me-2"></i>
+                                      No exclusions specified
+                                    </div>
+                                  )}
                                 </Card.Body>
                               </Card>
                             </Col>
@@ -874,17 +894,17 @@ const DoctorProfilePage = () => {
                   </Row>
                 </Container>
               </Modal.Body>
-              <Modal.Footer>
-                {/* <Button variant="primary" onClick={() => {
-                  handleServiceModalClose();
-                  handleShow();
-                }}>
-                  Book Appointment for this Service
-                </Button> */}
-                <Button variant="secondary" onClick={handleServiceModalClose}>
-                  Close
-                </Button>
-              </Modal.Footer>
+              {/* <Modal.Footer>
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          handleServiceModalClose();
+                          handleShow();
+                        }}
+                      >
+                        Book Appointment for this Service
+                      </Button>
+                    </Modal.Footer> */}
             </Modal>
           )}
         </Container>}

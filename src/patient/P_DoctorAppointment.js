@@ -211,7 +211,7 @@ const P_DoctorAppointment = () => {
                                                                         />
                                                                         :
                                                                         <Image 
-                                                                            src={`https://healtheasy-o25g.onrender.com/uploads/${v?.profile_pic}`} 
+                                                                            src={v?.profile_pic}
                                                                             roundedCircle 
                                                                             width={100} 
                                                                             height={100}

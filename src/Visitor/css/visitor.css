@@ -667,6 +667,24 @@ h6 {
     background: #006cbe;
 }
 
+/* doctor list section css */
+.doctor_card{
+    transition: .3s ease-in-out;
+}
+.doctor_card:hover{
+    background-color: var(--grayscale-color-50);
+}
+.doctor_card:hover .btn{
+    background-color: var(--white);
+}
+.doctor_img img{
+    height: 200px;
+    width: 200px;
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: cover;
+    margin: auto;
+}
 /* ======================== DOCTOR PROFILE SECTION CSS ======================== */
 
 /* Doctor Profile Main Container */
