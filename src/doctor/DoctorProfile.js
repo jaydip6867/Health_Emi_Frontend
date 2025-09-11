@@ -144,6 +144,7 @@ const DoctorProfile = () => {
       });
   }
   console.log("profile", profile);
+  console.log(token)
   function deletdoctor() {
     Swal.fire({
       title: "Are you sure?",
