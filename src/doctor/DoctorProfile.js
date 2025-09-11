@@ -130,8 +130,11 @@ const DoctorProfile = () => {
       },
     })
       .then((res) => {
-        setprofile(res.data.Data);
-        console.log("profile", res.data.Data);
+        setprofile({
+          ...res.data.Data,
+          oldProfilePic: res.data.Data.profile_pic,
+        });
+       
       })
       .catch(function (error) {
         console.log(error);
@@ -140,7 +143,7 @@ const DoctorProfile = () => {
         setloading(false);
       });
   }
-
+  console.log("profile", profile);
   function deletdoctor() {
     Swal.fire({
       title: "Are you sure?",
@@ -238,19 +241,37 @@ const DoctorProfile = () => {
     try {
       let updatedProfile = { ...profile };
 
-      // Check if there's a file to upload
+      // Check if there's a new file to upload
       if (
         profile.profile_pic &&
         typeof profile.profile_pic === "object" &&
         profile.profile_pic.name
       ) {
-        console.log("Uploading image first...");
+        console.log("Removing old image and uploading new one...");
 
-        // Create FormData for file upload
+        // If there's an existing profile picture, remove it first
+        if (profile.oldProfilePic) {
+          try {
+            await axios({
+              method: "post",
+              url: "https://healtheasy-o25g.onrender.com/user/upload/removeimage",
+              headers: { 
+                Authorization: token,
+                "Content-Type": "application/json"
+              },
+              data: { path: profile.oldProfilePic }
+            });
+            console.log("Old image removed successfully");
+          } catch (error) {
+            console.error("Error removing old image:", error);
+            // Continue with the upload even if removal fails
+          }
+        }
+
+        // Upload the new image
         const formData = new FormData();
         formData.append("file", profile.profile_pic);
 
-        // Upload image first
         const uploadResponse = await axios({
           method: "post",
           url: "https://healtheasy-o25g.onrender.com/user/upload",
@@ -261,14 +282,10 @@ const DoctorProfile = () => {
           data: formData,
         });
 
-        console.log("Image upload response:", uploadResponse.data.Data.url);
-
-        // Update profile with the returned image URL
+        console.log("New image upload response:", uploadResponse.data.Data.url);
         updatedProfile.profile_pic = uploadResponse.data.Data.url;
-        console.log(
-          "Updated profile with image URL:",
-          updatedProfile.profile_pic
-        );
+        // Clear the oldProfilePic since we've successfully uploaded a new one
+        updatedProfile.oldProfilePic = '';
       }
 
       // Handle identity proof upload
