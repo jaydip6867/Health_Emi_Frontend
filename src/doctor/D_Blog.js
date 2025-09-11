@@ -73,46 +73,87 @@ const D_Blog = () => {
 
     // ADD blog
 
-    const blog_var = { title: '', description: '', showto_doctor: false, showto_patient: true, expirydate: null };
+    const blog_var = { title: '', description: '', showto_doctor: false, showto_patient: true, expirydate: null, image: '' };
     const [blog, setblog] = useState(blog_var)
+    const [selectedImage, setSelectedImage] = useState(null)
+    const [imagePreview, setImagePreview] = useState(null)
 
-    function addblog() {
-        const data = { ...blog }
-        const date = new Date(data.expirydate);
-        const formattedDate = date.toLocaleDateString("en-GB"); // Gives dd/mm/yyyy
-        // Replace slashes with dashes
-        data.expirydate = formattedDate.replace(/\//g, "-");
-        // setblog(data)
+    // Image upload function
+    async function uploadImage(imageFile = selectedImage) {
+        if (!imageFile) return null;
 
-        if(data.expirydate === '01-01-1970'){
-            data.expirydate = ''
+        const formData = new FormData();
+        formData.append('file', imageFile);
+
+        try {
+            const response = await axios({
+                method: 'post',
+                url: 'https://healtheasy-o25g.onrender.com/user/upload',
+                data: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            return response.data.Data.url;
+        } catch (error) {
+            // console.error('Image upload failed:', error);
+            toast('Image upload failed', { className: 'custom-toast-error' });
+            return null;
         }
+    }
 
-        console.log(data)
-
+    async function addblog() {
         setloading(true)
-        axios({
-            method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/blogs/save',
-            headers: {
-                Authorization: token,
-            },
-            data: data
-        }).then((res) => {
-            // toast('Surgery added...', { className: 'custom-toast-success' })
+
+        try {
+            // Upload image first if selected
+            let imageUrl = '';
+            if (selectedImage) {
+                imageUrl = await uploadImage();
+                if (!imageUrl) {
+                    setloading(false)
+                    return; // Stop if image upload failed
+                }
+            }
+            // console.log(imageUrl)
+
+            const data = { ...blog, image: imageUrl }
+            const date = new Date(data.expirydate);
+            const formattedDate = date.toLocaleDateString("en-GB"); // Gives dd/mm/yyyy
+            // Replace slashes with dashes
+            data.expirydate = formattedDate.replace(/\//g, "-");
+
+            if (data.expirydate === '01-01-1970') {
+                data.expirydate = ''
+            }
+
+            // console.log(data)
+
+            const response = await axios({
+                method: 'post',
+                url: 'https://healtheasy-o25g.onrender.com/doctor/blogs/save',
+                headers: {
+                    Authorization: token,
+                },
+                data: data
+            });
+
             Swal.fire({
                 title: "Blog Added...",
                 icon: "success",
             });
             getblog()
-            setblog({ title: '', description: '', showto_doctor: false, showto_patient: true, expirydate: null });
+            setblog(blog_var);
+            setSelectedImage(null);
+            setImagePreview(null);
             handleblogClose()
-        }).catch(function (error) {
-            console.log(error);
-            toast(error.message, { className: 'custom-toast-error' })
-        }).finally(() => {
+
+        } catch (error) {
+            // console.log(error);
+            toast(error.response?.data?.Message || error.message, { className: 'custom-toast-error' })
+        } finally {
             setloading(false)
-        });
+        }
     }
 
     // delete blog
@@ -169,56 +210,104 @@ const D_Blog = () => {
     // Edit Blog display surgery in model
     const [editshow, seteditShow] = useState(false);
     const [edit_record, seteditrecord] = useState(null);
+    const [editSelectedImage, setEditSelectedImage] = useState(null)
+    const [editImagePreview, setEditImagePreview] = useState(null)
 
     const edithandleClose = () => seteditShow(false);
     const edithandleShow = () => seteditShow(true);
 
     function btnedit(id) {
         var datasingle = bloglist.filter((v, i) => { return v._id === id })
-        seteditrecord(datasingle[0]);
+        seteditrecord({ ...datasingle[0], oldImage: datasingle[0].image });
+        // Set existing image preview if available
+        if (datasingle[0]?.image) {
+            setEditImagePreview(datasingle[0].image);
+        } else {
+            setEditImagePreview(null);
+        }
+        setEditSelectedImage(null);
         edithandleShow()
         // console.log(datasingle[0])
     }
     const [startDate, setStartDate] = useState(new Date());
 
-    function editblog() {
-        const data = { ...edit_record, expirydate: startDate }
-        const date = new Date(data?.expirydate);
-        const formattedDate = date?.toLocaleDateString("en-GB"); // Gives dd/mm/yyyy
-        // Replace slashes with dashes
-        data.expirydate = formattedDate.replace(/\//g, "-");
-
-        // console.log(data)
+    async function editblog() {
         setloading(true)
-        axios({
-            method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/blogs/save',
-            headers: {
-                Authorization: token,
-            },
-            data: {
-                blogid: data?._id,
-                title: data?.title,
-                description: data?.description,
-                showto_doctor: data?.showto_doctor,
-                showto_patient: data?.showto_patient,
-                expirydate: data?.expirydate
+        // console.log(edit_record)
+        try {
+            // Upload new image if selected
+            let imageUrl = edit_record?.image || '';
+            if (editSelectedImage) {
+                if (
+                    edit_record.oldImage !== ''
+                ) {
+                    if (edit_record.image) {
+                        try {
+                            await axios({
+                                method: "post",
+                                url: "https://healtheasy-o25g.onrender.com/user/upload/removeimage",
+                                headers: {
+                                    Authorization: token,
+                                    "Content-Type": "application/json"
+                                },
+                                data: { path: edit_record.oldImage }
+                            });
+                        } catch (error) {
+                        }
+                    }
+                }
+
+
             }
-        }).then((res) => {
-            // toast('Surgery added...', { className: 'custom-toast-success' })
+            const uploadedUrl = await uploadImage(editSelectedImage);
+            if (!uploadedUrl) {
+                setloading(false)
+                return; // Stop if image upload failed
+            }
+            imageUrl = uploadedUrl;
+
+
+            const data = { ...edit_record, expirydate: startDate, image: imageUrl }
+            const date = new Date(data?.expirydate);
+            const formattedDate = date?.toLocaleDateString("en-GB"); // Gives dd/mm/yyyy
+            // Replace slashes with dashes
+            data.expirydate = formattedDate.replace(/\//g, "-");
+
+            // console.log(data)
+
+            const response = await axios({
+                method: 'post',
+                url: 'https://healtheasy-o25g.onrender.com/doctor/blogs/save',
+                headers: {
+                    Authorization: token,
+                },
+                data: {
+                    blogid: data?._id,
+                    title: data?.title,
+                    description: data?.description,
+                    showto_doctor: data?.showto_doctor,
+                    showto_patient: data?.showto_patient,
+                    expirydate: data?.expirydate,
+                    image: imageUrl
+                }
+            });
+
             Swal.fire({
-                title: "Surgery Updated...",
+                title: "Blog Updated...",
                 icon: "success",
             });
             getblog()
             seteditrecord(null)
+            setEditSelectedImage(null)
+            setEditImagePreview(null)
             edithandleClose()
-        }).catch(function (error) {
+
+        } catch (error) {
             // console.log(error);
-            toast(error.message, { className: 'custom-toast-error' })
-        }).finally(() => {
+            toast(error.response?.data?.Message || error.message, { className: 'custom-toast-error' })
+        } finally {
             setloading(false)
-        });
+        }
     }
 
     // show add blog model 
@@ -238,7 +327,7 @@ const D_Blog = () => {
     },
     {
         name: 'Expiry Date',
-        cell: row => <>{row.expirydate==='' ? 'Not Defined' : row.expirydate}</>
+        cell: row => <>{row.expirydate === '' ? 'Not Defined' : row.expirydate}</>
     },
     {
         name: 'Action',
@@ -251,13 +340,13 @@ const D_Blog = () => {
     }]
 
     const [search, setSearch] = useState('');
-    const searchbox = (e) =>{
+    const searchbox = (e) => {
         setSearch(e.target.value)
-        var data = bloglist.filter(items=>items.title.includes(e.target.value))
+        var data = bloglist.filter(items => items.title.includes(e.target.value))
         setdisplist(data)
         // console.log(data)
     }
-    
+
 
     return (
         <>
@@ -313,7 +402,7 @@ const D_Blog = () => {
                                             <Form.Control as="textarea" placeholder="The ‘new’ virus, tomato flu, is a variant of already existing hand, " name="description" value={blog.description} onChange={(e) => setblog({ ...blog, description: e.target.value })} />
                                         </div>
                                     </Form.Group>
-                                    <Form.Group controlId="expirydate">
+                                    <Form.Group controlId="expirydate" className='col-4'>
                                         <Form.Label>Expiry Date</Form.Label>
                                         <div>
                                             <DatePicker selected={blog.expirydate}
@@ -324,11 +413,47 @@ const D_Blog = () => {
                                                 value={blog.expirydate}
                                                 minDate={new Date()} />
                                         </div>
+                                        <div className='mb-3 mt-4'>
+                                            <Form.Check type="switch" name="showto_doctor" label="Display Blog to doctor" id="docshow" checked={blog.showto_doctor} onChange={(e) => setblog({ ...blog, showto_doctor: e.target.checked })} />
+                                            <Form.Check type="switch" name="showto_patient" label="Display Blog to patient" id="patshow" checked={blog.showto_patient} onChange={(e) => setblog({ ...blog, showto_patient: e.target.checked })} />
+                                        </div>
                                     </Form.Group>
-                                    <div className='mb-3'>
-                                        <Form.Check type="switch" name="showto_doctor" label="Display Blog to doctor" id="docshow" checked={blog.showto_doctor} onChange={(e) => setblog({ ...blog, showto_doctor: e.target.checked })} />
-                                        <Form.Check type="switch" name="showto_patient" label="Display Blog to patient" id="patshow" checked={blog.showto_patient} onChange={(e) => setblog({ ...blog, showto_patient: e.target.checked })} />
-                                    </div>
+                                    <Form.Group className='col-8'>
+                                        <Form.Label>Blog Image</Form.Label>
+                                        <Form.Control
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    setSelectedImage(file);
+                                                    const reader = new FileReader();
+                                                    reader.onload = (e) => {
+                                                        setImagePreview(e.target.result);
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                } else {
+                                                    setSelectedImage(null);
+                                                    setImagePreview(null);
+                                                }
+                                            }}
+                                        />
+                                        {imagePreview && (
+                                            <div className="mt-3">
+                                                <img
+                                                    src={imagePreview}
+                                                    alt="Preview"
+                                                    style={{
+                                                        maxWidth: '200px',
+                                                        maxHeight: '200px',
+                                                        objectFit: 'cover',
+                                                        border: '1px solid #ddd',
+                                                        borderRadius: '4px'
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                    </Form.Group>
 
 
                                 </Form>
@@ -353,6 +478,7 @@ const D_Blog = () => {
                                     <div>
                                         <h3 className='text-center'>{v?.title}</h3>
                                         <p>{v?.description}</p>
+                                        {v?.image && <img src={v?.image} alt={`${v?.title} blog...`} className="w-50 mx-auto" />}
                                     </div>
                                 </Modal.Body>
                                 <Modal.Footer>
@@ -400,6 +526,43 @@ const D_Blog = () => {
                                         <Form.Check type="switch" name="showto_doctor" label="Display Blog to doctor" id="docshow" checked={edit_record.showto_doctor} onChange={(e) => seteditrecord({ ...edit_record, showto_doctor: e.target.checked })} />
                                         <Form.Check type="switch" name="showto_patient" label="Display Blog to patient" id="patshow" checked={edit_record.showto_patient} onChange={(e) => seteditrecord({ ...edit_record, showto_patient: e.target.checked })} />
                                     </div>
+                                    <Form.Group controlId="editImage" className='mb-3'>
+                                        <Form.Label>Blog Image</Form.Label>
+                                        <Form.Control
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    setEditSelectedImage(file);
+                                                    seteditrecord({ ...edit_record, image: file });
+                                                    const reader = new FileReader();
+                                                    reader.onload = (e) => {
+                                                        setEditImagePreview(e.target.result);
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                } else {
+                                                    setEditSelectedImage(null);
+                                                    setEditImagePreview(edit_record?.image || null);
+                                                }
+                                            }}
+                                        />
+                                        {editImagePreview && (
+                                            <div className="mt-3">
+                                                <img
+                                                    src={editImagePreview}
+                                                    alt="Preview"
+                                                    style={{
+                                                        maxWidth: '200px',
+                                                        maxHeight: '200px',
+                                                        objectFit: 'cover',
+                                                        border: '1px solid #ddd',
+                                                        borderRadius: '4px'
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                    </Form.Group>
                                 </Form>
                             </Modal.Body>
                             <Modal.Footer>

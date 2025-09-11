@@ -137,7 +137,7 @@ const DoctorProfile = () => {
        
       })
       .catch(function (error) {
-        console.log(error);
+        // console.log(error);
       })
       .finally(() => {
         setloading(false);
@@ -221,7 +221,7 @@ const DoctorProfile = () => {
     }
 
     // Log updated profile for debugging
-    console.log("Updated profile state:", profile);
+    // console.log("Updated profile state:", profile);
   };
 
   const handleRemoveIdentityProof = (e) => {
@@ -235,7 +235,7 @@ const DoctorProfile = () => {
   };
 
   async function updateprofiledata(id) {
-    console.log("update profile data = ", id, profile);
+    // console.log("update profile data = ", id, profile);
     setloading(true);
 
     try {
@@ -247,7 +247,7 @@ const DoctorProfile = () => {
         typeof profile.profile_pic === "object" &&
         profile.profile_pic.name
       ) {
-        console.log("Removing old image and uploading new one...");
+        // console.log("Removing old image and uploading new one...");
 
         // If there's an existing profile picture, remove it first
         if (profile.oldProfilePic) {
@@ -261,9 +261,9 @@ const DoctorProfile = () => {
               },
               data: { path: profile.oldProfilePic }
             });
-            console.log("Old image removed successfully");
+            // console.log("Old image removed successfully");
           } catch (error) {
-            console.error("Error removing old image:", error);
+            // console.error("Error removing old image:", error);
             // Continue with the upload even if removal fails
           }
         }
@@ -282,7 +282,7 @@ const DoctorProfile = () => {
           data: formData,
         });
 
-        console.log("New image upload response:", uploadResponse.data.Data.url);
+        // console.log("New image upload response:", uploadResponse.data.Data.url);
         updatedProfile.profile_pic = uploadResponse.data.Data.url;
         // Clear the oldProfilePic since we've successfully uploaded a new one
         updatedProfile.oldProfilePic = '';
@@ -336,7 +336,7 @@ const DoctorProfile = () => {
         icon: "success",
       });
     } catch (error) {
-      console.error("Error updating profile:", error);
+      // console.error("Error updating profile:", error);
       Swal.fire({
         title: "Profile Not Update.",
         text: "Something went wrong. Please check details and try again.",
