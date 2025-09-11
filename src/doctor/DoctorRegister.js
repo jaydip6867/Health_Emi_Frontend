@@ -297,106 +297,189 @@ const DoctorRegister = () => {
     };
 
     var profile_data = {
-
         specialty: '',
         sub_specialty: '',
         degree_registration_no: '',
         qualification: '',
         experience: '',
         hospitals: [],
-        // hospital_name: '',
-        // hospital_address: '',
         country: '',
         state: '',
         city: '',
-        identityproof: '',
+        identityproof: [],
+        certificateproof: [],
         profile_pic: ''
     }
     const [frmdoctor, setfrmdoctor] = useState(frmdata);
     const [frmdocprofile, setdocprofile] = useState(profile_data);
 
     const [profilePic, setProfilePic] = useState(null);
-    const [identityProof, setIdentityProof] = useState(null);
+    const [profilePicFile, setProfilePicFile] = useState(null);
+    const [identityProofs, setIdentityProofs] = useState([]);
+    const [identityProofFiles, setIdentityProofFiles] = useState([]);
+    const [certificateProofs, setCertificateProofs] = useState([]);
+    const [certificateProofFiles, setCertificateProofFiles] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
 
-    // Function to handle file upload
-    const handleFileUpload = async (file, type) => {
-        if (!file) return null;
+    // Handle file selection (store files in state without uploading)
+    const handleProfilePicChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProfilePicFile(file);
+            setProfilePic(URL.createObjectURL(file));
+        }
+    };
 
+    const handleIdentityProofsChange = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            setIdentityProofFiles(prev => [...prev, ...files]);
+            // Create previews
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    setIdentityProofs(prev => [...prev, e.target.result]);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    };
+
+    const handleCertificateProofsChange = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            setCertificateProofFiles(prev => [...prev, ...files]);
+            // Create previews
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    setCertificateProofs(prev => [...prev, e.target.result]);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    };
+
+    // Upload files and return URLs
+    const uploadFile = async (file) => {
         const formData = new FormData();
         formData.append('file', file);
+        
+        const response = await axios.post(
+            'https://healtheasy-o25g.onrender.com/user/upload', 
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            }
+        );
+
+        if (response.data.Status === 200 && response.data.Data) {
+            return response.data.Data.url;
+        }
+        return null;
+    };
+
+    // Upload multiple files
+    const uploadMultipleFiles = async (files) => {
+        const formData = new FormData();
+        files.forEach(file => {
+            formData.append('files', file);
+        });
+
+        const response = await axios.post(
+            'https://healtheasy-o25g.onrender.com/user/upload/multiple',
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            }
+        );
+
+        if (response.data.Status === 200 && response.data.Data) {
+            return response.data.Data.map(item => item.path);
+        }
+        return [];
+    };
+
+    // Handle form submission
+    const profileadd = async () => {
+        if (!validateProfileForm()) {
+            toast('Please fix the validation errors before proceeding', { className: 'custom-toast-error' });
+            return;
+        }
+
+        setloading(true);
 
         try {
-            setIsUploading(true);
-            const response = await axios.post('https://healtheasy-o25g.onrender.com/user/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
+            // 1. Upload profile picture if selected
+            let profilePicUrl = frmdocprofile.profile_pic || '';
+            if (profilePicFile) {
+                const uploadedUrl = await uploadFile(profilePicFile);
+                if (uploadedUrl) {
+                    profilePicUrl = uploadedUrl;
                 }
-            });
+            }
 
-            if (response.data.Status === 200 && response.data.Data && response.data.Data.url) {
-                toast('File uploaded successfully!', { className: 'custom-toast-success' });
-                return response.data.Data.url;
+            // 2. Upload identity proofs
+            let identityUrls = [];
+            if (identityProofFiles.length > 0) {
+                const uploadedUrls = await uploadMultipleFiles(identityProofFiles);
+                identityUrls = uploadedUrls;
+            }
+
+            // 3. Upload certificate proofs
+            let certificateUrls = [];
+            if (certificateProofFiles.length > 0) {
+                const uploadedUrls = await uploadMultipleFiles(certificateProofFiles);
+                certificateUrls = uploadedUrls;
+            }
+
+            // Prepare the final data
+            const data = {
+                ...frmdocprofile,
+                profile_pic: profilePicUrl,
+                identityproof: [
+                    ...(Array.isArray(frmdocprofile.identityproof) ? frmdocprofile.identityproof : []),
+                    ...identityUrls
+                ],
+                certificateproof: [
+                    ...(Array.isArray(frmdocprofile.certificateproof) ? frmdocprofile.certificateproof : []),
+                    ...certificateUrls
+                ],
+                hospitals: hospitallist
+            };
+
+            // Submit the form
+            const doctordata = JSON.parse(localStorage.getItem('doctordetail'));
+            const token = doctordata?.data?.Data?.accessToken;
+
+            const response = await axios.post(
+                'https://healtheasy-o25g.onrender.com/doctor/profile/savebasicdetails',
+                data,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (response.data.Status === 200) {
+                toast.success('Profile created successfully!');
+                navigate('/doctor');
+                localStorage.removeItem('doctordetail');
             } else {
-                throw new Error('Failed to upload file');
+                throw new Error(response.data.Message || 'Failed to update profile');
             }
         } catch (error) {
-            console.error('Upload error:', error);
-            toast('Failed to upload file. Please try again.', { className: 'custom-toast-error' });
-            return null;
+            console.error('Error:', error);
+            toast.error(error.response?.data?.Message || error.message || 'An error occurred while saving the profile');
         } finally {
-            setIsUploading(false);
+            setloading(false);
         }
-    };
-
-    // Handle profile picture change
-    const handleProfilePicChange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const url = await handleFileUpload(file, 'profile');
-        if (url) {
-            setProfilePic(url);
-            setdocprofile(prev => ({
-                ...prev,
-                profile_pic: url
-            }));
-        }
-    };
-
-    // Handle identity proof change
-    const handleIdentityProofChange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const url = await handleFileUpload(file, 'identity');
-        if (url) {
-            setIdentityProof(url);
-            setdocprofile(prev => ({
-                ...prev,
-                identityproof: url
-            }));
-        }
-    };
-
-    // Handle remove profile picture
-    const handleRemoveProfilePic = (e) => {
-        e.stopPropagation();
-        setProfilePic(null);
-        setdocprofile(prev => ({
-            ...prev,
-            profile_pic: ''
-        }));
-    };
-
-    // Handle remove identity proof
-    const handleRemoveIdentityProof = (e) => {
-        e.stopPropagation();
-        setIdentityProof(null);
-        setdocprofile(prev => ({
-            ...prev,
-            identityproof: ''
-        }));
     };
 
     const selfrmdata = (e) => {
@@ -527,41 +610,6 @@ const DoctorRegister = () => {
             setdocreg2(true)
             setdocreg(false)
         }
-    }
-
-    function profileadd() {
-        // Validate profile form before submission
-        if (!validateProfileForm()) {
-            toast('Please fix the validation errors before proceeding', { className: 'custom-toast-error' });
-            return;
-        }
-        var data = {...frmdocprofile};
-        data.hospitals =  hospitallist;
-        setdocprofile(data);
-        // console.log(frmdocprofile)
-        var doctordata = JSON.parse(localStorage.getItem('doctordetail'));
-        var token = doctordata.data.Data.accessToken
-        console.log('token= ',doctordata.data.Data.accessToken)
-        setloading(true)
-        axios({
-            method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/profile/savebasicdetails',
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            data: data
-        }).then((res) => {
-            toast('Profile create successfully...', { className: 'custom-toast-success' })
-            navigate('/doctor')
-            localStorage.removeItem('doctordetail')
-        }).catch(function (error) {
-            console.log(error);
-            toast(error.response.data.Message, { className: 'custom-toast-error' })
-        }).finally(() => {
-            setloading(false)
-        });
-        setdocreg2(false);
-        setdocnext1(true);
     }
 
     // get specialty and category
@@ -1079,7 +1127,6 @@ const DoctorRegister = () => {
                                                 className="form-control"
                                                 accept="image/*"
                                                 onChange={handleProfilePicChange}
-                                                disabled={isUploading}
                                                 style={{ display: 'none' }}
                                                 id="profile-pic-upload"
                                             />
@@ -1093,7 +1140,7 @@ const DoctorRegister = () => {
                                         </div>
                                         {profilePic && (
                                             <div style={{ position: 'relative', display: 'inline-block', marginTop: '10px' }}>
-                                                <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#ff4444', color: 'white', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} onClick={handleRemoveProfilePic}>
+                                                <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#ff4444', color: 'white', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} onClick={() => setProfilePic(null)}>
                                                     ×
                                                 </div>
                                                 <img
@@ -1111,9 +1158,9 @@ const DoctorRegister = () => {
                                             <input
                                                 type="file"
                                                 className="form-control"
+                                                multiple
                                                 accept="image/*,.pdf"
-                                                onChange={handleIdentityProofChange}
-                                                disabled={isUploading}
+                                                onChange={handleIdentityProofsChange}
                                                 style={{ display: 'none' }}
                                                 id="identity-proof-upload"
                                             />
@@ -1122,30 +1169,69 @@ const DoctorRegister = () => {
                                                 className="btn btn-outline-secondary w-100"
                                                 style={{ cursor: 'pointer', padding: '0.375rem 0.75rem' }}
                                             >
-                                                {identityProof ? 'Change Identity Document' : 'Choose Identity Document'}
+                                                {identityProofs.length > 0 ? 'Change Identity Document' : 'Choose Identity Document'}
                                             </label>
                                         </div>
-                                        {identityProof && (
-                                            <div style={{ position: 'relative', display: 'inline-block', marginTop: '10px' }}>
-                                                <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#ff4444', color: 'white', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} onClick={handleRemoveIdentityProof}>
-                                                    ×
-                                                </div>
-                                                {identityProof.toLowerCase().endsWith('.pdf') ? (
-                                                    <div style={{ maxWidth: '200px', maxHeight: '200px', padding: '20px', textAlign: 'center', background: '#f8f9fa' }}>
-                                                        <i className="fas fa-file-pdf" style={{ fontSize: '48px', color: '#dc3545' }}></i>
-                                                        <div style={{ marginTop: '10px' }}>
-                                                            <a href={identityProof} target="_blank" rel="noopener noreferrer">
-                                                                View PDF
-                                                            </a>
-                                                        </div>
+                                        {identityProofs.length > 0 && (
+                                            <div className="d-flex flex-wrap mt-2">
+                                                {identityProofs.map((proof, index) => (
+                                                    <div key={index} className="position-relative me-2 mb-2">
+                                                        <img 
+                                                            src={proof} 
+                                                            alt={`Identity Proof ${index + 1}`} 
+                                                            style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
+                                                            className="img-thumbnail"
+                                                        />
+                                                        <button 
+                                                        type="button" 
+                                                        className="btn-close position-absolute top-0 end-0"
+                                                        onClick={() => setIdentityProofs(prev => prev.filter((_, i) => i !== index))}
+                                                        aria-label="Remove"
+                                                        />
                                                     </div>
-                                                ) : (
-                                                    <img
-                                                        src={identityProof}
-                                                        alt="Identity Proof Preview"
-                                                        style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd', padding: '4px' }}
-                                                    />
-                                                )}
+                                                ))}
+                                            </div>
+                                        )}
+                                    </Form.Group>
+
+                                    <Form.Group controlId="certificateProof" className='mb-3 col-6'>
+                                        <Form.Label>Upload Certificate Document</Form.Label>
+                                        <div className='position-relative'>
+                                            <input
+                                                type="file"
+                                                className="form-control"
+                                                multiple
+                                                accept="image/*,.pdf"
+                                                onChange={handleCertificateProofsChange}
+                                                style={{ display: 'none' }}
+                                                id="certificate-proof-upload"
+                                            />
+                                            <label
+                                                htmlFor="certificate-proof-upload"
+                                                className="btn btn-outline-secondary w-100"
+                                                style={{ cursor: 'pointer', padding: '0.375rem 0.75rem' }}
+                                            >
+                                                {certificateProofs.length > 0 ? 'Change Certificate Document' : 'Choose Certificate Document'}
+                                            </label>
+                                        </div>
+                                        {certificateProofs.length > 0 && (
+                                            <div className="d-flex flex-wrap mt-2">
+                                                {certificateProofs.map((proof, index) => (
+                                                    <div key={index} className="position-relative me-2 mb-2">
+                                                        <img 
+                                                            src={proof} 
+                                                            alt={`Certificate Proof ${index + 1}`} 
+                                                            style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
+                                                            className="img-thumbnail"
+                                                        />
+                                                        <button 
+                                                        type="button" 
+                                                        className="btn-close position-absolute top-0 end-0"
+                                                        onClick={() => setCertificateProofs(prev => prev.filter((_, i) => i !== index))}
+                                                        aria-label="Remove"
+                                                        />
+                                                    </div>
+                                                ))}
                                             </div>
                                         )}
                                     </Form.Group>
