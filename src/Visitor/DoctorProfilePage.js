@@ -59,7 +59,7 @@ const DoctorProfilePage = () => {
       }
     }).then((res) => {
       setdocprofile(res.data.Data)
-      console.log('doctor ', res.data.Data)
+      // console.log('doctor ', res.data.Data)
     }).catch(function (error) {
       console.log(error);
     }).finally(() => {
@@ -100,52 +100,127 @@ const DoctorProfilePage = () => {
 
 
   function appointmentbtn(id) {
-    // Split at the space before the time
-    const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
-    // Combine time + meridiem
-    const timeWithMeridiem = `${timePart} ${meridiem}`;
-    // console.log(apt_data, datePart, timeWithMeridiem )
-    setloading(true)
-    axios({
-      method: 'post',
-      url: 'https://healtheasy-o25g.onrender.com/user/appointments/save',
-      headers: {
-        Authorization: token
-      },
-      data: {
-        "patientname": patient.name,
-        "mobile": patient.mobile,
-        "alt_mobile": apt_data.alt_mobile,
-        "date": datePart,
-        "time": timeWithMeridiem,
-        "surgeryid": apt_data.surgeryid,
-        "appointment_reason": apt_data.appointment_reason,
-        "report": apt_data.report,
-        "doctorid": id,
-        "visit_types": apt_data.visit_types
-      }
-    }).then((res) => {
-      Swal.fire({
-        title: "Appointment Add Successfully...",
-        icon: "success",
-        confirmButtonText: 'Ok.'
-      }).then((result) => {
-        navigate('/patient/appointment');
+    if (patient) {
+      // Split at the space before the time
+      const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
+      // Combine time + meridiem
+      const timeWithMeridiem = `${timePart} ${meridiem}`;
+      // console.log(apt_data, datePart, timeWithMeridiem )
+      setloading(true)
+      axios({
+        method: 'post',
+        url: 'https://healtheasy-o25g.onrender.com/user/appointments/save',
+        headers: {
+          Authorization: token
+        },
+        data: {
+          "patientname": patient.name,
+          "mobile": patient.mobile,
+          "alt_mobile": apt_data.alt_mobile,
+          "date": datePart,
+          "time": timeWithMeridiem,
+          "surgeryid": apt_data.surgeryid,
+          "appointment_reason": apt_data.appointment_reason,
+          "report": apt_data.report,
+          "doctorid": id,
+          "visit_types": apt_data.visit_types
+        }
+      }).then((res) => {
+        Swal.fire({
+          title: "Appointment Add Successfully...",
+          icon: "success",
+          confirmButtonText: 'Ok.'
+        }).then((result) => {
+          navigate('/patient/appointment');
+        });
+      }).catch(function (error) {
+        Swal.fire({
+          title: "Something Went Wrong.",
+          text: "Something Is Missing. Please Check Details...",
+          icon: "error",
+        });
+      }).finally(() => {
+        setloading(false)
       });
-    }).catch(function (error) {
-      Swal.fire({
-        title: "Something Went Wrong.",
-        text: "Something Is Missing. Please Check Details...",
-        icon: "error",
-      });
-    }).finally(() => {
-      setloading(false)
-    });
+    } else {
+      navigate('/patient')
+    }
   }
 
   const formattedDateTime = selectedDate
     ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
     : '';
+
+
+  var surg_obj = { patientname: '', mobile: '', alt_name: '', alt_mobile: '', surgeryid: '', date: '', time: '', appointment_reason: '', report: '', doctorid: '', roomtype: '' }
+  const [addsurgery, setaddsurgery] = useState(surg_obj)
+  const [single_surg, setsingle_surg] = useState(null)
+  const [addshow, setaddshow] = useState(false)
+  const handleAddSurgeryClose = () => setaddshow(false)
+  function handleAddSurgery(surgdata, d_id) {
+    var surg_apt_data = { ...addsurgery, surgeryid: surgdata._id, doctorid: d_id, patientname: patient?.name, mobile: patient?.mobile }
+    setaddsurgery(surg_apt_data)
+    setsingle_surg(surgdata)
+    setaddshow(true)
+    if (!patient) {
+      navigate('/patient')
+    }
+    else {
+      setShow(true)
+    }
+    // console.log(patient, surg_apt_data, surgdata)
+  }
+
+  const surghandlechange = (e) => {
+    const { name, value } = e.target;
+    setaddsurgery(addsurgery => ({
+      ...addsurgery,
+      [name]: value
+    }))
+  }
+
+  async function booksurgery(d_id) {
+
+    if (patient) {
+      // console.log('book surgery : ',addsurgery, d_id)
+      // Split at the space before the time
+      const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
+      // Combine time + meridiem
+      const timeWithMeridiem = `${timePart} ${meridiem}`;
+      // console.log(apt_data, datePart, timeWithMeridiem )
+      var surg_data = { ...addsurgery, date: datePart, time: timeWithMeridiem, report: 'https://www.iitmandi.ac.in/pdf/ordinances/Medical_Report.pdf' }
+      console.log(surg_data)
+      setloading(true)
+      axios({
+        method: 'post',
+        url: 'https://healtheasy-o25g.onrender.com/user/surgeryappointments/save',
+        headers: {
+          Authorization: token
+        },
+        data: surg_data
+      }).then((res) => {
+        Swal.fire({
+          title: "Surgery Appointment Add Successfully...",
+          icon: "success",
+          confirmButtonText: 'Ok.'
+        }).then((result) => {
+          navigate('/patient/surgeries');
+        });
+      }).catch(function (error) {
+        Swal.fire({
+          title: "Something Went Wrong.",
+          text: "Something Is Missing. Please Check Details...",
+          icon: "error",
+        });
+        console.log(error)
+      }).finally(() => {
+        setloading(false)
+      });
+    } else {
+      navigate('/patient')
+    }
+  }
+
 
   return (
     <>
@@ -678,10 +753,10 @@ const DoctorProfilePage = () => {
                           <div className="d-flex justify-content-center">
                             <Button
                               variant="primary"
-                              // onClick={() => {
-                              //   handleServiceModalClose();
-                              //   handleShow();
-                              // }}
+                              onClick={() => {
+                                handleAddSurgery(selectedService, doctor_profile._id)
+                                handleServiceModalClose()
+                              }}
                             >
                               Book Appointment for this Service
                             </Button>
@@ -902,6 +977,100 @@ const DoctorProfilePage = () => {
                     </Modal.Footer> */}
             </Modal>
           )}
+          {/* add surgery */}
+          <Modal show={addshow} onHide={handleAddSurgeryClose} centered size="lg">
+            <Modal.Header closeButton>
+              <Modal.Title>Add Surgery</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div className='text-center fs-5'>
+                <p><b>Surgery Name:</b> {single_surg?.name}</p>
+              </div>
+              <Form className='row register_doctor gy-3 m-0 pb-3 border rounded-3'>
+                <Form.Group className='col-6 col-md-4 col-lg-3'>
+                  <Form.Label>Patient Name</Form.Label>
+                  <Form.Control type="text" name='patientname' value={addsurgery?.patientname} disabled />
+                </Form.Group>
+                <Form.Group className='col-6 col-md-4 col-lg-3'>
+                  <Form.Label>Mobile No</Form.Label>
+                  <Form.Control type="text" name='mobile' value={addsurgery?.mobile} disabled />
+                </Form.Group>
+                <Form.Group className='col-6 col-md-4 col-lg-3'>
+                  <Form.Label>Alt Name</Form.Label>
+                  <Form.Control type="text" name='alt_name' value={addsurgery?.alt_name} onChange={surghandlechange} />
+                </Form.Group>
+                <Form.Group className='col-6 col-md-4 col-lg-3'>
+                  <Form.Label>Alt Mobile No</Form.Label>
+                  <Form.Control type="text" name='alt_mobile' value={addsurgery?.alt_mobile} onChange={surghandlechange} />
+                </Form.Group>
+                <Form.Group className='col-6 col-md-4 col-lg-4'>
+                  {['radio'].map((type) => (
+                    <div key={`reverse-${type}`}>
+                      <Form.Check
+                        name="roomtype"
+                        type={type}
+                        id={`reverse-${type}-1`}
+                        value="General"
+                        onChange={surghandlechange}
+                        label={`General - ${single_surg?.general_price}`}
+                      />
+                      <Form.Check
+                        name="roomtype"
+                        type={type}
+                        id={`reverse-${type}-2`}
+                        value="Private"
+                        onChange={surghandlechange}
+                        label={`Private - ${single_surg?.private_price}`}
+                      />
+                      <Form.Check
+                        name="roomtype"
+                        type={type}
+                        id={`reverse-${type}-3`}
+                        value="Semiprivate"
+                        onChange={surghandlechange}
+                        label={`Semi-Private - ${single_surg?.semiprivate_price}`}
+                      />
+                      <Form.Check
+                        name="roomtype"
+                        type={type}
+                        id={`reverse-${type}-4`}
+                        value="Delux"
+                        onChange={surghandlechange}
+                        label={`Delux - ${single_surg?.delux_price}`}
+                      />
+                    </div>
+                  ))}
+                </Form.Group>
+                <Form.Group className='col-6 col-md-4 col-lg-8'>
+                  <Form.Label>Appointment Reason</Form.Label>
+                  <Form.Control as="textarea" name='appointment_reason' value={addsurgery?.appointment_reason} onChange={surghandlechange} />
+                </Form.Group>
+                <Form.Group className='col-6 col-md-4 col-lg-4'>
+                  <Form.Label>Reports</Form.Label>
+                  <Form.Control type="file" name='report' onChange={surghandlechange} />
+                </Form.Group>
+                <Form.Group className='col-6 col-md-4 col-lg-3'>
+                  <Form.Label>Appointment Date</Form.Label>
+                  <DatePicker
+                    selected={selectedDate}
+                    onChange={(date) => setSelectedDate(date)}
+                    showTimeSelect
+                    timeFormat="hh:mm a"
+                    timeIntervals={15}
+                    dateFormat="dd-MM-yyyy hh:mm a"
+                    placeholderText="Select date and time"
+                    minDate={new Date()}
+                  />
+                </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant='primary' onClick={() => {
+                booksurgery(doctor_profile._id)
+                // handleAddSurgeryClose()
+              }}>Book Surgery Appointment</Button>
+            </Modal.Footer>
+          </Modal>
         </Container>}
       </section>
       <FooterBar />

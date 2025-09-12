@@ -136,35 +136,7 @@ const P_Appointment = () => {
                         {/* <P_nav patientname={patient && patient.name} /> */}
                         <div className='bg-white rounded p-3 mb-3'>
                             <h5 className='mb-3'>All Appointments</h5>
-                            <DataTable columns={columns} data={appoint_data ? appoint_data : ''} pagination />
-                            {/* <Table hover bordered responsive>
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Doctor Name</th>
-                                        <th>Surgery</th>
-                                        <th>Price</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        appoint_data && appoint_data.map((v, i) => {
-                                            return (
-                                                <tr key={i}>
-                                                    <th>{i + 1}</th>
-                                                    <td>{v.doctorid.name}</td>
-                                                    <td>{v.surgerydetails.name}</td>
-                                                    <td>{v.surgerydetails.price}</td>
-                                                    <td>{v.date} {v.time}</td>
-                                                    <td>{v.status}</td>
-                                                </tr>
-                                            )
-                                        })
-                                    }
-                                </tbody>
-                            </Table> */}
+                            <DataTable columns={columns} data={appoint_data ? appoint_data : ''} pagination />                            
                         </div>
                     </Col>
                 </Row>

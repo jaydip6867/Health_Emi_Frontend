@@ -15,6 +15,9 @@ const SearchBox = () => {
         setloading(true)
         getsuggestion();
     }, []);
+
+    // find location 
+
     function getcitiesname() {
         const india = Country.getCountryByCode("IN");
         const states = State.getStatesOfCountry(india.isoCode);

@@ -11,8 +11,7 @@ import DataTable from 'react-data-table-component'
 import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye } from 'react-icons/md'
 import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
-
-const D_Appointment = () => {
+const D_SurgeryAppointment = () => {
     const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
@@ -226,8 +225,6 @@ const D_Appointment = () => {
                 </>
                 : ''
     }]
-
-
     return (
         <>
             <Container fluid className='p-0 panel'>
@@ -236,7 +233,7 @@ const D_Appointment = () => {
                     <Col xs={12} sm={9} lg={10} className='p-3'>
                         <DoctorNav doctorname={doctor && doctor.name} />
                         <div className='bg-white rounded p-2'>
-                            <h5 className='mb-4'>All Appointment</h5>
+                            <h5 className='mb-4'>All Surgery Appointment</h5>
                             <DataTable columns={columns} data={appointment ? appointment : ''} pagination />
                         </div>
                     </Col>
@@ -294,4 +291,4 @@ const D_Appointment = () => {
     )
 }
 
-export default D_Appointment
+export default D_SurgeryAppointment

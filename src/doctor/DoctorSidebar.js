@@ -13,7 +13,8 @@ const DoctorSidebar = () => {
                 <div className='px-3'><h4 className='p-3 m-0 border-bottom text-center'>Health Doctor</h4></div>
                 <div className='sidebar_nav mt-3 ps-3'>
                     <NavLink to={'/doctor/doctordashboard'} className={({ isActive }) => (isActive ? 'active' : '')}><MdSpaceDashboard /> Dashboard</NavLink>
-                    <NavLink to={'/doctor/doctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}><BiSolidUserBadge/>Appointment</NavLink>
+                    <NavLink to={'/doctor/doctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}><BiSolidUserBadge/>Consultant Appointment</NavLink>
+                    <NavLink to={'/doctor/doctorsurgeryappointment'} className={({ isActive }) => (isActive ? 'active' : '')}><BiSolidUserBadge/>Surgery Appointment</NavLink>
                     <NavLink to={'/doctor/doctorsurgery'} className={({ isActive }) => (isActive ? 'active' : '')} ><FaUserNurse/>Surgery</NavLink>
                     <NavLink to={'/doctor/doctorblog'} className={({ isActive }) => (isActive ? 'active' : '')} ><BiSolidCommentAdd   />Blog</NavLink>
                     <NavLink to={'/doctor/doctorconsultation'} className={({ isActive }) => (isActive ? 'active' : '')}><FiTrello /> Consultation</NavLink>

@@ -150,6 +150,7 @@ const P_Blog = () => {
                                     <div>
                                         <h3>{v.title}</h3>
                                         <p>{v.description}</p>
+                                        {v?.image && <img src={v?.image} alt={`${v?.title} blog...`} className="w-50 mx-auto" />}
                                     </div>
                                 </Modal.Body>
                             </Modal>

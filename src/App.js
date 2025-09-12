@@ -33,6 +33,8 @@ import Amb_dashboard from './Ambulance/Amb_dashboard';
 import Amb_Forgot from './Ambulance/Amb_Forgot';
 import Amb_Profile from './Ambulance/Amb_Profile';
 import D_Consultation from './doctor/D_Consultation';
+import P_Surgeries from './patient/P_Surgeries';
+import D_SurgeryAppointment from './doctor/D_SurgeryAppointment';
 
 function App() {
   return (
@@ -53,6 +55,7 @@ function App() {
           <Route path='doctordashboard' element={<DoctorDashboard />}></Route>
           <Route path='doctorprofile' element={<DoctorProfile />}></Route>
           <Route path='doctorappointment' element={<D_Appointment />}></Route>
+          <Route path='doctorsurgeryappointment' element={<D_SurgeryAppointment />}></Route>
           <Route path='doctorblog' element={<D_Blog />}></Route>
           <Route path='doctorsurgery' element={<D_Surgery />}></Route>
           <Route path='doctorconsultation' element={<D_Consultation />}></Route>
@@ -65,6 +68,7 @@ function App() {
           <Route path='patientdahsboard' element={<PatientDashboard />}></Route>
           <Route path='patientdoctorappointment' element={<P_DoctorAppointment />}></Route>
           <Route path='appointment' element={<P_Appointment />}></Route>
+          <Route path='surgeries' element={<P_Surgeries />}></Route>
           <Route path='blog' element={<P_Blog />}></Route>
           <Route path='doctor_ap/:id' element={<P_DoctorProfile />}></Route>
           <Route path='patientprofile' element={<PatientProfile />}></Route>
