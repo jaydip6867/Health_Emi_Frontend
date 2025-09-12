@@ -146,14 +146,16 @@ const DoctorProfilePage = () => {
       navigate('/patient')
     }
   }
-
   const formattedDateTime = selectedDate
     ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
     : '';
 
 
-  var surg_obj = { patientname: '', mobile: '', alt_name: '', alt_mobile: '', surgeryid: '', date: '', time: '', appointment_reason: '', report: '', doctorid: '', roomtype: '' }
+  var surg_obj = { patientname: '', mobile: '', alt_name: '', alt_mobile: '', surgeryid: '', date: '', time: '', appointment_reason: '', report: [], doctorid: '', roomtype: '' }
   const [addsurgery, setaddsurgery] = useState(surg_obj)
+  const [reportFiles, setReportFiles] = useState([])
+  const [reportPreviews, setReportPreviews] = useState([])
+  const [isUploadingReports, setIsUploadingReports] = useState(false)
   const [single_surg, setsingle_surg] = useState(null)
   const [addshow, setaddshow] = useState(false)
   const handleAddSurgeryClose = () => setaddshow(false)
@@ -179,6 +181,78 @@ const DoctorProfilePage = () => {
     }))
   }
 
+  // Handle multiple report files selection
+  const handleReportFilesChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      setReportFiles(prev => [...prev, ...files]);
+      // Create previews for images
+      files.forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            setReportPreviews(prev => [...prev, {
+              name: file.name,
+              url: e.target.result,
+              type: 'image'
+            }]);
+          };
+          reader.readAsDataURL(file);
+        } else {
+          setReportPreviews(prev => [...prev, {
+            name: file.name,
+            url: null,
+            type: 'file'
+          }]);
+        }
+      });
+    }
+  };
+
+  // Remove report file
+  const removeReportFile = (index) => {
+    setReportFiles(prev => prev.filter((_, i) => i !== index));
+    setReportPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Upload multiple report files
+  const uploadReportFiles = async (files) => {
+    if (files.length === 0) return [];
+
+    setIsUploadingReports(true);
+    try {
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('files', file);
+      });
+
+      const response = await axios.post(
+        'https://healtheasy-o25g.onrender.com/user/upload/multiple',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      );
+
+      if (response.data.Status === 200 && response.data.Data) {
+        return response.data.Data.map(item => item.path || item.url);
+      }
+      return [];
+    } catch (error) {
+      console.error('Error uploading report files:', error);
+      Swal.fire({
+        title: "Upload Error",
+        text: error.response.data.Message,
+        icon: "error",
+      });
+      return [];
+    } finally {
+      setIsUploadingReports(false);
+    }
+  };
+
   async function booksurgery(d_id) {
 
     if (patient) {
@@ -187,35 +261,57 @@ const DoctorProfilePage = () => {
       const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
       // Combine time + meridiem
       const timeWithMeridiem = `${timePart} ${meridiem}`;
-      // console.log(apt_data, datePart, timeWithMeridiem )
-      var surg_data = { ...addsurgery, date: datePart, time: timeWithMeridiem, report: 'https://www.iitmandi.ac.in/pdf/ordinances/Medical_Report.pdf' }
-      console.log(surg_data)
+
       setloading(true)
-      axios({
-        method: 'post',
-        url: 'https://healtheasy-o25g.onrender.com/user/surgeryappointments/save',
-        headers: {
-          Authorization: token
-        },
-        data: surg_data
-      }).then((res) => {
+
+      try {
+        // Upload report files first
+        let reportUrls = [];
+        if (reportFiles.length > 0) {
+          reportUrls = await uploadReportFiles(reportFiles);
+        }
+
+        // Prepare surgery data with uploaded report URLs
+        var surg_data = {
+          ...addsurgery,
+          date: datePart,
+          time: timeWithMeridiem,
+          report: reportUrls // Pass the array of uploaded file URLs
+        }
+
+        console.log('Surgery data with reports:', surg_data)
+
+        const response = await axios({
+          method: 'post',
+          url: 'https://healtheasy-o25g.onrender.com/user/surgeryappointments/save',
+          headers: {
+            Authorization: token
+          },
+          data: surg_data
+        });
+
         Swal.fire({
           title: "Surgery Appointment Add Successfully...",
           icon: "success",
           confirmButtonText: 'Ok.'
         }).then((result) => {
+          // Clear the form data
+          setReportFiles([]);
+          setReportPreviews([]);
+          setaddsurgery(surg_obj);
           navigate('/patient/surgeries');
         });
-      }).catch(function (error) {
+
+      } catch (error) {
         Swal.fire({
           title: "Something Went Wrong.",
           text: "Something Is Missing. Please Check Details...",
           icon: "error",
         });
         console.log(error)
-      }).finally(() => {
+      } finally {
         setloading(false)
-      });
+      }
     } else {
       navigate('/patient')
     }
@@ -543,13 +639,7 @@ const DoctorProfilePage = () => {
                                 variant="primary"
                                 onClick={handleShow}
                                 className="w-100 rounded-pill py-3 fw-bold"
-                              // style={{
-                              //     background: 'linear-gradient(45deg, #667eea, #764ba2)',
-                              //     border: 'none',
-                              //     boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
-                              // }}
                               >
-                                {/* <FaCalendarAlt className="me-2" /> */}
                                 Book Appointment
                               </Button>
                             </Card.Body>
@@ -1045,9 +1135,61 @@ const DoctorProfilePage = () => {
                   <Form.Label>Appointment Reason</Form.Label>
                   <Form.Control as="textarea" name='appointment_reason' value={addsurgery?.appointment_reason} onChange={surghandlechange} />
                 </Form.Group>
-                <Form.Group className='col-6 col-md-4 col-lg-4'>
+                <Form.Group className='col-12'>
                   <Form.Label>Reports</Form.Label>
-                  <Form.Control type="file" name='report' onChange={surghandlechange} />
+                  <div className='position-relative'>
+                    <input
+                      type="file"
+                      className="form-control"
+                      multiple
+                      accept="image/*,.pdf,.doc,.docx"
+                      onChange={handleReportFilesChange}
+                      style={{ display: 'none' }}
+                      id="report-files-upload"
+                    />
+                    <label
+                      htmlFor="report-files-upload"
+                      className="btn btn-outline-secondary w-100"
+                      style={{ cursor: 'pointer', padding: '0.375rem 0.75rem' }}
+                    >
+                      {reportFiles.length > 0 ? `${reportFiles.length} file(s) selected` : 'Choose Report Files'}
+                    </label>
+                  </div>
+                  {reportPreviews.length > 0 && (
+                    <div className="d-flex flex-wrap mt-2 gap-2">
+                      {reportPreviews.map((preview, index) => (
+                        <div key={index} className="position-relative">
+                          {preview.type === 'image' ? (
+                            <img
+                              src={preview.url}
+                              alt={`Report ${index + 1}`}
+                              style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+                              className="img-thumbnail"
+                            />
+                          ) : (
+                            <div
+                              className="d-flex align-items-center justify-content-center img-thumbnail"
+                              style={{ width: '80px', height: '80px', fontSize: '12px' }}
+                            >
+                              📄<br />{preview.name.substring(0, 8)}...
+                            </div>
+                          )}
+                          <button
+                            type="button"
+                            className="btn-close position-absolute top-0 end-0"
+                            onClick={() => removeReportFile(index)}
+                            aria-label="Remove"
+                            style={{ fontSize: '10px' }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {isUploadingReports && (
+                    <div className="text-info mt-2">
+                      <small>Uploading reports...</small>
+                    </div>
+                  )}
                 </Form.Group>
                 <Form.Group className='col-6 col-md-4 col-lg-3'>
                   <Form.Label>Appointment Date</Form.Label>
@@ -1065,10 +1207,16 @@ const DoctorProfilePage = () => {
               </Form>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant='primary' onClick={() => {
-                booksurgery(doctor_profile._id)
-                // handleAddSurgeryClose()
-              }}>Book Surgery Appointment</Button>
+              <Button
+                variant='primary'
+                onClick={() => {
+                  booksurgery(doctor_profile._id)
+                  // handleAddSurgeryClose()
+                }}
+                disabled={isUploadingReports}
+              >
+                {isUploadingReports ? 'Uploading Reports...' : 'Book Surgery Appointment'}
+              </Button>
             </Modal.Footer>
           </Modal>
         </Container>}

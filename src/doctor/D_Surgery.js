@@ -8,8 +8,10 @@ import {
   Container,
   Form,
   Modal,
+  OverlayTrigger,
   Row,
   Table,
+  Tooltip,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "./css/doctor.css";
@@ -17,8 +19,13 @@ import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import Swal from "sweetalert2";
 import {
+  MdClose,
   MdDelete,
+  MdDeleteOutline,
+  MdDone,
   MdEditDocument,
+  MdOutlineAutorenew,
+  MdOutlineEditCalendar,
   MdOutlineRemoveRedEye,
 } from "react-icons/md";
 import CryptoJS from "crypto-js";
@@ -33,50 +40,6 @@ const D_Surgery = () => {
   const [doctor, setdoctor] = useState(null);
   const [token, settoken] = useState(null);
 
-  //   var incl =
-  //     "Most surgery packages typically include an initial consultation and a basic pre-surgery evaluation to assess the patient’s readiness. They also cover essential diagnostic tests such as blood reports, ECGs, X-rays, along with the complete surgical procedure cost. Charges for the operation theatre, surgeon, and anesthesia are included, as well as the standard hospital stay for a specified number of days with routine nursing care. Standard room charges (general or semi-private), basic in-hospital medications, and one post-operative follow-up visit are also generally part of the inclusive offerings.";
-  //   var excl =
-  //     "Exclusions usually apply to any medical needs that go beyond the standard procedure. This includes extended hospital stays beyond the package limit, ICU or emergency care, and the use of premium or imported surgical materials such as specialized implants or lenses. Additional physiotherapy sessions, specialist consultations, extra follow-up visits, or any treatment related to post-surgery complications are also not included. Upgrading to deluxe or private rooms, personal or attendant meals, discharge medications, and ambulance or transport charges are typically billed separately.";
-  //   const incl_items = incl.split(",").map((item) => item.trim());
-  //   const excl_items = excl.split(",").map((item) => item.trim());
-  //   // State to store selected items
-  //   const [selectedinclItems, setSelectedinclItems] = useState(incl_items);
-  //   const [selectedexclItems, setSelectedexclItems] = useState(excl_items);
-  // Handle checkbox change
-  //   const handleinclChange = (item) => {
-  //     if (!editshow) {
-  //       setSelectedinclItems(
-  //         (prev) =>
-  //           prev.includes(item)
-  //             ? prev.filter((i) => i !== item) // Remove if already selected
-  //             : [...prev, item] // Add if not selected
-  //       );
-  //     } else {
-  //       setSelectededitinclItems(
-  //         (prev) =>
-  //           prev.includes(item)
-  //             ? prev.filter((i) => i !== item) // Remove if already selected
-  //             : [...prev, item] // Add if not selected
-  //       );
-  //     }
-  //   };
-  //   const handleexclChange = (item) => {
-  //     if (!editshow) {
-  //       setSelectedexclItems(
-  //         (prev) =>
-  //           prev.includes(item)
-  //             ? prev.filter((i) => i !== item) // Remove if already selected
-  //             : [...prev, item] // Add if not selected
-  //       );
-  //     } else {
-  //       setSelectededitexclItems(
-  //         (prev) =>
-  //           prev.includes(item)
-  //             ? prev.filter((i) => i !== item) // Remove if already selected
-  //             : [...prev, item] // Add if not selected
-  //       );
-  //     }
-  //   };
 
   // State for inclusive/exclusive inputs
   const [inclusiveInput, setInclusiveInput] = useState("");
@@ -210,7 +173,7 @@ const D_Surgery = () => {
       },
     })
       .then((res) => {
-        // console.log(res.data?.Data)
+        console.log(res.data?.Data)
         setsurgerylist(res.data?.Data);
       })
       .catch(function (error) {
@@ -348,7 +311,7 @@ const D_Surgery = () => {
               className: "custom-toast-error",
             });
           })
-          .finally(() => {});
+          .finally(() => { });
       }
     });
   }
@@ -442,7 +405,7 @@ const D_Surgery = () => {
       if (selectedFile) {
         const formData = new FormData();
         formData.append("file", selectedFile);
-        
+
         const uploadResponse = await axios.post(
           "https://healtheasy-o25g.onrender.com/user/upload",
           formData,
@@ -453,7 +416,7 @@ const D_Surgery = () => {
             },
           }
         );
-        
+
         if (uploadResponse.data?.url) {
           photoUrl = uploadResponse.data.url;
         }
@@ -534,53 +497,9 @@ const D_Surgery = () => {
       });
   };
 
-  // const [d_category, setdcategory] = useState(null)
-  // // get all doctor category
-  // const getdoctorcategory = () => {
-  //     setloading(true)
-  //     axios({
-  //         method: 'post',
-  //         url: 'https://healtheasy-o25g.onrender.com/doctor/doctorcategories/list',
-  //         data: {
-  //             "search": "",
-  //         }
-  //     }).then((res) => {
-  //         // console.log('d_category = ',res.data?.Data)
-  //         setdcategory(res.data?.Data)
-  //     }).catch(function (error) {
-  //         // console.log(error);
-  //         toast(error.response.data?.Message, { className: 'custom-toast-error' })
-  //     }).finally(() => {
-  //         setloading(false)
-  //     });
-  // }
+
   const [d_sel_cat, setdselcat] = useState([]);
   const [s_type_name, setsname] = useState("");
-  // const schange = (e) => {
-  //     var s_name = s_type.filter((v) => {
-  //         return v._id === e.target.value
-  //     })
-  //     setsurgery({ ...surgery, surgerytypeid: e.target.value })
-  //     setsname(s_name.surgerytypename)
-  //     var d_data = d_category.filter((v, i) => {
-  //         return v.surgerytypeid?._id === e.target.value
-  //     })
-  //     setdselcat(d_data);
-  //     // console.log(e.target.value , d_data)
-  // }
-
-  // select surgery type and doctor category when update model open
-  // const selUpsugdoc = (e) => {
-  //     var s_name = s_type.filter((v) => {
-  //         return v._id === e
-  //     })
-  //     setsname(s_name.surgerytypename)
-  //     setsname(s_name.surgerytypename)
-  //     var d_data = d_category.filter((v, i) => {
-  //         return v.surgerytypeid?._id === e
-  //     })
-  //     setdselcat(d_data);
-  // }
   const seditchange = (e) => {
     var id = e.target.value;
     // console.log(e.target.value)
@@ -596,6 +515,65 @@ const D_Surgery = () => {
     // console.log('edit change', s_name)
   };
 
+
+  const renderTooltip = (label) => (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      {label} Surgery
+    </Tooltip>
+  );
+
+  // Custom table styles
+  const customTableStyles = {
+    table: {
+      style: {
+        backgroundColor: '#ffffff',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: '14px',
+        fontWeight: '600',
+        backgroundColor: '#F9FAFB',
+        color: '#374151',
+        borderBottom: '1px solid #E5E7EB',
+        paddingTop: '16px',
+        paddingBottom: '16px',
+        paddingLeft: '16px',
+        paddingRight: '16px',
+      },
+    },
+    rows: {
+      style: {
+        borderBottom: '1px solid #F3F4F6',
+        '&:hover': {
+          backgroundColor: '#F9FAFB',
+          cursor: 'pointer'
+        },
+        '&:last-child': {
+          borderBottom: 'none'
+        }
+      },
+    },
+    cells: {
+      style: {
+        paddingTop: '16px',
+        paddingBottom: '16px',
+        paddingLeft: '16px',
+        paddingRight: '16px',
+        fontSize: '14px',
+        color: '#374151'
+      },
+    },
+    pagination: {
+      style: {
+        borderTop: '1px solid #E5E7EB',
+        backgroundColor: '#F9FAFB'
+      }
+    }
+  };
   // table data
   const columns = [
     {
@@ -609,26 +587,93 @@ const D_Surgery = () => {
       cell: (row) => row?.name,
     },
     {
-      name: "Price",
-      cell: (row) => row?.price,
+      name: "Surgery Type",
+      cell: (row) => row?.surgerytypeid?.surgerytypename,
     },
     {
-      name: "Action",
-      cell: (row) => (
-        <div className="d-flex gap-3">
-          <MdEditDocument className="fs-5" onClick={() => btnedit(row._id)} />
-          <MdOutlineRemoveRedEye
-            onClick={() => btnview(row._id)}
-            className="text-primary fs-5"
-          />
-          <MdDelete
-            onClick={() => deletesurgery(row._id)}
-            className="text-danger fs-5"
-          />
+      name: "Days Of Surgery",
+      cell: (row) => row?.days + ' Days',
+    },
+    {
+      name: "Experiance",
+      cell: (row) => row?.yearsof_experience + ' Years',
+    }, {
+      name: 'Action',
+      cell: row => (
+        <div className="d-flex align-items-center gap-1">
+          <OverlayTrigger placement="top" overlay={renderTooltip('Edit')}>
+            <button
+              className="btn btn-sm p-1"
+              style={{
+                border: 'none',
+                backgroundColor: 'transparent',
+                color: '#10B981',
+                borderRadius: '6px'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#F0FDF4'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+              onClick={() => btnedit(row._id)}
+            >
+              <MdOutlineEditCalendar size={18} />
+            </button>
+          </OverlayTrigger>
+
+          <OverlayTrigger placement="top" overlay={renderTooltip('Delete')}>
+            <button
+              className="btn btn-sm p-1"
+              style={{
+                border: 'none',
+                backgroundColor: 'transparent',
+                color: '#EF4444',
+                borderRadius: '6px'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#FEF2F2'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+              onClick={() => deletesurgery(row._id)}
+            >
+              <MdDeleteOutline size={18} />
+            </button>
+          </OverlayTrigger>
+
+          <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
+            <button
+              className="btn btn-sm p-1"
+              style={{
+                border: 'none',
+                backgroundColor: 'transparent',
+                color: '#6366F1',
+                borderRadius: '6px'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#F3F4F6'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+              onClick={() => btnview(row._id)}
+            >
+              <MdOutlineRemoveRedEye size={18} />
+            </button>
+          </OverlayTrigger>
         </div>
       ),
-      width: "150px",
-    },
+      width: '150px',
+      center: true
+    }
+
+    // {
+    //   name: "Action",
+    //   cell: (row) => (
+    //     <div className="d-flex gap-3">
+    //       <MdEditDocument className="fs-5" onClick={() => btnedit(row._id)} />
+    //       <MdOutlineRemoveRedEye
+    //         onClick={() => btnview(row._id)}
+    //         className="text-primary fs-5"
+    //       />
+    //       <MdDelete
+    //         onClick={() => deletesurgery(row._id)}
+    //         className="text-danger fs-5"
+    //       />
+    //     </div>
+    //   ),
+    //   width: "150px",
+    // },
   ];
 
   return (
@@ -653,7 +698,7 @@ const D_Surgery = () => {
               <DataTable
                 columns={columns}
                 data={surgerylist ? surgerylist : ""}
-                pagination
+                pagination customStyles={customTableStyles}
               />
             </div>
           </Col>
@@ -1148,10 +1193,6 @@ const D_Surgery = () => {
                       <span>{v?.name}</span>
                     </p>
                     <p>
-                      <b>Surgery Price :- </b>
-                      <span>{v?.price}</span>
-                    </p>
-                    <p>
                       <b>General Price :- </b>
                       <span>{v?.general_price}</span>
                     </p>
@@ -1530,7 +1571,7 @@ const D_Surgery = () => {
                             <div className="">Add</div>
                           </Button>
                         </div>
-                        <div style={{maxHeight: "150px", overflowY: "auto"}}>
+                        <div style={{ maxHeight: "150px", overflowY: "auto" }}>
                           {inclusiveItems.length > 0 && (
                             <ul
                               className="list-group"
