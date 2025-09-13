@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import DoctorNav from './DoctorNav';
-import { Button, Col, Container, Form, Modal, Row, Table, ToastContainer } from 'react-bootstrap';
+import { Button, Col, Container, Form, Modal, OverlayTrigger, Row, Table, ToastContainer, Tooltip } from 'react-bootstrap';
 import DoctorSidebar from './DoctorSidebar';
 import CryptoJS from "crypto-js";
 import DatePicker from 'react-datepicker';
@@ -10,7 +10,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
-import { MdDelete, MdEditDocument, MdOutlineRemoveRedEye } from 'react-icons/md';
+import { MdDelete, MdDeleteOutline, MdEditDocument, MdOutlineEditCalendar, MdOutlineRemoveRedEye } from 'react-icons/md';
 import DataTable from 'react-data-table-component';
 
 const D_Blog = () => {
@@ -315,6 +315,65 @@ const D_Blog = () => {
     const handleblogClose = () => setadblog(false);
     const handleblogShow = () => setadblog(true);
 
+
+    const renderTooltip = (label) => (props) => (
+        <Tooltip id="button-tooltip" {...props}>
+            {label} Blog
+        </Tooltip>
+    );
+    // Custom table styles
+    const customTableStyles = {
+        table: {
+            style: {
+                backgroundColor: '#ffffff',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+            },
+        },
+        headCells: {
+            style: {
+                fontSize: '14px',
+                fontWeight: '600',
+                backgroundColor: '#F9FAFB',
+                color: '#374151',
+                borderBottom: '1px solid #E5E7EB',
+                paddingTop: '16px',
+                paddingBottom: '16px',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+            },
+        },
+        rows: {
+            style: {
+                borderBottom: '1px solid #F3F4F6',
+                '&:hover': {
+                    backgroundColor: '#F9FAFB',
+                    cursor: 'pointer'
+                },
+                '&:last-child': {
+                    borderBottom: 'none'
+                }
+            },
+        },
+        cells: {
+            style: {
+                paddingTop: '16px',
+                paddingBottom: '16px',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                fontSize: '14px',
+                color: '#374151'
+            },
+        },
+        pagination: {
+            style: {
+                borderTop: '1px solid #E5E7EB',
+                backgroundColor: '#F9FAFB'
+            }
+        }
+    };
+
     // table data
     const columns = [{
         name: 'No',
@@ -331,11 +390,67 @@ const D_Blog = () => {
     },
     {
         name: 'Action',
-        cell: row => <div className='d-flex gap-3'>
-            <MdEditDocument className='fs-5' onClick={() => btnedit(row._id)} />
-            <MdOutlineRemoveRedEye onClick={() => btnview(row._id)} className='text-primary fs-5' />
-            <MdDelete onClick={() => deleteblog(row._id)} className='text-danger fs-5' />
-        </div>,
+        cell: row => (
+            <div className="d-flex align-items-center gap-1">
+                <OverlayTrigger placement="top" overlay={renderTooltip('Edit')}>
+                    <button
+                        className="btn btn-sm p-1"
+                        style={{
+                            border: 'none',
+                            backgroundColor: 'transparent',
+                            color: '#10B981',
+                            borderRadius: '6px'
+                        }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#F0FDF4'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                        onClick={() => btnedit(row._id)}
+                    >
+                        <MdOutlineEditCalendar size={18} />
+                    </button>
+                </OverlayTrigger>
+
+                <OverlayTrigger placement="top" overlay={renderTooltip('Delete')}>
+                    <button
+                        className="btn btn-sm p-1"
+                        style={{
+                            border: 'none',
+                            backgroundColor: 'transparent',
+                            color: '#EF4444',
+                            borderRadius: '6px'
+                        }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#FEF2F2'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                        onClick={() => deleteblog(row._id)}
+                    >
+                        <MdDeleteOutline size={18} />
+                    </button>
+                </OverlayTrigger>
+
+                <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
+                    <button
+                        className="btn btn-sm p-1"
+                        style={{
+                            border: 'none',
+                            backgroundColor: 'transparent',
+                            color: '#6366F1',
+                            borderRadius: '6px'
+                        }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#F3F4F6'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                        onClick={() => btnview(row._id)}
+                    >
+                        <MdOutlineRemoveRedEye size={18} />
+                    </button>
+                </OverlayTrigger>
+            </div>
+        )
+
+        // <div className='d-flex gap-3'>
+        //     <MdEditDocument className='fs-5' onClick={() => btnedit(row._id)} />
+        //     <MdOutlineRemoveRedEye onClick={() => btnview(row._id)} className='text-primary fs-5' />
+        //     <MdDelete onClick={() => deleteblog(row._id)} className='text-danger fs-5' />
+        // </div>
+        ,
         width: '150px'
     }]
 
@@ -354,7 +469,7 @@ const D_Blog = () => {
             <Container fluid className='p-0 panel'>
                 <Row className='g-0'>
                     <DoctorSidebar />
-                    <Col xs={12} sm={9} lg={10} className='p-3'>
+                    <Col xs={12} md={9} lg={10} className='p-3'>
                         <DoctorNav doctorname={doctor && doctor.name} />
 
                         <div className='bg-white rounded p-3 mt-3 shadow'>
@@ -377,7 +492,7 @@ const D_Blog = () => {
                                     />
                                 </Col> */}
                             </Row>
-                            <DataTable columns={columns} data={displist ? displist : ''} pagination />
+                            <DataTable columns={columns} data={displist ? displist : ''} pagination customStyles={customTableStyles} />
                         </div>
                     </Col>
                 </Row>

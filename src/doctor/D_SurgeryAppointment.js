@@ -49,7 +49,7 @@ const D_SurgeryAppointment = () => {
         // setloading(true)
         await axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/list',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/surgeryappointments/list',
             headers: {
                 Authorization: token
             }
@@ -68,7 +68,7 @@ const D_SurgeryAppointment = () => {
         setloading(true)
         await axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/changestatus',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/surgeryappointments/changestatus',
             headers: {
                 Authorization: token
             },
@@ -79,7 +79,7 @@ const D_SurgeryAppointment = () => {
         }).then((res) => {
             // console.log(res)
             Swal.fire({
-                title: "Appointment Accept...",
+                title: `Surgery Appointment ${s}...`,
                 icon: "success",
             });
             appointmentlist()
@@ -121,6 +121,7 @@ const D_SurgeryAppointment = () => {
         setschedule_data(data)
         // console.log(data)
         handlerescheduleShow()
+        console.log(data)
     }
 
     const formattedDateTime = selectedDate
@@ -136,7 +137,7 @@ const D_SurgeryAppointment = () => {
 
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/reschedule',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/surgeryappointments/reschedule',
             headers: {
                 Authorization: token
             },
@@ -148,7 +149,7 @@ const D_SurgeryAppointment = () => {
         }).then((res) => {
             // console.log('doctor ', res.data.Data)
             Swal.fire({
-                title: "Appointment Rescheduled Done...",
+                title: "Surgery Appointment Rescheduled Done...",
                 icon: "success",
             });
             appointmentlist()
@@ -161,6 +162,81 @@ const D_SurgeryAppointment = () => {
 
     }
 
+    // Generate initials for profile picture fallback
+    const getInitials = (name) => {
+        if (!name) return 'N/A';
+        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    };
+
+    // Get status badge styling
+    const getStatusBadge = (status) => {
+        const statusConfig = {
+            'Accept': { bg: '#10B981', text: 'Accepted', dot: '#10B981' },
+            'Pending': { bg: '#F59E0B', text: 'Pending', dot: '#F59E0B' },
+            'Cancel': { bg: '#EF4444', text: 'Cancelled', dot: '#EF4444' },
+            'Discharged': { bg: '#10B981', text: 'Discharged', dot: '#10B981' },
+            'Ext. hospitalization': { bg: '#F97316', text: 'Ext. hospitalization', dot: '#F97316' },
+            'Unavailable': { bg: '#6B7280', text: 'Unavailable', dot: '#6B7280' },
+            'Surgical intervention': { bg: '#8B5CF6', text: 'Surgical intervention', dot: '#8B5CF6' },
+            'In surgery': { bg: '#EAB308', text: 'In surgery', dot: '#EAB308' },
+            'Expected hospital stay': { bg: '#8B5CF6', text: 'Expected hospital stay', dot: '#8B5CF6' }
+        };
+        return statusConfig[status] || { bg: '#6B7280', text: status, dot: '#6B7280' };
+    };
+
+    // Custom table styles
+    const customTableStyles = {
+        table: {
+            style: {
+                backgroundColor: '#ffffff',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+            },
+        },
+        headCells: {
+            style: {
+                fontSize: '14px',
+                fontWeight: '600',
+                backgroundColor: '#F9FAFB',
+                color: '#374151',
+                borderBottom: '1px solid #E5E7EB',
+                paddingTop: '16px',
+                paddingBottom: '16px',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+            },
+        },
+        rows: {
+            style: {
+                borderBottom: '1px solid #F3F4F6',
+                '&:hover': {
+                    backgroundColor: '#F9FAFB',
+                    cursor: 'pointer'
+                },
+                '&:last-child': {
+                    borderBottom: 'none'
+                }
+            },
+        },
+        cells: {
+            style: {
+                paddingTop: '16px',
+                paddingBottom: '16px',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                fontSize: '14px',
+                color: '#374151'
+            },
+        },
+        pagination: {
+            style: {
+                borderTop: '1px solid #E5E7EB',
+                backgroundColor: '#F9FAFB'
+            }
+        }
+    };
+
     const renderTooltip = (label) => (props) => (
         <Tooltip id="button-tooltip" {...props}>
             {label} Appointment
@@ -171,11 +247,25 @@ const D_SurgeryAppointment = () => {
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
-        sortable: true,
-        width: '80px'
+        width: '50px'
     }, {
         name: 'Patient Name',
-        cell: row => row.patientname
+        cell: row => (
+            <div className="d-flex align-items-center gap-3">
+                <div
+                    className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
+                    style={{
+                        width: '40px',
+                        height: '40px',
+                        backgroundColor: '#6366F1',
+                        fontSize: '14px'
+                    }}
+                >
+                    {getInitials(row.patientname)}
+                </div>
+                <span className="fw-medium" style={{ color: '#111827' }}>{row.patientname}</span>
+            </div>
+        )
     },
     {
         name: 'Deases',
@@ -188,53 +278,137 @@ const D_SurgeryAppointment = () => {
     {
         name: 'Status',
         cell: row => {
-            let badgeClass = 'badge bg-secondary'; // default
-
-            if (row.status === 'Accept') {
-                badgeClass = 'badge bg-success';
-            } else if (row.status === 'Cancel') {
-                badgeClass = 'badge bg-danger';
-            } else if (row.status === 'Pending') {
-                badgeClass = 'badge bg-secondary';
-            }
-
-            return <span className={badgeClass}>{row.status}</span>;
+            const statusInfo = getStatusBadge(row.status);
+            return (
+                <div className="d-flex align-items-center gap-2">
+                    <div
+                        className="rounded-circle"
+                        style={{
+                            width: '8px',
+                            height: '8px',
+                            backgroundColor: statusInfo.dot
+                        }}
+                    ></div>
+                    <span style={{ color: '#6B7280', fontSize: '14px' }}>
+                        {statusInfo.text}
+                    </span>
+                </div>
+            );
         },
-        sortable: true
+        width: '120px'
     },
     {
         name: 'View',
-        cell: row => <MdOutlineRemoveRedEye onClick={() => btnview(row._id)} className='text-primary fs-5' />,
-        width: '80px'
+        cell: row => (
+            <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
+                <button
+                    className="btn btn-sm p-1"
+                    style={{
+                        border: 'none',
+                        backgroundColor: 'transparent',
+                        color: '#6366F1',
+                        borderRadius: '6px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#F3F4F6'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                    onClick={() => btnview(row._id)}
+                >
+                    <MdOutlineRemoveRedEye size={18} />
+                </button>
+            </OverlayTrigger>
+        ),
+        width: '80px',
+        center: true
     }, {
         name: 'Action',
-        cell: row =>
-            row.status === "Pending" ?
-                <>
-                    <div className='d-flex flex-wrap gap-2'>
-                        <OverlayTrigger placement="top" delay={{ show: 100, hide: 50 }} overlay={renderTooltip('Accept')}>
-                            <Button variant='success' size='sm'><MdDone onClick={() => appointmentbtn(row._id, 'Accept')} className='fs-5' /></Button>
+        cell: row => (
+            <div className="d-flex align-items-center gap-1">
+                {row.status === "Pending" && (
+                    <>
+                        <OverlayTrigger placement="top" overlay={renderTooltip('Accept')}>
+                            <button
+                                className="btn btn-sm p-1"
+                                style={{
+                                    border: 'none',
+                                    backgroundColor: 'transparent',
+                                    color: '#10B981',
+                                    borderRadius: '6px'
+                                }}
+                                onMouseEnter={(e) => e.target.style.backgroundColor = '#F0FDF4'}
+                                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                onClick={() => appointmentbtn(row._id, 'Accept')}
+                            >
+                                <MdDone size={18} />
+                            </button>
                         </OverlayTrigger>
-                        <OverlayTrigger placement="top" delay={{ show: 100, hide: 50 }} overlay={renderTooltip('Cancel')}>
-                            <Button variant='danger' size='sm'><MdClose onClick={() => appointmentbtn(row._id, 'Cancel')} className='fs-5' /></Button>
+
+                        <OverlayTrigger placement="top" overlay={renderTooltip('Cancel')}>
+                            <button
+                                className="btn btn-sm p-1"
+                                style={{
+                                    border: 'none',
+                                    backgroundColor: 'transparent',
+                                    color: '#EF4444',
+                                    borderRadius: '6px'
+                                }}
+                                onMouseEnter={(e) => e.target.style.backgroundColor = '#FEF2F2'}
+                                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                onClick={() => appointmentbtn(row._id, 'Cancel')}
+                            >
+                                <MdClose size={18} />
+                            </button>
                         </OverlayTrigger>
-                        <OverlayTrigger placement="top" delay={{ show: 100, hide: 50 }} overlay={renderTooltip('Reschedule')}>
-                            <Button variant='secondary' size='sm'><MdOutlineAutorenew onClick={() => reschedule_modal(row._id)} className='fs-5' /></Button>
+
+                        <OverlayTrigger placement="top" overlay={renderTooltip('Reschedule')}>
+                            <button
+                                className="btn btn-sm p-1"
+                                style={{
+                                    border: 'none',
+                                    backgroundColor: 'transparent',
+                                    color: '#6B7280',
+                                    borderRadius: '6px'
+                                }}
+                                onMouseEnter={(e) => e.target.style.backgroundColor = '#F3F4F6'}
+                                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                onClick={() => reschedule_modal(row._id)}
+                            >
+                                <MdOutlineAutorenew size={18} />
+                            </button>
                         </OverlayTrigger>
-                    </div>
-                </>
-                : ''
+                    </>
+                )}
+
+            </div>
+        ),
+        width: '150px',
+        center: true
+        // row =>
+        //     row.status === "Pending" ?
+        //         <>
+        //             <div className='d-flex flex-wrap gap-2'>
+        //                 <OverlayTrigger placement="top" delay={{ show: 100, hide: 50 }} overlay={renderTooltip('Accept')}>
+        //                     <Button variant='success' size='sm'><MdDone onClick={() => appointmentbtn(row._id, 'Accept')} className='fs-5' /></Button>
+        //                 </OverlayTrigger>
+        //                 <OverlayTrigger placement="top" delay={{ show: 100, hide: 50 }} overlay={renderTooltip('Cancel')}>
+        //                     <Button variant='danger' size='sm'><MdClose onClick={() => appointmentbtn(row._id, 'Cancel')} className='fs-5' /></Button>
+        //                 </OverlayTrigger>
+        //                 {/* <OverlayTrigger placement="top" delay={{ show: 100, hide: 50 }} overlay={renderTooltip('Reschedule')}>
+        //                     <Button variant='secondary' size='sm'><MdOutlineAutorenew onClick={() => reschedule_modal(row._id)} className='fs-5' /></Button>
+        //                 </OverlayTrigger> */}
+        //             </div>
+        //         </>
+        //         : ''
     }]
     return (
         <>
             <Container fluid className='p-0 panel'>
                 <Row className='g-0'>
                     <DoctorSidebar />
-                    <Col xs={12} sm={9} lg={10} className='p-3'>
+                    <Col xs={12} md={9} lg={10} className='p-3'>
                         <DoctorNav doctorname={doctor && doctor.name} />
                         <div className='bg-white rounded p-2'>
                             <h5 className='mb-4'>All Surgery Appointment</h5>
-                            <DataTable columns={columns} data={appointment ? appointment : ''} pagination />
+                            <DataTable columns={columns} data={appointment ? appointment : ''} pagination customStyles={customTableStyles} />
                         </div>
                     </Col>
                 </Row>
@@ -244,16 +418,149 @@ const D_SurgeryAppointment = () => {
                         return (
                             <Modal show={show} onHide={handleClose} centered size="lg" key={i}>
                                 <Modal.Header closeButton>
-                                    <Modal.Title>Appointment Detail</Modal.Title>
+                                    <Modal.Title>Surgery Appointment Detail</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <div>
-                                        <p><b>Patient Name :- </b><span>{v?.patientname}</span></p>
-                                        <p><b>Mobile No :- </b><span>{v?.mobile}</span></p>
-                                        <p><b>Surgery Name :- </b><span>{v?.surgerydetails?.name}</span></p>
-                                        <p><b>Date & Time :- </b><span>{v?.date} , {v?.time}</span></p>
-                                        <p><b>Price :- </b><span>{v?.surgerydetails?.price}</span></p>
-                                    </div>
+                                <Row className="p-4">
+                                        <Col xs={12} lg={6}>
+                                            <Row className="g-3">
+                                                <Col xs={12}>
+                                                    <div className="bg-light rounded p-3 h-100 shadow">
+                                                        <h6 className="text-muted mb-2">Patient Information</h6>
+                                                        <div className="mb-2">
+                                                            <strong>Name:</strong> <span className="text-primary">{v.patientname}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>Mobile:</strong> <span className="text-success">{v.mobile}</span>
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                                <Col xs={12}>
+                                                    <div className="bg-light rounded p-3 h-100 shadow">
+                                                        <h6 className="text-muted mb-2">Surgery Details</h6>
+                                                        <div className="mb-2">
+                                                            <strong>Surgery:</strong> <span className="text-info">{v.surgerydetails.name}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>Price:</strong> <span className="text-warning fw-bold">₹{v.surgerydetails.price}</span>
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                                <Col xs={12}>
+                                                    <div className="bg-light rounded p-3 h-100 shadow">
+                                                        <h6 className="text-muted mb-2">Appointment Schedule</h6>
+                                                        <div className="d-flex align-items-center">
+                                                            <i className="bi bi-calendar-event text-primary me-2"></i>
+                                                            <strong>Date:</strong> <span className="ms-2">{v.date}</span>
+                                                        </div>
+                                                        <div className="d-flex align-items-center mt-2">
+                                                            <i className="bi bi-clock text-success me-2"></i>
+                                                            <strong>Time:</strong> <span className="ms-2">{v.time}</span>
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                                {
+                                                    v.alt_name && v.alt_mobile ? <Col xs={12}>
+                                                        <div className="bg-light rounded p-3 h-100 shadow">
+                                                            <h6 className="text-muted mb-2">Patient Relative Information</h6>
+                                                            <div className="mb-2">
+                                                                <strong>Relative Name:</strong> <span className="text-primary">{v.alt_name}</span>
+                                                            </div>
+                                                            <div>
+                                                                <strong>Relative Mobile:</strong> <span className="text-success">{v.alt_mobile}</span>
+                                                            </div>
+                                                        </div>
+                                                    </Col> : ''
+                                                }
+                                            </Row>
+                                        </Col>
+                                        <Col xs={12} lg={6}>
+                                            <div className="bg-light rounded p-3 h-100 shadow">
+                                                <h6 className="text-muted mb-3">Medical Reports</h6>
+                                                {Array.isArray(v.report) ? (
+                                                    <div className="d-flex flex-column gap-3" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                                        {v.report?.map((r, i) => {
+                                                            // Determine file type based on URL extension
+                                                            const fileExtension = r.split('.').pop().toLowerCase();
+                                                            const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension);
+                                                            const isPdf = fileExtension === 'pdf';
+
+                                                            return (
+                                                                <div key={i} className="border rounded p-2 bg-white">
+                                                                    {isImage ? (
+                                                                        <div className="text-center">
+                                                                            <img
+                                                                                src={r}
+                                                                                alt={`Report ${i + 1}`}
+                                                                                className="img-fluid rounded"
+                                                                                style={{ maxHeight: '200px', cursor: 'pointer' }}
+                                                                                onClick={() => window.open(r, '_blank')}
+                                                                            />
+                                                                            <div className="mt-2">
+                                                                                <small className="text-muted">Image Report {i + 1}</small>
+                                                                                <br />
+                                                                                <Button
+                                                                                    size="sm"
+                                                                                    variant="outline-primary"
+                                                                                    onClick={() => {
+                                                                                        const link = document.createElement('a');
+                                                                                        link.href = r;
+                                                                                        link.download = `report_${i + 1}.${fileExtension}`;
+                                                                                        link.click();
+                                                                                    }}
+                                                                                >
+                                                                                    Download
+                                                                                </Button>
+                                                                            </div>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div>
+                                                                            <div className="d-flex align-items-center justify-content-between mb-2">
+                                                                                <div className="d-flex align-items-center">
+                                                                                    <i className="bi bi-file-earmark-pdf text-danger me-2" style={{ fontSize: '24px' }}></i>
+                                                                                    <div>
+                                                                                        <strong>Report {i + 1}</strong>
+                                                                                        <br />
+                                                                                        {/* <small className="text-muted">.{fileExtension} file</small> */}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <Button
+                                                                                    size="sm"
+                                                                                    variant="success"
+                                                                                    onClick={() => {
+                                                                                        const link = document.createElement('a');
+                                                                                        link.href = r;
+                                                                                        link.download = `report_${i + 1}.${fileExtension}`;
+                                                                                        link.click();
+                                                                                    }}
+                                                                                >
+                                                                                    Download
+                                                                                </Button>
+                                                                            </div>
+                                                                            <div className="border rounded" style={{ height: '300px' }}>
+                                                                                <iframe
+                                                                                    src={`https://docs.google.com/gview?url=${r}&embedded=true`}
+                                                                                    width="100%"
+                                                                                    height="100%"
+                                                                                    style={{ borderRadius: '4px', border: 'none' }}
+                                                                                    title={`Report ${i + 1}`}
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-center text-muted py-4">
+                                                        <i className="bi bi-file-earmark-x" style={{ fontSize: '48px' }}></i>
+                                                        <p className="mt-2">No reports uploaded</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </Col>
+                                    </Row>
                                 </Modal.Body>
                             </Modal>
                         )
@@ -268,6 +575,7 @@ const D_SurgeryAppointment = () => {
                                     <Modal.Title>Reschedule Surgery</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
+                                    <p>Surgery Name :- {v?.surgerydetails.name}</p>
                                     <Form.Label>New Appointment Date</Form.Label><br />
                                     <DatePicker selected={selectedDate}
                                         onChange={(date) => setSelectedDate(date)}

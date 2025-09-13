@@ -353,7 +353,7 @@ const DoctorProfile = () => {
       <Container fluid className="p-0 panel">
         <Row className="g-0">
           <DoctorSidebar />
-          <Col xs={12} sm={9} lg={10} className="p-3">
+          <Col xs={12} md={9} lg={10} className="p-3">
             <DoctorNav doctorname={doctor && doctor.name} />
             <div className="bg-light p-4">
               {/* Header */}

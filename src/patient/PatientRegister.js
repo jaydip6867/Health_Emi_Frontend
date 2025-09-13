@@ -166,13 +166,11 @@ const PatientRegister = () => {
                     <Form.Group controlId="name" className='position-relative mb-3'>
                       <Form.Label>Name</Form.Label>
                       <Form.Control placeholder="Enter Name" name='name' value={patient.name} className='frm_input' onChange={patientch} />
-                      <FaRegEnvelope className='icon_input' />
                     </Form.Group>
 
                     <Form.Group controlId="email" className='position-relative mb-3'>
                       <Form.Label>Email</Form.Label>
                       <Form.Control placeholder="Enter Email" name='email' value={patient.email} className='frm_input' onChange={patientch} />
-                      <FaRegEnvelope className='icon_input' />
                     </Form.Group>
 
                     <Form.Group controlId="gender" className='position-relative mb-3'>
@@ -186,13 +184,11 @@ const PatientRegister = () => {
                     <Form.Group controlId="mobile" className='position-relative mb-3'>
                       <Form.Label>Mobile</Form.Label>
                       <Form.Control placeholder="Enter Mobile" name='mobile' value={patient.mobile} className='frm_input' onChange={patientch} pattern='[0-9]{10}' />
-                      <FaRegEnvelope className='icon_input' />
                     </Form.Group>
 
                     <Form.Group controlId="pincode" className='position-relative mb-3'>
                       <Form.Label>Pincode</Form.Label>
                       <Form.Control placeholder="Enter Pincode" name='pincode' value={patient.pincode} className='frm_input' onChange={patientch} />
-                      <FaRegEnvelope className='icon_input' />
                     </Form.Group>
 
                     <Form.Group controlId="blood_group" className='position-relative mb-3'>
@@ -209,7 +205,6 @@ const PatientRegister = () => {
                     <Form.Group controlId="password" className='position-relative mb-1'>
                       <Form.Label>Password</Form.Label>
                       <Form.Control type='password' placeholder="Enter Password" name='password' value={patient.password} className='frm_input' onChange={patientch} />
-                      <CiLock className='icon_input' />
                     </Form.Group>
 
                     <div className="mb-3 form-check">

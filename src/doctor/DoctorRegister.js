@@ -125,8 +125,6 @@ const DoctorRegister = () => {
         degree_registration_no: '',
         qualification: '',
         experience: '',
-        // hospital_name: '',
-        // hospital_address: '',
         country: '',
         state: '',
         city: ''
@@ -225,20 +223,6 @@ const DoctorRegister = () => {
         }
         return '';
     };
-
-    // const validateHospitalName = (hospital_name) => {
-    //     if (!hospital_name || !hospital_name.trim()) {
-    //         return 'Hospital name is required';
-    //     }
-    //     return '';
-    // };
-
-    // const validateHospitalAddress = (hospital_address) => {
-    //     if (!hospital_address || !hospital_address.trim()) {
-    //         return 'Hospital address is required';
-    //     }
-    //     return '';
-    // };
 
     const validateCountry = (country) => {
         if (!country || !country.trim()) {
@@ -521,8 +505,8 @@ const DoctorRegister = () => {
             return;
         }
 
-        setloading(true)
         // console.log(frmdoctor)
+        setloading(true)
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/doctor/signup',
@@ -830,12 +814,6 @@ const DoctorRegister = () => {
                                         <Form.Label>Password</Form.Label>
                                         <Form.Control type='password' placeholder="Password" autoComplete='off' className='frm_input' name='password' value={frmdoctor.password} onChange={selfrmdata} />
                                     </Form.Group>
-
-                                    {/* <Form.Group controlId="password" className='position-relative mb-3'>
-                                        <Form.Label>Confirm Password</Form.Label>
-                                        <Form.Control placeholder="Confirm Password" />
-                                        <CiLock className='icon_input' />
-                                    </Form.Group> */}
 
                                     <Button type="button" onClick={send_doctor_otp} className='d-block w-100 theme_btn mt-3'>
                                         Get OTP

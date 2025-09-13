@@ -71,6 +71,7 @@ const P_Surgeries = () => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+
     function btnview(id) {
         var datasingle = appoint_data.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
@@ -83,8 +84,6 @@ const P_Surgeries = () => {
         name: 'No',
         selector: (row, index) => index + 1,
         sortable: true,
-        maxWidth: '80px',
-        minWidth: '80px',
         width: '80px'
     }, {
         name: 'Doctor Name',
@@ -122,9 +121,7 @@ const P_Surgeries = () => {
     {
         name: 'View',
         cell: row => <MdOutlineRemoveRedEye onClick={() => btnview(row?._id)} className='text-primary fs-5' />,
-        maxWidth: '80px',
-        minWidth: '80px',
-        width: '80px'
+        Width: '80px',
     }]
     return (
         <>
@@ -145,13 +142,13 @@ const P_Surgeries = () => {
                 {
                     single_view && single_view.map((v, i) => {
                         return (
-                            <Modal show={show} onHide={handleClose} centered size="lg" key={i}>
+                            <Modal show={show} onHide={handleClose} centered size="xl" key={i}>
                                 <Modal.Header closeButton>
                                     <Modal.Title>Surgery Appointment Detail</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
                                     <Row className="p-4">
-                                        <Col xs={6}>
+                                        <Col xs={12} lg={6}>
                                             <Row className="g-3">
                                                 <Col xs={12}>
                                                     <div className="bg-light rounded p-3 h-100 shadow">
@@ -203,8 +200,91 @@ const P_Surgeries = () => {
                                                 }
                                             </Row>
                                         </Col>
-                                        <Col xs={6}>
-                                            <iframe src={v.report} />
+                                        <Col xs={12} lg={6}>
+                                            <div className="bg-light rounded p-3 h-100 shadow">
+                                                <h6 className="text-muted mb-3">Medical Reports</h6>
+                                                {Array.isArray(v.report) ? (
+                                                    <div className="d-flex flex-column gap-3" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                                        {v.report?.map((r, i) => {
+                                                            // Determine file type based on URL extension
+                                                            const fileExtension = r.split('.').pop().toLowerCase();
+                                                            const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension);
+                                                            const isPdf = fileExtension === 'pdf';
+
+                                                            return (
+                                                                <div key={i} className="border rounded p-2 bg-white">
+                                                                    {isImage ? (
+                                                                        <div className="text-center">
+                                                                            <img
+                                                                                src={r}
+                                                                                alt={`Report ${i + 1}`}
+                                                                                className="img-fluid rounded"
+                                                                                style={{ maxHeight: '200px', cursor: 'pointer' }}
+                                                                                onClick={() => window.open(r, '_blank')}
+                                                                            />
+                                                                            <div className="mt-2">
+                                                                                <small className="text-muted">Image Report {i + 1}</small>
+                                                                                <br />
+                                                                                <Button
+                                                                                    size="sm"
+                                                                                    variant="outline-primary"
+                                                                                    onClick={() => {
+                                                                                        const link = document.createElement('a');
+                                                                                        link.href = r;
+                                                                                        link.download = `report_${i + 1}.${fileExtension}`;
+                                                                                        link.click();
+                                                                                    }}
+                                                                                >
+                                                                                    Download
+                                                                                </Button>
+                                                                            </div>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div>
+                                                                            <div className="d-flex align-items-center justify-content-between mb-2">
+                                                                                <div className="d-flex align-items-center">
+                                                                                    <i className="bi bi-file-earmark-pdf text-danger me-2" style={{ fontSize: '24px' }}></i>
+                                                                                    <div>
+                                                                                        <strong>Report {i + 1}</strong>
+                                                                                        <br />
+                                                                                        {/* <small className="text-muted">.{fileExtension} file</small> */}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <Button
+                                                                                    size="sm"
+                                                                                    variant="success"
+                                                                                    onClick={() => {
+                                                                                        const link = document.createElement('a');
+                                                                                        link.href = r;
+                                                                                        link.download = `report_${i + 1}.${fileExtension}`;
+                                                                                        link.click();
+                                                                                    }}
+                                                                                >
+                                                                                    Download
+                                                                                </Button>
+                                                                            </div>
+                                                                            <div className="border rounded" style={{ height: '300px' }}>
+                                                                                <iframe
+                                                                                    src={`https://docs.google.com/gview?url=${r}&embedded=true`}
+                                                                                    width="100%"
+                                                                                    height="100%"
+                                                                                    style={{ borderRadius: '4px', border: 'none' }}
+                                                                                    title={`Report ${i + 1}`}
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-center text-muted py-4">
+                                                        <i className="bi bi-file-earmark-x" style={{ fontSize: '48px' }}></i>
+                                                        <p className="mt-2">No reports uploaded</p>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </Col>
                                     </Row>
                                 </Modal.Body>

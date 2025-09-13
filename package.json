@@ -17,6 +17,7 @@
     "country-state-city": "^3.2.1",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13",
+    "jspdf": "^3.0.2",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",
     "react-data-table-component": "^7.7.0",
