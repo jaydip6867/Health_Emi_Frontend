@@ -584,7 +584,22 @@ const D_Surgery = () => {
     },
     {
       name: "Surgery Name",
-      cell: (row) => row?.name,
+      cell: (row) => (
+        <div className="d-flex align-items-center flex-wrap gap-3">
+            <div
+                className="rounded-circle d-flex align-items-center overflow-hidden justify-content-center text-white fw-bold"
+                style={{
+                    width: '40px',
+                    height: '40px',
+                    backgroundColor: '#6366F1',
+                    fontSize: '14px'
+                }}
+            >
+                <img src={row.surgery_photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <span className="fw-medium" style={{ color: '#111827' }}>{row.name}</span>
+        </div>
+    ),
     },
     {
       name: "Surgery Type",

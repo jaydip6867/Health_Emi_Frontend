@@ -382,11 +382,11 @@ const D_Blog = () => {
         width: '80px'
     }, {
         name: 'Title',
-        cell: row => row.title
+        cell: row =>  <span className="fw-medium">{row.title}</span>
     },
     {
         name: 'Description',
-        cell: row => row.description
+        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.description}</span>
     },
     {
         name: 'Expiry Date',

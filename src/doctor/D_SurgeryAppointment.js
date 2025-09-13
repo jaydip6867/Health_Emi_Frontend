@@ -269,11 +269,11 @@ const D_SurgeryAppointment = () => {
     },
     {
         name: 'Deases',
-        cell: row => row.surgerydetails?.name
+        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.surgerydetails?.name}</span>
     },
     {
         name: 'Date & Time',
-        cell: row => `${row.date} ${row.time}`
+        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{`${row.date} ${row.time}`}</span>
     },
     {
         name: 'Status',

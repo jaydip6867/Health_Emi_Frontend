@@ -187,7 +187,7 @@ const P_Surgeries = () => {
     },
     {
         name: 'Surgery',
-        cell: row => row?.surgerydetails?.name
+        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row?.surgerydetails?.name}</span>
     },
     {
         name: 'Price',
