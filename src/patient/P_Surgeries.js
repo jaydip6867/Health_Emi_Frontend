@@ -210,13 +210,13 @@ const P_Surgeries = () => {
                                                             const fileExtension = r.split('.').pop().toLowerCase();
                                                             const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension);
                                                             const isPdf = fileExtension === 'pdf';
-                                                            
+
                                                             return (
                                                                 <div key={i} className="border rounded p-2 bg-white">
                                                                     {isImage ? (
                                                                         <div className="text-center">
-                                                                            <img 
-                                                                                src={r} 
+                                                                            <img
+                                                                                src={r}
                                                                                 alt={`Report ${i + 1}`}
                                                                                 className="img-fluid rounded"
                                                                                 style={{ maxHeight: '200px', cursor: 'pointer' }}
@@ -225,8 +225,8 @@ const P_Surgeries = () => {
                                                                             <div className="mt-2">
                                                                                 <small className="text-muted">Image Report {i + 1}</small>
                                                                                 <br />
-                                                                                <Button 
-                                                                                    size="sm" 
+                                                                                <Button
+                                                                                    size="sm"
                                                                                     variant="outline-primary"
                                                                                     onClick={() => {
                                                                                         const link = document.createElement('a');
@@ -250,8 +250,8 @@ const P_Surgeries = () => {
                                                                                         {/* <small className="text-muted">.{fileExtension} file</small> */}
                                                                                     </div>
                                                                                 </div>
-                                                                                <Button 
-                                                                                    size="sm" 
+                                                                                <Button
+                                                                                    size="sm"
                                                                                     variant="success"
                                                                                     onClick={() => {
                                                                                         const link = document.createElement('a');
@@ -264,9 +264,9 @@ const P_Surgeries = () => {
                                                                                 </Button>
                                                                             </div>
                                                                             <div className="border rounded" style={{ height: '300px' }}>
-                                                                                <iframe 
+                                                                                <iframe
                                                                                     src={`https://docs.google.com/gview?url=${r}&embedded=true`}
-                                                                                    width="100%" 
+                                                                                    width="100%"
                                                                                     height="100%"
                                                                                     style={{ borderRadius: '4px', border: 'none' }}
                                                                                     title={`Report ${i + 1}`}
@@ -276,27 +276,27 @@ const P_Surgeries = () => {
                                                                     )}
                                                                 </div>
                                                             );
-                                                    })}
-                                                </div>
-                                            ) : (
-                                                <div className="text-center text-muted py-4">
-                                                    <i className="bi bi-file-earmark-x" style={{ fontSize: '48px' }}></i>
-                                                    <p className="mt-2">No reports uploaded</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </Col>
-                                </Row>
-                            </Modal.Body>
-                        </Modal>
-                    )
-                })
-            }
-        </Container>
-        {loading ? <Loader /> : ''}
-        <FooterBar />
-    </>
-)
+                                                        })}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-center text-muted py-4">
+                                                        <i className="bi bi-file-earmark-x" style={{ fontSize: '48px' }}></i>
+                                                        <p className="mt-2">No reports uploaded</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                </Modal.Body>
+                            </Modal>
+                        )
+                    })
+                }
+            </Container>
+            {loading ? <Loader /> : ''}
+            <FooterBar />
+        </>
+    )
 }
 
 export default P_Surgeries

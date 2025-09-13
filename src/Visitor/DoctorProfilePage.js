@@ -98,7 +98,6 @@ const DoctorProfilePage = () => {
     }))
   }
 
-
   function appointmentbtn(id) {
     if (patient) {
       // Split at the space before the time
@@ -403,9 +402,9 @@ const DoctorProfilePage = () => {
                         <Col md={3} className="text-center">
                           <div className="bg-white bg-opacity-20 rounded-3 p-3 mb-3">
                             <h3 className="fw-bold mb-1">
-                              {doctor_profile.experience}+
+                              {doctor_profile.experience}
                             </h3>
-                            <small>Years Experience</small>
+                            <small>Experience</small>
                           </div>
                           <div className="bg-white bg-opacity-20 rounded-3 p-3">
                             <h3 className="fw-bold mb-1">95%</h3>

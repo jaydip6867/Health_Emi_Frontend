@@ -247,8 +247,7 @@ const D_Appointment = () => {
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
-        sortable: true,
-        width: '70px'
+        width: '50px'
     }, {
         name: 'Patient Name',
         cell: row => (
@@ -267,13 +266,12 @@ const D_Appointment = () => {
                 <span className="fw-medium" style={{ color: '#111827' }}>{row.patientname}</span>
             </div>
         ),
-        sortable: true,
     },
     {
         name: 'Diseases',
         cell: row => (
             <span style={{ color: '#6B7280', fontSize: '14px' }}>
-                {row.surgerydetails?.name || 'General Consultation'}
+                {row.surgerydetails?.name || 'General Consultation OR Not Specified'}
             </span>
         ),
     },
@@ -284,7 +282,6 @@ const D_Appointment = () => {
                 {row.date} , {row.time}
             </span>
         ),
-        sortable: true,
     },
     {
         name: 'Status',
@@ -306,7 +303,7 @@ const D_Appointment = () => {
                 </div>
             );
         },
-        sortable: true,
+        width: '120px'
     },
     {
         name: 'View',
