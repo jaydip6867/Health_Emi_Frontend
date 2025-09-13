@@ -431,3 +431,35 @@ select.frm_input {
     0% { transform: translate(-50%, -50%) rotate(0deg); }
     100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
+
+
+/* sidebar css */
+/* DoctorSidebar.css */
+
+.sidebar-wrapper {
+    position: relative;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    .sidebar-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: auto;
+        height: 100vh;
+        background-color: white;
+        transform: translateX(-100%);
+        display: block !important; /* override d-none */
+    }
+
+    .sidebar-wrapper.open {
+        transform: translateX(0);
+    }
+
+    .sidebar-inner {
+        height: 100%;
+        overflow-y: auto;
+    }
+}

@@ -115,7 +115,7 @@ const D_Calender = () => {
             <Container fluid className='p-0 panel'>
                 <Row className='g-0'>
                     <DoctorSidebar />
-                    <Col xs={12} sm={9} lg={10} className='p-3'>
+                    <Col xs={12} md={9} lg={10} className='p-3'>
                         <DoctorNav doctorname={doctor && doctor.name} />
                         {/* Calendar Header */}
                         <Card className='mb-4 border-0 shadow-sm'>
@@ -149,6 +149,9 @@ const D_Calender = () => {
                                             font-size: 1.5rem !important;
                                             font-weight: 600 !important;
                                         }
+                                            .fc-toolbar{
+                                                flex-wrap: wrap;
+                                            }
                                         .fc-button {
                                             background: rgba(255,255,255,0.2) !important;
                                             border: 1px solid rgba(255,255,255,0.3) !important;
@@ -223,8 +226,8 @@ const D_Calender = () => {
                                         // Dynamic colors based on appointment status
                                         const status = info.event.extendedProps.status;
                                         let backgroundColor, textColor;
-                                        
-                                        switch(status?.toLowerCase()) {
+
+                                        switch (status?.toLowerCase()) {
                                             case 'confirmed':
                                                 backgroundColor = '#28a745';
                                                 textColor = '#fff';
@@ -245,7 +248,7 @@ const D_Calender = () => {
                                                 backgroundColor = '#6f42c1';
                                                 textColor = '#fff';
                                         }
-                                        
+
                                         info.el.style.backgroundColor = backgroundColor;
                                         info.el.style.color = textColor;
                                         info.el.style.borderRadius = '8px';
@@ -321,12 +324,12 @@ const D_Calender = () => {
                                     <div className='mb-2'>
                                         <strong>Status:</strong>
                                         <div>
-                                            <Badge 
+                                            <Badge
                                                 bg={
                                                     selectedAppointment?.status?.toLowerCase() === 'confirmed' ? 'success' :
-                                                    selectedAppointment?.status?.toLowerCase() === 'pending' ? 'warning' :
-                                                    selectedAppointment?.status?.toLowerCase() === 'cancelled' ? 'danger' :
-                                                    selectedAppointment?.status?.toLowerCase() === 'completed' ? 'info' : 'secondary'
+                                                        selectedAppointment?.status?.toLowerCase() === 'pending' ? 'warning' :
+                                                            selectedAppointment?.status?.toLowerCase() === 'cancelled' ? 'danger' :
+                                                                selectedAppointment?.status?.toLowerCase() === 'completed' ? 'info' : 'secondary'
                                                 }
                                                 className='px-3 py-2'
                                             >
