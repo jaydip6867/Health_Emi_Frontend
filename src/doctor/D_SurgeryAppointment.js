@@ -54,7 +54,7 @@ const D_SurgeryAppointment = () => {
                 Authorization: token
             }
         }).then((res) => {
-            // console.log(res.data.Data)
+            console.log(res.data.Data)
             setappointment(res.data.Data)
         }).catch(function (error) {
             console.log(error);
@@ -251,7 +251,7 @@ const D_SurgeryAppointment = () => {
     }, {
         name: 'Patient Name',
         cell: row => (
-            <div className="d-flex align-items-center gap-3">
+            <div className="d-flex align-items-center flex-wrap gap-3">
                 <div
                     className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
                     style={{
@@ -296,6 +296,28 @@ const D_SurgeryAppointment = () => {
             );
         },
         width: '120px'
+    },
+    {
+        name: 'Payment Status',
+        cell: row => {
+            const statusInfo = getStatusBadge(row.payment_status);
+            return (
+                <div className="d-flex align-items-center gap-2">
+                    <div
+                        className="rounded-circle"
+                        style={{
+                            width: '8px',
+                            height: '8px',
+                            backgroundColor: statusInfo.dot
+                        }}
+                    ></div>
+                    <span style={{ color: '#6B7280', fontSize: '14px' }}>
+                        {statusInfo.text}
+                    </span>
+                </div>
+            );
+        },
+        width: '150px'
     },
     {
         name: 'View',

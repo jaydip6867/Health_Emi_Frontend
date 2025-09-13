@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Loader from '../Loader'
-import { Col, Container, Modal, Row, Table } from 'react-bootstrap'
+import { Col, Container, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
 import P_Sidebar from './P_Sidebar'
 import P_nav from './P_nav'
 import NavBar from '../Visitor/Component/NavBar'
@@ -78,6 +78,65 @@ const P_Blog = () => {
         // console.log(datasingle)
     }
 
+    // Custom table styles
+            const customTableStyles = {
+                table: {
+                    style: {
+                        backgroundColor: '#ffffff',
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+                    },
+                },
+                headCells: {
+                    style: {
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        backgroundColor: '#F9FAFB',
+                        color: '#374151',
+                        borderBottom: '1px solid #E5E7EB',
+                        paddingTop: '16px',
+                        paddingBottom: '16px',
+                        paddingLeft: '16px',
+                        paddingRight: '16px',
+                    },
+                },
+                rows: {
+                    style: {
+                        borderBottom: '1px solid #F3F4F6',
+                        '&:hover': {
+                            backgroundColor: '#F9FAFB',
+                            cursor: 'pointer'
+                        },
+                        '&:last-child': {
+                            borderBottom: 'none'
+                        }
+                    },
+                },
+                cells: {
+                    style: {
+                        paddingTop: '16px',
+                        paddingBottom: '16px',
+                        paddingLeft: '16px',
+                        paddingRight: '16px',
+                        fontSize: '14px',
+                        color: '#374151'
+                    },
+                },
+                pagination: {
+                    style: {
+                        borderTop: '1px solid #E5E7EB',
+                        backgroundColor: '#F9FAFB'
+                    }
+                }
+            };
+        
+            const renderTooltip = (label) => (props) => (
+                <Tooltip id="button-tooltip" {...props}>
+                    {label} Appointment
+                </Tooltip>
+            );
+
     // table data
     const columns = [{
         name: 'No',
@@ -96,10 +155,26 @@ const P_Blog = () => {
     },
     {
         name: 'View',
-        cell: row => <MdOutlineRemoveRedEye onClick={() => btnview(row._id)} className='text-primary fs-5' />,
-        maxWidth: '80px',
-        minWidth: '80px',
-        width: '80px'
+        cell: row => (
+            <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
+                <button
+                    className="btn btn-sm p-1"
+                    style={{
+                        border: 'none',
+                        backgroundColor: 'transparent',
+                        color: '#6366F1',
+                        borderRadius: '6px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#F3F4F6'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                    onClick={() => btnview(row._id)}
+                >
+                    <MdOutlineRemoveRedEye size={18} />
+                </button>
+            </OverlayTrigger>
+        ),
+        width: '80px',
+        center: true
     }]
 
     return (
@@ -112,29 +187,7 @@ const P_Blog = () => {
                         {/* <P_nav patientname={patient && patient.name} /> */}
                         <div className='bg-white rounded p-3 mb-3'>
                             <h5 className='mb-3'>All Blogs</h5>
-                            <DataTable columns={columns} data={bloglist ? bloglist : ''} pagination />
-                            {/* <Table hover bordered responsive>
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Blog Title</th>
-                                        <th>Description</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        bloglist && bloglist.map((v, i) => {
-                                            return (
-                                                <tr key={i}>
-                                                    <th>{i + 1}</th>
-                                                    <td>{v.title}</td>
-                                                    <td>{v.description}</td>
-                                                </tr>
-                                            )
-                                        })
-                                    }
-                                </tbody>
-                            </Table> */}
+                            <DataTable columns={columns} data={bloglist ? bloglist : ''} pagination customStyles={customTableStyles} />
                         </div>
                     </Col>
                 </Row>

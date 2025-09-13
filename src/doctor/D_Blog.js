@@ -385,6 +385,10 @@ const D_Blog = () => {
         cell: row => row.title
     },
     {
+        name: 'Description',
+        cell: row => row.description
+    },
+    {
         name: 'Expiry Date',
         cell: row => <>{row.expirydate === '' ? 'Not Defined' : row.expirydate}</>
     },

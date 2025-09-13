@@ -31,7 +31,7 @@ const DoctorSidebar = () => {
                 lg={2}
                 className={`sidebar-wrapper ${isOpen ? 'open' : ''} d-none d-md-block d-sm-block`}
             >
-                <div className="bg-white h-100 rounded shadow sidebar-inner">
+                <div className="bg-white min-vh-100 rounded shadow sidebar-inner">
                     <div className="px-3">
                         <h4 className="p-3 m-0 border-bottom text-center">Health Doctor</h4>
                     </div>
