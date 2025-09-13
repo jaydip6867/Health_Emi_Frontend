@@ -79,7 +79,7 @@ const D_SurgeryAppointment = () => {
         }).then((res) => {
             // console.log(res)
             Swal.fire({
-                title: "Appointment Accept...",
+                title: `Surgery Appointment ${s}...`,
                 icon: "success",
             });
             appointmentlist()
@@ -105,61 +105,62 @@ const D_SurgeryAppointment = () => {
         // console.log(datasingle)
     }
 
-    // // reschedule appoinetment date
-    // const [selectedDate, setSelectedDate] = useState(null);
+    // reschedule appoinetment date
+    const [selectedDate, setSelectedDate] = useState(null);
 
-    // const [showreschedule, setrescheduleShow] = useState(false);
-    // const [schedule_data, setschedule_data] = useState(null);
+    const [showreschedule, setrescheduleShow] = useState(false);
+    const [schedule_data, setschedule_data] = useState(null);
 
-    // const handlerescheduleClose = () => setrescheduleShow(false);
-    // const handlerescheduleShow = () => setrescheduleShow(true);
+    const handlerescheduleClose = () => setrescheduleShow(false);
+    const handlerescheduleShow = () => setrescheduleShow(true);
 
-    // const reschedule_modal = (id) => {
-    //     var data = appointment.filter((v) => {
-    //         return v._id === id
-    //     })
-    //     setschedule_data(data)
-    //     // console.log(data)
-    //     handlerescheduleShow()
-    // }
+    const reschedule_modal = (id) => {
+        var data = appointment.filter((v) => {
+            return v._id === id
+        })
+        setschedule_data(data)
+        // console.log(data)
+        handlerescheduleShow()
+        console.log(data)
+    }
 
-    // const formattedDateTime = selectedDate
-    //     ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
-    //     : '';
-    // const reschedule_appointment = (date) => {
-    //     // Split at the space before the time
-    //     const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
-    //     // Combine time + meridiem
-    //     const timeWithMeridiem = `${timePart} ${meridiem}`;
-    //     // console.log(apt_data, datePart, timeWithMeridiem )
-    //     // console.log(schedule_data)
+    const formattedDateTime = selectedDate
+        ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
+        : '';
+    const reschedule_appointment = (date) => {
+        // Split at the space before the time
+        const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
+        // Combine time + meridiem
+        const timeWithMeridiem = `${timePart} ${meridiem}`;
+        // console.log(apt_data, datePart, timeWithMeridiem )
+        // console.log(schedule_data)
 
-    //     axios({
-    //         method: 'post',
-    //         url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/reschedule',
-    //         headers: {
-    //             Authorization: token
-    //         },
-    //         data: {
-    //             appointmentid: schedule_data[0]._id,
-    //             date: datePart,
-    //             time: timeWithMeridiem
-    //         }
-    //     }).then((res) => {
-    //         // console.log('doctor ', res.data.Data)
-    //         Swal.fire({
-    //             title: "Appointment Rescheduled Done...",
-    //             icon: "success",
-    //         });
-    //         appointmentlist()
-    //         handlerescheduleClose()
-    //     }).catch(function (error) {
-    //         console.log(error);
-    //     }).finally(() => {
-    //         setloading(false)
-    //     });
+        axios({
+            method: 'post',
+            url: 'https://healtheasy-o25g.onrender.com/doctor/surgeryappointments/reschedule',
+            headers: {
+                Authorization: token
+            },
+            data: {
+                appointmentid: schedule_data[0]._id,
+                date: datePart,
+                time: timeWithMeridiem
+            }
+        }).then((res) => {
+            // console.log('doctor ', res.data.Data)
+            Swal.fire({
+                title: "Surgery Appointment Rescheduled Done...",
+                icon: "success",
+            });
+            appointmentlist()
+            handlerescheduleClose()
+        }).catch(function (error) {
+            console.log(error);
+        }).finally(() => {
+            setloading(false)
+        });
 
-    // }
+    }
 
     // Generate initials for profile picture fallback
     const getInitials = (name) => {
@@ -358,7 +359,7 @@ const D_SurgeryAppointment = () => {
                             </button>
                         </OverlayTrigger>
 
-                        {/* <OverlayTrigger placement="top" overlay={renderTooltip('Reschedule')}>
+                        <OverlayTrigger placement="top" overlay={renderTooltip('Reschedule')}>
                             <button
                                 className="btn btn-sm p-1"
                                 style={{
@@ -373,13 +374,13 @@ const D_SurgeryAppointment = () => {
                             >
                                 <MdOutlineAutorenew size={18} />
                             </button>
-                        </OverlayTrigger> */}
+                        </OverlayTrigger>
                     </>
                 )}
 
             </div>
         ),
-        width: '120px',
+        width: '150px',
         center: true
         // row =>
         //     row.status === "Pending" ?
@@ -566,7 +567,7 @@ const D_SurgeryAppointment = () => {
                     })
                 }
                 {/* reschedule surgery surgery */}
-                {/* {
+                {
                     schedule_data && schedule_data.map((v, i) => {
                         return (
                             <Modal show={showreschedule} onHide={handlerescheduleClose} centered size="lg" key={i}>
@@ -574,6 +575,7 @@ const D_SurgeryAppointment = () => {
                                     <Modal.Title>Reschedule Surgery</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
+                                    <p>Surgery Name :- {v?.surgerydetails.name}</p>
                                     <Form.Label>New Appointment Date</Form.Label><br />
                                     <DatePicker selected={selectedDate}
                                         onChange={(date) => setSelectedDate(date)}
@@ -590,7 +592,7 @@ const D_SurgeryAppointment = () => {
                             </Modal>
                         )
                     })
-                } */}
+                }
             </Container>
             {loading ? <Loader /> : ''}
         </>

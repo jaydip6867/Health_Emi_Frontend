@@ -80,7 +80,7 @@ const D_Appointment = () => {
         }).then((res) => {
             // console.log(res)
             Swal.fire({
-                title: "Appointment Accept...",
+                title: `Appointment ${s}...`,
                 icon: "success",
             });
             appointmentlist()
