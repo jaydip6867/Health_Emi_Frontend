@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Col, Container, Form, Row } from 'react-bootstrap'
+import { Button, Col, Container, Form, Row, Modal } from 'react-bootstrap'
 import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
 import { CiLock } from 'react-icons/ci'
@@ -22,6 +22,11 @@ const PatientRegister = () => {
   const [patient, setpatient] = useState({ name: '', email: '', gender: '', mobile: '', pincode: '', blood_group: '', password: '' })
   const [otp, setotp] = useState('');
 
+  const [showTcModal, setShowTcModal] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsContent, setTermsContent] = useState('');
+  const [shortTerms, setShortTerms] = useState('');
+
   const patientch = (e) => {
     const { name, value } = e.target;
     setpatient(patient => ({
@@ -30,7 +35,22 @@ const PatientRegister = () => {
     }))
   };
 
+  const fetchTermsAndConditions = async () => {
+    try {
+      const response = await axios.get('https://healtheasy-o25g.onrender.com/user/gettc');
+      const fullText = response.data.Data.patient_tc || 'No terms and conditions available.';
+      setTermsContent(fullText);
+      // Get first 150 characters for preview
+      setShortTerms(fullText.length > 150 ? `${fullText.substring(0, 150)}...` : fullText);
+    } catch (error) {
+      console.error('Error fetching terms and conditions:', error);
+      setTermsContent('Failed to load terms and conditions.');
+      setShortTerms('Failed to load terms and conditions.');
+    }
+  };
+
   useEffect(() => {
+    fetchTermsAndConditions();
     var getlocaldata = localStorage.getItem('PatientLogin');
     if (getlocaldata) {
       navigate('/patient')
@@ -38,6 +58,10 @@ const PatientRegister = () => {
   }, [navigate])
 
   function patientsignup() {
+    if (!termsAccepted) {
+      toast('Please accept the terms and conditions to continue', { className: 'custom-toast-error' });
+      return;
+    }
     console.log(patient)
     setloading(true)
     axios({
@@ -88,6 +112,45 @@ const PatientRegister = () => {
   return (
     <>
       <NavBar />
+      <Modal 
+        show={showTcModal} 
+        onHide={() => setShowTcModal(false)} 
+        size="lg"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Terms and Conditions</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ 
+          maxHeight: '60vh', 
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          wordWrap: 'break-word',
+          whiteSpace: 'pre-line',
+          padding: '1rem'
+        }}>
+          <div style={{ 
+            maxWidth: '100%',
+            overflowWrap: 'break-word',
+            wordWrap: 'break-word',
+            hyphens: 'auto'
+          }}>
+            {termsContent || 'Loading terms and conditions...'}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowTcModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={() => {
+            setTermsAccepted(true);
+            setShowTcModal(false);
+          }}>
+            I Accept
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       <div className='spacer-y d-flex align-items-center panel'>
         <Container className='py-3'>
           <Row className='justify-content-center'>
@@ -149,8 +212,42 @@ const PatientRegister = () => {
                       <CiLock className='icon_input' />
                     </Form.Group>
 
-                    <Button onClick={patientsignup} type="button" className='btn btn-primary d-block w-100 theme_btn mt-4'>
-                      Sign Up
+                    <div className="mb-3 form-check">
+                      <Form.Check 
+                        type="checkbox" 
+                        id="termsCheckbox"
+                        checked={termsAccepted}
+                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                        label={
+                          <span>
+                            I agree to the 
+                            <a 
+                              href="#" 
+                              className="text-primary ms-1"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setShowTcModal(true);
+                              }}
+                            >
+                              Terms and Conditions
+                            </a>
+                          </span>
+                        }
+                      />
+                      {shortTerms && (
+                        <div className="form-text text-muted" style={{ maxHeight: '60px', overflow: 'hidden' }}>
+                          {shortTerms}
+                        </div>
+                      )}
+                    </div>
+
+                    <Button 
+                      variant="primary" 
+                      className='w-100 py-2 mt-3' 
+                      onClick={patientsignup}
+                      disabled={loading}
+                    >
+                      {loading ? 'Processing...' : 'Sign Up'}
                     </Button>
                   </Form>
                   <div className='form_bottom_div text-center mt-3'>
