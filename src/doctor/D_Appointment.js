@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Col, Container, Dropdown, Form, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
+import { Badge, Button, Col, Container, Dropdown, Form, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
 import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'
@@ -55,7 +55,7 @@ const D_Appointment = () => {
                 Authorization: token
             }
         }).then((res) => {
-            // console.log(res.data.Data)
+            console.log(res.data.Data)
             setappointment(res.data.Data)
         }).catch(function (error) {
             console.log(error);
@@ -103,7 +103,7 @@ const D_Appointment = () => {
         var datasingle = appointment.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        // console.log(datasingle)
+        console.log(datasingle)
     }
 
     // reschedule appoinetment date
@@ -306,6 +306,28 @@ const D_Appointment = () => {
         width: '120px'
     },
     {
+        name: 'Payment Status',
+        cell: row => {
+            const statusInfo = getStatusBadge(row.payment_status);
+            return (
+                <div className="d-flex align-items-center gap-2">
+                    <div
+                        className="rounded-circle"
+                        style={{
+                            width: '8px',
+                            height: '8px',
+                            backgroundColor: statusInfo.dot
+                        }}
+                    ></div>
+                    <span style={{ color: '#6B7280', fontSize: '14px' }}>
+                        {statusInfo.text}
+                    </span>
+                </div>
+            );
+        },
+        width: '150px'
+    },
+    {
         name: 'View',
         cell: row => (
             <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
@@ -416,13 +438,58 @@ const D_Appointment = () => {
                                     <Modal.Title>Appointment Detail</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <div>
-                                        <p><b>Patient Name :- </b><span>{v?.patientname}</span></p>
-                                        <p><b>Mobile No :- </b><span>{v?.mobile}</span></p>
-                                        <p><b>Surgery Name :- </b><span>{v?.surgerydetails?.name}</span></p>
-                                        <p><b>Date & Time :- </b><span>{v?.date} , {v?.time}</span></p>
-                                        <p><b>Price :- </b><span>{v?.surgerydetails?.price}</span></p>
+                                    <div className="mb-3">
+                                        <h5 className="fw-bold border-bottom pb-2">Patient Information</h5>
+                                        <p><strong>Name:</strong> {v?.patientname}</p>
+                                        <p><strong>Mobile:</strong> {v?.mobile}</p>
                                     </div>
+
+                                    {/* Surgery Information */}
+                                    <div className="mb-3">
+                                        <h5 className="fw-bold border-bottom pb-2">Surgery Information</h5>
+                                        <p><strong>Surgery:</strong> {v?.surgerydetails.name}</p>
+                                        <p><strong>Date & Time:</strong> {v?.date}, {v?.time}</p>
+                                        <p>
+                                            <strong>Price:</strong>{" "}
+                                            <span className="text-success fw-bold">
+                                                ₹{v?.surgerydetails.price}
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    {/* Optional Fields */}
+                                    {v?.appointment_reason && (
+                                        <div className="mb-2">
+                                            <h6 className="fw-bold">Reason</h6>
+                                            <p>{v?.appointment_reason}</p>
+                                        </div>
+                                    )}
+
+                                    {v?.payment_status && (
+                                        <div className="mb-2">
+                                            <h6 className="fw-bold">Payment Status</h6>
+                                            <Badge
+                                                bg={v?.payment_status === "Pending" ? "warning" : "success"}
+                                                text={v?.payment_status === "Pending" ? "dark" : "light"}
+                                            >
+                                                {v?.payment_status}
+                                            </Badge>
+                                        </div>
+                                    )}
+
+                                    {v?.visit_types && (
+                                        <div className="mb-2">
+                                            <h6 className="fw-bold">Visit Type</h6>
+                                            <Badge bg="info">{v?.visit_types}</Badge>
+                                        </div>
+                                    )}
+
+                                    {v?.surgerydetails.additional_features && (
+                                        <div className="mb-2">
+                                            <h6 className="fw-bold">Features</h6>
+                                            <p>{v?.surgerydetails.additional_features}</p>
+                                        </div>
+                                    )}
                                 </Modal.Body>
                             </Modal>
                         )
