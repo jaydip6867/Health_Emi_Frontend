@@ -35,6 +35,7 @@ import Amb_Profile from './Ambulance/Amb_Profile';
 import D_Consultation from './doctor/D_Consultation';
 import P_Surgeries from './patient/P_Surgeries';
 import D_SurgeryAppointment from './doctor/D_SurgeryAppointment';
+import DemoProfile from './Visitor/DemoProfile';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
         <Route path='/doctorprofile/:id' element={<DoctorProfilePage />}></Route>
         <Route path='/surgery' element={<Surgeries />}></Route>
         <Route path='/surgery/:id' element={<Surgerydoctorlist />}></Route>
+        <Route path='/demoprofile' element={<DemoProfile />}></Route>
         <Route path='/doctor'>
           <Route path='' index element={<DoctorLogin />}></Route>
           <Route path='doctorregister' element={<DoctorRegister />}></Route>

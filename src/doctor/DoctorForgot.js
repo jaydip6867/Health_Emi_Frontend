@@ -11,18 +11,18 @@ import DoctorTestimonial from './DoctorTestimonial';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import Loader from '../Loader';
+import Swal from 'sweetalert2';
 
 const DoctorForgot = () => {
 
     var navigate = useNavigate();
-    const [loading,setloading] = useState(false);
+    const [loading, setloading] = useState(false);
 
     const [doc_email, setdoc_email] = useState(true);
     const [doc_forgt_otp, setdoc_forgt_otp] = useState(false);
     const [doc_reset_ps, setdoc_rest_ps] = useState(false);
 
     const [email, setemail] = useState('')
-    const [otp, setotp] = useState('')
     const [newps, setnewps] = useState('')
     // const [cfmps, setcfmps] = useState('')
 
@@ -42,7 +42,7 @@ const DoctorForgot = () => {
         }).catch(function (error) {
             console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
-        }).finally(()=>{
+        }).finally(() => {
             setloading(false)
         });
 
@@ -68,6 +68,7 @@ const DoctorForgot = () => {
     }
 
     function resetps() {
+        // setloading(true)
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/doctor/forgetpassword/setpassword',
@@ -76,14 +77,63 @@ const DoctorForgot = () => {
                 "password": newps
             }
         }).then((res) => {
-            toast('Password Reset Successfully...', { className: 'custom-toast-success' })
+            Swal.fire({
+                title: 'Password Reset Successfully...',
+                icon: 'success',
+                confirmButtonText: 'OK',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Redirect to another page
+                  navigate('/doctor'); // change to your desired route
+                }
+              });
             // console.log(res)
-            navigate('/doctor')
+            // navigate('/doctor')
         }).catch(function (error) {
             // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         });
     }
+
+    const [otp, setotp] = useState("");
+    const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
+    // Handle OTP input change
+    const handleOtpChange = (index, value) => {
+        // Only allow single digit
+        if (value.length > 1) return;
+
+        // Only allow numbers
+        if (value && !/^[0-9]$/.test(value)) return;
+
+        const newOtpDigits = [...otpDigits];
+        newOtpDigits[index] = value;
+        setOtpDigits(newOtpDigits);
+
+        // Update the main otp variable
+        const otpString = newOtpDigits.join("");
+        setotp(otpString);
+
+        // Auto focus to next input
+        if (value && index < 5) {
+            const nextInput = document.getElementById(`otp-${index + 1}`);
+            if (nextInput) nextInput.focus();
+        }
+    };
+
+    // Handle backspace
+    const handleOtpKeyDown = (index, e) => {
+        if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
+            const prevInput = document.getElementById(`otp-${index - 1}`);
+            if (prevInput) {
+                prevInput.focus();
+                const newOtpDigits = [...otpDigits];
+                newOtpDigits[index - 1] = "";
+                setOtpDigits(newOtpDigits);
+                setotp(newOtpDigits.join(""));
+            }
+        }
+    };
+
 
     return (
         <div className='min-vh-100 d-flex align-items-center panel'>
@@ -102,7 +152,6 @@ const DoctorForgot = () => {
                                     <Form.Group controlId="Email" className='position-relative mb-3'>
                                         <Form.Label>Email Address</Form.Label>
                                         <Form.Control placeholder="Email Address" name='email' value={email} onChange={(e) => setemail(e.target.value)} className='frm_input' />
-                                        <FaRegEnvelope className='icon_input' />
                                     </Form.Group>
 
                                     <Button type="button" onClick={emailotpforgot} className='d-block w-100 theme_btn my-3 mt-4'>
@@ -114,22 +163,62 @@ const DoctorForgot = () => {
                     }
                     {
                         doc_forgt_otp === true ? <Col md={5}>
-                            <div className='register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100'>
-                                <div className='text-center'>
+                            <div className="register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100">
+                                <div className="text-center">
                                     <h3>OTP Verification</h3>
-                                    <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
+                                    <p className="w-75 mx-auto">
+                                        Lorem Ipsum is simply dummy text of the printing and
+                                        typesetting industry
+                                    </p>
                                     <Form>
-                                        <Form.Group as={Col} controlId="fullname" className='position-relative my-3'>
-                                            <Form.Control type="text" name='otp' value={otp} onChange={(e) => setotp(e.target.value)} placeholder="Ex:- 1234" className='otpfield' />
-                                        </Form.Group>
+                                        <div className="my-4">
+                                            <Form.Label className="d-block text-center mb-3 fw-bold">
+                                                Enter 6-Digit OTP
+                                            </Form.Label>
+                                            <div className="d-flex justify-content-center gap-2">
+                                                {otpDigits.map((digit, index) => (
+                                                    <Form.Control
+                                                        key={index}
+                                                        id={`otp-${index}`}
+                                                        type="text"
+                                                        value={digit}
+                                                        onChange={(e) =>
+                                                            handleOtpChange(index, e.target.value)
+                                                        }
+                                                        onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                                                        className="text-center fw-bold border-2"
+                                                        style={{
+                                                            width: "50px",
+                                                            height: "50px",
+                                                            fontSize: "20px",
+                                                            borderRadius: "8px",
+                                                        }}
+                                                        maxLength="1"
+                                                    />
+                                                ))}
+                                            </div>
+                                            <small className="d-block text-center text-muted mt-2">
+                                                Enter the 6-digit code sent to your email
+                                            </small>
+                                        </div>
                                     </Form>
-                                    <div className='form_bottom_div text-end mt-3'>
-                                        <p><Link className='form-link' onClick={emailotpforgot}>Resend OTP ?</Link> </p>
+                                    <div className="form_bottom_div text-end mt-3">
+                                        <p>
+                                            <Link className="form-link">Resend OTP ?</Link>{" "}
+                                        </p>
                                     </div>
                                 </div>
 
-                                <Button type="button" onClick={otpverifydone} className='d-block w-100 theme_btn my-3'>
-                                    Verify OTP
+                                <Button
+                                    type="button"
+                                    onClick={otpverifydone}
+                                    className="d-block w-100 theme_btn my-3"
+                                    disabled={otp.length !== 6}
+                                >
+                                    {otp.length === 6
+                                        ? "Verify OTP"
+                                        : `Enter ${6 - otp.length} more digit${6 - otp.length > 1 ? "s" : ""
+                                        }`}
                                 </Button>
                             </div>
                         </Col> : ''
@@ -146,11 +235,10 @@ const DoctorForgot = () => {
                                     <Form.Group controlId="password" className='position-relative mb-3'>
                                         <Form.Label>New Password</Form.Label>
                                         <Form.Control type='password' placeholder="New Password" name='newpassword' value={newps} onChange={(e) => setnewps(e.target.value)} className='frm_input' />
-                                        <CiLock className='icon_input' />
                                     </Form.Group>
 
                                     <Button type="button" onClick={resetps} className='d-block w-100 theme_btn my-3 mt-4'>
-                                        Continue To Sign In
+                                        Reset Password
                                     </Button>
                                 </Form>
                             </div>
@@ -160,7 +248,7 @@ const DoctorForgot = () => {
                 </Row>
             </Container>
             <ToastContainer />
-            {loading ? <Loader/> : ''}
+            {loading ? <Loader /> : ''}
         </div>
     )
 }
