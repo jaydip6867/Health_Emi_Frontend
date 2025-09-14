@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Form, Button, Alert } from "react-bootstrap";
+import { Container, Row, Col, Card, Form, Button, Alert, Modal, Toast } from "react-bootstrap";
 import { Country, State, City } from "country-state-city";
 import axios from "axios";
 import "../Visitor/css/visitor.css";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Amb_register = () => {
   const [formData, setFormData] = useState({
@@ -37,6 +39,10 @@ const Amb_register = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAlert, setShowAlert] = useState({ show: false, message: "", type: "" });
+  const [showTcModal, setShowTcModal] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsContent, setTermsContent] = useState('');
+  const [shortTerms, setShortTerms] = useState('');
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedStateCode, setSelectedStateCode] = useState("");
@@ -77,6 +83,7 @@ const Amb_register = () => {
   useEffect(() => {
     const indianStates = State.getStatesOfCountry("IN");
     setStates(indianStates);
+    fetchTermsAndConditions();
   }, []);
 
   // Load cities when state changes
@@ -106,31 +113,60 @@ const Amb_register = () => {
     return () => clearInterval(interval);
   }, [showOtpForm, canResendOtp, resendTimer]);
 
-  const handleInputChange = (e) => {
-    const { name, value, files } = e.target;
-    
-    // Handle file uploads for all image fields
-    const imageFields = ['rc_pic', 'insurance_pic', 'polution_pic', 'driver_pic', 'driving_licence_pic', 'ambulance_front_pic', 'ambulance_back_pic', 'ambulance_fitness_pic'];
-    
-    if (imageFields.includes(name) && files && files[0]) {
-      const file = files[0];
-      setFormData(prev => ({
-        ...prev,
-        [name]: file
-      }));
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setFilePreviews(prev => ({
-          ...prev,
-          [name]: e.target.result
-        }));
-      };
-      reader.readAsDataURL(file);
+  const fetchTermsAndConditions = async () => {
+    try {
+      const response = await axios.get('https://healtheasy-o25g.onrender.com/ambulance/gettc');
+      const fullText = response.data.Data.ambulance_tc || 'No terms and conditions available.';
+      setTermsContent(fullText);
+      // Get first 150 characters for preview
+      setShortTerms(fullText.length > 150 ? `${fullText.substring(0, 150)}...` : fullText);
+    } catch (error) {
+      console.error('Error fetching terms and conditions:', error);
+      setTermsContent('Failed to load terms and conditions.');
+      setShortTerms('Failed to load terms and conditions.');
     }
+  };
+
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    if (!files || files.length === 0) return;
+
+    const fileList = Array.from(files);
+    
+    // Update file previews with file objects
+    setFilePreviews(prev => ({
+      ...prev,
+      [name]: fileList
+    }));
+
+    // Update form data with the first file
+    setFormData(prev => ({
+      ...prev,
+      [name]: fileList[0]
+    }));
+  };
+
+  const handleRemoveFile = (fieldName, index) => {
+    setFilePreviews(prev => {
+      const updatedFiles = [...(prev[fieldName] || [])];
+      updatedFiles.splice(index, 1);
+      return {
+        ...prev,
+        [fieldName]: updatedFiles
+      };
+    });
+
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: null
+    }));
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    
     // Handle state selection
-    else if (name === "state") {
+    if (name === "state") {
       const selectedState = states.find(state => state.name === value);
       setSelectedStateCode(selectedState ? selectedState.isoCode : "");
       setFormData(prev => ({
@@ -152,20 +188,6 @@ const Amb_register = () => {
         [name]: ""
       }));
     }
-  };
-
-  const handleRemoveFile = (fieldName) => {
-    setFormData(prev => ({
-      ...prev,
-      [fieldName]: null
-    }));
-    setFilePreviews(prev => ({
-      ...prev,
-      [fieldName]: null
-    }));
-    // Reset file input
-    const fileInput = document.querySelector(`input[name="${fieldName}"]`);
-    if (fileInput) fileInput.value = '';
   };
 
   // OTP input handler
@@ -267,179 +289,115 @@ const Amb_register = () => {
 
   const validateForm = () => {
     const newErrors = {};
+    const requiredFields = [
+      'fullname', 'email', 'mobile', 'password', 'gender', 'state', 'city', 
+      'address', 'ambulance_type', 'rc_no', 'blood_group', 'dob',
+      'insurance_expiry', 'insurance_holder', 'polution_expiry', 'vehicle_no',
+      'experience', 'ambulance_fitness_expiry'
+    ];
 
-    // Full name validation
-    if (!formData.fullname.trim()) {
-      newErrors.fullname = "Full name is required";
-    } else if (formData.fullname.trim().length < 2) {
-      newErrors.fullname = "Full name must be at least 2 characters";
-    } else if (!/^[a-zA-Z\s]+$/.test(formData.fullname.trim())) {
-      newErrors.fullname = "Full name should only contain letters and spaces";
-    }
+    // Check required fields
+    requiredFields.forEach(field => {
+      if (!formData[field]) {
+        newErrors[field] = `${field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} is required`;
+      }
+    });
 
     // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
     }
 
-    // Mobile validation
-    if (!formData.mobile.trim()) {
-      newErrors.mobile = "Mobile number is required";
-    } else if (!/^[6-9]\d{9}$/.test(formData.mobile)) {
-      newErrors.mobile = "Please enter a valid 10-digit mobile number";
+    // Mobile validation (10 digits)
+    if (formData.mobile && !/^\d{10}$/.test(formData.mobile)) {
+      newErrors.mobile = 'Please enter a valid 10-digit mobile number';
     }
 
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 3) {
-      newErrors.password = "Password must be at least 3 characters long";
+    // Password validation (at least 6 characters)
+    if (formData.password && formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters long';
     }
 
-    // Gender validation
-    if (!formData.gender) {
-      newErrors.gender = "Please select your gender";
-    }
+    // Date validations
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    // State validation
-    if (!formData.state) {
-      newErrors.state = "Please select your state";
-    }
-
-    // City validation
-    if (!formData.city.trim()) {
-      newErrors.city = "City is required";
-    } else if (formData.city.trim().length < 2) {
-      newErrors.city = "City name must be at least 2 characters";
-    }
-
-    // Address validation
-    if (!formData.address.trim()) {
-      newErrors.address = "Address is required";
-    } else if (formData.address.trim().length < 10) {
-      newErrors.address = "Please provide a complete address (minimum 10 characters)";
-    }
-
-    // Ambulance type validation
-    if (!formData.ambulance_type) {
-      newErrors.ambulance_type = "Please select ambulance type";
-    }
-
-    // RC number validation
-    if (!formData.rc_no.trim()) {
-      newErrors.rc_no = "RC number is required";
-    } else if (formData.rc_no.trim().length < 5) {
-      newErrors.rc_no = "Please enter a valid RC number";
-    }
-
-    // RC picture validation
-    if (!formData.rc_pic) {
-      newErrors.rc_pic = "RC picture is required";
-    }
-
-    // Blood group validation
-    if (!formData.blood_group) {
-      newErrors.blood_group = "Please select your blood group";
-    }
-
-    // Date of birth validation
-    if (!formData.dob) {
-      newErrors.dob = "Date of birth is required";
-    } else {
-      const today = new Date();
-      const birthDate = new Date(formData.dob);
-      const age = today.getFullYear() - birthDate.getFullYear();
-      if (age < 20 || age > 45) {
-        newErrors.dob = "Age must be between 20 and 45 years";
+    if (formData.dob) {
+      const dob = new Date(formData.dob);
+      if (dob >= today) {
+        newErrors.dob = 'Date of birth must be in the past';
       }
     }
 
-    // Insurance validation
-    if (!formData.insurance_expiry) {
-      newErrors.insurance_expiry = "Insurance expiry date is required";
-    } else {
-      const today = new Date();
-      const insuranceDate = new Date(formData.insurance_expiry);
-      if (insuranceDate <= today) {
-        newErrors.insurance_expiry = "Insurance must be valid (future date)";
+    if (formData.insurance_expiry) {
+      const expiry = new Date(formData.insurance_expiry);
+      if (expiry <= today) {
+        newErrors.insurance_expiry = 'Insurance must be valid (future date)';
       }
     }
 
-    if (!formData.insurance_pic) {
-      newErrors.insurance_pic = "Insurance document is required";
-    }
-
-    if (!formData.insurance_holder.trim()) {
-      newErrors.insurance_holder = "Insurance holder name is required";
-    }
-
-    // polution validation
-    if (!formData.polution_expiry) {
-      newErrors.polution_expiry = "polution certificate expiry is required";
-    } else {
-      const today = new Date();
-      const polutionDate = new Date(formData.polution_expiry);
-      if (polutionDate <= today) {
-        newErrors.polution_expiry = "polution certificate must be valid (future date)";
+    if (formData.polution_expiry) {
+      const expiry = new Date(formData.polution_expiry);
+      if (expiry <= today) {
+        newErrors.polution_expiry = 'Pollution certificate must be valid (future date)';
       }
     }
 
-    if (!formData.polution_pic) {
-      newErrors.polution_pic = "polution certificate is required";
-    }
-
-    // Vehicle number validation
-    if (!formData.vehicle_no.trim()) {
-      newErrors.vehicle_no = "Vehicle number is required";
-    } else if (!/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/.test(formData.vehicle_no.replace(/\s/g, '').toUpperCase())) {
-      newErrors.vehicle_no = "Please enter a valid vehicle number (e.g., MH12AB1234)";
-    }
-
-    // Driver and license validation
-    if (!formData.driver_pic) {
-      newErrors.driver_pic = "Driver photo is required";
-    }
-
-    if (!formData.experience) {
-      newErrors.experience = "Please select your driving experience";
-    }
-
-    if (!formData.driving_licence_pic) {
-      newErrors.driving_licence_pic = "Driving license photo is required";
-    }
-
-    // Ambulance photos validation
-    if (!formData.ambulance_front_pic) {
-      newErrors.ambulance_front_pic = "Ambulance front photo is required";
-    }
-
-    if (!formData.ambulance_back_pic) {
-      newErrors.ambulance_back_pic = "Ambulance back photo is required";
-    }
-
-    if (!formData.ambulance_fitness_pic) {
-      newErrors.ambulance_fitness_pic = "Ambulance fitness certificate is required";
-    }
-
-    // Ambulance fitness expiry validation
-    if (!formData.ambulance_fitness_expiry) {
-      newErrors.ambulance_fitness_expiry = "Fitness certificate expiry is required";
-    } else {
-      const today = new Date();
-      const fitnessDate = new Date(formData.ambulance_fitness_expiry);
-      if (fitnessDate <= today) {
-        newErrors.ambulance_fitness_expiry = "Fitness certificate must be valid (future date)";
+    if (formData.ambulance_fitness_expiry) {
+      const expiry = new Date(formData.ambulance_fitness_expiry);
+      if (expiry <= today) {
+        newErrors.ambulance_fitness_expiry = 'Fitness certificate must be valid (future date)';
       }
     }
+
+    // File validations
+    const requiredFiles = [
+      'rc_pic', 'insurance_pic', 'polution_pic', 'driver_pic',
+      'driving_licence_pic', 'ambulance_front_pic', 'ambulance_back_pic',
+      'ambulance_fitness_pic'
+    ];
+
+    requiredFiles.forEach(fileField => {
+      if (!formData[fileField]) {
+        newErrors[fileField] = `${fileField.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} is required`;
+      }
+    });
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    
+    // Show toast for each error
+    if (Object.keys(newErrors).length > 0) {
+      Object.values(newErrors).forEach(error => {
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        });
+      });
+      return false;
+    }
+    
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check if terms are accepted
+    if (!termsAccepted) {
+      toast.error('Please accept the terms and conditions to continue', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true
+      });
+      return;
+    }
     
     if (!validateForm()) {
       setShowAlert({
@@ -599,6 +557,116 @@ const Amb_register = () => {
       });
     }
   };
+
+  const renderFileInput = (name, label, accept = '*', showPreview = false) => {
+    const files = filePreviews[name] || [];
+    
+    return (
+      <Form.Group className="mb-3">
+        <Form.Label>{label}</Form.Label>
+        <div className="input-group">
+          <input
+            type="file"
+            className="form-control"
+            id={name}
+            name={name}
+            accept={accept}
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+          />
+          <label 
+            className="form-control d-flex justify-content-between align-items-center"
+            htmlFor={name}
+            style={{ cursor: 'pointer' }}
+          >
+            <span>
+              {files.length > 0 
+                ? `${files.length} file${files.length > 1 ? 's' : ''} selected` 
+                : 'Choose file...'}
+            </span>
+            <i className="bi bi-upload"></i>
+          </label>
+        </div>
+        
+        {files.length > 0 && (
+          <div className="mt-2">
+            {files.map((file, index) => (
+              <div key={index}>
+                {showPreview && file.type?.startsWith('image/') ? (
+                  <div className="position-relative mb-2">
+                    <img 
+                      src={URL.createObjectURL(file)} 
+                      alt={`Preview ${index + 1}`} 
+                      className="img-thumbnail"
+                      style={{ maxWidth: '200px', maxHeight: '150px' }}
+                    />
+                    <button 
+                      type="button" 
+                      className="btn-close position-absolute top-0 end-0 bg-white rounded-circle p-1 m-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveFile(name, index);
+                      }}
+                      aria-label="Remove"
+                    />
+                  </div>
+                ) : (
+                  <div className="d-flex justify-content-between align-items-center">
+                    <small className="text-muted">
+                      {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                    </small>
+                    <button 
+                      type="button" 
+                      className="btn-close btn-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveFile(name, index);
+                      }}
+                      aria-label="Remove"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {errors[name] && (
+          <div className="invalid-feedback d-block">
+            {errors[name]}
+          </div>
+        )}
+      </Form.Group>
+    );
+  };
+
+  const TermsAndConditionsModal = () => (
+    <Modal show={showTcModal} onHide={() => setShowTcModal(false)} size="lg">
+      <Modal.Header closeButton>
+        <Modal.Title>Terms and Conditions</Modal.Title>
+      </Modal.Header>
+      <Modal.Body style={{ 
+        maxHeight: '60vh', 
+        overflow: 'auto',
+        whiteSpace: 'pre-line',
+        wordWrap: 'break-word',
+        padding: '1rem'
+      }}>
+        {termsContent || 'Loading terms and conditions...'}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => setShowTcModal(false)}>
+          Close
+        </Button>
+        <Button variant="primary" onClick={() => {
+          setTermsAccepted(true);
+          setShowTcModal(false);
+        }}>
+          I Accept
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 
   return (
     <>
@@ -930,41 +998,7 @@ const Amb_register = () => {
 
                       {/* RC Picture Upload */}
                       <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">RC Picture *</Form.Label>
-                          <Form.Control
-                            type="file"
-                            name="rc_pic"
-                            onChange={handleInputChange}
-                            accept="image/*"
-                            isInvalid={!!errors.rc_pic}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.rc_pic}
-                          </Form.Control.Feedback>
-                          
-                          {/* Image Preview */}
-                          {filePreviews.rc_pic && (
-                            <div className="mt-3 position-relative">
-                              <img
-                                src={filePreviews.rc_pic}
-                                alt="RC Preview"
-                                className="img-thumbnail"
-                                style={{ maxWidth: "200px", maxHeight: "150px" }}
-                              />
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                className="position-absolute top-0 end-0 rounded-circle"
-                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
-                                onClick={() => handleRemoveFile('rc_pic')}
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          )}
-                        </Form.Group>
+                        {renderFileInput('rc_pic', 'RC Document', 'image/*,.pdf')}
                       </Col>
 
                       {/* Vehicle Number */}
@@ -1051,40 +1085,7 @@ const Amb_register = () => {
 
                       {/* Insurance Picture */}
                       <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Insurance Document *</Form.Label>
-                          <Form.Control
-                            type="file"
-                            name="insurance_pic"
-                            onChange={handleInputChange}
-                            accept="image/*"
-                            isInvalid={!!errors.insurance_pic}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.insurance_pic}
-                          </Form.Control.Feedback>
-                          
-                          {filePreviews.insurance_pic && (
-                            <div className="mt-3 position-relative">
-                              <img
-                                src={filePreviews.insurance_pic}
-                                alt="Insurance Preview"
-                                className="img-thumbnail"
-                                style={{ maxWidth: "200px", maxHeight: "150px" }}
-                              />
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                className="position-absolute top-0 end-0 rounded-circle"
-                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
-                                onClick={() => handleRemoveFile('insurance_pic')}
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          )}
-                        </Form.Group>
+                        {renderFileInput('insurance_pic', 'Insurance Document', 'image/*,.pdf')}
                       </Col>
 
                       {/* polution Expiry */}
@@ -1108,192 +1109,27 @@ const Amb_register = () => {
 
                       {/* polution Picture */}
                       <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">polution Certificate *</Form.Label>
-                          <Form.Control
-                            type="file"
-                            name="polution_pic"
-                            onChange={handleInputChange}
-                            accept="image/*"
-                            isInvalid={!!errors.polution_pic}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.polution_pic}
-                          </Form.Control.Feedback>
-                          
-                          {filePreviews.polution_pic && (
-                            <div className="mt-3 position-relative">
-                              <img
-                                src={filePreviews.polution_pic}
-                                alt="polution Certificate Preview"
-                                className="img-thumbnail"
-                                style={{ maxWidth: "200px", maxHeight: "150px" }}
-                              />
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                className="position-absolute top-0 end-0 rounded-circle"
-                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
-                                onClick={() => handleRemoveFile('polution_pic')}
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          )}
-                        </Form.Group>
+                        {renderFileInput('polution_pic', 'polution Certificate', 'image/*,.pdf')}
                       </Col>
 
                       {/* Driver Picture */}
                       <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Driver Photo *</Form.Label>
-                          <Form.Control
-                            type="file"
-                            name="driver_pic"
-                            onChange={handleInputChange}
-                            accept="image/*"
-                            isInvalid={!!errors.driver_pic}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.driver_pic}
-                          </Form.Control.Feedback>
-                          
-                          {filePreviews.driver_pic && (
-                            <div className="mt-3 position-relative">
-                              <img
-                                src={filePreviews.driver_pic}
-                                alt="Driver Photo Preview"
-                                className="img-thumbnail"
-                                style={{ maxWidth: "200px", maxHeight: "150px" }}
-                              />
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                className="position-absolute top-0 end-0 rounded-circle"
-                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
-                                onClick={() => handleRemoveFile('driver_pic')}
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          )}
-                        </Form.Group>
+                        {renderFileInput('driver_pic', 'Driver Photo', 'image/*', true)}
                       </Col>
 
                       {/* Driving License Picture */}
                       <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Driving License *</Form.Label>
-                          <Form.Control
-                            type="file"
-                            name="driving_licence_pic"
-                            onChange={handleInputChange}
-                            accept="image/*"
-                            isInvalid={!!errors.driving_licence_pic}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.driving_licence_pic}
-                          </Form.Control.Feedback>
-                          
-                          {filePreviews.driving_licence_pic && (
-                            <div className="mt-3 position-relative">
-                              <img
-                                src={filePreviews.driving_licence_pic}
-                                alt="Driving License Preview"
-                                className="img-thumbnail"
-                                style={{ maxWidth: "200px", maxHeight: "150px" }}
-                              />
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                className="position-absolute top-0 end-0 rounded-circle"
-                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
-                                onClick={() => handleRemoveFile('driving_licence_pic')}
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          )}
-                        </Form.Group>
+                        {renderFileInput('driving_licence_pic', 'Driving License', 'image/*,.pdf')}
                       </Col>
 
                       {/* Ambulance Front Picture */}
                       <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Ambulance Front Photo *</Form.Label>
-                          <Form.Control
-                            type="file"
-                            name="ambulance_front_pic"
-                            onChange={handleInputChange}
-                            accept="image/*"
-                            isInvalid={!!errors.ambulance_front_pic}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.ambulance_front_pic}
-                          </Form.Control.Feedback>
-                          
-                          {filePreviews.ambulance_front_pic && (
-                            <div className="mt-3 position-relative">
-                              <img
-                                src={filePreviews.ambulance_front_pic}
-                                alt="Ambulance Front Preview"
-                                className="img-thumbnail"
-                                style={{ maxWidth: "200px", maxHeight: "150px" }}
-                              />
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                className="position-absolute top-0 end-0 rounded-circle"
-                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
-                                onClick={() => handleRemoveFile('ambulance_front_pic')}
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          )}
-                        </Form.Group>
+                        {renderFileInput('ambulance_front_pic', 'Ambulance Front Photo', 'image/*', true)}
                       </Col>
 
                       {/* Ambulance Back Picture */}
                       <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Ambulance Back Photo *</Form.Label>
-                          <Form.Control
-                            type="file"
-                            name="ambulance_back_pic"
-                            onChange={handleInputChange}
-                            accept="image/*"
-                            isInvalid={!!errors.ambulance_back_pic}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.ambulance_back_pic}
-                          </Form.Control.Feedback>
-                          
-                          {filePreviews.ambulance_back_pic && (
-                            <div className="mt-3 position-relative">
-                              <img
-                                src={filePreviews.ambulance_back_pic}
-                                alt="Ambulance Back Preview"
-                                className="img-thumbnail"
-                                style={{ maxWidth: "200px", maxHeight: "150px" }}
-                              />
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                className="position-absolute top-0 end-0 rounded-circle"
-                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
-                                onClick={() => handleRemoveFile('ambulance_back_pic')}
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          )}
-                        </Form.Group>
+                        {renderFileInput('ambulance_back_pic', 'Ambulance Back Photo', 'image/*', true)}
                       </Col>
 
                       {/* Ambulance Fitness Expiry */}
@@ -1317,43 +1153,38 @@ const Amb_register = () => {
 
                       {/* Ambulance Fitness Picture */}
                       <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Fitness Certificate *</Form.Label>
-                          <Form.Control
-                            type="file"
-                            name="ambulance_fitness_pic"
-                            onChange={handleInputChange}
-                            accept="image/*"
-                            isInvalid={!!errors.ambulance_fitness_pic}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.ambulance_fitness_pic}
-                          </Form.Control.Feedback>
-                          
-                          {filePreviews.ambulance_fitness_pic && (
-                            <div className="mt-3 position-relative">
-                              <img
-                                src={filePreviews.ambulance_fitness_pic}
-                                alt="Fitness Certificate Preview"
-                                className="img-thumbnail"
-                                style={{ maxWidth: "200px", maxHeight: "150px" }}
-                              />
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                className="position-absolute top-0 end-0 rounded-circle"
-                                style={{ transform: "translate(25%, -25%)", width: "30px", height: "30px" }}
-                                onClick={() => handleRemoveFile('ambulance_fitness_pic')}
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          )}
-                        </Form.Group>
+                        {renderFileInput('ambulance_fitness_pic', 'Fitness Certificate', 'image/*,.pdf')}
                       </Col>
 
-                      
+                      <Form.Group className="mb-3">
+                        <Form.Check 
+                          type="checkbox"
+                          id="termsCheckbox"
+                          checked={termsAccepted}
+                          onChange={(e) => setTermsAccepted(e.target.checked)}
+                          label={
+                            <span>
+                              I agree to the{' '}
+                              <a 
+                                href="#" 
+                                className="text-primary"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setShowTcModal(true);
+                                }}
+                              >
+                                Terms and Conditions
+                              </a>
+                            </span>
+                          }
+                        />
+                        {shortTerms && (
+                          <div className="form-text text-muted" style={{ maxHeight: '60px', overflow: 'hidden' }}>
+                            {shortTerms}
+                          </div>
+                        )}
+                      </Form.Group>
+
                     </Row>
 
                     <div className="d-grid gap-2 mt-4">
@@ -1497,6 +1328,18 @@ const Amb_register = () => {
           </Row>
         </Container>
       </div>
+      <TermsAndConditionsModal />
+      <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </>
   );
 };

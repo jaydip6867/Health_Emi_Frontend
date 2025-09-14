@@ -348,6 +348,13 @@ const DoctorProfile = () => {
     }
   }
 
+  const isPdf = (url = "") => {
+    if (!url || typeof url !== 'string') return false;
+    // Check for PDF extension or Cloudinary raw upload path
+    return url.toLowerCase().endsWith('.pdf') || 
+           url.includes('/raw/upload/');
+  };
+
   return (
     <>
       <Container fluid className="p-0 panel">
@@ -680,7 +687,7 @@ const DoctorProfile = () => {
                     </Card.Header>
                     <Card.Body className="p-4">
                       <Row className="g-3">
-                        <Col md={6}>
+                        <Col sm={12} lg={4}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">
                               Profile Picture
@@ -772,97 +779,120 @@ const DoctorProfile = () => {
                             )}
                           </Form.Group>
                         </Col>
-                        <Col md={6}>
+                        <Col md={12}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">
                               Identity Proof (Aadhar)
                             </Form.Label>
-                            <div className="position-relative">
-                              <input
-                                type="file"
-                                className="form-control"
-                                name="identityproof"
-                                accept="image/*,.pdf"
-                                onChange={handleChange}
-                                disabled={IsDisable}
-                                style={{ display: "none" }}
-                                id="identity-proof-upload"
-                              />
-                              <label
-                                htmlFor="identity-proof-upload"
-                                className="btn btn-outline-secondary w-100"
-                                style={{
-                                  cursor: "pointer",
-                                  padding: "0.375rem 0.75rem",
-                                }}
-                              >
-                                {profile?.identityproof || identityProofFile
-                                  ? "Change Identity Proof"
-                                  : "Upload Identity Proof"}
-                              </label>
-                            </div>
-                            {(profile?.identityproof || identityProofFile) && (
-                              <div className="mt-3">
-                                <div className="border rounded p-3 bg-light">
-                                  <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div className="d-flex align-items-center">
-                                      <i className="fas fa-file-alt text-primary me-2 fs-5"></i>
-                                      <span className="fw-medium">
-                                        Identity Proof Document
-                                      </span>
-                                    </div>
-                                    <button
-                                      onClick={handleRemoveIdentityProof}
-                                      className="btn btn-sm btn-outline-danger"
-                                      disabled={IsDisable}
-                                      title="Remove document"
-                                    >
-                                      <i className="fas fa-trash-alt me-1"></i>{" "}
-                                      Remove
-                                    </button>
-                                  </div>
+                            {profile?.identityproof?.length > 0 ? (
+                              <div className="row g-3">
+                                {profile.identityproof.map((doc, index) => (
+                                  <div key={index} className="col-4">
+                                    <div className="border rounded p-3 bg-light">
+                                      <div className="d-flex align-items-center justify-content-between mb-3">
+                                        <div className="d-flex align-items-center">
+                                          <i className="fas fa-file-alt text-primary me-2 fs-5"></i>
+                                          <span className="fw-medium">
+                                            Document {index + 1}
+                                          </span>
+                                        </div>
+                                        <a 
+                                          href={doc} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="btn btn-sm btn-outline-primary"
+                                        >
+                                          <i className="fas fa-external-link-alt me-1"></i> Open
+                                        </a>
+                                      </div>
 
-                                  <div className="text-center">
-                                    <div className="position-relative d-inline-block">
-                                      <img
-                                        src={
-                                          profile?.identityproof ||
-                                          URL.createObjectURL(identityProofFile)
-                                        }
-                                        alt="Identity Proof Preview"
-                                        className="img-thumbnail"
-                                        style={{
-                                          maxHeight: "200px",
-                                          width: "auto",
-                                          objectFit: "contain",
-                                          border: "1px solid #dee2e6",
-                                          boxShadow:
-                                            "0 2px 4px rgba(0,0,0,0.05)",
-                                        }}
-                                      />
-                                    </div>
-
-                                    <div className="mt-3">
-                                      <a
-                                        href={
-                                          profile?.identityproof ||
-                                          URL.createObjectURL(identityProofFile)
-                                        }
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="btn btn-primary"
-                                      >
-                                        <i className="fas fa-eye me-2"></i>View
-                                        Full Document
-                                      </a>
+                                      <div className="text-center">
+                                        {isPdf(doc) ? (
+                                          <div style={{ height: '200px' }}>
+                                            <iframe 
+                                              src={`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(doc)}`}
+                                              className="w-100 h-100 border-0"
+                                              frameBorder="0"
+                                              title={`Document ${index + 1}`}
+                                            />
+                                          </div>
+                                        ) : (
+                                          <div className="text-center">
+                                            <img 
+                                              src={doc} 
+                                              alt={`Document ${index + 1}`}
+                                              className="img-fluid rounded border"
+                                              style={{ maxHeight: '200px', width: 'auto' }}
+                                            />
+                                          </div>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="text-muted p-3 border rounded bg-light">
+                                No identity proof documents uploaded
+                              </div>
+                            )}
+                          </Form.Group>
+                        </Col>
+                        <Col md={12}>
+                          <Form.Group>
+                            <Form.Label className="fw-semibold">
+                            Certificate Proof
+                            </Form.Label>
+                            {profile?.certificateproof?.length > 0 ? (
+                              <div className="row g-3">
+                                {profile.certificateproof.map((doc, index) => (
+                                  <div key={index} className="col-4">
+                                    <div className="border rounded p-3 bg-light">
+                                      <div className="d-flex align-items-center justify-content-between mb-3">
+                                        <div className="d-flex align-items-center">
+                                          <i className="fas fa-file-alt text-primary me-2 fs-5"></i>
+                                          <span className="fw-medium">
+                                            Document {index + 1}
+                                          </span>
+                                        </div>
+                                        <a 
+                                          href={doc} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="btn btn-sm btn-outline-primary"
+                                        >
+                                          <i className="fas fa-external-link-alt me-1"></i> Open
+                                        </a>
+                                      </div>
 
-                                  <div className="text-muted text-center mt-2 small">
-                                    {identityProofFile?.name ||
-                                      "Document uploaded"}
+                                      <div className="text-center">
+                                        {isPdf(doc) ? (
+                                          <div style={{ height: '200px' }}>
+                                            <iframe 
+                                              src={`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(doc)}`}
+                                              className="w-100 h-100 border-0"
+                                              frameBorder="0"
+                                              title={`Document ${index + 1}`}
+                                            />
+                                          </div>
+                                        ) : (
+                                          <div className="text-center">
+                                            <img 
+                                              src={doc} 
+                                              alt={`Document ${index + 1}`}
+                                              className="img-fluid rounded border"
+                                              style={{ maxHeight: '200px', width: 'auto' }}
+                                            />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="text-muted p-3 border rounded bg-light">
+                                No Certificate Proof documents uploaded
                               </div>
                             )}
                           </Form.Group>
