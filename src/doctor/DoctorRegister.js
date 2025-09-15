@@ -12,9 +12,6 @@ import {
   Modal,
 } from "react-bootstrap";
 import "./css/doctor.css";
-import { AiOutlinePhone, AiOutlineUser } from "react-icons/ai";
-import { FaRegEnvelope } from "react-icons/fa";
-import { CiLock, CiLocationOn } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
 import DoctorTestimonial from "./DoctorTestimonial";
 import axios from "axios";
@@ -118,7 +115,6 @@ const DoctorRegister = () => {
   const [doc_reg, setdocreg] = useState(true);
   const [doc_otp, setdocotp] = useState(false);
   const [doc_reg2, setdocreg2] = useState(false);
-  const [doc_next1, setdocnext1] = useState(false);
 
   var frmdata = {
     name: "",

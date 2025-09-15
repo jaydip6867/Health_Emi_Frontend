@@ -158,8 +158,8 @@ export default function DoctorProfile() {
                                 <Image
                                     src="https://randomuser.me/api/portraits/men/75.jpg"
                                     roundedCircle
-                                    width={90}
-                                    height={90}
+                                    width={130}
+                                    height={130}
                                     alt="doctor"
                                 />
                             </Col>
