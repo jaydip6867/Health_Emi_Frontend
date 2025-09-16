@@ -8,12 +8,11 @@ import axios from 'axios'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom';
 import './css/visitor.css'
-import { FaEnvelope, FaPhone, FaStethoscope, FaClock, FaVideo, FaHome } from 'react-icons/fa'
-import { BsStarFill, BsPeople, BsGeoAlt } from 'react-icons/bs'
+import { FaEnvelope, FaPhone, FaRegDotCircle } from 'react-icons/fa'
+import { BsStarFill, BsGeoAlt } from 'react-icons/bs'
 import { format } from 'date-fns';
 import Swal from 'sweetalert2'
 import DatePicker from 'react-datepicker'
-import { HiUsers } from 'react-icons/hi'
 
 const DoctorProfilePage = () => {
   const SECRET_KEY = "health-emi";
@@ -59,7 +58,7 @@ const DoctorProfilePage = () => {
       }
     }).then((res) => {
       setdocprofile(res.data.Data)
-      console.log('doctor ', res.data.Data)
+      // console.log('doctor ', res.data.Data)
     }).catch(function (error) {
       console.log(error);
     }).finally(() => {
@@ -162,12 +161,12 @@ const DoctorProfilePage = () => {
     var surg_apt_data = { ...addsurgery, surgeryid: surgdata._id, doctorid: d_id, patientname: patient?.name, mobile: patient?.mobile }
     setaddsurgery(surg_apt_data)
     setsingle_surg(surgdata)
-    setaddshow(true)
     if (!patient) {
       navigate('/patient')
     }
     else {
-      setShow(true)
+      setaddshow(true)
+      // setShow(true)
     }
     // console.log(patient, surg_apt_data, surgdata)
   }
@@ -357,7 +356,7 @@ const DoctorProfilePage = () => {
                     </Col>
                     <Col md={4}>
                       <h3 className="fw-bold">Dr. {doctor_profile.name}</h3>
-                      <hr/>
+                      <hr />
                       <p className="text-dark mb-2">{doctor_profile.specialty} ({doctor_profile.qualification})</p>
                       <div className="d-flex align-items-center mb-2">
                         <BsGeoAlt className="me-2 text-muted" />
@@ -460,13 +459,13 @@ const DoctorProfilePage = () => {
                 <Card.Body className="p-4">
                   <h5 className="fw-bold mb-3">About me</h5>
                   <p className="text-muted mb-0">
-                    Dr. David Patel, a dedicated cardiologist, brings a wealth of experience to Golden Gate Cardiology Center in
-                    Golden Gate, CA Dr. David Patel, a dedicated cardiologist, brings a wealth of experience to Golden Gate
-                    Cardiology Center in Golden Gate, CA Dr. David Patel, a dedicated cardiologist, brings a wealth of experience
-                    to Golden Gate Cardiology Center in Golden Gate, CA Dr. David Patel, a dedicated cardiologist, brings a
-                    wealth of experience to Golden Gate Cardiology Center in Golden Gate, CA Dr. David Patel, a dedicated
-                    cardiologist, brings a wealth of experience to Golden Gate Cardiology Center in Golden Gate, CA Dr. David Patel, a dedicated
-                    cardiologist, brings a wealth of experience to Golden Gate Cardiology Center in Golden Gate, CA Dr. <span className="text-primary fw-bold" style={{ cursor: 'pointer' }}>read more</span>
+                    Dr. {doctor_profile.name}, a dedicated {doctor_profile.specialty}, brings a wealth of experience to Golden Gate {doctor_profile.specialty} Center in
+                    Golden Gate, CA Dr. {doctor_profile.name}, a dedicated cardiologist, brings a wealth of experience to Golden Gate
+                    {doctor_profile.specialty} Center in Golden Gate, CA Dr. {doctor_profile.name}, a dedicated cardiologist, brings a wealth of experience
+                    to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. {doctor_profile.name}, a dedicated cardiologist, brings a
+                    wealth of experience to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. {doctor_profile.name}, a dedicated
+                    {doctor_profile.specialty}, brings a wealth of experience to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. {doctor_profile.name}, a dedicated
+                    {doctor_profile.specialty}, brings a wealth of experience to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. <span className="text-primary fw-bold" style={{ cursor: 'pointer' }}>read more</span>
                   </p>
                 </Card.Body>
               </Card>
@@ -476,25 +475,23 @@ const DoctorProfilePage = () => {
                 <Card.Body className="p-4">
                   <h5 className="fw-bold mb-4">Surgeries</h5>
                   <Row className="g-4">
-                    {doctor_profile.surgeriesDetails.slice(0, 6).map((surgery, index) => (
+                    {doctor_profile.surgeriesDetails.map((surgery, index) => (
                       <Col md={6} key={index}>
-                        <Card className="border-0 shadow-sm h-100" style={{ borderRadius: '12px' }}>
+                        <Card className="border-1 pointer shadow-sm border-opacity-25 h-100" style={{ borderRadius: '12px' }} onClick={() => handleServiceModalShow(surgery)}>
                           <Card.Body className="p-3">
-                            <Row className="align-items-center">
-                              <Col xs={3}>
+                            <Row >
+                              <Col xs={5}>
                                 <Image
                                   src={surgery.surgery_photo || require("../assets/image/doctor_img.jpg")}
-                                  roundedCircle
-                                  width={60}
-                                  height={60}
-                                  className="border border-2 border-light"
+                                  style={{ minHeight: 100, maxHeight: 100, objectFit: 'cover' }}
+                                  className="border border-2 border-light rounded-3 w-100 h-100"
                                   onError={(e) => {
                                     e.target.src = require("../assets/image/doctor_img.jpg");
                                   }}
                                 />
                               </Col>
-                              <Col xs={9}>
-                                <h6 className="fw-bold mb-1">{surgery.name}</h6>
+                              <Col xs={7}>
+                                <h6 className="fw-bold mb-1 border-bottom pb-2">{surgery.name}</h6>
                                 <p className="text-muted small mb-1">{surgery.surgery_type || 'Surgery Type'}</p>
                                 <p className="text-muted small mb-0">Days of Surgery</p>
                               </Col>
@@ -512,36 +509,24 @@ const DoctorProfilePage = () => {
                 <Card.Body className="p-4">
                   <h5 className="fw-bold mb-4">Hospitals</h5>
                   <Row className="g-3">
-                    <Col md={6}>
-                      <Card className="border-0 shadow-sm h-100" style={{ borderRadius: '12px' }}>
-                        <Card.Body className="p-3">
-                          <div className="d-flex align-items-start">
-                            <BsGeoAlt className="text-primary me-3 mt-1" size={20} />
-                            <div>
-                              <h6 className="fw-bold mb-1">PP Savani Hospital</h6>
-                              <p className="text-muted small mb-0">
-                                Varachha Road, Near Kapodara Police Station, Surat.
-                              </p>
-                            </div>
-                          </div>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                    <Col md={6}>
-                      <Card className="border-0 shadow-sm h-100" style={{ borderRadius: '12px' }}>
-                        <Card.Body className="p-3">
-                          <div className="d-flex align-items-start">
-                            <BsGeoAlt className="text-primary me-3 mt-1" size={20} />
-                            <div>
-                              <h6 className="fw-bold mb-1">PP Savani Hospital</h6>
-                              <p className="text-muted small mb-0">
-                                Varachha Road, Near Kapodara Police Station, Surat.
-                              </p>
-                            </div>
-                          </div>
-                        </Card.Body>
-                      </Card>
-                    </Col>
+                    {
+                      doctor_profile.hospitals.map((v, i) => {
+                        return (
+                          <Col md={6}>
+                            <Card className="border-1 border-opacity-25 shadow-sm h-100" style={{ borderRadius: '12px' }}>
+                              <Card.Body className="p-3">
+                                <div>
+                                  <h6 className="fw-bold mb-1 pb-2 border-bottom">{v.name}</h6>
+                                  <p className="text-muted small m-0">
+                                    <BsGeoAlt className="text-dark me-2" /> {v.address}
+                                  </p>
+                                </div>
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                        )
+                      })
+                    }
                   </Row>
                 </Card.Body>
               </Card>
@@ -913,11 +898,51 @@ const DoctorProfilePage = () => {
                       <h6 className="mb-0">Service Information</h6>
                     </Card.Header>
                     <Card.Body>
-                      <p><strong>Name:</strong> {selectedService.name}</p>
-                      <p><strong>Description:</strong> {selectedService.description || "No description available"}</p>
-                      <p><strong>Features:</strong> {selectedService.features || "No features listed"}</p>
+                      <Row className='gy-2'>
+                        <Col xs={2}><strong>Name:</strong></Col>
+                        <Col xs={10}>{selectedService.name}</Col>
+                        <Col xs={2}><strong>Description:</strong></Col>
+                        <Col xs={10}>{selectedService.description || "No description available"}</Col>
+                        <Col xs={2}><strong>Features:</strong></Col>
+                        <Col xs={10}>{selectedService.features || "No features listed"}</Col>
+                      </Row>
                     </Card.Body>
                   </Card>
+
+                  <Row className='mt-3'>
+                    <Col xs={12} md={6}>
+                      <Card className='bg-success-subtle'>
+                        <Card.Header>
+                          <h6 className="mb-0">Inclusive</h6>
+                        </Card.Header>
+                        <Card.Body>
+                          <ul>
+                            {
+                              selectedService.inclusive.split(', ').map((v, i) => (
+                                <li key={i}><FaRegDotCircle className='me-2' />{v}</li>
+                              ))
+                            }
+                          </ul>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                    <Col xs={12} md={6}>
+                      <Card className='bg-danger-subtle'>
+                        <Card.Header>
+                          <h6 className="mb-0">Exclusive</h6>
+                        </Card.Header>
+                        <Card.Body>
+                          <ul>
+                            {
+                              selectedService.exclusive.split(', ').map((v, i) => (
+                                <li key={i}><FaRegDotCircle className='me-2' />{v}</li>
+                              ))
+                            }
+                          </ul>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
             </Container>
@@ -951,13 +976,14 @@ const DoctorProfilePage = () => {
               <Form.Label>Alt Mobile No</Form.Label>
               <Form.Control type="text" name='alt_mobile' value={addsurgery?.alt_mobile} onChange={surghandlechange} />
             </Form.Group>
-            <Form.Group className='col-12'>
+            <Form.Group className='col-4'>
               <Form.Label>Room Type</Form.Label>
               <div>
                 <Form.Check
                   name="roomtype"
                   type="radio"
                   value="General"
+                  id='label-1'
                   onChange={surghandlechange}
                   label={`General - ₹${single_surg?.general_price || 'N/A'}`}
                 />
@@ -965,16 +991,13 @@ const DoctorProfilePage = () => {
                   name="roomtype"
                   type="radio"
                   value="Private"
+                  id='label-2'
                   onChange={surghandlechange}
                   label={`Private - ₹${single_surg?.private_price || 'N/A'}`}
                 />
               </div>
             </Form.Group>
-            <Form.Group className='col-12'>
-              <Form.Label>Appointment Reason</Form.Label>
-              <Form.Control as="textarea" name='appointment_reason' value={addsurgery?.appointment_reason} onChange={surghandlechange} />
-            </Form.Group>
-            <Form.Group className='col-12'>
+            <Form.Group className='col-4'>
               <Form.Label>Reports</Form.Label>
               <input
                 type="file"
@@ -1013,7 +1036,7 @@ const DoctorProfilePage = () => {
                 </div>
               )}
             </Form.Group>
-            <Form.Group className='col-12'>
+            <Form.Group className='col-4'>
               <Form.Label>Appointment Date & Time</Form.Label>
               <DatePicker
                 selected={selectedDate}
@@ -1026,200 +1049,10 @@ const DoctorProfilePage = () => {
                 minDate={new Date()}
                 className="form-control"
               />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant='primary'
-            onClick={() => booksurgery(doctor_profile._id)}
-            disabled={isUploadingReports}
-          >
-            {isUploadingReports ? 'Uploading Reports...' : 'Book Surgery Appointment'}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* Service Detail Modal */}
-      {selectedService && (
-        <Modal
-          show={showServiceModal}
-          size="xl"
-          onHide={handleServiceModalClose}
-          centered
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Service Details - {selectedService.name}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Container fluid>
-              <Row className="g-4">
-                <Col md={4}>
-                  <Card className="h-100">
-                    <Card.Header>
-                      <h6 className="mb-0">Service Image</h6>
-                    </Card.Header>
-                    <Card.Body className="d-flex flex-column justify-content-around">
-                      <div className="text-center">
-                        {selectedService.surgery_photo ? (
-                          <Image
-                            src={selectedService.surgery_photo}
-                            alt={selectedService.name}
-                            fluid
-                            rounded
-                            className="mb-3"
-                            style={{ maxHeight: "200px" }}
-                          />
-                        ) : (
-                          <div
-                            className="bg-light p-4 rounded mb-3"
-                            style={{
-                              height: "200px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <span className="text-muted">No image available</span>
-                          </div>
-                        )}
-                        <p><strong>Surgery Type:</strong> {selectedService.surgery_type || "Not specified"}</p>
-                        <p><strong>Duration:</strong> {selectedService.days || "Not specified"} days</p>
-                        <p><strong>Price:</strong> ₹{selectedService.price || "Contact for pricing"}</p>
-                      </div>
-                      <div className="d-flex justify-content-center">
-                        <Button
-                          variant="primary"
-                          onClick={() => {
-                            handleAddSurgery(selectedService, doctor_profile._id)
-                            handleServiceModalClose()
-                          }}
-                        >
-                          Book Appointment for this Service
-                        </Button>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col md={8}>
-                  <Card>
-                    <Card.Header>
-                      <h6 className="mb-0">Service Information</h6>
-                    </Card.Header>
-                    <Card.Body>
-                      <p><strong>Name:</strong> {selectedService.name}</p>
-                      <p><strong>Description:</strong> {selectedService.description || "No description available"}</p>
-                      <p><strong>Features:</strong> {selectedService.features || "No features listed"}</p>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              </Row>
-            </Container>
-          </Modal.Body>
-        </Modal>
-      )}
-
-      {/* Surgery Appointment Modal */}
-      <Modal show={addshow} onHide={handleAddSurgeryClose} centered size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Book Surgery Appointment</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className='text-center fs-5 mb-3'>
-            <p><b>Surgery:</b> {single_surg?.name}</p>
-          </div>
-          <Form className='row g-3'>
-            <Form.Group className='col-6'>
-              <Form.Label>Patient Name</Form.Label>
-              <Form.Control type="text" name='patientname' value={addsurgery?.patientname} disabled />
-            </Form.Group>
-            <Form.Group className='col-6'>
-              <Form.Label>Mobile No</Form.Label>
-              <Form.Control type="text" name='mobile' value={addsurgery?.mobile} disabled />
-            </Form.Group>
-            <Form.Group className='col-6'>
-              <Form.Label>Alt Name</Form.Label>
-              <Form.Control type="text" name='alt_name' value={addsurgery?.alt_name} onChange={surghandlechange} />
-            </Form.Group>
-            <Form.Group className='col-6'>
-              <Form.Label>Alt Mobile No</Form.Label>
-              <Form.Control type="text" name='alt_mobile' value={addsurgery?.alt_mobile} onChange={surghandlechange} />
-            </Form.Group>
-            <Form.Group className='col-12'>
-              <Form.Label>Room Type</Form.Label>
-              <div>
-                <Form.Check
-                  name="roomtype"
-                  type="radio"
-                  value="General"
-                  onChange={surghandlechange}
-                  label={`General - ₹${single_surg?.general_price || 'N/A'}`}
-                />
-                <Form.Check
-                  name="roomtype"
-                  type="radio"
-                  value="Private"
-                  onChange={surghandlechange}
-                  label={`Private - ₹${single_surg?.private_price || 'N/A'}`}
-                />
-              </div>
             </Form.Group>
             <Form.Group className='col-12'>
               <Form.Label>Appointment Reason</Form.Label>
               <Form.Control as="textarea" name='appointment_reason' value={addsurgery?.appointment_reason} onChange={surghandlechange} />
-            </Form.Group>
-            <Form.Group className='col-12'>
-              <Form.Label>Reports</Form.Label>
-              <input
-                type="file"
-                className="form-control"
-                multiple
-                accept="image/*,.pdf,.doc,.docx"
-                onChange={handleReportFilesChange}
-              />
-              {reportPreviews.length > 0 && (
-                <div className="d-flex flex-wrap mt-2 gap-2">
-                  {reportPreviews.map((preview, index) => (
-                    <div key={index} className="position-relative">
-                      {preview.type === 'image' ? (
-                        <img
-                          src={preview.url}
-                          alt={`Report ${index + 1}`}
-                          style={{ width: '80px', height: '80px', objectFit: 'cover' }}
-                          className="img-thumbnail"
-                        />
-                      ) : (
-                        <div
-                          className="d-flex align-items-center justify-content-center img-thumbnail"
-                          style={{ width: '80px', height: '80px', fontSize: '12px' }}
-                        >
-                          📄<br />{preview.name.substring(0, 8)}...
-                        </div>
-                      )}
-                      <button
-                        type="button"
-                        className="btn-close position-absolute top-0 end-0"
-                        onClick={() => removeReportFile(index)}
-                        style={{ fontSize: '10px' }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Form.Group>
-            <Form.Group className='col-12'>
-              <Form.Label>Appointment Date & Time</Form.Label>
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date) => setSelectedDate(date)}
-                showTimeSelect
-                timeFormat="hh:mm a"
-                timeIntervals={15}
-                dateFormat="dd-MM-yyyy hh:mm a"
-                placeholderText="Select date and time"
-                minDate={new Date()}
-                className="form-control"
-              />
             </Form.Group>
           </Form>
         </Modal.Body>

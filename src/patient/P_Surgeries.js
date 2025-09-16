@@ -169,12 +169,13 @@ const P_Surgeries = () => {
     }, {
         name: 'Doctor Name',
         cell: row => (
-            <div className="d-flex align-items-center flex-wrap gap-3">
+            <div className="d-flex align-items-center gap-3 text-truncate">
                 <div
                     className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
                     style={{
                         width: '40px',
                         height: '40px',
+                        minWidth: '40px',
                         backgroundColor: '#6366F1',
                         fontSize: '14px'
                     }}
