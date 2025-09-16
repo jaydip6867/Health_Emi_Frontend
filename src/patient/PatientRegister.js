@@ -207,7 +207,7 @@ const PatientRegister = () => {
                       <Form.Control type='password' placeholder="Enter Password" name='password' value={patient.password} className='frm_input' onChange={patientch} />
                     </Form.Group>
 
-                    <div className="mb-3 form-check">
+                    <div className="my-3 form-check ps-0">
                       <Form.Check 
                         type="checkbox" 
                         id="termsCheckbox"
@@ -229,11 +229,11 @@ const PatientRegister = () => {
                           </span>
                         }
                       />
-                      {shortTerms && (
+                      {/* {shortTerms && (
                         <div className="form-text text-muted" style={{ maxHeight: '60px', overflow: 'hidden' }}>
                           {shortTerms}
                         </div>
-                      )}
+                      )} */}
                     </div>
 
                     <Button 

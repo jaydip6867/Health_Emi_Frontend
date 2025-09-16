@@ -48,7 +48,7 @@ const Home = () => {
                 <div className='pe-5 head_sec'>
                   <h1><span>Book an Appointment</span> <br /> for a consultation</h1>
                   <p>Choose the best deal among 50,000 people and pros by requesting a service!</p>
-                  <Button className="banner_btn">Book Appointment</Button>
+                  <Button className="banner_btn my-2">Book Appointment</Button>
                   <div className='d-flex gap-5 mt-3 text-dark'>
                     <div><h6>1,00,000+</h6>Doctors</div>
                     <div><h6>20,000+</h6>Surgeries</div>

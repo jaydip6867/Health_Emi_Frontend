@@ -115,9 +115,11 @@ img {
     max-width: 100%;
     height: auto;
 }
-.logo-img{
+
+.logo-img {
     max-width: 200px;
 }
+
 ul,
 ol {
     list-style-type: none;
@@ -148,11 +150,11 @@ h6 {
     color: var(--dark-text);
 }
 
-.text-white{
+.text-white {
     color: var(--white);
 }
 
-.spacer-t{
+.spacer-t {
     padding-top: var(--spacing-top);
 }
 
@@ -164,7 +166,8 @@ h6 {
 }
 
 .menubar a.nav-link {
-    color: var(--grayscale-color-600) !important; /* #4E7A9B */
+    color: var(--grayscale-color-600) !important;
+    /* #4E7A9B */
     font-weight: 500;
     padding: 0.5rem 1rem !important;
     transition: all 0.3s ease;
@@ -175,11 +178,13 @@ h6 {
 
 .menubar a.nav-link:hover,
 .menubar a.nav-link:focus {
-    color: var(--primary-color-700) !important; /* #006CBE */
+    color: var(--primary-color-700) !important;
+    /* #006CBE */
 }
 
 .menubar a.nav-link.active {
-    color: var(--primary-color-800) !important; /* #005493 */
+    color: var(--primary-color-800) !important;
+    /* #005493 */
     font-weight: 800;
 }
 
@@ -203,11 +208,11 @@ h6 {
         border-radius: 4px;
         margin: 0.25rem 0;
     }
-    
+
     .menubar a.nav-link.active::after {
         display: none;
     }
-    
+
     .menubar a.nav-link.active {
         background-color: rgba(0, 84, 147, 0.05);
     }
@@ -248,7 +253,8 @@ h6 {
 .searchbox .form-select:focus {
     box-shadow: none;
 }
-.theme-btn-outline{
+
+.theme-btn-outline {
     background-color: transparent;
     color: var(--primary-color-600);
     padding: 10px 30px;
@@ -262,7 +268,8 @@ h6 {
     padding: 40px;
 }
 
-.head_sec h1 span, .head_sec h2 span {
+.head_sec h1 span,
+.head_sec h2 span {
     color: var(--primary-color-500);
 }
 
@@ -272,7 +279,7 @@ h6 {
 }
 
 .banner_btn {
-    padding: 12px 30px;
+    padding: 10px 30px;
     background-color: var(--primary-color-600);
     font-size: 20px;
     border: 0;
@@ -331,118 +338,132 @@ h6 {
 }
 
 /* -------------------- App Download Section CSS ------------------------ */
-.app-sec-bg{
+.app-sec-bg {
     background-color: var(--secondary-color-900);
 }
-.app-download-box{
+
+.app-download-box {
     padding: 60px 40px 40px 40px;
 }
-.app-download-box img{
+
+.app-download-box img {
     max-width: 130px;
 }
-@media screen and (min-width: 991.98px){
 
-    .app-download-img-div{
+@media screen and (min-width: 991.98px) {
+
+    .app-download-img-div {
         position: absolute;
-        bottom: 0;       
+        bottom: 0;
     }
 }
 
 /* testimonial section CSS */
-.testimonial-bg{
+.testimonial-bg {
     background-image: url(../assets/testimonial-bg.png);
     background-repeat: no-repeat;
     background-size: auto 100%;
 }
-.sec_head span{
+
+.sec_head span {
     text-transform: uppercase;
     color: var(--primary-color);
     font-weight: 500;
 }
-.btn-next,.btn-prev{
-    position: absolute;
-    bottom: 0;
-    right: -120px;
-}
-.btn-prev{
-    right: -60px;
+.btn-next,
+    .btn-prev{
+        display: none !important;
+    }
+@media screen and (min-width: 768px) {
+
+    .btn-next,
+    .btn-prev {
+        position: absolute;
+        bottom: 0;
+        right: -120px;
+        display: block !important;
+    }
+
+    .btn-prev {
+        right: -60px;
+    }
 }
 
 /* Login/Signup Button Styles */
 .login-signup-btn {
-  display: inline-block;
-  padding: 0.5rem 1.25rem;
-  border: 1px solid var(--primary-color-600);
-  border-radius: 6px;
-  color: var(--primary-color-600);
-  font-weight: 500;
-  transition: all 0.3s ease;
-  text-decoration: none;
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--primary-color-600);
+    border-radius: 6px;
+    color: var(--primary-color-600);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
 }
 
 .login-signup-btn:hover {
-  background-color: rgba(0, 121, 213, 0.212);
-  color: var(--primary-color-600);
-  border-color: var(--primary-color-600);
+    background-color: rgba(0, 121, 213, 0.212);
+    color: var(--primary-color-600);
+    border-color: var(--primary-color-600);
 }
 
 /* Dropdown Styles */
 .navbar .dropdown-toggle::after {
-  display: none;
+    display: none;
 }
 
 .navbar .dropdown-menu {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  min-width: 200px;
-  margin-top: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    margin-top: 0.5rem;
 }
 
 /* Make dropdown full width on mobile */
 @media (max-width: 991.98px) {
-  .navbar .dropdown-menu {
-    width: 100%;
-    border: none;
-    box-shadow: none;
-    padding: 0;
-    margin: 0.5rem 0;
-  }
-  
-  .navbar .dropdown-item {
-    padding: 0.75rem 1.5rem;
-    border-radius: 0;
-  }
-  
-  .login-signup-btn {
-    display: block;
-    /* margin: 0.5rem 1rem; */
-    text-align: left;
-    padding: 0.5rem 1rem !important;
-    border: 1px solid var(--primary-color-600) !important;
-  }
-  
-  .navbar .dropdown.show .dropdown-menu {
-    display: block;
-    position: static;
-    float: none;
-  }
+    .navbar .dropdown-menu {
+        width: 100%;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        margin: 0.5rem 0;
+    }
+
+    .navbar .dropdown-item {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0;
+    }
+
+    .login-signup-btn {
+        display: block;
+        /* margin: 0.5rem 1rem; */
+        text-align: left;
+        padding: 0.5rem 1rem !important;
+        border: 1px solid var(--primary-color-600) !important;
+    }
+
+    .navbar .dropdown.show .dropdown-menu {
+        display: block;
+        position: static;
+        float: none;
+    }
 }
 
 /* Improve dropdown toggle button on mobile */
 .navbar .dropdown-toggle {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 /* Ensure dropdown items are properly spaced */
 .dropdown-item {
-  padding: 0.5rem 1.5rem;
-  color: var(--grayscale-color-800);
-  transition: all 0.2s ease;
+    padding: 0.5rem 1.5rem;
+    color: var(--grayscale-color-800);
+    transition: all 0.2s ease;
 }
 
 .dropdown-item:hover,
 .dropdown-item:focus {
-  background-color: var(--grayscale-color-50);
-  color: var(--primary-color-600);
+    background-color: var(--grayscale-color-50);
+    color: var(--primary-color-600);
 }
 
 /* Footer Styles */
@@ -608,7 +629,8 @@ h6 {
 .footer-legal span {
     color: rgba(255, 255, 255, 0.3);
 }
-.text-sky-500{
+
+.text-sky-500 {
     color: var(--primary-color-500);
 }
 
@@ -617,11 +639,13 @@ h6 {
     .footer-top {
         padding: 50px 0 20px;
     }
-    
-    .footer-about, .footer-links, .footer-contact {
+
+    .footer-about,
+    .footer-links,
+    .footer-contact {
         margin-bottom: 30px;
     }
-    
+
     .footer h4 {
         margin-bottom: 15px;
     }
@@ -633,7 +657,7 @@ h6 {
         text-align: center;
         gap: 10px;
     }
-    
+
     .footer-legal {
         margin-top: 10px;
     }
@@ -641,8 +665,15 @@ h6 {
 
 /* Animation for Social Icons */
 @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
 }
 
 .social-icon:hover {
@@ -668,22 +699,26 @@ h6 {
 }
 
 /* doctor list section css */
-.doctor_card{
+.doctor_card {
     transition: .3s ease-in-out;
 }
-.doctor_card:hover{
+
+.doctor_card:hover {
     background-color: var(--grayscale-color-50);
 }
-.doctor_card:hover .btn{
+
+.doctor_card:hover .btn {
     background-color: var(--white);
 }
-.doctor_card img{
+
+.doctor_card img {
     max-height: 200px;
     width: 200px;
     max-width: 200px;
     object-fit: cover;
 }
-.doctor_img img{
+
+.doctor_img img {
     height: 200px;
     width: 200px;
     max-width: 200px;
@@ -691,6 +726,7 @@ h6 {
     object-fit: cover;
     margin: auto;
 }
+
 /* ======================== DOCTOR PROFILE SECTION CSS ======================== */
 
 /* Doctor Profile Main Container */
@@ -1185,58 +1221,59 @@ h6 {
     .doctor-profile-section {
         padding: 1rem 0;
     }
-    
+
     .doctor-avatar {
         width: 100px;
         height: 100px;
     }
-    
+
     .doctor-name {
         font-size: 1.5rem;
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
     }
-    
+
     .appointment-card {
         position: static;
         margin-top: 2rem;
     }
-    
+
     .date-slots {
         justify-content: center;
     }
-    
+
     .date-slot {
         min-width: 70px;
     }
-    
+
     .doctor-profile-tabs .nav-link {
         padding: 0.75rem 1rem;
         font-size: 0.9rem;
     }
-    
+
     .doctor-profile-tabs .tab-content {
         padding: 1.5rem;
     }
 }
 
 @media (max-width: 576px) {
+
     .doctor-profile-card,
     .appointment-card {
         border-radius: 15px;
         margin: 0 0.5rem;
     }
-    
+
     .doctor-name {
         font-size: 1.3rem;
     }
-    
+
     .book-appointment-btn {
         padding: 0.875rem 1.5rem;
         font-size: 1rem;
     }
-    
+
     .date-badge {
         padding: 0.4rem 0.6rem;
         font-size: 0.75rem;
@@ -1250,6 +1287,7 @@ h6 {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);

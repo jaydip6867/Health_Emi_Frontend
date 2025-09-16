@@ -86,10 +86,10 @@ const Testimonial = () => {
     return (
         <>
             <Container>
-                <Row className="testimonial-bg py-5 radius-20 align-items-center">
+                <Row className="testimonial-bg py-5 radius-20 g-4 align-items-center">
 
                     {/* Testimonials Slider */}
-                    <Col md={8}>
+                    <Col md={8} className=''>
                         <Slider {...settings}>
                             {testimonials.map(({ id, name, title, image, quote }) => (
                                 <div key={id}>
@@ -123,7 +123,7 @@ const Testimonial = () => {
                     </Col>
 
                     {/* Title and Controls */}
-                    <Col md={4} className="mb-4 mb-md-0 pe-md-5">
+                    <Col md={4} className="mb-4 mb-md-0 pe-md-5 order-first order-md-last">
                         <div className='sec_head'>
                             <span className='fs-6'>Testimonial</span>
                             <p className='h2'>Client’s Success <br />Stories</p>
