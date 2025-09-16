@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DoctorSidebar from "./DoctorSidebar";
 import DoctorNav from "./DoctorNav";
-import { Button, Col, Container, Form, Row, Card } from "react-bootstrap";
+import { Button, Col, Container, Form, Row, Card, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Loader from "../Loader";
 import axios from "axios";
@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { Country, State, City } from "country-state-city";
 import CryptoJS from "crypto-js";
+import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
 
 const DoctorProfile = () => {
   const SECRET_KEY = "health-emi";
@@ -29,9 +30,48 @@ const DoctorProfile = () => {
   const [selectedCountryCode, setSelectedCountryCode] = useState("");
   const [selectedStateCode, setSelectedStateCode] = useState("");
 
+  // Hospital edit modal state
+  const [showEditHospitalModal, setShowEditHospitalModal] = useState(false);
+  const [editingHospitalIndex, setEditingHospitalIndex] = useState(null);
+  const [editHospital, setEditHospital] = useState({
+    name: "",
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+    pincode: ""
+  });
+
+  // Add hospital modal state
+  const [showAddHospitalModal, setShowAddHospitalModal] = useState(false);
+  const [newHospital, setNewHospital] = useState({
+    name: "",
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+    pincode: ""
+  });
+
+  // Add hospital dropdowns state
+  const [addHospitalCountries, setAddHospitalCountries] = useState([]);
+  const [addHospitalStates, setAddHospitalStates] = useState([]);
+  const [addHospitalCities, setAddHospitalCities] = useState([]);
+  const [selectedAddHospitalCountryCode, setSelectedAddHospitalCountryCode] = useState("");
+  const [selectedAddHospitalStateCode, setSelectedAddHospitalStateCode] = useState("");
+
+  // Hospital edit dropdowns state
+  const [hospitalCountries, setHospitalCountries] = useState([]);
+  const [hospitalStates, setHospitalStates] = useState([]);
+  const [hospitalCities, setHospitalCities] = useState([]);
+  const [selectedHospitalCountryCode, setSelectedHospitalCountryCode] = useState("");
+  const [selectedHospitalStateCode, setSelectedHospitalStateCode] = useState("");
+
   // Fetch all countries when component mounts
   useEffect(() => {
     setCountries(Country.getAllCountries());
+    setHospitalCountries(Country.getAllCountries());
+    setAddHospitalCountries(Country.getAllCountries());
   }, []);
 
   // Cleanup preview URL on component unmount
@@ -94,6 +134,293 @@ const DoctorProfile = () => {
     // console.log(sel_state[0].name)
   };
 
+  // Hospital edit handlers
+  const handleEditHospital = (index) => {
+    const hospital = profile.hospitals[index];
+    setEditingHospitalIndex(index);
+    setEditHospital({
+      name: hospital.name || "",
+      address: hospital.address || "",
+      city: hospital.city || "",
+      state: hospital.state || "",
+      country: hospital.country || "",
+      pincode: hospital.pincode || ""
+    });
+
+    // Find and set country code
+    const country = hospitalCountries.find(c => c.name === hospital.country);
+    if (country) {
+      setSelectedHospitalCountryCode(country.isoCode);
+      const filteredStates = State.getStatesOfCountry(country.isoCode);
+      setHospitalStates(filteredStates);
+
+      // Find and set state code
+      const state = filteredStates.find(s => s.name === hospital.state);
+      if (state) {
+        setSelectedHospitalStateCode(state.isoCode);
+        const filteredCities = City.getCitiesOfState(country.isoCode, state.isoCode);
+        setHospitalCities(filteredCities);
+      }
+    }
+
+    setShowEditHospitalModal(true);
+  };
+
+  const handleHospitalCountryChange = (e) => {
+    const countryCode = e.target.value;
+    setSelectedHospitalCountryCode(countryCode);
+
+    if (countryCode) {
+      const sel_country = hospitalCountries.find(country => country.isoCode === countryCode);
+      const filteredStates = State.getStatesOfCountry(countryCode);
+
+      setHospitalStates(filteredStates);
+      setHospitalCities([]);
+      setSelectedHospitalStateCode("");
+
+      setEditHospital({
+        ...editHospital,
+        country: sel_country.name,
+        state: "",
+        city: ""
+      });
+    } else {
+      setHospitalStates([]);
+      setHospitalCities([]);
+      setSelectedHospitalStateCode("");
+      setEditHospital({
+        ...editHospital,
+        country: "",
+        state: "",
+        city: ""
+      });
+    }
+  };
+
+  const handleHospitalStateChange = (e) => {
+    const stateCode = e.target.value;
+    setSelectedHospitalStateCode(stateCode);
+
+    if (stateCode) {
+      const sel_state = hospitalStates.find(state => state.isoCode === stateCode);
+      const filteredCities = City.getCitiesOfState(selectedHospitalCountryCode, stateCode);
+
+      setHospitalCities(filteredCities);
+
+      setEditHospital({
+        ...editHospital,
+        state: sel_state.name,
+        city: ""
+      });
+    } else {
+      setHospitalCities([]);
+      setEditHospital({
+        ...editHospital,
+        state: "",
+        city: ""
+      });
+    }
+  };
+
+  const handleHospitalCityChange = (e) => {
+    const { name, value } = e.target;
+    setEditHospital({
+      ...editHospital,
+      [name]: value,
+    });
+  };
+
+  const handleEditHospitalChange = (e) => {
+    const { name, value } = e.target;
+    setEditHospital({
+      ...editHospital,
+      [name]: value,
+    });
+  };
+
+  const saveHospitalEdit = () => {
+    if (!editHospital.name || !editHospital.address || !editHospital.city || !editHospital.state || !editHospital.country || !editHospital.pincode) {
+      toast.error("Please fill all hospital fields");
+      return;
+    }
+
+    const updatedHospitals = [...profile.hospitals];
+    updatedHospitals[editingHospitalIndex] = editHospital;
+
+    setprofile({
+      ...profile,
+      hospitals: updatedHospitals
+    });
+
+    // Reset modal state
+    setShowEditHospitalModal(false);
+    setEditingHospitalIndex(null);
+    setEditHospital({
+      name: "",
+      address: "",
+      city: "",
+      state: "",
+      country: "",
+      pincode: ""
+    });
+    setSelectedHospitalCountryCode("");
+    setSelectedHospitalStateCode("");
+    setHospitalStates([]);
+    setHospitalCities([]);
+
+    toast.success("Hospital information updated successfully!");
+  };
+
+  const closeEditModal = () => {
+    setShowEditHospitalModal(false);
+    setEditingHospitalIndex(null);
+    setEditHospital({
+      name: "",
+      address: "",
+      city: "",
+      state: "",
+      country: "",
+      pincode: ""
+    });
+    setSelectedHospitalCountryCode("");
+    setSelectedHospitalStateCode("");
+    setHospitalStates([]);
+    setHospitalCities([]);
+  };
+
+  // Add hospital handlers
+  const handleAddHospital = () => {
+    setShowAddHospitalModal(true);
+  };
+
+  const handleAddHospitalCountryChange = (e) => {
+    const countryCode = e.target.value;
+    setSelectedAddHospitalCountryCode(countryCode);
+
+    if (countryCode) {
+      const sel_country = addHospitalCountries.find(country => country.isoCode === countryCode);
+      const filteredStates = State.getStatesOfCountry(countryCode);
+
+      setAddHospitalStates(filteredStates);
+      setAddHospitalCities([]);
+      setSelectedAddHospitalStateCode("");
+
+      setNewHospital({
+        ...newHospital,
+        country: sel_country.name,
+        state: "",
+        city: ""
+      });
+    } else {
+      setAddHospitalStates([]);
+      setAddHospitalCities([]);
+      setSelectedAddHospitalStateCode("");
+      setNewHospital({
+        ...newHospital,
+        country: "",
+        state: "",
+        city: ""
+      });
+    }
+  };
+
+  const handleAddHospitalStateChange = (e) => {
+    const stateCode = e.target.value;
+    setSelectedAddHospitalStateCode(stateCode);
+
+    if (stateCode) {
+      const sel_state = addHospitalStates.find(state => state.isoCode === stateCode);
+      const filteredCities = City.getCitiesOfState(selectedAddHospitalCountryCode, stateCode);
+
+      setAddHospitalCities(filteredCities);
+
+      setNewHospital({
+        ...newHospital,
+        state: sel_state.name,
+        city: ""
+      });
+    } else {
+      setAddHospitalCities([]);
+      setNewHospital({
+        ...newHospital,
+        state: "",
+        city: ""
+      });
+    }
+  };
+
+  const handleAddHospitalCityChange = (e) => {
+    const { name, value } = e.target;
+    setNewHospital({
+      ...newHospital,
+      [name]: value,
+    });
+  };
+
+  const handleNewHospitalChange = (e) => {
+    const { name, value } = e.target;
+    setNewHospital({
+      ...newHospital,
+      [name]: value,
+    });
+  };
+
+  const saveNewHospital = () => {
+    if (!newHospital.name || !newHospital.address || !newHospital.city || !newHospital.state || !newHospital.country || !newHospital.pincode) {
+      toast.error("Please fill all hospital fields");
+      return;
+    }
+
+    const updatedHospitals = profile.hospitals ? [...profile.hospitals, newHospital] : [newHospital];
+
+    setprofile({
+      ...profile,
+      hospitals: updatedHospitals
+    });
+
+    // Reset modal state
+    closeAddModal();
+    toast.success("Hospital added successfully!");
+  };
+
+  const closeAddModal = () => {
+    setShowAddHospitalModal(false);
+    setNewHospital({
+      name: "",
+      address: "",
+      city: "",
+      state: "",
+      country: "",
+      pincode: ""
+    });
+    setSelectedAddHospitalCountryCode("");
+    setSelectedAddHospitalStateCode("");
+    setAddHospitalStates([]);
+    setAddHospitalCities([]);
+  };
+
+  // Remove hospital handler
+  const handleRemoveHospital = (index) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to remove this hospital affiliation?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, remove it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedHospitals = profile.hospitals.filter((_, i) => i !== index);
+        setprofile({
+          ...profile,
+          hospitals: updatedHospitals
+        });
+        toast.success('Hospital removed successfully!');
+      }
+    });
+  };
+
   const [doctor, setdoctor] = useState(null);
   const [token, settoken] = useState(null);
 
@@ -134,7 +461,7 @@ const DoctorProfile = () => {
           ...res.data.Data,
           oldProfilePic: res.data.Data.profile_pic,
         });
-       
+
       })
       .catch(function (error) {
         // console.log(error);
@@ -256,7 +583,7 @@ const DoctorProfile = () => {
             await axios({
               method: "post",
               url: "https://healtheasy-o25g.onrender.com/user/upload/removeimage",
-              headers: { 
+              headers: {
                 Authorization: token,
                 "Content-Type": "application/json"
               },
@@ -351,8 +678,8 @@ const DoctorProfile = () => {
   const isPdf = (url = "") => {
     if (!url || typeof url !== 'string') return false;
     // Check for PDF extension or Cloudinary raw upload path
-    return url.toLowerCase().endsWith('.pdf') || 
-           url.includes('/raw/upload/');
+    return url.toLowerCase().endsWith('.pdf') ||
+      url.includes('/raw/upload/');
   };
 
   return (
@@ -634,10 +961,21 @@ const DoctorProfile = () => {
                   {/* Hospital Information Section */}
                   <Card className="mb-4 border-0 shadow-sm">
                     <Card.Header className="bg-light border-bottom">
-                      <h5 className="mb-0 text-success">
-                        <i className="fas fa-hospital me-2"></i>
-                        Hospital Affiliations
-                      </h5>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <h5 className="mb-0 text-success">
+                          <i className="fas fa-hospital me-2"></i>
+                          Hospital Affiliations
+                        </h5>
+                        <Button
+                          variant="success"
+                          size="sm"
+                          onClick={handleAddHospital}
+                          disabled={IsDisable}
+                          className="d-flex align-items-center"
+                        >
+                          Add Hospital
+                        </Button>
+                      </div>
                     </Card.Header>
                     <Card.Body className="p-4">
                       <Row className="g-4">
@@ -651,13 +989,35 @@ const DoctorProfile = () => {
                                       <i className="fas fa-hospital-alt fa-2x"></i>
                                     </div>
                                     <div className="flex-grow-1">
-                                      <h6 className="mb-1 fw-bold text-primary">
-                                        {hospital.name}
-                                      </h6>
+                                      <div className="d-flex justify-content-between align-items-start">
+                                        <h6 className="mb-1 fw-bold text-primary">
+                                          {hospital.name}
+                                        </h6>
+                                        <div className="d-flex gap-1">
+                                          <Button
+                                            variant="outline-secondary"
+                                            size="sm"
+                                            disabled={IsDisable}
+                                            onClick={() => handleEditHospital(index)}
+                                            title="Edit Hospital"
+                                          >
+                                            <FaRegPenToSquare />
+                                          </Button>
+                                          <Button
+                                            variant="outline-danger"
+                                            size="sm"
+                                            disabled={IsDisable}
+                                            onClick={() => handleRemoveHospital(index)}
+                                            title="Remove Hospital"
+                                          >
+                                            <FaRegTrashCan />
+                                          </Button>
+                                        </div>
+                                      </div>
                                       <div className="text-muted small">
                                         <div className="mb-1">
                                           <i className="fas fa-map-marker-alt me-1"></i>
-                                          {hospital.address}
+                                          {hospital.address} , {hospital.city} , {hospital.state} , {hospital.country}, {hospital.pincode}.
                                         </div>
                                       </div>
                                     </div>
@@ -687,7 +1047,7 @@ const DoctorProfile = () => {
                     </Card.Header>
                     <Card.Body className="p-4">
                       <Row className="g-3">
-                        <Col sm={12} lg={4}>
+                        <Col sm={12} md={4} lg={3}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">
                               Profile Picture
@@ -779,74 +1139,15 @@ const DoctorProfile = () => {
                             )}
                           </Form.Group>
                         </Col>
-                        <Col md={12}>
+                        <Col sm={12} md={4} lg={3}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">
-                              Identity Proof (Aadhar)
-                            </Form.Label>
-                            {profile?.identityproof?.length > 0 ? (
-                              <div className="row g-3">
-                                {profile.identityproof.map((doc, index) => (
-                                  <div key={index} className="col-4">
-                                    <div className="border rounded p-3 bg-light">
-                                      <div className="d-flex align-items-center justify-content-between mb-3">
-                                        <div className="d-flex align-items-center">
-                                          <i className="fas fa-file-alt text-primary me-2 fs-5"></i>
-                                          <span className="fw-medium">
-                                            Document {index + 1}
-                                          </span>
-                                        </div>
-                                        <a 
-                                          href={doc} 
-                                          target="_blank" 
-                                          rel="noopener noreferrer"
-                                          className="btn btn-sm btn-outline-primary"
-                                        >
-                                          <i className="fas fa-external-link-alt me-1"></i> Open
-                                        </a>
-                                      </div>
-
-                                      <div className="text-center">
-                                        {isPdf(doc) ? (
-                                          <div style={{ height: '200px' }}>
-                                            <iframe 
-                                              src={`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(doc)}`}
-                                              className="w-100 h-100 border-0"
-                                              frameBorder="0"
-                                              title={`Document ${index + 1}`}
-                                            />
-                                          </div>
-                                        ) : (
-                                          <div className="text-center">
-                                            <img 
-                                              src={doc} 
-                                              alt={`Document ${index + 1}`}
-                                              className="img-fluid rounded border"
-                                              style={{ maxHeight: '200px', width: 'auto' }}
-                                            />
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <div className="text-muted p-3 border rounded bg-light">
-                                No identity proof documents uploaded
-                              </div>
-                            )}
-                          </Form.Group>
-                        </Col>
-                        <Col md={12}>
-                          <Form.Group>
-                            <Form.Label className="fw-semibold">
-                            Certificate Proof
+                              Certificate Proof
                             </Form.Label>
                             {profile?.certificateproof?.length > 0 ? (
                               <div className="row g-3">
                                 {profile.certificateproof.map((doc, index) => (
-                                  <div key={index} className="col-4">
+                                  <div key={index} className="col">
                                     <div className="border rounded p-3 bg-light">
                                       <div className="d-flex align-items-center justify-content-between mb-3">
                                         <div className="d-flex align-items-center">
@@ -855,9 +1156,9 @@ const DoctorProfile = () => {
                                             Document {index + 1}
                                           </span>
                                         </div>
-                                        <a 
-                                          href={doc} 
-                                          target="_blank" 
+                                        <a
+                                          href={doc}
+                                          target="_blank"
                                           rel="noopener noreferrer"
                                           className="btn btn-sm btn-outline-primary"
                                         >
@@ -868,7 +1169,7 @@ const DoctorProfile = () => {
                                       <div className="text-center">
                                         {isPdf(doc) ? (
                                           <div style={{ height: '200px' }}>
-                                            <iframe 
+                                            <iframe
                                               src={`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(doc)}`}
                                               className="w-100 h-100 border-0"
                                               frameBorder="0"
@@ -877,8 +1178,8 @@ const DoctorProfile = () => {
                                           </div>
                                         ) : (
                                           <div className="text-center">
-                                            <img 
-                                              src={doc} 
+                                            <img
+                                              src={doc}
                                               alt={`Document ${index + 1}`}
                                               className="img-fluid rounded border"
                                               style={{ maxHeight: '200px', width: 'auto' }}
@@ -897,6 +1198,66 @@ const DoctorProfile = () => {
                             )}
                           </Form.Group>
                         </Col>
+                        <Col sm={12} md={4} lg={6}>
+                          <Form.Group>
+                            <Form.Label className="fw-semibold">
+                              Identity Proof (Aadhar)
+                            </Form.Label>
+                            {profile?.identityproof?.length > 0 ? (
+                              <div className="row g-3">
+                                {profile.identityproof.map((doc, index) => (
+                                  <div key={index} className="col-6">
+                                    <div className="border rounded p-3 bg-light">
+                                      <div className="d-flex align-items-center justify-content-between mb-3">
+                                        <div className="d-flex align-items-center">
+                                          <i className="fas fa-file-alt text-primary me-2 fs-5"></i>
+                                          <span className="fw-medium">
+                                            Document {index + 1}
+                                          </span>
+                                        </div>
+                                        <a
+                                          href={doc}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="btn btn-sm btn-outline-primary"
+                                        >
+                                          <i className="fas fa-external-link-alt me-1"></i> Open
+                                        </a>
+                                      </div>
+
+                                      <div className="text-center">
+                                        {isPdf(doc) ? (
+                                          <div style={{ height: '200px' }}>
+                                            <iframe
+                                              src={`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(doc)}`}
+                                              className="w-100 h-100 border-0"
+                                              frameBorder="0"
+                                              title={`Document ${index + 1}`}
+                                            />
+                                          </div>
+                                        ) : (
+                                          <div className="text-center">
+                                            <img
+                                              src={doc}
+                                              alt={`Document ${index + 1}`}
+                                              className="img-fluid rounded border"
+                                              style={{ maxHeight: '200px', width: 'auto' }}
+                                            />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="text-muted p-3 border rounded bg-light">
+                                No identity proof documents uploaded
+                              </div>
+                            )}
+                          </Form.Group>
+                        </Col>
+
                       </Row>
                     </Card.Body>
                   </Card>
@@ -1066,6 +1427,238 @@ const DoctorProfile = () => {
         </Row>
       </Container>
       {loading && <Loader />}
+
+      {/* Edit Hospital Modal */}
+      <Modal show={showEditHospitalModal} onHide={closeEditModal} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Hospital Information</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Row className="g-3">
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">Hospital Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    value={editHospital.name}
+                    onChange={handleEditHospitalChange}
+                    placeholder="Enter hospital name"
+                    size="sm"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">Address</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="address"
+                    value={editHospital.address}
+                    onChange={handleEditHospitalChange}
+                    placeholder="Enter hospital address"
+                    size="sm"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">Country</Form.Label>
+                  <Form.Select
+                    name="country"
+                    value={selectedHospitalCountryCode}
+                    onChange={handleHospitalCountryChange}
+                    size="sm"
+                  >
+                    <option value="">Select Country</option>
+                    {hospitalCountries.map((country) => (
+                      <option key={country.isoCode} value={country.isoCode}>
+                        {country.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">State</Form.Label>
+                  <Form.Select
+                    name="state"
+                    value={selectedHospitalStateCode}
+                    onChange={handleHospitalStateChange}
+                    disabled={!selectedHospitalCountryCode}
+                    size="sm"
+                  >
+                    <option value="">Select State</option>
+                    {hospitalStates.map((state) => (
+                      <option key={state.isoCode} value={state.isoCode}>
+                        {state.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">City</Form.Label>
+                  <Form.Select
+                    name="city"
+                    value={editHospital.city}
+                    onChange={handleHospitalCityChange}
+                    disabled={!selectedHospitalStateCode}
+                    size="sm"
+                  >
+                    <option value="">Select City</option>
+                    {hospitalCities.map((city) => (
+                      <option key={city.name} value={city.name}>
+                        {city.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">Pincode</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="pincode"
+                    value={editHospital.pincode}
+                    onChange={handleEditHospitalChange}
+                    placeholder="Enter pincode"
+                    size="sm"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeEditModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={saveHospitalEdit}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Add Hospital Modal */}
+      <Modal show={showAddHospitalModal} onHide={closeAddModal} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Hospital</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Row className="g-3">
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">Hospital Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    value={newHospital.name}
+                    onChange={handleNewHospitalChange}
+                    placeholder="Enter hospital name"
+                    size="sm"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">Address</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="address"
+                    value={newHospital.address}
+                    onChange={handleNewHospitalChange}
+                    placeholder="Enter hospital address"
+                    size="sm"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">Country</Form.Label>
+                  <Form.Select
+                    name="country"
+                    value={selectedAddHospitalCountryCode}
+                    onChange={handleAddHospitalCountryChange}
+                    size="sm"
+                  >
+                    <option value="">Select Country</option>
+                    {addHospitalCountries.map((country) => (
+                      <option key={country.isoCode} value={country.isoCode}>
+                        {country.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">State</Form.Label>
+                  <Form.Select
+                    name="state"
+                    value={selectedAddHospitalStateCode}
+                    onChange={handleAddHospitalStateChange}
+                    disabled={!selectedAddHospitalCountryCode}
+                    size="sm"
+                  >
+                    <option value="">Select State</option>
+                    {addHospitalStates.map((state) => (
+                      <option key={state.isoCode} value={state.isoCode}>
+                        {state.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">City</Form.Label>
+                  <Form.Select
+                    name="city"
+                    value={newHospital.city}
+                    onChange={handleAddHospitalCityChange}
+                    disabled={!selectedAddHospitalStateCode}
+                    size="sm"
+                  >
+                    <option value="">Select City</option>
+                    {addHospitalCities.map((city) => (
+                      <option key={city.name} value={city.name}>
+                        {city.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">Pincode</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="pincode"
+                    value={newHospital.pincode}
+                    onChange={handleNewHospitalChange}
+                    placeholder="Enter pincode"
+                    size="sm"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeAddModal}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={saveNewHospital}>
+            Add Hospital
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

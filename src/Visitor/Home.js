@@ -103,20 +103,6 @@ const Home = () => {
       {/* testimonial section */}
       <section className='spacer-t position-relative'>
         <Testimonial />
-        {/* <Container>
-          <div className='testimonial-bg py-5 radius-20'>
-            <Row className='align-items-center'>
-              <Col md={7}>
-              </Col>
-              <Col md={5}>
-                <div className='sec_head'>
-                  <span className='fs-6'>Testimonial</span>
-                  <p className='h2'>Client’s Success <br />Stories</p>
-                </div>
-              </Col>
-            </Row>
-          </div>
-        </Container> */}
       </section>
       {/* speciality section */}
       <section className='spacer-y'>
@@ -127,45 +113,52 @@ const Home = () => {
           </Row>
           <Row className='flex-nowrap overflow-x-auto'>
             <Col>
-              <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('./assets/gyanecology.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
-                <h6 className='mt-3'>gyanecology</h6>
+              <div className='card border-0 speciality_box_item text-center position-relative'>
+                <img src={require('./assets/gyanecology.png')} className='img-fluid' style={{maxWidth:'100px',maxHeight:'100px'}} alt='period' />
+                <h6 className='mt-3'>Women & Child Health</h6>
+                <Link to={`/surgery/${encodeURIComponent(btoa("68c9ae6e17381fc6ef23e469"))}`} className='stretched-link'></Link>
               </div>
             </Col>
             <Col>
-              <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('./assets/sexology.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+              <div className='card border-0 speciality_box_item text-center position-relative'>
+                <img src={require('./assets/sexology.png')} className='img-fluid' style={{maxWidth:'100px',maxHeight:'100px'}} alt='period' />
                 <h6 className='mt-3'>Sexology</h6>
+                <Link to={`/surgery/${encodeURIComponent(btoa("68c9ae6e17381fc6ef23e469"))}`} className='stretched-link'></Link>
               </div>
             </Col>
             <Col>
-              <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('./assets/general-physiciann.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+              <div className='card border-0 speciality_box_item text-center position-relative'>
+                <img src={require('./assets/general-physiciann.png')} className='img-fluid' style={{maxWidth:'100px',maxHeight:'100px'}} alt='period' />
                 <h6 className='mt-3'>general-physiciann</h6>
+                <Link to={`/surgery/${encodeURIComponent(btoa("68c9ae6e17381fc6ef23e469"))}`} className='stretched-link'></Link>
               </div>
             </Col>
             <Col>
-              <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('./assets/dermatology.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+              <div className='card border-0 speciality_box_item text-center position-relative'>
+                <img src={require('./assets/dermatology.png')} className='img-fluid' style={{maxWidth:'100px',maxHeight:'100px'}} alt='period' />
                 <h6 className='mt-3'>Dermatology</h6>
+                <Link to={`/surgery/${encodeURIComponent(btoa("68c9ae6e17381fc6ef23e469"))}`} className='stretched-link'></Link>
               </div>
             </Col>
             <Col>
-              <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('./assets/psychiatry.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+              <div className='card border-0 speciality_box_item text-center position-relative'>
+                <img src={require('./assets/psychiatry.png')} className='img-fluid' style={{maxWidth:'100px',maxHeight:'100px'}} alt='period' />
                 <h6 className='mt-3'>Psychiatry</h6>
+                <Link to={`/surgery/${encodeURIComponent(btoa("68c9ae6e17381fc6ef23e469"))}`} className='stretched-link'></Link>
               </div>
             </Col>
             <Col>
-              <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('./assets/urology.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+              <div className='card border-0 speciality_box_item text-center position-relative'>
+                <img src={require('./assets/urology.png')} className='img-fluid' style={{maxWidth:'100px',maxHeight:'100px'}} alt='period' />
                 <h6 className='mt-3'>Urology</h6>
+                <Link to={`/surgery/${encodeURIComponent(btoa("68c9ae6e17381fc6ef23e469"))}`} className='stretched-link'></Link>
               </div>
             </Col>
             <Col>
-              <div className='card border-0 speciality_box_item text-center'>
-                <img src={require('./assets/stomachdigestion.png')} className='img-fluid' style={{'max-width':'100px','max-height':'100px'}} alt='period' />
+              <div className='card border-0 speciality_box_item text-center position-relative'>
+                <img src={require('./assets/stomachdigestion.png')} className='img-fluid' style={{maxWidth:'100px',maxHeight:'100px'}} alt='period' />
                 <h6 className='mt-3'>Stomach & Digestion</h6>
+                <Link to={`/surgery/${encodeURIComponent(btoa("68c9ae6e17381fc6ef23e469"))}`} className='stretched-link'></Link>
               </div>
             </Col>
           </Row>

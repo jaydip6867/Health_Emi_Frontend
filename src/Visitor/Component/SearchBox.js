@@ -40,7 +40,7 @@ const SearchBox = () => {
                 "search": n
             }
         }).then((res) => {
-            // console.log('suggestions = ',res.data.Data)
+            console.log('suggestions = ',res.data.Data)
             setreclist(res.data.Data)
         }).catch(function (error) {
             console.log(error);

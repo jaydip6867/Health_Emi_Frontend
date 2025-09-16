@@ -4,19 +4,19 @@ import { PiStethoscopeBold } from "react-icons/pi"
 import { Link } from "react-router-dom"
 
 const DoctorListComponents = ({ details }) => {
-    console.log(details)
+    // console.log(details)
     return (
         <>
             <Card
                 text="secondary"
-                className="p-4 rounded-4 doctor_card"
+                className="p-4 my-3 rounded-4 doctor_card"
             >
                 <Row className="g-3">
                     <Col xs={12} md={2}>
                         <div style={{ Width: "100", height: "auto", borderRadius: "15px" }}>
                             <img
                                 src={details?.profile_pic} // Use a relevant doctor image URL or local path here
-                                alt="Dr. Jaydeep Thummar"
+                                alt={`Dr. ${details?.name}`}
                                 className="rounded-3 img-fluid"
                             />
                         </div>
@@ -24,15 +24,16 @@ const DoctorListComponents = ({ details }) => {
                     <Col xs={12} md={7}>
                         <Card.Body className="p-0">
                             <Card.Title>
-                                <h4 className="mb-1 text-dark">Dr. Jaydeep Thummar</h4>
+                                <h4 className="mb-1 text-dark">Dr. {details?.name}</h4>
                             </Card.Title>
                             <hr/>
                             <Card.Text className="mb-1 fs-6">
-                                <PiStethoscopeBold className="text-dark me-2" />Orthopedic Surgery
+                                <PiStethoscopeBold className="text-dark me-2" />
+                                {details?.specialty}
                             </Card.Text>
                             <Card.Text className="fs-7" style={{ lineHeight: 1.2 }}>
                                 <MdLocationOn className="text-dark me-2" />
-                                Sahara Darwaja, Station Road, Surat
+                                {details?.city}, {details?.state}, {details?.country}, {details?.pincode}
                             </Card.Text>
                         </Card.Body>
                     </Col>
@@ -45,7 +46,7 @@ const DoctorListComponents = ({ details }) => {
                             See More <span style={{ width: 30, height: 30 }} className="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white"><MdArrowOutward size={20} /></span>
                         </Button>
                     </Col>
-                    <Link to={`/doctorprofile/${encodeURIComponent(btoa(details._id))}`} className="text-body-primary text-decoration-none stretched-link"></Link>
+                    <Link to={`/doctorprofile/${encodeURIComponent(btoa(details._id))}`} className="m-0 stretched-link"></Link>
                 </Row>
             </Card>
         </>

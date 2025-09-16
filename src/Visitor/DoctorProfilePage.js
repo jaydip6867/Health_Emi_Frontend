@@ -13,6 +13,7 @@ import { BsStarFill, BsGeoAlt } from 'react-icons/bs'
 import { format } from 'date-fns';
 import Swal from 'sweetalert2'
 import DatePicker from 'react-datepicker'
+import { FaLocationDot } from 'react-icons/fa6'
 
 const DoctorProfilePage = () => {
   const SECRET_KEY = "health-emi";
@@ -359,16 +360,12 @@ const DoctorProfilePage = () => {
                       <hr />
                       <p className="text-dark mb-2">{doctor_profile.specialty} ({doctor_profile.qualification})</p>
                       <div className="d-flex align-items-center mb-2">
-                        <BsGeoAlt className="me-2 text-muted" />
+                        <FaLocationDot className="me-2 text-muted" />
                         <small className="text-muted">{doctor_profile.address || 'Address Not Available'}</small>
                       </div>
                       <div className="d-flex align-items-center mb-2">
                         <FaEnvelope className="me-2 text-muted" />
                         <small className="text-muted">{doctor_profile.email}</small>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <FaPhone className="me-2 text-muted" />
-                        <small className="text-muted">{doctor_profile.mobile}</small>
                       </div>
                     </Col>
                     <Col md={5}>
@@ -377,7 +374,6 @@ const DoctorProfilePage = () => {
                           <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
                             <div>
                               <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#d5E1EA', fontSize: '14px' }} >
-                                {/* <HiUsers className="text-dark" size={20} /> */}
                                 <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M12.1817 3.27246C8.84714 3.27246 6.13623 5.98337 6.13623 9.31792C6.13623 12.5888 8.69441 15.2361 12.029 15.3506C12.1308 15.3379 12.2326 15.3379 12.309 15.3506C12.3344 15.3506 12.3471 15.3506 12.3726 15.3506C12.3853 15.3506 12.3853 15.3506 12.398 15.3506C15.6562 15.2361 18.2144 12.5888 18.2271 9.31792C18.2271 5.98337 15.5162 3.27246 12.1817 3.27246Z" fill="#1C2A3A" />
                                   <path d="M18.6471 18.7364C15.0962 16.3691 9.30532 16.3691 5.72895 18.7364C4.11259 19.8182 3.22168 21.2818 3.22168 22.8473C3.22168 24.4128 4.11259 25.8637 5.71623 26.9328C7.49804 28.1291 9.83986 28.7273 12.1817 28.7273C14.5235 28.7273 16.8653 28.1291 18.6471 26.9328C20.2508 25.8509 21.1417 24.4 21.1417 22.8218C21.129 21.2564 20.2508 19.8055 18.6471 18.7364Z" fill="#1C2A3A" />
@@ -398,7 +394,6 @@ const DoctorProfilePage = () => {
                           <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
                             <div>
                               <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#E2E7F2', fontSize: '14px' }} >
-                                {/* <FaStethoscope className="text-white" size={20} /> */}
                                 <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M17.5143 8.36426H9.36882C9.03792 8.36426 8.71973 8.37699 8.41428 8.41517C4.99064 8.70789 3.27246 10.7315 3.27246 14.4606V19.5515C3.27246 24.6424 5.30882 25.6479 9.36882 25.6479H9.87792C10.1579 25.6479 10.527 25.8388 10.6925 26.0552L12.2197 28.0915C12.8943 28.9952 13.9888 28.9952 14.6634 28.0915L16.1906 26.0552C16.3816 25.8006 16.687 25.6479 17.0052 25.6479H17.5143C21.2434 25.6479 23.267 23.9424 23.5597 20.5061C23.5979 20.2006 23.6106 19.8824 23.6106 19.5515V14.4606C23.6106 10.4006 21.5743 8.36426 17.5143 8.36426ZM8.99973 18.5461C8.28701 18.5461 7.72701 17.9733 7.72701 17.2733C7.72701 16.5733 8.29973 16.0006 8.99973 16.0006C9.69973 16.0006 10.2725 16.5733 10.2725 17.2733C10.2725 17.9733 9.69973 18.5461 8.99973 18.5461ZM13.4416 18.5461C12.7288 18.5461 12.1688 17.9733 12.1688 17.2733C12.1688 16.5733 12.7416 16.0006 13.4416 16.0006C14.1416 16.0006 14.7143 16.5733 14.7143 17.2733C14.7143 17.9733 14.1543 18.5461 13.4416 18.5461ZM17.8961 18.5461C17.1834 18.5461 16.6234 17.9733 16.6234 17.2733C16.6234 16.5733 17.1961 16.0006 17.8961 16.0006C18.5961 16.0006 19.1688 16.5733 19.1688 17.2733C19.1688 17.9733 18.5961 18.5461 17.8961 18.5461Z" fill="#3F5FAB" />
                                   <path d="M28.7016 9.3698V14.4607C28.7016 17.0062 27.9126 18.7371 26.3344 19.6916C25.9526 19.9207 25.5071 19.6153 25.5071 19.1698L25.5198 14.4607C25.5198 9.3698 22.6053 6.45526 17.5144 6.45526L9.76346 6.46798C9.31801 6.46798 9.01255 6.02253 9.24164 5.64071C10.1962 4.06253 11.9271 3.27344 14.4598 3.27344H22.6053C26.6653 3.27344 28.7016 5.3098 28.7016 9.3698Z" fill="#3F5FAB" />
@@ -416,7 +411,6 @@ const DoctorProfilePage = () => {
                           <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
                             <div>
                               <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#D8F3F1', fontSize: '14px' }} >
-                                {/* <FaClock className="text-white" size={20} /> */}
                                 <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M15.9996 19.8189C20.7442 19.8189 24.5905 16.1151 24.5905 11.5462C24.5905 6.97726 20.7442 3.27344 15.9996 3.27344C11.255 3.27344 7.40869 6.97726 7.40869 11.5462C7.40869 16.1151 11.255 19.8189 15.9996 19.8189Z" fill="#12A79D" />
                                   <path d="M20.8234 20.5946C21.2434 20.3783 21.727 20.6965 21.727 21.1674V27.3401C21.727 28.4855 20.9252 29.0455 19.9325 28.5746L16.5216 26.9583C16.2288 26.831 15.7706 26.831 15.4779 26.9583L12.067 28.5746C11.0743 29.0328 10.2725 28.4728 10.2725 27.3274L10.2979 21.1674C10.2979 20.6965 10.7943 20.391 11.2016 20.5946C12.6397 21.3201 14.2688 21.7274 15.9997 21.7274C17.7306 21.7274 19.3725 21.3201 20.8234 20.5946Z" fill="#12A79D" />
@@ -434,7 +428,6 @@ const DoctorProfilePage = () => {
                           <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
                             <div>
                               <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#F8EFE1', fontSize: '14px' }} >
-                                {/* <BsStarFill className="text-warning" size={20} /> */}
                                 <svg width="20" height="20" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M10.9326 18.4492C10.5956 18.4604 10.2642 18.5418 10.0117 18.6943L6.98242 20.4941C4.81503 21.7743 3.49702 20.8241 4.06738 18.3652L4.79004 15.2471C4.904 14.6388 4.66325 13.8147 4.24512 13.3965L1.72266 10.874C0.23975 9.39108 0.721132 7.89591 2.78711 7.54102L6.01953 7.00879C6.56431 6.91993 7.21024 6.43839 7.45117 5.94434L9.23828 2.36914C9.70894 1.44019 10.3185 0.960228 10.9326 0.928711V18.4492Z" fill="#FEB052" />
                                   <path d="M10.9326 0.930664C11.5918 0.896922 12.2565 1.38003 12.7617 2.38379L14.5488 5.95801C14.7896 6.45233 15.4364 6.92106 15.9814 7.02246L19.2139 7.55566C21.2794 7.89803 21.761 9.39322 20.2783 10.8887L17.7559 13.4111C17.3376 13.8294 17.0969 14.6533 17.2363 15.249L17.959 18.3672C18.5291 20.8258 17.2103 21.7889 15.043 20.4961L12.0137 18.6963C11.7212 18.5196 11.3231 18.4382 10.9326 18.4512V0.930664Z" fill="#FEB052" />
@@ -546,7 +539,6 @@ const DoctorProfilePage = () => {
                     <div className="flex-grow-1">
                       <div className="d-flex align-items-center mb-2">
                         <h6 className="fw-bold mb-0 me-2">Bharti patel</h6>
-                        <span className="badge bg-success text-white small">Verified</span>
                       </div>
                       <div className="d-flex align-items-center mb-2">
                         {[...Array(5)].map((_, i) => (

@@ -2,15 +2,7 @@ import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import {
-  Col,
-  Container,
-  Row,
-  Button,
-  Form,
-  InputGroup,
-  Modal,
-} from "react-bootstrap";
+import { Col, Container, Row, Button, Form, Modal } from "react-bootstrap";
 import "./css/doctor.css";
 import { Link, useNavigate } from "react-router-dom";
 import DoctorTestimonial from "./DoctorTestimonial";
@@ -37,6 +29,7 @@ const DoctorRegister = () => {
   // Fetch all countries when component mounts
   useEffect(() => {
     setCountries(Country.getAllCountries());
+    setHospitalCountries(Country.getAllCountries());
 
     // if doctor verify but not profile done
     docprofilenotdone();
@@ -495,8 +488,8 @@ const DoctorRegister = () => {
       console.error("Error:", error);
       toast.error(
         error.response?.data?.Message ||
-          error.message ||
-          "An error occurred while saving the profile"
+        error.message ||
+        "An error occurred while saving the profile"
       );
     } finally {
       setloading(false);
@@ -742,9 +735,16 @@ const DoctorRegister = () => {
   };
 
   // add multiple hospital in profile form
-  const hospital_obj = { name: "", address: "" };
+  const hospital_obj = { name: "", address: "", city: "", state: "", country: "", pincode: "" };
   const [hospital_st, sethospital] = useState(hospital_obj);
   const [hospitallist, sethospitallist] = useState([]);
+
+  // Hospital location state management
+  const [hospitalCountries, setHospitalCountries] = useState([]);
+  const [hospitalStates, setHospitalStates] = useState([]);
+  const [hospitalCities, setHospitalCities] = useState([]);
+  const [selectedHospitalCountryCode, setSelectedHospitalCountryCode] = useState("");
+  const [selectedHospitalStateCode, setSelectedHospitalStateCode] = useState("");
 
   // Handle input change
   const handlehospitalChange = (e) => {
@@ -755,13 +755,85 @@ const DoctorRegister = () => {
     });
   };
 
+  // Handle hospital country change
+  const handleHospitalCountryChange = (e) => {
+    const countryCode = e.target.value;
+    setSelectedHospitalCountryCode(countryCode);
+
+    if (countryCode) {
+      const sel_country = hospitalCountries.find(country => country.isoCode === countryCode);
+      const filteredStates = State.getStatesOfCountry(countryCode);
+
+      setHospitalStates(filteredStates);
+      setHospitalCities([]);
+      setSelectedHospitalStateCode("");
+
+      sethospital({
+        ...hospital_st,
+        country: sel_country.name,
+        state: "",
+        city: ""
+      });
+    } else {
+      setHospitalStates([]);
+      setHospitalCities([]);
+      setSelectedHospitalStateCode("");
+      sethospital({
+        ...hospital_st,
+        country: "",
+        state: "",
+        city: ""
+      });
+    }
+  };
+
+  // Handle hospital state change
+  const handleHospitalStateChange = (e) => {
+    const stateCode = e.target.value;
+    setSelectedHospitalStateCode(stateCode);
+
+    if (stateCode) {
+      const sel_state = hospitalStates.find(state => state.isoCode === stateCode);
+      const filteredCities = City.getCitiesOfState(selectedHospitalCountryCode, stateCode);
+
+      setHospitalCities(filteredCities);
+
+      sethospital({
+        ...hospital_st,
+        state: sel_state.name,
+        city: ""
+      });
+    } else {
+      setHospitalCities([]);
+      sethospital({
+        ...hospital_st,
+        state: "",
+        city: ""
+      });
+    }
+  };
+
+  // Handle hospital city change
+  const handleHospitalCityChange = (e) => {
+    const { name, value } = e.target;
+    sethospital({
+      ...hospital_st,
+      [name]: value,
+    });
+  };
+
   // Add hospital to list
   const addHospital = () => {
-    if (hospital_st.name.trim() && hospital_st.address.trim()) {
+    if (hospital_st.name.trim() && hospital_st.address.trim() && hospital_st.country.trim() && hospital_st.state.trim() && hospital_st.city.trim() && hospital_st.pincode.trim()) {
       sethospitallist([...hospitallist, hospital_st]);
       sethospital(hospital_obj); // reset input fields
+      // Reset dropdown selections
+      setSelectedHospitalCountryCode("");
+      setSelectedHospitalStateCode("");
+      setHospitalStates([]);
+      setHospitalCities([]);
     } else {
-      alert("Please enter both name and address");
+      alert("Please fill all hospital details: name, address, country, state, city, and pincode");
     }
   };
 
@@ -810,20 +882,20 @@ const DoctorRegister = () => {
       <Modal.Header closeButton>
         <Modal.Title>Terms and Conditions</Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{ 
-          maxHeight: '60vh', 
-          overflowY: 'auto',
-          overflowX: 'hidden',
+      <Modal.Body style={{
+        maxHeight: '60vh',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        wordWrap: 'break-word',
+        whiteSpace: 'pre-line',
+        padding: '1rem'
+      }}>
+        <div style={{
+          maxWidth: '100%',
+          overflowWrap: 'break-word',
           wordWrap: 'break-word',
-          whiteSpace: 'pre-line',
-          padding: '1rem'
-        }}>
-        <div style={{ 
-            maxWidth: '100%',
-            overflowWrap: 'break-word',
-            wordWrap: 'break-word',
-            hyphens: 'auto'
-          }}>{termsContent}</div>
+          hyphens: 'auto'
+        }}>{termsContent}</div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setShowTcModal(false)}>
@@ -863,9 +935,8 @@ const DoctorRegister = () => {
                     <Form.Control
                       type="text"
                       placeholder="Full Name"
-                      className={`frm_input ${
-                        validationErrors.name ? "is-invalid" : ""
-                      }`}
+                      className={`frm_input ${validationErrors.name ? "is-invalid" : ""
+                        }`}
                       name="name"
                       value={frmdoctor.name}
                       onChange={selfrmdata}
@@ -883,9 +954,8 @@ const DoctorRegister = () => {
                       type="email"
                       placeholder="Email"
                       autoComplete="off"
-                      className={`frm_input ${
-                        validationErrors.email ? "is-invalid" : ""
-                      }`}
+                      className={`frm_input ${validationErrors.email ? "is-invalid" : ""
+                        }`}
                       name="email"
                       value={frmdoctor.email}
                       onChange={selfrmdata}
@@ -901,9 +971,8 @@ const DoctorRegister = () => {
                     <Form.Label>Mobile No.</Form.Label>
                     <Form.Control
                       placeholder="Mobile No."
-                      className={`frm_input ${
-                        validationErrors.mobile ? "is-invalid" : ""
-                      }`}
+                      className={`frm_input ${validationErrors.mobile ? "is-invalid" : ""
+                        }`}
                       name="mobile"
                       value={frmdoctor.mobile}
                       onChange={selfrmdata}
@@ -964,9 +1033,8 @@ const DoctorRegister = () => {
                     <Form.Label>Pincode</Form.Label>
                     <Form.Control
                       placeholder="Pincode"
-                      className={`frm_input ${
-                        validationErrors.pincode ? "is-invalid" : ""
-                      }`}
+                      className={`frm_input ${validationErrors.pincode ? "is-invalid" : ""
+                        }`}
                       name="pincode"
                       value={frmdoctor.pincode}
                       onChange={selfrmdata}
@@ -1069,9 +1137,8 @@ const DoctorRegister = () => {
                 >
                   {otp.length === 6
                     ? "Verify OTP"
-                    : `Enter ${6 - otp.length} more digit${
-                        6 - otp.length > 1 ? "s" : ""
-                      }`}
+                    : `Enter ${6 - otp.length} more digit${6 - otp.length > 1 ? "s" : ""
+                    }`}
                 </Button>
               </div>
             </Col>
@@ -1100,9 +1167,8 @@ const DoctorRegister = () => {
                         name="specialty"
                         value={s_type_name}
                         onChange={schange}
-                        className={`${
-                          profileValidationErrors.specialty ? "is-invalid" : ""
-                        }`}
+                        className={`${profileValidationErrors.specialty ? "is-invalid" : ""
+                          }`}
                       >
                         {/* <Form.Control type="text" placeholder="Ex:- Cardiology" className='frm_input' name="specialty" value={frmdocprofile.specialty} onChange={selfrmdata} /> */}
                         <option value={""}>Select Surgery Type</option>
@@ -1134,11 +1200,10 @@ const DoctorRegister = () => {
                         name="sub_specialty"
                         value={sub_type_name}
                         onChange={subchange}
-                        className={`${
-                          profileValidationErrors.sub_specialty
+                        className={`${profileValidationErrors.sub_specialty
                             ? "is-invalid"
                             : ""
-                        }`}
+                          }`}
                       >
                         <option value={""} selected disabled>
                           Doctor Category
@@ -1164,11 +1229,10 @@ const DoctorRegister = () => {
                       <Form.Label>Degree Registration No.</Form.Label>
                       <Form.Control
                         placeholder="Ex:- Dk4567"
-                        className={`frm_input ${
-                          profileValidationErrors.degree_registration_no
+                        className={`frm_input ${profileValidationErrors.degree_registration_no
                             ? "is-invalid"
                             : ""
-                        }`}
+                          }`}
                         name="degree_registration_no"
                         value={frmdocprofile.degree_registration_no}
                         onChange={selfrmdata}
@@ -1186,11 +1250,10 @@ const DoctorRegister = () => {
                       <Form.Label>Qualification</Form.Label>
                       <Form.Control
                         placeholder="Ex:- D.H.M.S, MD"
-                        className={`frm_input ${
-                          profileValidationErrors.qualification
+                        className={`frm_input ${profileValidationErrors.qualification
                             ? "is-invalid"
                             : ""
-                        }`}
+                          }`}
                         name="qualification"
                         value={frmdocprofile.qualification}
                         onChange={selfrmdata}
@@ -1207,9 +1270,8 @@ const DoctorRegister = () => {
                     <div className="position-relative">
                       <Form.Label>Experience</Form.Label>
                       <Form.Select
-                        className={`frm_input text-dark ${
-                          profileValidationErrors.experience ? "is-invalid" : ""
-                        }`}
+                        className={`frm_input text-dark ${profileValidationErrors.experience ? "is-invalid" : ""
+                          }`}
                         name="experience"
                         value={frmdocprofile.experience}
                         onChange={selfrmdata}
@@ -1233,43 +1295,6 @@ const DoctorRegister = () => {
                     </div>
                   </Form.Group>
 
-                  {/* <Form.Group controlId="Hospitalname" className='mb-3 col-6'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Hospital Name</Form.Label>
-                                            <Form.Control 
-                                                placeholder="Enter Hospital Name" 
-                                                className={`frm_input ${profileValidationErrors.hospital_name ? 'is-invalid' : ''}`} 
-                                                name="hospital_name" 
-                                                value={frmdocprofile.hospital_name} 
-                                                onChange={selfrmdata} 
-                                            />
-                                            {profileValidationErrors.hospital_name && (
-                                                <div className="invalid-feedback">
-                                                    {profileValidationErrors.hospital_name}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </Form.Group>
-
-                                    <Form.Group controlId="Hospitaladdress" className='mb-3 col-12'>
-                                        <div className='position-relative'>
-                                            <Form.Label>Hospital Address</Form.Label>
-                                            <Form.Control 
-                                                as="textarea" 
-                                                placeholder="Enter Hospital Address" 
-                                                name="hospital_address" 
-                                                value={frmdocprofile.hospital_address} 
-                                                onChange={selfrmdata} 
-                                                className={`${profileValidationErrors.hospital_address ? 'is-invalid' : ''}`}
-                                            />
-                                            {profileValidationErrors.hospital_address && (
-                                                <div className="invalid-feedback">
-                                                    {profileValidationErrors.hospital_address}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </Form.Group> */}
-
                   <Form.Group
                     as={Col}
                     controlId="Country"
@@ -1278,9 +1303,8 @@ const DoctorRegister = () => {
                     <div className="position-relative">
                       <Form.Label>Country</Form.Label>
                       <Form.Select
-                        className={`frm-select ${
-                          profileValidationErrors.country ? "is-invalid" : ""
-                        }`}
+                        className={`frm-select ${profileValidationErrors.country ? "is-invalid" : ""
+                          }`}
                         name="country"
                         onChange={handleCountryChange}
                         value={selectedCountryCode}
@@ -1304,9 +1328,8 @@ const DoctorRegister = () => {
                     <div className="position-relative">
                       <Form.Label>State</Form.Label>
                       <Form.Select
-                        className={`frm-select ${
-                          profileValidationErrors.state ? "is-invalid" : ""
-                        }`}
+                        className={`frm-select ${profileValidationErrors.state ? "is-invalid" : ""
+                          }`}
                         name="state"
                         onChange={handleStateChange}
                         value={selectedStateCode}
@@ -1331,9 +1354,8 @@ const DoctorRegister = () => {
                     <div className="position-relative">
                       <Form.Label>City</Form.Label>
                       <Form.Select
-                        className={`frm-select ${
-                          profileValidationErrors.city ? "is-invalid" : ""
-                        }`}
+                        className={`frm-select ${profileValidationErrors.city ? "is-invalid" : ""
+                          }`}
                         name="city"
                         onChange={selfrmdata}
                         disabled={!selectedStateCode}
@@ -1528,63 +1550,128 @@ const DoctorRegister = () => {
                     )}
                   </Form.Group>
 
-                  <Form.Group>
-                    <Form.Label>Add Hospital Details</Form.Label>
-                    <div className="position-relative row g-1">
-                      <div className="col-5">
-                        <Form.Control
-                          type="text"
-                          name="name"
-                          placeholder="Hospital Name"
-                          value={hospital_st.name}
-                          onChange={handlehospitalChange}
-                          style={{ marginRight: "10px" }}
-                        />
+                  <Form.Group className="mb-3">
+                    <Form.Label className="mb-2">Add Hospital Details</Form.Label>
+                    <div className="border rounded p-2" style={{ backgroundColor: '#f8f9fa' }}>
+                      <div className="row g-1 mb-2">
+                        <div className="col-6">
+                          <Form.Control
+                            size="sm"
+                            type="text"
+                            name="name"
+                            placeholder="Hospital Name"
+                            value={hospital_st.name}
+                            onChange={handlehospitalChange}
+                          />
+                        </div>
+                        <div className="col-6">
+                          <Form.Control
+                            size="sm"
+                            type="text"
+                            name="address"
+                            placeholder="Address"
+                            value={hospital_st.address}
+                            onChange={handlehospitalChange}
+                          />
+                        </div>
                       </div>
-                      <div className="col-5">
-                        <Form.Control
-                          type="text"
-                          name="address"
-                          placeholder="Address"
-                          value={hospital_st.address}
-                          onChange={handlehospitalChange}
-                          style={{ marginRight: "10px" }}
-                        />
+                      <div className="row g-1 mb-2">
+                        <div className="col-4">
+                          <Form.Select
+                            size="sm"
+                            name="country"
+                            value={selectedHospitalCountryCode}
+                            onChange={handleHospitalCountryChange}
+                          >
+                            <option value="">Country</option>
+                            {hospitalCountries.map((country) => (
+                              <option key={country.isoCode} value={country.isoCode}>
+                                {country.name}
+                              </option>
+                            ))}
+                          </Form.Select>
+                        </div>
+                        <div className="col-4">
+                          <Form.Select
+                            size="sm"
+                            name="state"
+                            value={selectedHospitalStateCode}
+                            onChange={handleHospitalStateChange}
+                            disabled={!selectedHospitalCountryCode}
+                          >
+                            <option value="">State</option>
+                            {hospitalStates.map((state) => (
+                              <option key={state.isoCode} value={state.isoCode}>
+                                {state.name}
+                              </option>
+                            ))}
+                          </Form.Select>
+                        </div>
+                        <div className="col-4">
+                          <Form.Select
+                            size="sm"
+                            name="city"
+                            value={hospital_st.city}
+                            onChange={handleHospitalCityChange}
+                            disabled={!selectedHospitalStateCode}
+                          >
+                            <option value="">City</option>
+                            {hospitalCities.map((city, index) => (
+                              <option key={index} value={city.name}>
+                                {city.name}
+                              </option>
+                            ))}
+                          </Form.Select>
+                        </div>
                       </div>
-                      <div className="col-2">
-                        <Button
-                          className="d-block w-100 theme_btn"
-                          onClick={addHospital}
-                        >
-                          Add
-                        </Button>
+                      <div className="row g-1">
+                        <div className="col-4">
+                          <Form.Control
+                            size="sm"
+                            type="text"
+                            name="pincode"
+                            placeholder="Pincode"
+                            value={hospital_st.pincode}
+                            onChange={handlehospitalChange}
+                            maxLength="6"
+                          />
+                        </div>
+                        <div className="col-8 d-flex align-items-end">
+                          <Button
+                            size="sm"
+                            className="theme_btn ms-auto"
+                            onClick={addHospital}
+                            style={{ minWidth: '60px' }}
+                          >
+                            Add
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                    <ul
-                      style={{
-                        marginTop: "20px",
-                        listStyleType: "1",
-                        marginLeft: 25,
-                      }}
-                    >
-                      {hospitallist &&
-                        hospitallist.map((hospital, index) => (
-                          <li key={index} style={{ marginBottom: "10px" }}>
-                            <strong>{hospital.name}</strong> -{" "}
-                            {hospital.address}
+                    {hospitallist.length > 0 && (
+                      <div className="mt-2">
+                        {hospitallist.map((hospital, index) => (
+                          <div key={index} className="d-flex justify-content-between align-items-center p-2 mb-1 bg-light rounded" style={{ fontSize: '0.85rem' }}>
+                            <div className="flex-grow-1">
+                              <strong className="d-block">{hospital.name}</strong>
+                              <small className="text-muted">
+                                {hospital.address}, {hospital.city}, {hospital.state}, {hospital.country} - {hospital.pincode}
+                              </small>
+                            </div>
                             <Button
-                              variant="danger"
+                              variant="outline-danger"
                               size="sm"
                               onClick={() => deleteHospital(index)}
-                              style={{ marginLeft: "10px" }}
+                              className="ms-2"
+                              style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
                             >
-                              Delete
+                              ×
                             </Button>
-                          </li>
+                          </div>
                         ))}
-                    </ul>
+                      </div>
+                    )}
                   </Form.Group>
-
                   <Form.Group className="mb-3">
                     <Form.Check
                       type="checkbox"
@@ -1607,20 +1694,7 @@ const DoctorRegister = () => {
                         </span>
                       }
                     />
-                    {shortTerms && (
-                      <div
-                        style={{
-                          maxWidth: "100%",
-                          overflowWrap: "break-word",
-                          wordWrap: "break-word",
-                          hyphens: "auto",
-                        }}
-                      >
-                        {shortTerms}
-                      </div>
-                    )}
                   </Form.Group>
-
                   <Button
                     type="button"
                     onClick={profileadd}
@@ -1634,50 +1708,6 @@ const DoctorRegister = () => {
           ) : (
             ""
           )}
-          {/* {
-                        doc_next1 === true ? <Col md={5}>
-                            <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
-                                <div className='text-center'>
-                                    <h3>Signup</h3>
-                                    <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
-                                </div>
-                                <Form>
-                                    <Form.Group as={Col} controlId="fullname" className='position-relative mb-3'>
-                                        <Form.Label>Country</Form.Label>
-                                        <Form.Control type="text" placeholder="Country" />
-                                        <AiOutlineUser className='icon_input' />
-                                    </Form.Group>
-
-                                    <Form.Group as={Col} controlId="email" className='position-relative mb-3'>
-                                        <Form.Label>State</Form.Label>
-                                        <Form.Control type="text" placeholder="State" />
-                                        <FaRegEnvelope className='icon_input' />
-                                    </Form.Group>
-
-                                    <Form.Group controlId="mobile" className='position-relative mb-3'>
-                                        <Form.Label>Country</Form.Label>
-                                        <Form.Control placeholder="Country" />
-                                        <AiOutlinePhone className='icon_input' />
-                                    </Form.Group>
-
-                                    <Form.Group controlId="password" className='position-relative mb-3'>
-                                        <Form.Label>Pincode</Form.Label>
-                                        <Form.Control placeholder="Pincode" />
-                                        <CiLock className='icon_input' />
-                                    </Form.Group>
-
-                                    <Form.Group controlId="password" className='position-relative mb-3'>
-                                        <Form.Label>Upload Identify Document</Form.Label>
-                                        <Form.Control type="file" placeholder="Experience" className='upload_file_doc' />
-                                    </Form.Group>
-
-                                    <Link type="button" to={'/doctor'} className='btn btn-primary d-block w-100 theme_btn my-3'>
-                                        Next
-                                    </Link>
-                                </Form>
-                            </div>
-                        </Col> : ''
-                    } */}
         </Row>
       </Container>
       <ToastContainer />
