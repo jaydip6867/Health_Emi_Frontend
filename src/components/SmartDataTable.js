@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 
 const pageSizes = [5, 10, 20, 50]
 
-const SmartDataTable = ({ columns = [], data = [], pagination = true, customStyles = {}, defaultSortFieldId }) => {
+const SmartDataTable = ({ columns = [], data = [], pagination = true, customStyles = {} }) => {
   const [filterText, setFilterText] = useState('')
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
   const [page, setPage] = useState(1)

@@ -247,7 +247,7 @@ const D_Appointment = () => {
     // table data
     const columns = [{
         name: 'No',
-        selector: (row, index) => index + 1,
+        cell: (row, index) => index +1,
         width: '50px'
     }, {
         name: 'Patient Name',

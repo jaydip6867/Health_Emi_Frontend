@@ -13,13 +13,55 @@ import { BsStarFill, BsGeoAlt } from 'react-icons/bs'
 import { format } from 'date-fns';
 import Swal from 'sweetalert2'
 import DatePicker from 'react-datepicker'
+import { addDays } from 'date-fns';
+import 'react-datepicker/dist/react-datepicker.css'
 import { FaLocationDot } from 'react-icons/fa6'
 
 const DoctorProfilePage = () => {
   const SECRET_KEY = "health-emi";
   var navigate = useNavigate();
 
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(null);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [selectedConsultationType, setSelectedConsultationType] = useState('clinic_visit');
+
+  // Available time slots
+  const timeSlots = [
+    { time: '09:00 AM', available: true },
+    { time: '09:30 AM', available: true },
+    { time: '10:00 AM', available: true },
+    { time: '10:30 AM', available: true },
+    { time: '11:00 AM', available: true },
+    { time: '11:30 AM', available: true },
+    { time: '03:00 PM', available: true },
+    { time: '03:30 PM', available: true },
+    { time: '04:00 PM', available: true },
+    { time: '04:30 PM', available: true },
+    { time: '05:00 PM', available: true },
+    { time: '05:30 PM', available: true },
+    { time: '06:00 PM', available: true },
+    { time: '06:30 PM', available: true },
+    { time: '07:00 PM', available: true },
+    { time: '07:30 PM', available: true },
+    { time: '08:00 PM', available: true },
+    { time: '08:30 PM', available: true }
+  ];
+
+  // Handle time slot selection
+  const handleTimeSlotSelect = (timeSlot) => {
+    if (timeSlot.available) {
+      setSelectedTimeSlot(timeSlot.time);
+    }
+  };
+
+  // Handle date range selection
+  const onDateChange = (dates) => {
+    const [start, end] = dates;
+    setSelectedDate(start);
+    setEndDate(end);
+    setSelectedTimeSlot(null); // Reset time slot when date changes
+  };
 
   const [patient, setpatient] = useState(null)
   const [token, settoken] = useState(null)
@@ -104,50 +146,52 @@ const DoctorProfilePage = () => {
       const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
       // Combine time + meridiem
       const timeWithMeridiem = `${timePart} ${meridiem}`;
-      // console.log(apt_data, datePart, timeWithMeridiem )
-      setloading(true)
-      axios({
-        method: 'post',
-        url: 'https://healtheasy-o25g.onrender.com/user/appointments/save',
-        headers: {
-          Authorization: token
-        },
-        data: {
-          "patientname": patient.name,
-          "mobile": patient.mobile,
-          "alt_mobile": apt_data.alt_mobile,
-          "date": datePart,
-          "time": timeWithMeridiem,
-          "surgeryid": apt_data.surgeryid,
-          "appointment_reason": apt_data.appointment_reason,
-          "report": apt_data.report,
-          "doctorid": id,
-          "visit_types": apt_data.visit_types
-        }
-      }).then((res) => {
-        Swal.fire({
-          title: "Appointment Add Successfully...",
-          icon: "success",
-          confirmButtonText: 'Ok.'
-        }).then((result) => {
-          navigate('/patient/appointment');
-        });
-      }).catch(function (error) {
-        Swal.fire({
-          title: "Something Went Wrong.",
-          text: "Something Is Missing. Please Check Details...",
-          icon: "error",
-        });
-      }).finally(() => {
-        setloading(false)
-      });
+      console.log(apt_data, datePart, timeWithMeridiem )
+      // setloading(true)
+      // axios({
+      //   method: 'post',
+      //   url: 'https://healtheasy-o25g.onrender.com/user/appointments/save',
+      //   headers: {
+      //     Authorization: token
+      //   },
+      //   data: {
+      //     "patientname": patient.name,
+      //     "mobile": patient.mobile,
+      //     "alt_mobile": apt_data.alt_mobile,
+      //     "date": datePart,
+      //     "time": timeWithMeridiem,
+      //     "surgeryid": apt_data.surgeryid,
+      //     "appointment_reason": apt_data.appointment_reason,
+      //     "report": apt_data.report,
+      //     "doctorid": id,
+      //     "visit_types": apt_data.visit_types
+      //   }
+      // }).then((res) => {
+      //   Swal.fire({
+      //     title: "Appointment Add Successfully...",
+      //     icon: "success",
+      //     confirmButtonText: 'Ok.'
+      //   }).then((result) => {
+      //     navigate('/patient/appointment');
+      //   });
+      // }).catch(function (error) {
+      //   Swal.fire({
+      //     title: "Something Went Wrong.",
+      //     text: "Something Is Missing. Please Check Details...",
+      //     icon: "error",
+      //   });
+      // }).finally(() => {
+      //   setloading(false)
+      // });
     } else {
-      navigate('/patient')
+      // navigate('/patient')
     }
   }
-  const formattedDateTime = selectedDate
-    ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
-    : '';
+  const formattedDateTime = selectedDate && selectedTimeSlot
+    ? format(selectedDate, 'dd-MM-yyyy') + ' ' + selectedTimeSlot
+    : selectedDate
+      ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
+      : '';
 
 
   var surg_obj = { patientname: '', mobile: '', alt_name: '', alt_mobile: '', surgeryid: '', date: '', time: '', appointment_reason: '', report: [], doctorid: '', roomtype: '' }
@@ -505,7 +549,7 @@ const DoctorProfilePage = () => {
                     {
                       doctor_profile.hospitals.map((v, i) => {
                         return (
-                          <Col md={6}>
+                          <Col md={6} key={i}>
                             <Card className="border-1 border-opacity-25 shadow-sm h-100" style={{ borderRadius: '12px' }}>
                               <Card.Body className="p-3">
                                 <div>
@@ -567,62 +611,95 @@ const DoctorProfilePage = () => {
                     <h6 className="fw-bold mb-3 text-muted">Select Consultation Type</h6>
                     <Row className="g-3">
                       <Col xs={4}>
-                        <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
+                        <input
+                          type="radio"
+                          name="consultationType"
+                          value="clinic_visit"
+                          checked={selectedConsultationType === 'clinic_visit'}
+                          onChange={(e) => setSelectedConsultationType(e.target.value)}
+                          className="d-none"
+                          id="clinic_visit"
+                        />
+                        <label 
+                          htmlFor="clinic_visit" 
+                          className={`text-center p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${
+                            selectedConsultationType === 'clinic_visit' ? 'bg-primary-subtle' : ''
+                          }`}
+                          style={{ cursor: 'pointer' }}
+                        >
                           <div>
                             <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#F8EFE1', fontSize: '14px' }} >
-                              {/* <HiUsers className="text-dark" size={20} /> */}
                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5.25 3.57812H14.25C14.4945 3.57812 14.7295 3.67477 14.9023 3.84766C15.0752 4.02054 15.1719 4.2555 15.1719 4.5V11.0781H21C21.2445 11.0781 21.4795 11.1748 21.6523 11.3477C21.8252 11.5205 21.9219 11.7555 21.9219 12V20.0781H23.25C23.2956 20.0781 23.3389 20.0967 23.3711 20.1289C23.4033 20.1611 23.4219 20.2044 23.4219 20.25C23.4219 20.2956 23.4033 20.3389 23.3711 20.3711C23.3389 20.4033 23.2956 20.4219 23.25 20.4219H3C2.95442 20.4219 2.91114 20.4033 2.87891 20.3711C2.84667 20.3389 2.82812 20.2956 2.82812 20.25C2.82812 20.2044 2.84667 20.1611 2.87891 20.1289C2.91114 20.0967 2.95442 20.0781 3 20.0781H4.32812V4.5C4.32812 4.2555 4.42477 4.02054 4.59766 3.84766C4.77054 3.67477 5.0055 3.57812 5.25 3.57812ZM5.25 3.92188C5.09667 3.92188 4.94924 3.9824 4.84082 4.09082C4.7324 4.19924 4.67188 4.34667 4.67188 4.5V20.0781H7.32812V15C7.32812 14.9544 7.34667 14.9111 7.37891 14.8789C7.41114 14.8467 7.45442 14.8281 7.5 14.8281H12C12.0456 14.8281 12.0889 14.8467 12.1211 14.8789C12.1533 14.9111 12.1719 14.9544 12.1719 15V20.0781H14.8281V4.5C14.8281 4.38521 14.7941 4.27386 14.7314 4.17969L14.6592 4.09082L14.5703 4.01855C14.4761 3.9559 14.3648 3.92188 14.25 3.92188H5.25ZM7.67188 20.0781H11.8281V15.1719H7.67188V20.0781ZM15.1719 20.0781H21.5781V12C21.5781 11.8852 21.5441 11.7739 21.4814 11.6797L21.4092 11.5908L21.3203 11.5186C21.2261 11.4559 21.1148 11.4219 21 11.4219H15.1719V20.0781ZM9.75 6.57812C9.79558 6.57812 9.83886 6.59667 9.87109 6.62891C9.90333 6.66114 9.92188 6.70442 9.92188 6.75V8.82812H12C12.0456 8.82812 12.0889 8.84667 12.1211 8.87891C12.1533 8.91114 12.1719 8.95442 12.1719 9C12.1719 9.04558 12.1533 9.08886 12.1211 9.12109C12.0889 9.15333 12.0456 9.17188 12 9.17188H9.92188V11.25C9.92188 11.2956 9.90333 11.3389 9.87109 11.3711C9.83886 11.4033 9.79558 11.4219 9.75 11.4219C9.70442 11.4219 9.66114 11.4033 9.62891 11.3711C9.59667 11.3389 9.57812 11.2956 9.57812 11.25V9.17188H7.5C7.45442 9.17188 7.41114 9.15333 7.37891 9.12109C7.34667 9.08886 7.32812 9.04558 7.32812 9C7.32812 8.95442 7.34667 8.91114 7.37891 8.87891C7.41114 8.84667 7.45442 8.82812 7.5 8.82812H9.57812V6.75C9.57812 6.70442 9.59667 6.66114 9.62891 6.62891C9.66114 6.59667 9.70442 6.57812 9.75 6.57812Z" fill="black" stroke="#FBB03F" stroke-width="0.78125" />
+                                <path d="M5.25 3.57812H14.25C14.4945 3.57812 14.7295 3.67477 14.9023 3.84766C15.0752 4.02054 15.1719 4.2555 15.1719 4.5V11.0781H21C21.2445 11.0781 21.4795 11.1748 21.6523 11.3477C21.8252 11.5205 21.9219 11.7555 21.9219 12V20.0781H23.25C23.2956 20.0781 23.3389 20.0967 23.3711 20.1289C23.4033 20.1611 23.4219 20.2044 23.4219 20.25C23.4219 20.2956 23.4033 20.3389 23.3711 20.3711C23.3389 20.4033 23.2956 20.4219 23.25 20.4219H3C2.95442 20.4219 2.91114 20.4033 2.87891 20.3711C2.84667 20.3389 2.82812 20.2956 2.82812 20.25C2.82812 20.2044 2.84667 20.1611 2.87891 20.1289C2.91114 20.0967 2.95442 20.0781 3 20.0781H4.32812V4.5C4.32812 4.2555 4.42477 4.02054 4.59766 3.84766C4.77054 3.67477 5.0055 3.57812 5.25 3.57812ZM5.25 3.92188C5.09667 3.92188 4.94924 3.9824 4.84082 4.09082C4.7324 4.19924 4.67188 4.34667 4.67188 4.5V20.0781H7.32812V15C7.32812 14.9544 7.34667 14.9111 7.37891 14.8789C7.41114 14.8467 7.45442 14.8281 7.5 14.8281H12C12.0456 14.8281 12.0889 14.8467 12.1211 14.8789C12.1533 14.9111 12.1719 14.9544 12.1719 15V20.0781H14.8281V4.5C14.8281 4.38521 14.7941 4.27386 14.7314 4.17969L14.6592 4.09082L14.5703 4.01855C14.4761 3.9559 14.3648 3.92188 14.25 3.92188H5.25ZM7.67188 20.0781H11.8281V15.1719H7.67188V20.0781ZM15.1719 20.0781H21.5781V12C21.5781 11.8852 21.5441 11.7739 21.4814 11.6797L21.4092 11.5908L21.3203 11.5186C21.2261 11.4559 21.1148 11.4219 21 11.4219H15.1719V20.0781ZM9.75 6.57812C9.79558 6.57812 9.83886 6.59667 9.87109 6.62891C9.90333 6.66114 9.92188 6.70442 9.92188 6.75V8.82812H12C12.0456 8.82812 12.0889 8.84667 12.1211 8.87891C12.1533 8.91114 12.1719 8.95442 12.1719 9C12.1719 9.04558 12.1533 9.08886 12.1211 9.12109C12.0889 9.15333 12.0456 9.17188 12 9.17188H9.92188V11.25C9.92188 11.2956 9.90333 11.3389 9.87109 11.3711C9.83886 11.4033 9.79558 11.4219 9.75 11.4219C9.70442 11.4219 9.66114 11.4033 9.62891 11.3711C9.59667 11.3389 9.57812 11.2956 9.57812 11.25V9.17188H7.5C7.45442 9.17188 7.41114 9.15333 7.37891 9.12109C7.34667 9.08886 7.32812 9.04558 7.32812 9C7.32812 8.95442 7.34667 8.91114 7.37891 8.87891C7.41114 8.84667 7.45442 8.82812 7.5 8.82812H9.57812V6.75C9.57812 6.70442 9.59667 6.66114 9.62891 6.62891C9.66114 6.59667 9.70442 6.57812 9.75 6.57812Z" fill="black" stroke="#FBB03F" strokeWidth="0.78125" />
                               </svg>
-
-
                             </div>
                             <div className="d-flex flex-column mt-1">
                               <span className="fw-bold">Clinic Visit</span>
                               <small className="text-muted">₹{doctor_profile?.consultationsDetails?.clinic_visit_price}</small>
                             </div>
                           </div>
-
-                        </div>
+                        </label>
                       </Col>
                       <Col xs={4}>
-                        <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
+                        <input
+                          type="radio"
+                          name="consultationType"
+                          value="home_visit"
+                          checked={selectedConsultationType === 'home_visit'}
+                          onChange={(e) => setSelectedConsultationType(e.target.value)}
+                          className="d-none"
+                          id="home_visit"
+                        />
+                        <label 
+                          htmlFor="home_visit" 
+                          className={`text-center p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${
+                            selectedConsultationType === 'home_visit' ? 'bg-primary-subtle' : ''
+                          }`}
+                          style={{ cursor: 'pointer' }}
+                        >
                           <div>
                             <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#D8F3F1', fontSize: '14px' }} >
-                              {/* <HiUsers className="text-dark" size={20} /> */}
                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9 20.9998H7C5.93913 20.9998 4.92172 20.5784 4.17157 19.8282C3.42143 19.0781 3 18.0607 3 16.9998V10.7078C2.99999 10.02 3.17732 9.34386 3.51487 8.74461C3.85242 8.14535 4.33879 7.64326 4.927 7.28682L9.927 4.25682C10.5521 3.87801 11.2691 3.67773 12 3.67773C12.7309 3.67773 13.4479 3.87801 14.073 4.25682L19.073 7.28682C19.6611 7.64317 20.1473 8.14511 20.4849 8.74417C20.8224 9.34324 20.9998 10.0192 21 10.7068V16.9998C21 18.0607 20.5786 19.0781 19.8284 19.8282C19.0783 20.5784 18.0609 20.9998 17 20.9998H15M9 20.9998V16.9998C9 16.2042 9.31607 15.4411 9.87868 14.8785C10.4413 14.3159 11.2044 13.9998 12 13.9998C12.7956 13.9998 13.5587 14.3159 14.1213 14.8785C14.6839 15.4411 15 16.2042 15 16.9998V20.9998M9 20.9998H15" stroke="#12A79D" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M9 20.9998H7C5.93913 20.9998 4.92172 20.5784 4.17157 19.8282C3.42143 19.0781 3 18.0607 3 16.9998V10.7078C2.99999 10.02 3.17732 9.34386 3.51487 8.74461C3.85242 8.14535 4.33879 7.64326 4.927 7.28682L9.927 4.25682C10.5521 3.87801 11.2691 3.67773 12 3.67773C12.7309 3.67773 13.4479 3.87801 14.073 4.25682L19.073 7.28682C19.6611 7.64317 20.1473 8.14511 20.4849 8.74417C20.8224 9.34324 20.9998 10.0192 21 10.7068V16.9998C21 18.0607 20.5786 19.0781 19.8284 19.8282C19.0783 20.5784 18.0609 20.9998 17 20.9998H15M9 20.9998V16.9998C9 16.2042 9.31607 15.4411 9.87868 14.8785C10.4413 14.3159 11.2044 13.9998 12 13.9998C12.7956 13.9998 13.5587 14.3159 14.1213 14.8785C14.6839 15.4411 15 16.2042 15 16.9998V20.9998M9 20.9998H15" stroke="#12A79D" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
-
-
                             </div>
                             <div className="d-flex flex-column mt-1">
                               <span className="fw-bold">Home Visit</span>
                               <small className="text-muted">₹{doctor_profile?.consultationsDetails?.home_visit_price}</small>
                             </div>
                           </div>
-
-                        </div>
+                        </label>
                       </Col>
                       <Col xs={4}>
-                        <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
+                        <input
+                          type="radio"
+                          name="consultationType"
+                          value="eopd"
+                          checked={selectedConsultationType === 'eopd'}
+                          onChange={(e) => setSelectedConsultationType(e.target.value)}
+                          className="d-none"
+                          id="eopd"
+                        />
+                        <label 
+                          htmlFor="eopd" 
+                          className={`text-center p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${
+                            selectedConsultationType === 'eopd' ? 'bg-primary-subtle' : ''
+                          }`}
+                          style={{ cursor: 'pointer' }}
+                        >
                           <div>
                             <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#E2E7F2', fontSize: '14px' }} >
-                              {/* <HiUsers className="text-dark" size={20} /> */}
                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12.75 6H6.25C4.317 6 2.75 7.567 2.75 9.5V14.5C2.75 16.433 4.317 18 6.25 18H12.75C14.683 18 16.25 16.433 16.25 14.5V9.5C16.25 7.567 14.683 6 12.75 6Z" stroke="#3F5FAB" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M16.25 9.7402L19.804 7.9702C19.9565 7.89423 20.1258 7.85846 20.296 7.86629C20.4661 7.87412 20.6315 7.92528 20.7763 8.01493C20.9211 8.10458 21.0407 8.22974 21.1236 8.37854C21.2065 8.52735 21.25 8.69486 21.25 8.8652V15.1332C21.2501 15.3037 21.2066 15.4713 21.1236 15.6203C21.0407 15.7692 20.921 15.8945 20.776 15.9841C20.631 16.0738 20.4655 16.1249 20.2952 16.1326C20.1249 16.1404 19.9555 16.1044 19.803 16.0282L16.25 14.2552V9.7402Z" stroke="#3F5FAB" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M12.75 6H6.25C4.317 6 2.75 7.567 2.75 9.5V14.5C2.75 16.433 4.317 18 6.25 18H12.75C14.683 18 16.25 16.433 16.25 14.5V9.5C16.25 7.567 14.683 6 12.75 6Z" stroke="#3F5FAB" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M16.25 9.7402L19.804 7.9702C19.9565 7.89423 20.1258 7.85846 20.296 7.86629C20.4661 7.87412 20.6315 7.92528 20.7763 8.01493C20.9211 8.10458 21.0407 8.22974 21.1236 8.37854C21.2065 8.52735 21.25 8.69486 21.25 8.8652V15.1332C21.2501 15.3037 21.2066 15.4713 21.1236 15.6203C21.0407 15.7692 20.921 15.8945 20.776 15.9841C20.631 16.0738 20.4655 16.1249 20.2952 16.1326C20.1249 16.1404 19.9555 16.1044 19.803 16.0282L16.25 14.2552V9.7402Z" stroke="#3F5FAB" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
-
-
                             </div>
                             <div className="d-flex flex-column mt-1">
                               <span className="fw-bold">EOPD</span>
                               <small className="text-muted">₹{doctor_profile?.consultationsDetails?.eopd_price}</small>
                             </div>
                           </div>
-
-                        </div>
+                        </label>
                       </Col>
                     </Row>
                   </Card.Body>
@@ -633,60 +710,75 @@ const DoctorProfilePage = () => {
                   <Card.Body className="p-4">
                     <h5 className="fw-bold mb-4 text-center">Book Consultation</h5>
 
-                    {/* Select Date */}
+                    {/* Select Date with DatePicker */}
                     <div className="mb-4">
-                      <h6 className="fw-bold mb-3">Select Date</h6>
-                      <div className="d-flex gap-2 mb-3">
-                        <Button variant="outline-secondary" size="sm" className="rounded-pill">15/07</Button>
-                        <Button variant="dark" size="sm" className="rounded-pill">16/07</Button>
-                        <Button variant="outline-secondary" size="sm" className="rounded-pill">17/07</Button>
-                        <Button variant="outline-secondary" size="sm" className="rounded-pill">→</Button>
-                      </div>
-                    </div>
+                      <h6 className="fw-bold mb-3">Select Date & Time</h6>
+                      <div className="custom-datepicker-container w-100">
+                        <DatePicker
+                          selected={selectedDate}
+                          onChange={(date) => {
+                            setSelectedDate(date);
+                            setSelectedTimeSlot(null); // Reset time slot when date changes
+                          }}
+                          inline
+                          minDate={new Date()}
+                          className="form-control"
+                          calendarClassName="custom-calendar"
+                          style={{ width: "100%" }}
+                        />
 
-                    {/* Select Hour */}
-                    <div className="mb-4">
-                      <h6 className="fw-bold mb-3">Select Hour</h6>
-                      <Row className="g-2 mb-3">
-                        <Col xs={6}>
-                          <Button variant="outline-secondary" size="sm" className="w-100">09:00 AM</Button>
-                        </Col>
-                        <Col xs={6}>
-                          <Button variant="outline-secondary" size="sm" className="w-100">09:30 AM</Button>
-                        </Col>
-                        <Col xs={6}>
-                          <Button variant="dark" size="sm" className="w-100">10:00 AM</Button>
-                        </Col>
-                        <Col xs={6}>
-                          <Button variant="outline-secondary" size="sm" className="w-100">10:30 AM</Button>
-                        </Col>
-                        <Col xs={6}>
-                          <Button variant="outline-secondary" size="sm" className="w-100">11:00 AM</Button>
-                        </Col>
-                        <Col xs={6}>
-                          <Button variant="outline-secondary" size="sm" className="w-100">11:30 AM</Button>
-                        </Col>
-                      </Row>
-                      <Row className="g-2 mb-3">
-                        <Col xs={6}>
-                          <Button variant="outline-secondary" size="sm" className="w-100">3:00 PM</Button>
-                        </Col>
-                        <Col xs={6}>
-                          <Button variant="outline-secondary" size="sm" className="w-100">3:30 PM</Button>
-                        </Col>
-                        <Col xs={6}>
-                          <Button variant="outline-secondary" size="sm" className="w-100">4:00 PM</Button>
-                        </Col>
-                        <Col xs={6}>
-                          <Button variant="outline-secondary" size="sm" className="w-100">4:30 PM</Button>
-                        </Col>
-                        <Col xs={6}>
-                          <Button variant="outline-secondary" size="sm" className="w-100">5:00 PM</Button>
-                        </Col>
-                        <Col xs={6}>
-                          <Button variant="outline-secondary" size="sm" className="w-100">5:30 PM</Button>
-                        </Col>
-                      </Row>
+                        {/* Time Slots Below Calendar */}
+                        <div className="time-slots-container mt-3 p-3" style={{
+                          backgroundColor: '#f8f9fa',
+                          borderRadius: '8px',
+                          border: '1px solid #e9ecef'
+                        }}>
+                          <h6 className="fw-bold mb-3 text-center">Available Time Slots</h6>
+                          {selectedDate ? (
+                            <div>
+                              <Row className="g-2">
+                                {timeSlots.map((slot, index) => (
+                                  <Col xs={4} key={index}>
+                                    <Button
+                                      variant={
+                                        selectedTimeSlot === slot.time
+                                          ? "dark"
+                                          : slot.available
+                                            ? "outline-primary"
+                                            : "outline-danger"
+                                      }
+                                      size="sm"
+                                      className="w-100"
+                                      disabled={!slot.available}
+                                      onClick={() => handleTimeSlotSelect(slot)}
+                                      style={{
+                                        opacity: slot.available ? 1 : 0.5,
+                                        cursor: slot.available ? 'pointer' : 'not-allowed',
+                                        fontSize: '12px',
+                                        padding: '8px 4px'
+                                      }}
+                                    >
+                                      {slot.time}
+                                      {!slot.available && ' (Booked)'}
+                                    </Button>
+                                  </Col>
+                                ))}
+                              </Row>
+                              {selectedTimeSlot && (
+                                <div className="mt-3 p-2 bg-success bg-opacity-10 rounded text-center">
+                                  <small className="text-success fw-bold">
+                                    ✓ Selected: {format(selectedDate, 'dd/MM/yyyy')} at {selectedTimeSlot}
+                                  </small>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="text-muted text-center py-3">
+                              <small>Select a date above to view available time slots</small>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
                     {/* Book Button */}
@@ -694,6 +786,7 @@ const DoctorProfilePage = () => {
                       variant="dark"
                       className="w-100 rounded-pill py-3 fw-bold"
                       onClick={handleShow}
+                      disabled={!selectedDate || !selectedTimeSlot}
                     >
                       Book Consultation
                     </Button>
@@ -767,7 +860,7 @@ const DoctorProfilePage = () => {
                       <Form.Label>Reports</Form.Label>
                       <Form.Control type='file' value={apt_data.report} name='report' onChange={appchangedata}></Form.Control>
                     </Col>
-                    <Col xs={12} md={4}>
+                    {/* <Col xs={12} md={4}>
                       <Form.Check
                         label={`Home Visit - ${doctor_profile.consultationsDetails.home_visit_price}`}
                         type="radio"
@@ -789,21 +882,19 @@ const DoctorProfilePage = () => {
                         value={"eopd"}
                         onChange={appchangedata}
                       />
-                    </Col>
-                    <Col xs={6} md={6}>
+                    </Col> */}
+                    {/* <Col xs={'auto'}>
                       <Form.Label>Appointment Date</Form.Label>
-                      <br />
-                      <DatePicker
-                        selected={selectedDate}
-                        onChange={(date) => setSelectedDate(date)}
-                        showTimeSelect
-                        timeFormat="hh:mm a"
-                        timeIntervals={15}
-                        dateFormat="dd-MM-yyyy hh:mm a"
-                        placeholderText="Select date and time"
-                        minDate={new Date()}
-                      />
-                    </Col>
+                      <br /> */}
+                      
+                      {/* {selectedTimeSlot && (
+                        <div className="p-2 bg-success bg-opacity-10 rounded text-center">
+                          <small className="text-success fw-bold">
+                            ✓ Selected: {format(selectedDate, 'dd/MM/yyyy')} at {selectedTimeSlot}
+                          </small>
+                        </div>
+                      )}
+                    </Col> */}
                   </Row>
                 </Form>
               </Col>
@@ -1033,6 +1124,7 @@ const DoctorProfilePage = () => {
               <DatePicker
                 selected={selectedDate}
                 onChange={(date) => setSelectedDate(date)}
+                inline
                 showTimeSelect
                 timeFormat="hh:mm a"
                 timeIntervals={15}

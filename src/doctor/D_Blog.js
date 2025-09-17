@@ -485,17 +485,6 @@ const D_Blog = () => {
                                     <Button variant='primary' onClick={handleblogShow}>Add Blog</Button>
                                 </Col>
                             </Row>
-                            <Row>
-                                {/* <Col xs={4}>
-                                    <input
-                                        type="text"
-                                        placeholder="Search by title or author"
-                                        value={search}
-                                        onChange={searchbox}
-                                        style={{ marginBottom: '10px', padding: '8px', width: '300px' }}
-                                    />
-                                </Col> */}
-                            </Row>
                             <SmartDataTable columns={columns} data={displist ? displist : []} pagination customStyles={customTableStyles} />
                         </div>
                     </Col>
