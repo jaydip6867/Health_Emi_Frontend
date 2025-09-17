@@ -7,7 +7,7 @@ import axios from 'axios'
 import Loader from '../Loader'
 import CryptoJS from "crypto-js";
 import Swal from 'sweetalert2'
-import DataTable from 'react-data-table-component'
+import SmartDataTable from '../components/SmartDataTable'
 import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye } from 'react-icons/md'
 import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
@@ -247,9 +247,10 @@ const D_SurgeryAppointment = () => {
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
-        width: '50px'
+        width: '50px',
     }, {
         name: 'Patient Name',
+        selector: row => row.patientname,
         cell: row => (
             <div className="d-flex align-items-center flex-wrap gap-3">
                 <div
@@ -265,18 +266,24 @@ const D_SurgeryAppointment = () => {
                 </div>
                 <span className="fw-medium" style={{ color: '#111827' }}>{row.patientname}</span>
             </div>
-        )
+        ),
+        sortable: true
     },
     {
         name: 'Deases',
-        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.surgerydetails?.name}</span>
+        selector: row => row.surgerydetails?.name || '',
+        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.surgerydetails?.name}</span>,
+        sortable: true
     },
     {
         name: 'Date & Time',
-        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{`${row.date} ${row.time}`}</span>
+        selector: row => `${row.date || ''} ${row.time || ''}`,
+        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{`${row.date} ${row.time}`}</span>,
+        sortable: true
     },
     {
         name: 'Status',
+        selector: row => row.status || '',
         cell: row => {
             const statusInfo = getStatusBadge(row.status);
             return (
@@ -295,10 +302,12 @@ const D_SurgeryAppointment = () => {
                 </div>
             );
         },
-        width: '120px'
+        width: '120px',
+        sortable: true
     },
     {
         name: 'Payment Status',
+        selector: row => row.payment_status || '',
         cell: row => {
             const statusInfo = getStatusBadge(row.payment_status);
             return (
@@ -317,7 +326,8 @@ const D_SurgeryAppointment = () => {
                 </div>
             );
         },
-        width: '150px'
+        width: '150px',
+        sortable: true
     },
     {
         name: 'View',
@@ -404,22 +414,6 @@ const D_SurgeryAppointment = () => {
         ),
         width: '150px',
         center: true
-        // row =>
-        //     row.status === "Pending" ?
-        //         <>
-        //             <div className='d-flex flex-wrap gap-2'>
-        //                 <OverlayTrigger placement="top" delay={{ show: 100, hide: 50 }} overlay={renderTooltip('Accept')}>
-        //                     <Button variant='success' size='sm'><MdDone onClick={() => appointmentbtn(row._id, 'Accept')} className='fs-5' /></Button>
-        //                 </OverlayTrigger>
-        //                 <OverlayTrigger placement="top" delay={{ show: 100, hide: 50 }} overlay={renderTooltip('Cancel')}>
-        //                     <Button variant='danger' size='sm'><MdClose onClick={() => appointmentbtn(row._id, 'Cancel')} className='fs-5' /></Button>
-        //                 </OverlayTrigger>
-        //                 {/* <OverlayTrigger placement="top" delay={{ show: 100, hide: 50 }} overlay={renderTooltip('Reschedule')}>
-        //                     <Button variant='secondary' size='sm'><MdOutlineAutorenew onClick={() => reschedule_modal(row._id)} className='fs-5' /></Button>
-        //                 </OverlayTrigger> */}
-        //             </div>
-        //         </>
-        //         : ''
     }]
     return (
         <>
@@ -430,7 +424,7 @@ const D_SurgeryAppointment = () => {
                         <DoctorNav doctorname={doctor && doctor.name} />
                         <div className='bg-white rounded p-2'>
                             <h5 className='mb-4'>All Surgery Appointment</h5>
-                            <DataTable columns={columns} data={appointment ? appointment : ''} pagination customStyles={customTableStyles} />
+                            <SmartDataTable columns={columns} data={appointment ? appointment : []} pagination customStyles={customTableStyles} />
                         </div>
                     </Col>
                 </Row>

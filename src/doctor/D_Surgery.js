@@ -29,7 +29,7 @@ import {
   MdOutlineRemoveRedEye,
 } from "react-icons/md";
 import CryptoJS from "crypto-js";
-import DataTable from "react-data-table-component";
+import SmartDataTable from '../components/SmartDataTable';
 import { FiChevronsRight, FiPlus, FiX } from "react-icons/fi";
 
 const D_Surgery = () => {
@@ -579,39 +579,46 @@ const D_Surgery = () => {
     {
       name: "No",
       selector: (row, index) => index + 1,
-      sortable: true,
       width: "80px",
     },
     {
       name: "Surgery Name",
+      selector: (row) => row.name,
       cell: (row) => (
         <div className="d-flex align-items-center flex-wrap gap-3">
-            <div
-                className="rounded-circle d-flex align-items-center overflow-hidden justify-content-center text-white fw-bold"
-                style={{
-                    width: '40px',
-                    height: '40px',
-                    backgroundColor: '#6366F1',
-                    fontSize: '14px'
-                }}
-            >
-                <img src={row.surgery_photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </div>
-            <span className="fw-medium" style={{ color: '#111827' }}>{row.name}</span>
+          <div
+            className="rounded-circle d-flex align-items-center overflow-hidden justify-content-center text-white fw-bold"
+            style={{
+              width: '40px',
+              height: '40px',
+              backgroundColor: '#6366F1',
+              fontSize: '14px'
+            }}
+          >
+            <img src={row.surgery_photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+          <span className="fw-medium" style={{ color: '#111827' }}>{row.name}</span>
         </div>
-    ),
+      ),
+      sortable: true,
     },
     {
       name: "Surgery Type",
+      selector: (row) => row?.surgerytypeid?.surgerytypename || '',
       cell: (row) => row?.surgerytypeid?.surgerytypename,
+      sortable: true,
     },
     {
       name: "Days Of Surgery",
+      selector: (row) => `${row?.days || ''}`,
       cell: (row) => row?.days + ' Days',
+      sortable: true,
     },
     {
       name: "Experiance",
+      selector: (row) => `${row?.yearsof_experience || ''}`,
       cell: (row) => row?.yearsof_experience + ' Years',
+      sortable: true,
     }, {
       name: 'Action',
       cell: row => (
@@ -671,24 +678,6 @@ const D_Surgery = () => {
       width: '150px',
       center: true
     }
-
-    // {
-    //   name: "Action",
-    //   cell: (row) => (
-    //     <div className="d-flex gap-3">
-    //       <MdEditDocument className="fs-5" onClick={() => btnedit(row._id)} />
-    //       <MdOutlineRemoveRedEye
-    //         onClick={() => btnview(row._id)}
-    //         className="text-primary fs-5"
-    //       />
-    //       <MdDelete
-    //         onClick={() => deletesurgery(row._id)}
-    //         className="text-danger fs-5"
-    //       />
-    //     </div>
-    //   ),
-    //   width: "150px",
-    // },
   ];
 
   return (
@@ -710,7 +699,7 @@ const D_Surgery = () => {
                   </Button>
                 </Col>
               </Row>
-              <DataTable
+              <SmartDataTable
                 columns={columns}
                 data={surgerylist ? surgerylist : ""}
                 pagination customStyles={customTableStyles}

@@ -8,7 +8,7 @@ import FooterBar from '../Visitor/Component/FooterBar'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import DataTable from 'react-data-table-component'
+import SmartDataTable from '../components/SmartDataTable'
 import { MdCurrencyRupee, MdOutlineRemoveRedEye } from 'react-icons/md'
 
 const P_Surgeries = () => {
@@ -149,7 +149,7 @@ const P_Surgeries = () => {
             pagination: {
                 style: {
                     borderTop: '1px solid #E5E7EB',
-                    backgroundColor: '#F9FAFB'
+                    backgroundColor: '#F9FAFB',
                 }
             }
         };
@@ -164,10 +164,10 @@ const P_Surgeries = () => {
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
-        sortable: true,
-        width: '80px'
+        width: '80px',
     }, {
         name: 'Doctor Name',
+        selector: row => row.doctorid?.name || '',
         cell: row => (
             <div className="d-flex align-items-center gap-3 text-truncate">
                 <div
@@ -184,24 +184,30 @@ const P_Surgeries = () => {
                 </div>
                 <span className="fw-medium" style={{ color: '#111827' }}>{row.doctorid?.name}</span>
             </div>
-        )
+        ),
+        sortable: true
     },
     {
         name: 'Surgery',
-        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row?.surgerydetails?.name}</span>
+        selector: row => row?.surgerydetails?.name || '',
+        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row?.surgerydetails?.name}</span>,
+        sortable: true
     },
     {
         name: 'Price',
-        cell: row => {
-            return `₹ ${row?.surgerydetails?.price} /-`
-        }
+        selector: row => `${row?.surgerydetails?.price || ''}`,
+        cell: row => `₹ ${row?.surgerydetails?.price} /-`,
+        sortable: true
     },
     {
         name: 'Date & Time',
-        cell: row => `${row?.date} ${row?.time}`
+        selector: row => `${row?.date || ''} ${row?.time || ''}`,
+        cell: row => `${row?.date} ${row?.time}`,
+        sortable: true
     },
     {
         name: 'Status',
+        selector: row => row.status || '',
         cell: row => {
             const statusInfo = getStatusBadge(row.status);
             return (
@@ -220,10 +226,12 @@ const P_Surgeries = () => {
                 </div>
             );
         },
-        width: '120px'
+        width: '120px',
+        sortable: true
     },
     {
         name: 'Payment Status',
+        selector: row => row.payment_status || '',
         cell: row => {
             const statusInfo = getStatusBadge(row.payment_status);
             return (
@@ -242,7 +250,8 @@ const P_Surgeries = () => {
                 </div>
             );
         },
-        width: '150px'
+        width: '150px',
+        sortable: true
     },
     {
         name: 'View',
@@ -277,7 +286,7 @@ const P_Surgeries = () => {
                         {/* <P_nav patientname={patient && patient.name} /> */}
                         <div className='bg-white rounded p-3 mb-3'>
                             <h5 className='mb-3'>All Surgery Appointments</h5>
-                            <DataTable columns={columns} data={appoint_data ? appoint_data : ''} pagination customStyles={customTableStyles} />
+                            <SmartDataTable columns={columns} data={appoint_data ? appoint_data : []} pagination customStyles={customTableStyles} />
 
                         </div>
                     </Col>

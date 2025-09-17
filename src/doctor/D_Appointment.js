@@ -7,7 +7,7 @@ import axios from 'axios'
 import Loader from '../Loader'
 import CryptoJS from "crypto-js";
 import Swal from 'sweetalert2'
-import DataTable from 'react-data-table-component'
+import SmartDataTable from '../components/SmartDataTable'
 import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye, MdEdit, MdDelete, MdMoreVert } from 'react-icons/md'
 import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
@@ -250,6 +250,7 @@ const D_Appointment = () => {
         width: '50px'
     }, {
         name: 'Patient Name',
+        selector: row => row.patientname,
         cell: row => (
             <div className="d-flex align-items-center gap-3">
                 <div
@@ -266,22 +267,27 @@ const D_Appointment = () => {
                 <span className="fw-medium" style={{ color: '#111827' }}>{row.patientname}</span>
             </div>
         ),
+        sortable: true,
     },
     {
         name: 'Diseases',
+        selector: row=>row.surgerydetails?.name,
         cell: row => (
             <span style={{ color: '#6B7280', fontSize: '14px' }}>
                 {row.surgerydetails?.name || 'General Consultation OR Not Specified'}
             </span>
         ),
+        sortable: true,
     },
     {
         name: 'Date & Time',
+        selector: row=>row.date,
         cell: row => (
             <span style={{ color: '#6B7280', fontSize: '14px' }}>
                 {row.date} , {row.time}
             </span>
         ),
+        sortable: true,
     },
     {
         name: 'Status',
@@ -303,10 +309,12 @@ const D_Appointment = () => {
                 </div>
             );
         },
-        width: '120px'
+        sortable: true,
+        width: '120px',
     },
     {
         name: 'Payment Status',
+        selector: row=> row.payment_status,
         cell: row => {
             const statusInfo = getStatusBadge(row.payment_status);
             return (
@@ -325,6 +333,7 @@ const D_Appointment = () => {
                 </div>
             );
         },
+        sortable: true,
         width: '150px'
     },
     {
@@ -409,7 +418,7 @@ const D_Appointment = () => {
 
             </div>
         ),
-        width: '150px',
+        width: '130px',
         center: true
     }]
 
@@ -424,7 +433,7 @@ const D_Appointment = () => {
                         <div className='bg-white rounded p-2'>
                             <h5 className='mb-4'>All Appointment</h5>
                             <div className='p-3'>
-                                <DataTable columns={columns} data={appointment ? appointment : ''} pagination customStyles={customTableStyles} />
+                                <SmartDataTable columns={columns} data={appointment ? appointment : []} pagination customStyles={customTableStyles} />
                             </div>
                         </div>
                     </Col>

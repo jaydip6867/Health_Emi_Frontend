@@ -8,7 +8,7 @@ import FooterBar from '../Visitor/Component/FooterBar'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import DataTable from 'react-data-table-component'
+import SmartDataTable from '../components/SmartDataTable'
 import { MdOutlineRemoveRedEye } from 'react-icons/md'
 
 const P_Blog = () => {
@@ -141,17 +141,18 @@ const P_Blog = () => {
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
-        sortable: true,
         maxWidth: '80px',
         minWidth: '80px',
-        width: '80px'
+        width: '80px',
     }, {
         name: 'Title',
-        cell: row => row.title
+        selector: row=> row.title || '',
+        cell: row => row.title,
+        sortable: true
     },
     {
         name: 'Description',
-        cell: row => row.description
+        cell: row => row.description,
     },
     {
         name: 'View',
@@ -187,7 +188,7 @@ const P_Blog = () => {
                         {/* <P_nav patientname={patient && patient.name} /> */}
                         <div className='bg-white rounded p-3 mb-3'>
                             <h5 className='mb-3'>All Blogs</h5>
-                            <DataTable columns={columns} data={bloglist ? bloglist : ''} pagination customStyles={customTableStyles} />
+                            <SmartDataTable columns={columns} data={bloglist ? bloglist : []} pagination customStyles={customTableStyles} />
                         </div>
                     </Col>
                 </Row>

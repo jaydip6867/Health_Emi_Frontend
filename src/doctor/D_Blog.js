@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
 import { MdDelete, MdDeleteOutline, MdEditDocument, MdOutlineEditCalendar, MdOutlineRemoveRedEye } from 'react-icons/md';
-import DataTable from 'react-data-table-component';
+import SmartDataTable from '../components/SmartDataTable';
 
 const D_Blog = () => {
     const SECRET_KEY = "health-emi";
@@ -378,19 +378,25 @@ const D_Blog = () => {
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
-        sortable: true,
-        width: '80px'
+        width: '80px',
+        sortable: true
     }, {
         name: 'Title',
-        cell: row =>  <span className="fw-medium">{row.title}</span>
+        selector: (row) => row.title || '',
+        cell: row =>  <span className="fw-medium">{row.title}</span>,
+        sortable: true
     },
     {
         name: 'Description',
-        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.description}</span>
+        selector: (row) => row.description || '',
+        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.description}</span>,
+        sortable: true
     },
     {
         name: 'Expiry Date',
-        cell: row => <>{row.expirydate === '' ? 'Not Defined' : row.expirydate}</>
+        selector: row => row.expirydate || 'Not Defined',
+        cell: row => <>{row.expirydate === '' ? 'Not Defined' : row.expirydate}</>,
+        sortable: true
     },
     {
         name: 'Action',
@@ -448,12 +454,6 @@ const D_Blog = () => {
                 </OverlayTrigger>
             </div>
         )
-
-        // <div className='d-flex gap-3'>
-        //     <MdEditDocument className='fs-5' onClick={() => btnedit(row._id)} />
-        //     <MdOutlineRemoveRedEye onClick={() => btnview(row._id)} className='text-primary fs-5' />
-        //     <MdDelete onClick={() => deleteblog(row._id)} className='text-danger fs-5' />
-        // </div>
         ,
         width: '150px'
     }]
@@ -496,7 +496,7 @@ const D_Blog = () => {
                                     />
                                 </Col> */}
                             </Row>
-                            <DataTable columns={columns} data={displist ? displist : ''} pagination customStyles={customTableStyles} />
+                            <SmartDataTable columns={columns} data={displist ? displist : []} pagination customStyles={customTableStyles} />
                         </div>
                     </Col>
                 </Row>
