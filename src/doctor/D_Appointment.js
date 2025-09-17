@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Badge, Button, Col, Container, Dropdown, Form, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
+import { Badge, Button, Card, Col, Container, Dropdown, Form, ListGroup, ListGroupItem, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
 import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +11,7 @@ import SmartDataTable from '../components/SmartDataTable'
 import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye, MdEdit, MdDelete, MdMoreVert } from 'react-icons/md'
 import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
+import { FaCalendarAlt, FaHeart, FaMoneyBillAlt, FaPhoneAlt } from 'react-icons/fa'
 
 const D_Appointment = () => {
     const SECRET_KEY = "health-emi";
@@ -94,7 +95,7 @@ const D_Appointment = () => {
 
     // display Appointment Details in model
     const [show, setShow] = useState(false);
-    const [single_view, setsingleview] = useState(null);
+    const [v, setsingleview] = useState(null);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -271,7 +272,7 @@ const D_Appointment = () => {
     },
     {
         name: 'Diseases',
-        selector: row=>row.surgerydetails?.name,
+        selector: row => row.surgerydetails?.name,
         cell: row => (
             <span style={{ color: '#6B7280', fontSize: '14px' }}>
                 {row.surgerydetails?.name || 'General Consultation OR Not Specified'}
@@ -281,7 +282,7 @@ const D_Appointment = () => {
     },
     {
         name: 'Date & Time',
-        selector: row=>row.date,
+        selector: row => row.date,
         cell: row => (
             <span style={{ color: '#6B7280', fontSize: '14px' }}>
                 {row.date} , {row.time}
@@ -314,7 +315,7 @@ const D_Appointment = () => {
     },
     {
         name: 'Payment Status',
-        selector: row=> row.payment_status,
+        selector: row => row.payment_status,
         cell: row => {
             const statusInfo = getStatusBadge(row.payment_status);
             return (
@@ -440,65 +441,68 @@ const D_Appointment = () => {
                 </Row>
                 {/* view single surgery */}
                 {
-                    single_view && single_view.map((v, i) => {
+                    v && v.map((v, i) => {
                         return (
                             <Modal show={show} onHide={handleClose} centered size="lg" key={i}>
                                 <Modal.Header closeButton>
                                     <Modal.Title>Appointment Detail</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <div className="mb-3">
-                                        <h5 className="fw-bold border-bottom pb-2">Patient Information</h5>
-                                        <p><strong>Name:</strong> {v?.patientname}</p>
-                                        <p><strong>Mobile:</strong> {v?.mobile}</p>
-                                    </div>
-
-                                    {/* Surgery Information */}
-                                    <div className="mb-3">
-                                        <h5 className="fw-bold border-bottom pb-2">Surgery Information</h5>
-                                        <p><strong>Surgery:</strong> {v?.surgerydetails.name}</p>
-                                        <p><strong>Date & Time:</strong> {v?.date}, {v?.time}</p>
-                                        <p>
-                                            <strong>Price:</strong>{" "}
-                                            <span className="text-success fw-bold">
-                                                ₹{v?.surgerydetails.price}
-                                            </span>
-                                        </p>
-                                    </div>
-
-                                    {/* Optional Fields */}
-                                    {v?.appointment_reason && (
-                                        <div className="mb-2">
-                                            <h6 className="fw-bold">Reason</h6>
-                                            <p>{v?.appointment_reason}</p>
-                                        </div>
-                                    )}
-
-                                    {v?.payment_status && (
-                                        <div className="mb-2">
-                                            <h6 className="fw-bold">Payment Status</h6>
-                                            <Badge
-                                                bg={v?.payment_status === "Pending" ? "warning" : "success"}
-                                                text={v?.payment_status === "Pending" ? "dark" : "light"}
-                                            >
-                                                {v?.payment_status}
-                                            </Badge>
-                                        </div>
-                                    )}
-
-                                    {v?.visit_types && (
-                                        <div className="mb-2">
-                                            <h6 className="fw-bold">Visit Type</h6>
-                                            <Badge bg="info">{v?.visit_types}</Badge>
-                                        </div>
-                                    )}
-
-                                    {v?.surgerydetails.additional_features && (
-                                        <div className="mb-2">
-                                            <h6 className="fw-bold">Features</h6>
-                                            <p>{v?.surgerydetails.additional_features}</p>
-                                        </div>
-                                    )}
+                                    <Row>
+                                        <Col md={6}>
+                                            <Card className="mb-4 shadow-sm border-light">
+                                                <Card.Body>
+                                                    <Card.Title className="text-primary">Patient Information</Card.Title>
+                                                    <ListGroup variant="flush">
+                                                        <ListGroupItem><strong>Name:</strong> {v.patientname}</ListGroupItem>
+                                                        <ListGroupItem><strong>Mobile:</strong> {v.mobile}</ListGroupItem>
+                                                    </ListGroup>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Card className="mb-4 shadow-sm border-light">
+                                                <Card.Body>
+                                                    <Card.Title className="text-primary">Surgery Information</Card.Title>
+                                                    <ListGroup variant="flush">
+                                                        <ListGroupItem><strong>Surgery:</strong> {v.surgerydetails.name}</ListGroupItem>
+                                                        <ListGroupItem><strong>Date & Time:</strong> {v.date} , {v.time}</ListGroupItem>
+                                                        <ListGroupItem><strong>Reason:</strong> {v.appointment_reason}</ListGroupItem>
+                                                    </ListGroup>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                        <Col md={4}>
+                                            <Card className="mb-4 shadow-sm border-light">
+                                                <Card.Body>
+                                                    <Card.Title className="text-primary">Payment Status</Card.Title>
+                                                    <ListGroup variant="flush">
+                                                        <ListGroupItem><strong>Status:</strong> <Badge bg={v.payment_status === "Pending" ? "warning" : "success"}>{v.payment_status}</Badge></ListGroupItem>
+                                                    </ListGroup>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                        <Col md={4}>
+                                            <Card className="mb-4 shadow-sm border-light">
+                                                <Card.Body>
+                                                    <Card.Title className="text-primary">Visit Type</Card.Title>
+                                                    <ListGroup variant="flush">
+                                                        <ListGroupItem><strong>Type:</strong> {v.visit_types}</ListGroupItem>
+                                                    </ListGroup>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                        <Col md={4}>
+                                            <Card className="mb-4 shadow-sm border-light">
+                                                <Card.Body>
+                                                    <Card.Title className="text-primary">Features Available</Card.Title>
+                                                    <ListGroup variant="flush">
+                                                        <ListGroupItem><strong>-</strong> {v?.surgerydetails?.additional_features}</ListGroupItem>
+                                                    </ListGroup>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                    </Row>
                                 </Modal.Body>
                             </Modal>
                         )
@@ -530,8 +534,9 @@ const D_Appointment = () => {
                         )
                     })
                 }
-            </Container>
-            {loading ? <Loader /> : ''}
+            </Container >
+            {loading ? <Loader /> : ''
+            }
         </>
     )
 }
