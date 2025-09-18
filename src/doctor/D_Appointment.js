@@ -11,7 +11,6 @@ import SmartDataTable from '../components/SmartDataTable'
 import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye, MdEdit, MdDelete, MdMoreVert } from 'react-icons/md'
 import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
-import { FaCalendarAlt, FaHeart, FaMoneyBillAlt, FaPhoneAlt } from 'react-icons/fa'
 
 const D_Appointment = () => {
     const SECRET_KEY = "health-emi";
@@ -56,7 +55,7 @@ const D_Appointment = () => {
                 Authorization: token
             }
         }).then((res) => {
-            console.log(res.data.Data)
+            // console.log(res.data.Data)
             setappointment(res.data.Data)
         }).catch(function (error) {
             console.log(error);

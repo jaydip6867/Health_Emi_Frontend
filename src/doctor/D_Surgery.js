@@ -10,7 +10,6 @@ import {
   Modal,
   OverlayTrigger,
   Row,
-  Table,
   Tooltip,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -19,12 +18,7 @@ import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import Swal from "sweetalert2";
 import {
-  MdClose,
-  MdDelete,
   MdDeleteOutline,
-  MdDone,
-  MdEditDocument,
-  MdOutlineAutorenew,
   MdOutlineEditCalendar,
   MdOutlineRemoveRedEye,
 } from "react-icons/md";
@@ -173,7 +167,7 @@ const D_Surgery = () => {
       },
     })
       .then((res) => {
-        console.log(res.data?.Data)
+        // console.log(res.data?.Data)
         setsurgerylist(res.data?.Data);
       })
       .catch(function (error) {
