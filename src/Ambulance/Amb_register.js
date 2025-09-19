@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Form, Button, Alert, Modal, Toast } from "react-bootstrap";
+import { Container, Row, Col, Card, Form, Button, Alert, Modal } from "react-bootstrap";
 import { Country, State, City } from "country-state-city";
 import axios from "axios";
 import "../Visitor/css/visitor.css";
