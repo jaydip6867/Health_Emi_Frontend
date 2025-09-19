@@ -5,8 +5,10 @@ import axios from "axios";
 import "../Visitor/css/visitor.css";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
 
 const Amb_register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullname: "",
     email: "",
@@ -56,7 +58,7 @@ const Amb_register = () => {
     ambulance_back_pic: null,
     ambulance_fitness_pic: null
   });
-  
+
   // OTP verification states
   const [showOtpForm, setShowOtpForm] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -69,7 +71,7 @@ const Amb_register = () => {
 
   // Blood group options
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-  
+
   // Experience options
   const experienceOptions = [
     "Less than 1 year",
@@ -132,7 +134,7 @@ const Amb_register = () => {
     if (!files || files.length === 0) return;
 
     const fileList = Array.from(files);
-    
+
     // Update file previews with file objects
     setFilePreviews(prev => ({
       ...prev,
@@ -164,7 +166,7 @@ const Amb_register = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     // Handle state selection
     if (name === "state") {
       const selectedState = states.find(state => state.name === value);
@@ -180,7 +182,7 @@ const Amb_register = () => {
         [name]: value
       }));
     }
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -193,17 +195,17 @@ const Amb_register = () => {
   // OTP input handler
   const handleOtpChange = (index, value) => {
     if (value.length > 1) return; // Only allow single digit
-    
+
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
-    
+
     // Auto focus next input
     if (value && index < 5) {
       const nextInput = document.querySelector(`input[name="otp-${index + 1}"]`);
       if (nextInput) nextInput.focus();
     }
-    
+
     // Clear error when user types
     if (otpErrors) setOtpErrors('');
   };
@@ -219,17 +221,17 @@ const Amb_register = () => {
   // File upload function
   const uploadFile = async (file, fieldName) => {
     if (!file) return null;
-    
+
     const formData = new FormData();
     formData.append('file', file);
-    
+
     try {
       const response = await axios.post('https://healtheasy-o25g.onrender.com/user/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      
+
       // Extract URL from response data
       return response.data?.Data?.url || null;
     } catch (error) {
@@ -241,10 +243,10 @@ const Amb_register = () => {
   // Upload all files
   const uploadAllFiles = async () => {
     const fileFields = [
-      'rc_pic', 'insurance_pic', 'polution_pic', 'driver_pic', 
+      'rc_pic', 'insurance_pic', 'polution_pic', 'driver_pic',
       'driving_licence_pic', 'ambulance_front_pic', 'ambulance_back_pic', 'ambulance_fitness_pic'
     ];
-    
+
     const uploadPromises = fileFields.map(async (fieldName) => {
       const file = formData[fieldName];
       if (file) {
@@ -257,9 +259,9 @@ const Amb_register = () => {
       }
       return { fieldName, url: null };
     });
-    
+
     const results = await Promise.all(uploadPromises);
-    
+
     // Store uploaded file URLs
     const uploadedData = {};
     results.forEach(({ fieldName, url }) => {
@@ -267,7 +269,7 @@ const Amb_register = () => {
         uploadedData[fieldName] = url;
       }
     });
-    
+
     return uploadedData;
   };
 
@@ -279,7 +281,7 @@ const Amb_register = () => {
           'Content-Type': 'application/json',
         },
       });
-      
+
       return response.data;
     } catch (error) {
       console.error('Registration failed:', error);
@@ -290,7 +292,7 @@ const Amb_register = () => {
   const validateForm = () => {
     const newErrors = {};
     const requiredFields = [
-      'fullname', 'email', 'mobile', 'password', 'gender', 'state', 'city', 
+      'fullname', 'email', 'mobile', 'password', 'gender', 'state', 'city',
       'address', 'ambulance_type', 'rc_no', 'blood_group', 'dob',
       'insurance_expiry', 'insurance_holder', 'polution_expiry', 'vehicle_no',
       'experience', 'ambulance_fitness_expiry'
@@ -364,7 +366,7 @@ const Amb_register = () => {
     });
 
     setErrors(newErrors);
-    
+
     // Show toast for each error
     if (Object.keys(newErrors).length > 0) {
       Object.values(newErrors).forEach(error => {
@@ -379,13 +381,13 @@ const Amb_register = () => {
       });
       return false;
     }
-    
+
     return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Check if terms are accepted
     if (!termsAccepted) {
       toast.error('Please accept the terms and conditions to continue', {
@@ -398,7 +400,7 @@ const Amb_register = () => {
       });
       return;
     }
-    
+
     if (!validateForm()) {
       setShowAlert({
         show: true,
@@ -409,7 +411,7 @@ const Amb_register = () => {
     }
 
     setIsSubmitting(true);
-    
+
     try {
       // Step 1: Upload all files first
       setShowAlert({
@@ -417,9 +419,9 @@ const Amb_register = () => {
         message: "Uploading files... Please wait.",
         type: "info"
       });
-      
+
       const uploadedData = await uploadAllFiles();
-      
+
       // Step 2: Prepare registration data with uploaded file responses
       const registrationData = { ...formData };
       Object.keys(uploadedData).forEach(fieldName => {
@@ -427,19 +429,19 @@ const Amb_register = () => {
           registrationData[fieldName] = uploadedData[fieldName];
         }
       });
-      
+
       // Step 3: Call registration API
       setShowAlert({
         show: true,
         message: "Processing registration... Please wait.",
         type: "info"
       });
-      
+
       const registrationResponse = await registerAmbulance(registrationData);
-      
+
       // Step 4: Store response in localStorage
       localStorage.setItem('ambulanceRegistration', JSON.stringify(registrationResponse));
-      
+
       // Step 5: Show OTP form
       setShowOtpForm(true);
       setShowAlert({
@@ -449,7 +451,7 @@ const Amb_register = () => {
       });
       setCanResendOtp(false);
       setResendTimer(30);
-      
+
     } catch (error) {
       setShowAlert({
         show: true,
@@ -464,26 +466,37 @@ const Amb_register = () => {
   // OTP verification handler
   const handleOtpVerification = async (e) => {
     e.preventDefault();
-    
+
     const otpString = otp.join('');
     if (otpString.length !== 6) {
       setOtpErrors('Please enter complete 6-digit OTP');
       return;
     }
-    
+
     setIsVerifyingOtp(true);
-    
+
     try {
       // Simulate OTP verification API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // For demo purposes, accept any 6-digit OTP
-      setShowAlert({
-        show: true,
-        message: "Registration successful! Welcome to Health Easy EMI Ambulance Services.",
-        type: "success"
+
+      await axios.post(`https://healtheasy-o25g.onrender.com/ambulance/signup/otpverification`, {
+        email: formData.email,
+        otp: otpString
+      }).then(response => {
+        setShowAlert({
+          show: true,
+          message: "Registration successful! Welcome to Health Easy EMI Ambulance Services.",
+          type: "success"
+        });
+        navigate('/ambulance');
+      }).catch(error => {
+        setShowAlert({
+          show: true,
+          message: error.message || "OTP verification failed. Please try again.",
+          type: "danger"
+        });
       });
-      
+
       // Reset all forms
       setShowOtpForm(false);
       setFormData({
@@ -526,7 +539,7 @@ const Amb_register = () => {
       });
       setSelectedStateCode("");
       setOtp(['', '', '', '', '', '']);
-      
+
     } catch (error) {
       setOtpErrors('Invalid OTP. Please try again.');
     } finally {
@@ -539,7 +552,7 @@ const Amb_register = () => {
     try {
       // Simulate resend OTP API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       setShowAlert({
         show: true,
         message: `New OTP sent to ${formData.mobile}`,
@@ -548,7 +561,7 @@ const Amb_register = () => {
       setCanResendOtp(false);
       setResendTimer(30);
       setOtp(['', '', '', '', '', '']);
-      
+
     } catch (error) {
       setShowAlert({
         show: true,
@@ -560,7 +573,7 @@ const Amb_register = () => {
 
   const renderFileInput = (name, label, accept = '*', showPreview = false) => {
     const files = filePreviews[name] || [];
-    
+
     return (
       <Form.Group className="mb-3">
         <Form.Label>{label}</Form.Label>
@@ -574,34 +587,34 @@ const Amb_register = () => {
             onChange={handleFileChange}
             style={{ display: 'none' }}
           />
-          <label 
+          <label
             className="form-control d-flex justify-content-between align-items-center"
             htmlFor={name}
             style={{ cursor: 'pointer' }}
           >
             <span>
-              {files.length > 0 
-                ? `${files.length} file${files.length > 1 ? 's' : ''} selected` 
+              {files.length > 0
+                ? `${files.length} file${files.length > 1 ? 's' : ''} selected`
                 : 'Choose file...'}
             </span>
             <i className="bi bi-upload"></i>
           </label>
         </div>
-        
+
         {files.length > 0 && (
           <div className="mt-2">
             {files.map((file, index) => (
               <div key={index}>
                 {showPreview && file.type?.startsWith('image/') ? (
                   <div className="position-relative mb-2">
-                    <img 
-                      src={URL.createObjectURL(file)} 
-                      alt={`Preview ${index + 1}`} 
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${index + 1}`}
                       className="img-thumbnail"
                       style={{ maxWidth: '200px', maxHeight: '150px' }}
                     />
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       className="btn-close position-absolute top-0 end-0 bg-white rounded-circle p-1 m-1"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -615,8 +628,8 @@ const Amb_register = () => {
                     <small className="text-muted">
                       {file.name} ({(file.size / 1024).toFixed(2)} KB)
                     </small>
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       className="btn-close btn-sm"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -630,7 +643,7 @@ const Amb_register = () => {
             ))}
           </div>
         )}
-        
+
         {errors[name] && (
           <div className="invalid-feedback d-block">
             {errors[name]}
@@ -645,8 +658,8 @@ const Amb_register = () => {
       <Modal.Header closeButton>
         <Modal.Title>Terms and Conditions</Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{ 
-        maxHeight: '60vh', 
+      <Modal.Body style={{
+        maxHeight: '60vh',
         overflow: 'auto',
         whiteSpace: 'pre-line',
         wordWrap: 'break-word',
@@ -681,12 +694,12 @@ const Amb_register = () => {
                   </div>
                   <p className="text-white mb-0 opacity-75">Join our emergency medical services network</p>
                 </Card.Header>
-                
+
                 <Card.Body className="p-4 p-md-5">
                   {showAlert.show && (
-                    <Alert 
-                      variant={showAlert.type} 
-                      dismissible 
+                    <Alert
+                      variant={showAlert.type}
+                      dismissible
                       onClose={() => setShowAlert({ show: false, message: "", type: "" })}
                       className="mb-4"
                     >
@@ -696,531 +709,531 @@ const Amb_register = () => {
 
                   {!showOtpForm ? (
                     <Form onSubmit={handleSubmit}>
-                    <Row>
-                      {/* Full Name */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">
-                            Full Name *
-                          </Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="fullname"
-                            value={formData.fullname}
-                            onChange={handleInputChange}
-                            placeholder="Enter your full name"
-                            isInvalid={!!errors.fullname}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.fullname}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* Email */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">
-                            Email Address *
-                          </Form.Label>
-                          <Form.Control
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            placeholder="Enter your email"
-                            isInvalid={!!errors.email}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.email}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* Mobile */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">
-                            Mobile Number *
-                          </Form.Label>
-                          <Form.Control
-                            type="tel"
-                            name="mobile"
-                            value={formData.mobile}
-                            onChange={handleInputChange}
-                            placeholder="Enter 10-digit mobile number"
-                            isInvalid={!!errors.mobile}
-                            className="py-2"
-                            maxLength="10"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.mobile}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* Password */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">
-                            Password *
-                          </Form.Label>
-                          <Form.Control
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            placeholder="Create a strong password"
-                            isInvalid={!!errors.password}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.password}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* Gender */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Gender *</Form.Label>
-                          <div className="d-flex gap-4 mt-2">
-                            <Form.Check
-                              type="radio"
-                              id="Male"
-                              name="gender"
-                              value="Male"
-                              label="Male"
-                              checked={formData.gender === "Male"}
+                      <Row>
+                        {/* Full Name */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">
+                              Full Name *
+                            </Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="fullname"
+                              value={formData.fullname}
                               onChange={handleInputChange}
-                              isInvalid={!!errors.gender}
+                              placeholder="Enter your full name"
+                              isInvalid={!!errors.fullname}
+                              className="py-2"
                             />
-                            <Form.Check
-                              type="radio"
-                              id="Female"
-                              name="gender"
-                              value="Female"
-                              label="Female"
-                              checked={formData.gender === "Female"}
+                            <Form.Control.Feedback type="invalid">
+                              {errors.fullname}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Email */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">
+                              Email Address *
+                            </Form.Label>
+                            <Form.Control
+                              type="email"
+                              name="email"
+                              value={formData.email}
                               onChange={handleInputChange}
-                              isInvalid={!!errors.gender}
+                              placeholder="Enter your email"
+                              isInvalid={!!errors.email}
+                              className="py-2"
                             />
-                          </div>
-                          {errors.gender && (
-                            <div className="invalid-feedback d-block">
-                              {errors.gender}
+                            <Form.Control.Feedback type="invalid">
+                              {errors.email}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Mobile */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">
+                              Mobile Number *
+                            </Form.Label>
+                            <Form.Control
+                              type="tel"
+                              name="mobile"
+                              value={formData.mobile}
+                              onChange={handleInputChange}
+                              placeholder="Enter 10-digit mobile number"
+                              isInvalid={!!errors.mobile}
+                              className="py-2"
+                              maxLength="10"
+                            />
+                            <Form.Control.Feedback type="invalid">
+                              {errors.mobile}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Password */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">
+                              Password *
+                            </Form.Label>
+                            <Form.Control
+                              type="password"
+                              name="password"
+                              value={formData.password}
+                              onChange={handleInputChange}
+                              placeholder="Create a strong password"
+                              isInvalid={!!errors.password}
+                              className="py-2"
+                            />
+                            <Form.Control.Feedback type="invalid">
+                              {errors.password}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Gender */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">Gender *</Form.Label>
+                            <div className="d-flex gap-4 mt-2">
+                              <Form.Check
+                                type="radio"
+                                id="Male"
+                                name="gender"
+                                value="Male"
+                                label="Male"
+                                checked={formData.gender === "Male"}
+                                onChange={handleInputChange}
+                                isInvalid={!!errors.gender}
+                              />
+                              <Form.Check
+                                type="radio"
+                                id="Female"
+                                name="gender"
+                                value="Female"
+                                label="Female"
+                                checked={formData.gender === "Female"}
+                                onChange={handleInputChange}
+                                isInvalid={!!errors.gender}
+                              />
+                            </div>
+                            {errors.gender && (
+                              <div className="invalid-feedback d-block">
+                                {errors.gender}
+                              </div>
+                            )}
+                          </Form.Group>
+                        </Col>
+
+                        {/* Date of Birth */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">Date of Birth *</Form.Label>
+                            <Form.Control
+                              type="date"
+                              name="dob"
+                              value={formData.dob}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.dob}
+                              className="py-2"
+                              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                              {errors.dob}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Blood Group */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">Blood Group *</Form.Label>
+                            <Form.Select
+                              name="blood_group"
+                              value={formData.blood_group}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.blood_group}
+                              className="py-2"
+                            >
+                              <option value="">Select your blood group</option>
+                              {bloodGroups.map((group) => (
+                                <option key={group} value={group}>
+                                  {group}
+                                </option>
+                              ))}
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                              {errors.blood_group}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Ambulance Type */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">Ambulance Type *</Form.Label>
+                            <div className="d-flex gap-4 mt-2">
+                              <Form.Check
+                                type="radio"
+                                id="advance"
+                                name="ambulance_type"
+                                value="Advance"
+                                label="Advance"
+                                checked={formData.ambulance_type === "Advance"}
+                                onChange={handleInputChange}
+                                isInvalid={!!errors.ambulance_type}
+                              />
+                              <Form.Check
+                                type="radio"
+                                id="basic"
+                                name="ambulance_type"
+                                value="Basic"
+                                label="Basic"
+                                checked={formData.ambulance_type === "Basic"}
+                                onChange={handleInputChange}
+                                isInvalid={!!errors.ambulance_type}
+                              />
+                            </div>
+                            {errors.ambulance_type && (
+                              <div className="invalid-feedback d-block">
+                                {errors.ambulance_type}
+                              </div>
+                            )}
+                          </Form.Group>
+                        </Col>
+
+                        {/* State */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">
+                              State *
+                            </Form.Label>
+                            <Form.Select
+                              name="state"
+                              value={formData.state}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.state}
+                              className="py-2"
+                            >
+                              <option value="">Select your state</option>
+                              {states.map((state) => (
+                                <option key={state.isoCode} value={state.name}>
+                                  {state.name}
+                                </option>
+                              ))}
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                              {errors.state}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* City */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">
+                              City *
+                            </Form.Label>
+                            <Form.Select
+                              name="city"
+                              value={formData.city}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.city}
+                              className="py-2"
+                              disabled={!selectedStateCode}
+                            >
+                              <option value="">
+                                {selectedStateCode ? "Select your city" : "Please select a state first"}
+                              </option>
+                              {cities.map((city) => (
+                                <option key={city.name} value={city.name}>
+                                  {city.name}
+                                </option>
+                              ))}
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                              {errors.city}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Address */}
+                        <Col md={12} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">
+                              Complete Address *
+                            </Form.Label>
+                            <Form.Control
+                              as="textarea"
+                              rows={3}
+                              name="address"
+                              value={formData.address}
+                              onChange={handleInputChange}
+                              placeholder="Enter your complete address"
+                              isInvalid={!!errors.address}
+                              className="py-2"
+                            />
+                            <Form.Control.Feedback type="invalid">
+                              {errors.address}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Ambulance Details Section */}
+                        <Col md={12} className="mb-4">
+                          <h4 className="text-center mb-4 bg-primary-subtle py-2 rounded" style={{ color: "var(--primary-color-600)", fontWeight: "bold" }}>
+                            Vehicle & Driver Details
+                          </h4>
+                        </Col>
+
+                        {/* RC Number */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">RC Number *</Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="rc_no"
+                              value={formData.rc_no}
+                              onChange={handleInputChange}
+                              placeholder="Enter RC number"
+                              isInvalid={!!errors.rc_no}
+                              className="py-2"
+                            />
+                            <Form.Control.Feedback type="invalid">
+                              {errors.rc_no}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* RC Picture Upload */}
+                        <Col md={6} className="mb-3">
+                          {renderFileInput('rc_pic', 'RC Document', 'image/*,.pdf')}
+                        </Col>
+
+                        {/* Vehicle Number */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">Vehicle Number *</Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="vehicle_no"
+                              value={formData.vehicle_no}
+                              onChange={handleInputChange}
+                              placeholder="Enter vehicle number (e.g., MH12AB1234)"
+                              isInvalid={!!errors.vehicle_no}
+                              className="py-2"
+                              style={{ textTransform: 'uppercase' }}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                              {errors.vehicle_no}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Experience */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">Driving Experience *</Form.Label>
+                            <Form.Select
+                              name="experience"
+                              value={formData.experience}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.experience}
+                              className="py-2"
+                            >
+                              <option value="">Select your experience</option>
+                              {experienceOptions.map((exp) => (
+                                <option key={exp} value={exp}>
+                                  {exp}
+                                </option>
+                              ))}
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                              {errors.experience}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Insurance Holder */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">Insurance Holder Name *</Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="insurance_holder"
+                              value={formData.insurance_holder}
+                              onChange={handleInputChange}
+                              placeholder="Enter insurance holder name"
+                              isInvalid={!!errors.insurance_holder}
+                              className="py-2"
+                            />
+                            <Form.Control.Feedback type="invalid">
+                              {errors.insurance_holder}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Insurance Expiry */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">Insurance Expiry Date *</Form.Label>
+                            <Form.Control
+                              type="date"
+                              name="insurance_expiry"
+                              value={formData.insurance_expiry}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.insurance_expiry}
+                              className="py-2"
+                              min={new Date().toISOString().split('T')[0]}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                              {errors.insurance_expiry}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Insurance Picture */}
+                        <Col md={6} className="mb-3">
+                          {renderFileInput('insurance_pic', 'Insurance Document', 'image/*,.pdf')}
+                        </Col>
+
+                        {/* polution Expiry */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">polution Certificate Expiry *</Form.Label>
+                            <Form.Control
+                              type="date"
+                              name="polution_expiry"
+                              value={formData.polution_expiry}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.polution_expiry}
+                              className="py-2"
+                              min={new Date().toISOString().split('T')[0]}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                              {errors.polution_expiry}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* polution Picture */}
+                        <Col md={6} className="mb-3">
+                          {renderFileInput('polution_pic', 'polution Certificate', 'image/*,.pdf')}
+                        </Col>
+
+                        {/* Driver Picture */}
+                        <Col md={6} className="mb-3">
+                          {renderFileInput('driver_pic', 'Driver Photo', 'image/*', true)}
+                        </Col>
+
+                        {/* Driving License Picture */}
+                        <Col md={6} className="mb-3">
+                          {renderFileInput('driving_licence_pic', 'Driving License', 'image/*,.pdf')}
+                        </Col>
+
+                        {/* Ambulance Front Picture */}
+                        <Col md={6} className="mb-3">
+                          {renderFileInput('ambulance_front_pic', 'Ambulance Front Photo', 'image/*', true)}
+                        </Col>
+
+                        {/* Ambulance Back Picture */}
+                        <Col md={6} className="mb-3">
+                          {renderFileInput('ambulance_back_pic', 'Ambulance Back Photo', 'image/*', true)}
+                        </Col>
+
+                        {/* Ambulance Fitness Expiry */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">Fitness Certificate Expiry *</Form.Label>
+                            <Form.Control
+                              type="date"
+                              name="ambulance_fitness_expiry"
+                              value={formData.ambulance_fitness_expiry}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.ambulance_fitness_expiry}
+                              className="py-2"
+                              min={new Date().toISOString().split('T')[0]}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                              {errors.ambulance_fitness_expiry}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+
+                        {/* Ambulance Fitness Picture */}
+                        <Col md={6} className="mb-3">
+                          {renderFileInput('ambulance_fitness_pic', 'Fitness Certificate', 'image/*,.pdf')}
+                        </Col>
+
+                        <Form.Group className="mb-3">
+                          <Form.Check
+                            type="checkbox"
+                            id="termsCheckbox"
+                            checked={termsAccepted}
+                            onChange={(e) => setTermsAccepted(e.target.checked)}
+                            label={
+                              <span>
+                                I agree to the{' '}
+                                <a
+                                  href="#"
+                                  className="text-primary"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setShowTcModal(true);
+                                  }}
+                                >
+                                  Terms and Conditions
+                                </a>
+                              </span>
+                            }
+                          />
+                          {shortTerms && (
+                            <div className="form-text text-muted" style={{ maxHeight: '60px', overflow: 'hidden' }}>
+                              {shortTerms}
                             </div>
                           )}
                         </Form.Group>
-                      </Col>
 
-                      {/* Date of Birth */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Date of Birth *</Form.Label>
-                          <Form.Control
-                            type="date"
-                            name="dob"
-                            value={formData.dob}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.dob}
-                            className="py-2"
-                            max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.dob}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
+                      </Row>
 
-                      {/* Blood Group */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Blood Group *</Form.Label>
-                          <Form.Select
-                            name="blood_group"
-                            value={formData.blood_group}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.blood_group}
-                            className="py-2"
-                          >
-                            <option value="">Select your blood group</option>
-                            {bloodGroups.map((group) => (
-                              <option key={group} value={group}>
-                                {group}
-                              </option>
-                            ))}
-                          </Form.Select>
-                          <Form.Control.Feedback type="invalid">
-                            {errors.blood_group}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* Ambulance Type */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Ambulance Type *</Form.Label>
-                          <div className="d-flex gap-4 mt-2">
-                            <Form.Check
-                              type="radio"
-                              id="advance"
-                              name="ambulance_type"
-                              value="Advance"
-                              label="Advance"
-                              checked={formData.ambulance_type === "Advance"}
-                              onChange={handleInputChange}
-                              isInvalid={!!errors.ambulance_type}
-                            />
-                            <Form.Check
-                              type="radio"
-                              id="basic"
-                              name="ambulance_type"
-                              value="Basic"
-                              label="Basic"
-                              checked={formData.ambulance_type === "Basic"}
-                              onChange={handleInputChange}
-                              isInvalid={!!errors.ambulance_type}
-                            />
-                          </div>
-                          {errors.ambulance_type && (
-                            <div className="invalid-feedback d-block">
-                              {errors.ambulance_type}
-                            </div>
+                      <div className="d-grid gap-2 mt-4">
+                        <Button
+                          type="submit"
+                          size="lg"
+                          disabled={isSubmitting}
+                          className="py-3 fw-semibold"
+                          style={{
+                            backgroundColor: "var(--primary-color-600)",
+                            border: "none",
+                            borderRadius: "12px"
+                          }}
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                              Registering...
+                            </>
+                          ) : (
+                            <>
+                              Register Ambulance
+                            </>
                           )}
-                        </Form.Group>
-                      </Col>
+                        </Button>
+                      </div>
 
-                      {/* State */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">
-                            State *
-                          </Form.Label>
-                          <Form.Select
-                            name="state"
-                            value={formData.state}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.state}
-                            className="py-2"
-                          >
-                            <option value="">Select your state</option>
-                            {states.map((state) => (
-                              <option key={state.isoCode} value={state.name}>
-                                {state.name}
-                              </option>
-                            ))}
-                          </Form.Select>
-                          <Form.Control.Feedback type="invalid">
-                            {errors.state}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* City */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">
-                            City *
-                          </Form.Label>
-                          <Form.Select
-                            name="city"
-                            value={formData.city}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.city}
-                            className="py-2"
-                            disabled={!selectedStateCode}
-                          >
-                            <option value="">
-                              {selectedStateCode ? "Select your city" : "Please select a state first"}
-                            </option>
-                            {cities.map((city) => (
-                              <option key={city.name} value={city.name}>
-                                {city.name}
-                              </option>
-                            ))}
-                          </Form.Select>
-                          <Form.Control.Feedback type="invalid">
-                            {errors.city}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* Address */}
-                      <Col md={12} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">
-                            Complete Address *
-                          </Form.Label>
-                          <Form.Control
-                            as="textarea"
-                            rows={3}
-                            name="address"
-                            value={formData.address}
-                            onChange={handleInputChange}
-                            placeholder="Enter your complete address"
-                            isInvalid={!!errors.address}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.address}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* Ambulance Details Section */}
-                      <Col md={12} className="mb-4">
-                        <h4 className="text-center mb-4 bg-primary-subtle py-2 rounded" style={{ color: "var(--primary-color-600)", fontWeight: "bold" }}>
-                          Vehicle & Driver Details
-                        </h4>
-                      </Col>
-
-                      {/* RC Number */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">RC Number *</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="rc_no"
-                            value={formData.rc_no}
-                            onChange={handleInputChange}
-                            placeholder="Enter RC number"
-                            isInvalid={!!errors.rc_no}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.rc_no}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* RC Picture Upload */}
-                      <Col md={6} className="mb-3">
-                        {renderFileInput('rc_pic', 'RC Document', 'image/*,.pdf')}
-                      </Col>
-
-                      {/* Vehicle Number */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Vehicle Number *</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="vehicle_no"
-                            value={formData.vehicle_no}
-                            onChange={handleInputChange}
-                            placeholder="Enter vehicle number (e.g., MH12AB1234)"
-                            isInvalid={!!errors.vehicle_no}
-                            className="py-2"
-                            style={{ textTransform: 'uppercase' }}
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.vehicle_no}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* Experience */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Driving Experience *</Form.Label>
-                          <Form.Select
-                            name="experience"
-                            value={formData.experience}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.experience}
-                            className="py-2"
-                          >
-                            <option value="">Select your experience</option>
-                            {experienceOptions.map((exp) => (
-                              <option key={exp} value={exp}>
-                                {exp}
-                              </option>
-                            ))}
-                          </Form.Select>
-                          <Form.Control.Feedback type="invalid">
-                            {errors.experience}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* Insurance Holder */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Insurance Holder Name *</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="insurance_holder"
-                            value={formData.insurance_holder}
-                            onChange={handleInputChange}
-                            placeholder="Enter insurance holder name"
-                            isInvalid={!!errors.insurance_holder}
-                            className="py-2"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.insurance_holder}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* Insurance Expiry */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Insurance Expiry Date *</Form.Label>
-                          <Form.Control
-                            type="date"
-                            name="insurance_expiry"
-                            value={formData.insurance_expiry}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.insurance_expiry}
-                            className="py-2"
-                            min={new Date().toISOString().split('T')[0]}
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.insurance_expiry}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* Insurance Picture */}
-                      <Col md={6} className="mb-3">
-                        {renderFileInput('insurance_pic', 'Insurance Document', 'image/*,.pdf')}
-                      </Col>
-
-                      {/* polution Expiry */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">polution Certificate Expiry *</Form.Label>
-                          <Form.Control
-                            type="date"
-                            name="polution_expiry"
-                            value={formData.polution_expiry}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.polution_expiry}
-                            className="py-2"
-                            min={new Date().toISOString().split('T')[0]}
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.polution_expiry}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* polution Picture */}
-                      <Col md={6} className="mb-3">
-                        {renderFileInput('polution_pic', 'polution Certificate', 'image/*,.pdf')}
-                      </Col>
-
-                      {/* Driver Picture */}
-                      <Col md={6} className="mb-3">
-                        {renderFileInput('driver_pic', 'Driver Photo', 'image/*', true)}
-                      </Col>
-
-                      {/* Driving License Picture */}
-                      <Col md={6} className="mb-3">
-                        {renderFileInput('driving_licence_pic', 'Driving License', 'image/*,.pdf')}
-                      </Col>
-
-                      {/* Ambulance Front Picture */}
-                      <Col md={6} className="mb-3">
-                        {renderFileInput('ambulance_front_pic', 'Ambulance Front Photo', 'image/*', true)}
-                      </Col>
-
-                      {/* Ambulance Back Picture */}
-                      <Col md={6} className="mb-3">
-                        {renderFileInput('ambulance_back_pic', 'Ambulance Back Photo', 'image/*', true)}
-                      </Col>
-
-                      {/* Ambulance Fitness Expiry */}
-                      <Col md={6} className="mb-3">
-                        <Form.Group>
-                          <Form.Label className="fw-semibold text-dark">Fitness Certificate Expiry *</Form.Label>
-                          <Form.Control
-                            type="date"
-                            name="ambulance_fitness_expiry"
-                            value={formData.ambulance_fitness_expiry}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.ambulance_fitness_expiry}
-                            className="py-2"
-                            min={new Date().toISOString().split('T')[0]}
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.ambulance_fitness_expiry}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      {/* Ambulance Fitness Picture */}
-                      <Col md={6} className="mb-3">
-                        {renderFileInput('ambulance_fitness_pic', 'Fitness Certificate', 'image/*,.pdf')}
-                      </Col>
-
-                      <Form.Group className="mb-3">
-                        <Form.Check 
-                          type="checkbox"
-                          id="termsCheckbox"
-                          checked={termsAccepted}
-                          onChange={(e) => setTermsAccepted(e.target.checked)}
-                          label={
-                            <span>
-                              I agree to the{' '}
-                              <a 
-                                href="#" 
-                                className="text-primary"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  setShowTcModal(true);
-                                }}
-                              >
-                                Terms and Conditions
-                              </a>
-                            </span>
-                          }
-                        />
-                        {shortTerms && (
-                          <div className="form-text text-muted" style={{ maxHeight: '60px', overflow: 'hidden' }}>
-                            {shortTerms}
-                          </div>
-                        )}
-                      </Form.Group>
-
-                    </Row>
-
-                    <div className="d-grid gap-2 mt-4">
-                      <Button
-                        type="submit"
-                        size="lg"
-                        disabled={isSubmitting}
-                        className="py-3 fw-semibold"
-                        style={{
-                          backgroundColor: "var(--primary-color-600)",
-                          border: "none",
-                          borderRadius: "12px"
-                        }}
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            Registering...
-                          </>
-                        ) : (
-                          <>
-                            Register Ambulance
-                          </>
-                        )}
-                      </Button>
-                    </div>
-
-                    <div className="text-center mt-4">
-                      <p className="text-muted mb-0">
-                        Already have an account?{" "}
-                        <a href="/ambulance" className="text-decoration-none fw-semibold" style={{ color: "var(--primary-color-600)" }}>
-                          Sign in here
-                        </a>
-                      </p>
-                    </div>
-                  </Form>
+                      <div className="text-center mt-4">
+                        <p className="text-muted mb-0">
+                          Already have an account?{" "}
+                          <a href="/ambulance" className="text-decoration-none fw-semibold" style={{ color: "var(--primary-color-600)" }}>
+                            Sign in here
+                          </a>
+                        </p>
+                      </div>
+                    </Form>
                   ) : (
                     /* OTP Verification Form */
                     <div className="text-center">
@@ -1329,7 +1342,7 @@ const Amb_register = () => {
         </Container>
       </div>
       <TermsAndConditionsModal />
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={5000}
         hideProgressBar={false}
