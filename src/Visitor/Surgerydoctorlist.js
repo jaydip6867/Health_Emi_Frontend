@@ -117,7 +117,7 @@ const Surgerydoctorlist = () => {
                 <Container>
                     <h2 className='mb-5'>{doctor_list && doctor_list[0]?.surgerytypeid?.surgerytypename} Doctors List</h2>
                     {doctor_list.length <= 0 ? <Col>No Doctor Found...</Col> : doctor_list.map((doc, i) => (
-                        <DoctorListComponents details={doc} />
+                        <DoctorListComponents details={doc} key={i} />
                     ))}
                 </Container>
             </section>

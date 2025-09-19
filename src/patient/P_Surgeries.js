@@ -164,7 +164,7 @@ const P_Surgeries = () => {
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
-        width: '80px',
+        width: '60px',
     }, {
         name: 'Doctor Name',
         selector: row => row.doctorid?.name || '',
@@ -196,7 +196,7 @@ const P_Surgeries = () => {
     {
         name: 'Price',
         selector: row => `${row?.surgerydetails?.price || ''}`,
-        cell: row => `₹ ${row?.surgerydetails?.price} /-`,
+        cell: row => <span  className=' text-nowrap'>₹{row?.surgerydetails?.price}/-</span>,
         sortable: true
     },
     {

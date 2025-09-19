@@ -24,7 +24,7 @@ const DoctorProfilePage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [endDate, setEndDate] = useState(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
-  const [selectedConsultationType, setSelectedConsultationType] = useState('clinic_visit');
+  const [selectedConsultationType, setSelectedConsultationType] = useState('');
 
   // Available time slots
   const timeSlots = [
@@ -101,7 +101,7 @@ const DoctorProfilePage = () => {
       }
     }).then((res) => {
       setdocprofile(res.data.Data)
-      // console.log('doctor ', res.data.Data)
+      console.log('doctor ', res.data.Data)
     }).catch(function (error) {
       console.log(error);
     }).finally(() => {
@@ -146,43 +146,43 @@ const DoctorProfilePage = () => {
       const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
       // Combine time + meridiem
       const timeWithMeridiem = `${timePart} ${meridiem}`;
-      console.log(apt_data, datePart, timeWithMeridiem )
-      // setloading(true)
-      // axios({
-      //   method: 'post',
-      //   url: 'https://healtheasy-o25g.onrender.com/user/appointments/save',
-      //   headers: {
-      //     Authorization: token
-      //   },
-      //   data: {
-      //     "patientname": patient.name,
-      //     "mobile": patient.mobile,
-      //     "alt_mobile": apt_data.alt_mobile,
-      //     "date": datePart,
-      //     "time": timeWithMeridiem,
-      //     "surgeryid": apt_data.surgeryid,
-      //     "appointment_reason": apt_data.appointment_reason,
-      //     "report": apt_data.report,
-      //     "doctorid": id,
-      //     "visit_types": apt_data.visit_types
-      //   }
-      // }).then((res) => {
-      //   Swal.fire({
-      //     title: "Appointment Add Successfully...",
-      //     icon: "success",
-      //     confirmButtonText: 'Ok.'
-      //   }).then((result) => {
-      //     navigate('/patient/appointment');
-      //   });
-      // }).catch(function (error) {
-      //   Swal.fire({
-      //     title: "Something Went Wrong.",
-      //     text: "Something Is Missing. Please Check Details...",
-      //     icon: "error",
-      //   });
-      // }).finally(() => {
-      //   setloading(false)
-      // });
+      console.log(apt_data, datePart, timeWithMeridiem, selectedConsultationType)
+      setloading(true)
+      axios({
+        method: 'post',
+        url: 'https://healtheasy-o25g.onrender.com/user/appointments/save',
+        headers: {
+          Authorization: token
+        },
+        data: {
+          "patientname": patient.name,
+          "mobile": patient.mobile,
+          "alt_mobile": apt_data.alt_mobile,
+          "date": datePart,
+          "time": timeWithMeridiem,
+          "surgeryid": apt_data.surgeryid,
+          "appointment_reason": apt_data.appointment_reason,
+          "report": apt_data.report,
+          "doctorid": id,
+          "visit_types": selectedConsultationType
+        }
+      }).then((res) => {
+        Swal.fire({
+          title: "Appointment Add Successfully...",
+          icon: "success",
+          confirmButtonText: 'Ok.'
+        }).then((result) => {
+          navigate('/patient/appointment');
+        });
+      }).catch(function (error) {
+        Swal.fire({
+          title: "Something Went Wrong.",
+          text: "Something Is Missing. Please Check Details...",
+          icon: "error",
+        });
+      }).finally(() => {
+        setloading(false)
+      });
     } else {
       // navigate('/patient')
     }
@@ -512,7 +512,7 @@ const DoctorProfilePage = () => {
                 <Card.Body className="p-4">
                   <h5 className="fw-bold mb-4">Surgeries</h5>
                   <Row className="g-4">
-                    {doctor_profile.surgeriesDetails.map((surgery, index) => (
+                    {doctor_profile.surgeriesDetails.length === 0 ? <p className='text-muted'>Surgery not added...</p> : doctor_profile.surgeriesDetails.map((surgery, index) => (
                       <Col md={6} key={index}>
                         <Card className="border-1 pointer shadow-sm border-opacity-25 h-100" style={{ borderRadius: '12px' }} onClick={() => handleServiceModalShow(surgery)}>
                           <Card.Body className="p-3">
@@ -572,31 +572,35 @@ const DoctorProfilePage = () => {
               <Card className="mb-4 border-0 shadow-sm" style={{ borderRadius: '15px' }}>
                 <Card.Body className="p-4">
                   <h5 className="fw-bold mb-4">Reviews</h5>
-                  <div className="d-flex align-items-start mb-4">
-                    <Image
-                      src={require("../assets/image/doctor_img.jpg")}
-                      roundedCircle
-                      width={50}
-                      height={50}
-                      className="me-3"
-                    />
-                    <div className="flex-grow-1">
-                      <div className="d-flex align-items-center mb-2">
-                        <h6 className="fw-bold mb-0 me-2">Bharti patel</h6>
+                  <div className='card p-3 shadow'>
+                    <div className="d-flex align-items-start mb-3 pb-2 border-bottom">
+                      <Image
+                        src={require("../assets/image/doctor_img.jpg")}
+                        roundedCircle
+                        width={50}
+                        height={50}
+                        className="me-3"
+                      />
+                      <div className="flex-grow-1">
+                        <div className="d-flex align-items-center mb-2">
+                          <h6 className="fw-bold mb-0 me-2">Bharti patel</h6>
+                        </div>
+                        <div className="d-flex align-items-center mb-2">
+                          {[...Array(5)].map((_, i) => (
+                            <BsStarFill key={i} className="text-warning me-1" size={14} />
+                          ))}
+                          <span className="small text-muted ms-2">5.0</span>
+                        </div>
+
                       </div>
-                      <div className="d-flex align-items-center mb-2">
-                        {[...Array(5)].map((_, i) => (
-                          <BsStarFill key={i} className="text-warning me-1" size={14} />
-                        ))}
-                        <span className="small text-muted ms-2">5.0</span>
-                      </div>
-                      <h6 className="fw-bold mb-2">Visit For Root Canal Treatment</h6>
-                      <p className="text-muted small mb-0">
-                        I had a lot of pain in my tooth and not involved in just one sitting. Earlier I have had a bad experience
-                        with dentists but after getting my treatment done here I have overcome my fears. The doctor is very
-                        good in her work and also knows how to take care of my teeth after treatment.
-                      </p>
+
                     </div>
+                    <h6 className="fw-bold mb-2">Visit For Root Canal Treatment</h6>
+                    <p className="text-muted small mb-0">
+                      I had a lot of pain in my tooth and not involved in just one sitting. Earlier I have had a bad experience
+                      with dentists but after getting my treatment done here I have overcome my fears. The doctor is very
+                      good in her work and also knows how to take care of my teeth after treatment.
+                    </p>
                   </div>
                 </Card.Body>
               </Card>
@@ -616,15 +620,14 @@ const DoctorProfilePage = () => {
                           name="consultationType"
                           value="clinic_visit"
                           checked={selectedConsultationType === 'clinic_visit'}
-                          onChange={(e) => setSelectedConsultationType(e.target.value)}
+                          onChange={(e) => { setSelectedConsultationType(e.target.value); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
                           className="d-none"
                           id="clinic_visit"
                         />
-                        <label 
-                          htmlFor="clinic_visit" 
-                          className={`text-center p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${
-                            selectedConsultationType === 'clinic_visit' ? 'bg-primary-subtle' : ''
-                          }`}
+                        <label
+                          htmlFor="clinic_visit"
+                          className={`text-center p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'clinic_visit' ? 'bg-primary-subtle' : ''
+                            }`}
                           style={{ cursor: 'pointer' }}
                         >
                           <div>
@@ -635,7 +638,7 @@ const DoctorProfilePage = () => {
                             </div>
                             <div className="d-flex flex-column mt-1">
                               <span className="fw-bold">Clinic Visit</span>
-                              <small className="text-muted">₹{doctor_profile?.consultationsDetails?.clinic_visit_price}</small>
+                              <small className="text-muted">₹{doctor_profile?.consultationsDetails === null ? 0 : doctor_profile?.consultationsDetails?.clinic_visit_price}</small>
                             </div>
                           </div>
                         </label>
@@ -646,15 +649,14 @@ const DoctorProfilePage = () => {
                           name="consultationType"
                           value="home_visit"
                           checked={selectedConsultationType === 'home_visit'}
-                          onChange={(e) => setSelectedConsultationType(e.target.value)}
+                          onChange={(e) => { setSelectedConsultationType(e.target.value); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
                           className="d-none"
                           id="home_visit"
                         />
-                        <label 
-                          htmlFor="home_visit" 
-                          className={`text-center p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${
-                            selectedConsultationType === 'home_visit' ? 'bg-primary-subtle' : ''
-                          }`}
+                        <label
+                          htmlFor="home_visit"
+                          className={`text-center p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'home_visit' ? 'bg-primary-subtle' : ''
+                            }`}
                           style={{ cursor: 'pointer' }}
                         >
                           <div>
@@ -665,7 +667,7 @@ const DoctorProfilePage = () => {
                             </div>
                             <div className="d-flex flex-column mt-1">
                               <span className="fw-bold">Home Visit</span>
-                              <small className="text-muted">₹{doctor_profile?.consultationsDetails?.home_visit_price}</small>
+                              <small className="text-muted">₹{doctor_profile?.consultationsDetails === null ? 0 : doctor_profile?.consultationsDetails?.home_visit_price}</small>
                             </div>
                           </div>
                         </label>
@@ -676,15 +678,14 @@ const DoctorProfilePage = () => {
                           name="consultationType"
                           value="eopd"
                           checked={selectedConsultationType === 'eopd'}
-                          onChange={(e) => setSelectedConsultationType(e.target.value)}
+                          onChange={(e) => { setSelectedConsultationType(e.target.value); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
                           className="d-none"
                           id="eopd"
                         />
-                        <label 
-                          htmlFor="eopd" 
-                          className={`text-center p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${
-                            selectedConsultationType === 'eopd' ? 'bg-primary-subtle' : ''
-                          }`}
+                        <label
+                          htmlFor="eopd"
+                          className={`text-center p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'eopd' ? 'bg-primary-subtle' : ''
+                            }`}
                           style={{ cursor: 'pointer' }}
                         >
                           <div>
@@ -696,7 +697,7 @@ const DoctorProfilePage = () => {
                             </div>
                             <div className="d-flex flex-column mt-1">
                               <span className="fw-bold">EOPD</span>
-                              <small className="text-muted">₹{doctor_profile?.consultationsDetails?.eopd_price}</small>
+                              <small className="text-muted">₹{doctor_profile?.consultationsDetails === null ? 0 : doctor_profile?.consultationsDetails?.eopd_price}</small>
                             </div>
                           </div>
                         </label>
@@ -733,7 +734,7 @@ const DoctorProfilePage = () => {
                           borderRadius: '8px',
                           border: '1px solid #e9ecef'
                         }}>
-                          <h6 className="fw-bold mb-3 text-center">Available Time Slots</h6>
+                          <h6 className="fw-bold mb-3 text-center">Time Slots</h6>
                           {selectedDate ? (
                             <div>
                               <Row className="g-2">
@@ -786,7 +787,7 @@ const DoctorProfilePage = () => {
                       variant="dark"
                       className="w-100 rounded-pill py-3 fw-bold"
                       onClick={handleShow}
-                      disabled={!selectedDate || !selectedTimeSlot}
+                      disabled={!selectedConsultationType || !selectedDate || !selectedTimeSlot}
                     >
                       Book Consultation
                     </Button>
@@ -886,8 +887,8 @@ const DoctorProfilePage = () => {
                     {/* <Col xs={'auto'}>
                       <Form.Label>Appointment Date</Form.Label>
                       <br /> */}
-                      
-                      {/* {selectedTimeSlot && (
+
+                    {/* {selectedTimeSlot && (
                         <div className="p-2 bg-success bg-opacity-10 rounded text-center">
                           <small className="text-success fw-bold">
                             ✓ Selected: {format(selectedDate, 'dd/MM/yyyy')} at {selectedTimeSlot}
@@ -1070,15 +1071,47 @@ const DoctorProfilePage = () => {
                   onChange={surghandlechange}
                   label={`General - ₹${single_surg?.general_price || 'N/A'}`}
                 />
+
+                <Form.Check
+                  name="roomtype"
+                  type="radio"
+                  value="Semiprivate"
+                  id='label-2'
+                  onChange={surghandlechange}
+                  label={`SemiPrivate - ₹${single_surg?.semiprivate_price || 'N/A'}`}
+                />
                 <Form.Check
                   name="roomtype"
                   type="radio"
                   value="Private"
-                  id='label-2'
+                  id='label-3'
                   onChange={surghandlechange}
                   label={`Private - ₹${single_surg?.private_price || 'N/A'}`}
                 />
+                <Form.Check
+                  name="roomtype"
+                  type="radio"
+                  value="Delux"
+                  id='label-4'
+                  onChange={surghandlechange}
+                  label={`Delux - ₹${single_surg?.delux_price || 'N/A'}`}
+                />
               </div>
+            </Form.Group>
+            <Form.Group className='col-8'>
+              <Form.Label>Appointment Date & Time</Form.Label>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                inline
+                showTimeSelect
+                timeFormat="hh:mm a"
+                timeIntervals={15}
+                dateFormat="dd-MM-yyyy hh:mm a"
+                placeholderText="Select date and time"
+                minDate={new Date()}
+                className="form-control"
+              />
             </Form.Group>
             <Form.Group className='col-4'>
               <Form.Label>Reports</Form.Label>
@@ -1119,22 +1152,8 @@ const DoctorProfilePage = () => {
                 </div>
               )}
             </Form.Group>
-            <Form.Group className='col-4'>
-              <Form.Label>Appointment Date & Time</Form.Label>
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date) => setSelectedDate(date)}
-                inline
-                showTimeSelect
-                timeFormat="hh:mm a"
-                timeIntervals={15}
-                dateFormat="dd-MM-yyyy hh:mm a"
-                placeholderText="Select date and time"
-                minDate={new Date()}
-                className="form-control"
-              />
-            </Form.Group>
-            <Form.Group className='col-12'>
+
+            <Form.Group className='col-8'>
               <Form.Label>Appointment Reason</Form.Label>
               <Form.Control as="textarea" name='appointment_reason' value={addsurgery?.appointment_reason} onChange={surghandlechange} />
             </Form.Group>

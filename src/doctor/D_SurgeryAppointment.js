@@ -54,7 +54,7 @@ const D_SurgeryAppointment = () => {
                 Authorization: token
             }
         }).then((res) => {
-            console.log(res.data.Data)
+            // console.log(res.data.Data)
             setappointment(res.data.Data)
         }).catch(function (error) {
             console.log(error);

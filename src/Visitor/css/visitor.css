@@ -1322,10 +1322,12 @@ h6 {
 
 /* datepicker and slot */
 .custom-datepicker-container,
-.react-datepicker, .react-datepicker__month-container, .react-datepicker__day-names  {
+.custom-datepicker-container .react-datepicker, 
+.custom-datepicker-container .react-datepicker__month-container, 
+.custom-datepicker-container .react-datepicker__day-names  {
     width: 100%;
 }
-.custom-datepicker-container .react-datepicker__day-names, .react-datepicker__week {
+.custom-datepicker-container .react-datepicker__day-names,.custom-datepicker-container .react-datepicker__week {
     display: flex;
 
 }
@@ -1335,10 +1337,10 @@ h6 {
 .custom-datepicker-container .react-datepicker__day-name {
     flex: 1;
     text-align: center;
-    padding: 12px;
+    padding: 10px 12px;
 }
 .custom-datepicker-container .react-datepicker__day {
     flex: 1;
     text-align: center;
-    padding: 12px;
+    padding: 10px 12px;
 }
