@@ -463,3 +463,23 @@ select.frm_input {
         overflow-y: auto;
     }
 }
+
+
+/* display modal data */
+.label_head{
+    margin-bottom: 24px;
+    text-align: center;
+}
+.label_box .label_title{
+    margin-bottom: 4px;
+    display: block;
+    color: #9CA3AF;
+}
+.label_box p{
+    padding: 8px 12px;
+    border: 1px solid #D1D5DB;
+    background-color: #F9FAFB;
+    margin-bottom: 16px;
+    color: #6B7280;
+    border-radius: 8px;
+}

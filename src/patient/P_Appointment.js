@@ -167,7 +167,6 @@ const P_Appointment = () => {
         maxWidth: '80px',
         minWidth: '80px',
         width: '80px',
-        // sortable: true
     }, {
         name: 'Doctor Name',
         selector: row => row.doctorid?.name || '',
@@ -188,20 +187,16 @@ const P_Appointment = () => {
                 <span className="fw-medium" style={{ color: '#111827' }}>{row.doctorid?.name}</span>
             </div>
         ),
-        // sortable: true
-        // cell: row => row.doctorid?.name
     },
     {
         name: 'Surgery',
         selector: row => row.surgerydetails?.name || '',
         cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.surgerydetails?.name}</span>,
-        // sortable: true
     },
     {
         name: 'Date & Time',
         selector: row => `${row.date || ''} ${row.time || ''}`,
         cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{`${row.date} , ${row.time}`}</span>,
-        // sortable: true
     },
     {
         name: 'Status',
@@ -225,7 +220,6 @@ const P_Appointment = () => {
             );
         },
         width: '120px',
-        // sortable: true
     },
     {
         name: 'Payment Status',
@@ -249,7 +243,6 @@ const P_Appointment = () => {
             );
         },
         width: '150px',
-        // sortable: true
     },
     {
         name: 'View',

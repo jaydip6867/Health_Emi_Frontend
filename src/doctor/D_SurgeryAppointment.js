@@ -267,19 +267,16 @@ const D_SurgeryAppointment = () => {
                 <span className="fw-medium" style={{ color: '#111827' }}>{row.patientname}</span>
             </div>
         ),
-        sortable: true
     },
     {
         name: 'Deases',
         selector: row => row.surgerydetails?.name || '',
         cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.surgerydetails?.name}</span>,
-        sortable: true
     },
     {
         name: 'Date & Time',
         selector: row => `${row.date || ''} ${row.time || ''}`,
         cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{`${row.date} ${row.time}`}</span>,
-        sortable: true
     },
     {
         name: 'Status',
@@ -303,7 +300,6 @@ const D_SurgeryAppointment = () => {
             );
         },
         width: '120px',
-        sortable: true
     },
     {
         name: 'Payment Status',
@@ -327,7 +323,6 @@ const D_SurgeryAppointment = () => {
             );
         },
         width: '150px',
-        sortable: true
     },
     {
         name: 'View',

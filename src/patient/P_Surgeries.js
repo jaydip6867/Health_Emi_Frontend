@@ -185,25 +185,21 @@ const P_Surgeries = () => {
                 <span className="fw-medium" style={{ color: '#111827' }}>{row.doctorid?.name}</span>
             </div>
         ),
-        sortable: true
     },
     {
         name: 'Surgery',
         selector: row => row?.surgerydetails?.name || '',
         cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row?.surgerydetails?.name}</span>,
-        sortable: true
     },
     {
         name: 'Price',
         selector: row => `${row?.surgerydetails?.price || ''}`,
         cell: row => <span  className=' text-nowrap'>₹{row?.surgerydetails?.price}/-</span>,
-        sortable: true
     },
     {
         name: 'Date & Time',
         selector: row => `${row?.date || ''} ${row?.time || ''}`,
         cell: row => `${row?.date} ${row?.time}`,
-        sortable: true
     },
     {
         name: 'Status',
@@ -227,7 +223,6 @@ const P_Surgeries = () => {
             );
         },
         width: '120px',
-        sortable: true
     },
     {
         name: 'Payment Status',
@@ -251,7 +246,6 @@ const P_Surgeries = () => {
             );
         },
         width: '150px',
-        sortable: true
     },
     {
         name: 'View',

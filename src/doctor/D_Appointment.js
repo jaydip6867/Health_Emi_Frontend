@@ -246,7 +246,7 @@ const D_Appointment = () => {
     // table data
     const columns = [{
         name: 'No',
-        cell: (row, index) => index +1,
+        cell: (row, index) => index + 1,
         width: '50px'
     }, {
         name: 'Patient Name',
@@ -447,57 +447,117 @@ const D_Appointment = () => {
                                     <Modal.Title>Appointment Detail</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <Row>
-                                        <Col md={6}>
-                                            <Card className="mb-4 shadow-sm border-light">
+                                    <Row className="g-3">
+                                        <Col xs={12} md={6}>
+
+                                            {/* <div className="label_box">
+                                                <div className="label_head">
+                                                    <h5>Patient Information</h5>
+                                                </div>
+                                                <p><strong>Name:</strong> {v.patientname}</p>
+                                                <p><strong>Mobile:</strong> {v.mobile}</p>
+                                            </div> */}
+                                            <Card className="mb-4 border-light">
                                                 <Card.Body>
-                                                    <Card.Title className="text-primary">Patient Information</Card.Title>
-                                                    <ListGroup variant="flush">
-                                                        <ListGroupItem><strong>Name:</strong> {v.patientname}</ListGroupItem>
-                                                        <ListGroupItem><strong>Mobile:</strong> {v.mobile}</ListGroupItem>
-                                                    </ListGroup>
+                                                    <Card.Title className="label_head">Patient Information</Card.Title>
+                                                    <Row>
+                                                        <Col xs={12}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Name:</span>
+                                                                <p>{v?.patientname}</p>
+                                                            </div>
+                                                        </Col>
+                                                        <Col xs={12}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Mobile:</span>
+                                                                <p>{v?.mobile}</p>
+                                                            </div>
+                                                        </Col>
+                                                        <Col xs={6}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Blood Group:</span>
+                                                                <p>{v?.createdByuser?.blood_group === '' ? 'Not Defined.' : v?.createdByuser?.blood_group}</p>
+                                                            </div>
+                                                        </Col>
+                                                        <Col xs={6}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Gender:</span>
+                                                                <p>{v?.createdByuser?.gender === '' ? 'Not Defined.' : v?.createdByuser?.gender}</p>
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
                                                 </Card.Body>
                                             </Card>
+
                                         </Col>
                                         <Col md={6}>
-                                            <Card className="mb-4 shadow-sm border-light">
+                                            <Card className="mb-4 border-light">
                                                 <Card.Body>
-                                                    <Card.Title className="text-primary">Surgery Information</Card.Title>
-                                                    <ListGroup variant="flush">
-                                                        <ListGroupItem><strong>Surgery:</strong> {v.surgerydetails.name}</ListGroupItem>
-                                                        <ListGroupItem><strong>Date & Time:</strong> {v.date} , {v.time}</ListGroupItem>
-                                                        <ListGroupItem><strong>Reason:</strong> {v.appointment_reason}</ListGroupItem>
-                                                    </ListGroup>
+                                                    <Card.Title className="label_head">Surgery Information</Card.Title>
+                                                    <Row>
+                                                        <Col xs={12}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Surgery:</span>
+                                                                <p>{v?.surgerydetails?.name}</p>
+                                                            </div>
+                                                        </Col>
+                                                        <Col xs={12}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Date & Time:</span>
+                                                                <p>{v?.date} , {v?.time}</p>
+                                                            </div>
+                                                        </Col>
+                                                        <Col xs={12}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Reason:</span>
+                                                                <p>{v?.appointment_reason}</p>
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
                                                 </Card.Body>
                                             </Card>
                                         </Col>
                                         <Col md={4}>
-                                            <Card className="mb-4 shadow-sm border-light">
+                                            <Card className='border-light text-center'>
                                                 <Card.Body>
-                                                    <Card.Title className="text-primary">Payment Status</Card.Title>
-                                                    <ListGroup variant="flush">
-                                                        <ListGroupItem><strong>Status:</strong> <Badge bg={v.payment_status === "Pending" ? "warning" : "success"}>{v.payment_status}</Badge></ListGroupItem>
-                                                    </ListGroup>
+                                                    <Card.Title className="label_head">Payment Status</Card.Title>
+                                                    <Badge className="rounded-pill px-4 py-2 fs-6" bg={v?.payment_status === "Pending" ? "warning" : "success"}>{v.payment_status}</Badge>
                                                 </Card.Body>
                                             </Card>
                                         </Col>
                                         <Col md={4}>
-                                            <Card className="mb-4 shadow-sm border-light">
-                                                <Card.Body>
-                                                    <Card.Title className="text-primary">Visit Type</Card.Title>
-                                                    <ListGroup variant="flush">
-                                                        <ListGroupItem><strong>Type:</strong> {v.visit_types}</ListGroupItem>
-                                                    </ListGroup>
+                                            <Card className='border-light'>
+                                                <Card.Body className="text-center">
+                                                    <Card.Title className="label_head">Visit Type</Card.Title>
+                                                    <div className='label_box'>
+                                                        <Badge className="rounded-pill px-4 py-2 fs-6" bg={'secondary'}>{v?.visit_types}</Badge>
+                                                    </div>
                                                 </Card.Body>
                                             </Card>
                                         </Col>
-                                        <Col md={4}>
-                                            <Card className="mb-4 shadow-sm border-light">
+                                        <Col md={6}>
+                                            <Card className="border-light">
                                                 <Card.Body>
-                                                    <Card.Title className="text-primary">Features Available</Card.Title>
-                                                    <ListGroup variant="flush">
-                                                        <ListGroupItem><strong>-</strong> {v?.surgerydetails?.additional_features}</ListGroupItem>
-                                                    </ListGroup>
+                                                    <Card.Title className="label_head">Features Available</Card.Title>
+                                                    <div className='label_box'>
+                                                        <p>{v?.surgerydetails?.additional_features}</p>
+                                                    </div>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Card className="border-light">
+                                                <Card.Body>
+                                                    <Card.Title className="label_head">Reports</Card.Title>
+                                                    {
+                                                        v?.report?.length === 0 ? <div className="label_box"><p>No Reports.</p></div> : v?.report?.map((v, i) => {
+                                                            return (
+                                                                <div className='label_box' key={i}>
+                                                                    <iframe src={v?.name}></iframe>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    }
                                                 </Card.Body>
                                             </Card>
                                         </Col>

@@ -594,25 +594,21 @@ const D_Surgery = () => {
           <span className="fw-medium" style={{ color: '#111827' }}>{row.name}</span>
         </div>
       ),
-      sortable: true,
     },
     {
       name: "Surgery Type",
       selector: (row) => row?.surgerytypeid?.surgerytypename || '',
       cell: (row) => row?.surgerytypeid?.surgerytypename,
-      sortable: true,
     },
     {
       name: "Days Of Surgery",
       selector: (row) => `${row?.days || ''}`,
       cell: (row) => row?.days + ' Days',
-      sortable: true,
     },
     {
       name: "Experiance",
       selector: (row) => `${row?.yearsof_experience || ''}`,
       cell: (row) => row?.yearsof_experience + ' Years',
-      sortable: true,
     }, {
       name: 'Action',
       cell: row => (

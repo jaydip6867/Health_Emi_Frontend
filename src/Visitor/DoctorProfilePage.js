@@ -380,17 +380,15 @@ const DoctorProfilePage = () => {
                           <Image
                             src={require("../assets/image/doctor_img.jpg")}
                             roundedCircle
-                            width={200}
-                            height={200}
                             className="border border-3 border-white shadow"
+                            style={{ width: '200px', height: '200px', objectFit: 'cover' }}
                           />
                         ) : (
                           <Image
                             src={doctor_profile?.profile_pic}
                             roundedCircle
-                            width={200}
-                            height={200}
                             className="border border-3 border-white shadow"
+                            style={{ width: '200px', height: '200px', objectFit: 'cover' }}
                             alt={doctor_profile?.name}
                             onError={(e) => {
                               e.target.src = require("../assets/image/doctor_img.jpg");

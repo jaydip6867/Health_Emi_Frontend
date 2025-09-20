@@ -148,7 +148,6 @@ const P_Blog = () => {
         name: 'Title',
         selector: row=> row.title || '',
         cell: row => row.title,
-        sortable: true
     },
     {
         name: 'Description',

@@ -379,24 +379,20 @@ const D_Blog = () => {
         name: 'No',
         selector: (row, index) => index + 1,
         width: '80px',
-        sortable: true
     }, {
         name: 'Title',
         selector: (row) => row.title || '',
-        cell: row =>  <span className="fw-medium">{row.title}</span>,
-        sortable: true
+        cell: row => <span className="fw-medium">{row.title}</span>,
     },
     {
         name: 'Description',
         selector: (row) => row.description || '',
         cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.description}</span>,
-        sortable: true
     },
     {
         name: 'Expiry Date',
         selector: row => row.expirydate || 'Not Defined',
         cell: row => <>{row.expirydate === '' ? 'Not Defined' : row.expirydate}</>,
-        sortable: true
     },
     {
         name: 'Action',
@@ -583,17 +579,27 @@ const D_Blog = () => {
                                     <Modal.Title>Blog Detail</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <div>
-                                        <h3 className='text-center'>{v?.title}</h3>
-                                        <p>{v?.description}</p>
-                                        {v?.image && <img src={v?.image} alt={`${v?.title} blog...`} className="w-50 mx-auto" />}
-                                    </div>
+                                    <Row>
+                                        <Col xs={12}>
+                                            <div className='label_box'>
+                                                <span className="label_title">Title:</span>
+                                                <p>{v?.title}</p>
+                                            </div>
+                                        </Col>
+                                        <Col xs={12}>
+                                            <div className='label_box'>
+                                                <span className="label_title">Description:</span>
+                                                <p>{v?.description}</p>
+                                            </div>
+                                        </Col>
+                                        <Col xs={12}>
+                                            <div className="label_box">
+                                                <span className="label_title">Image:</span>
+                                                <img src={v?.image} alt={`${v?.title} blog...`} className="w-50" style={{ objectFit: 'cover', borderRadius: '10px', maxHeight: '200px', maxWidth: '200px' }} />
+                                            </div>
+                                        </Col>
+                                    </Row>
                                 </Modal.Body>
-                                <Modal.Footer>
-                                    <Button variant="secondary" onClick={handleClose}>
-                                        Close
-                                    </Button>
-                                </Modal.Footer>
                             </Modal>
                         )
                     })
