@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Col } from "react-bootstrap";
 import { BiSolidCommentAdd, BiSolidUserBadge } from "react-icons/bi";
-import { FaUserNurse } from "react-icons/fa";
+import { FaUserNurse, FaAmbulance } from "react-icons/fa";
 import { FiTrello } from "react-icons/fi";
 import { MdCalendarMonth, MdSpaceDashboard } from "react-icons/md";
 import { NavLink } from "react-router-dom";
@@ -73,6 +73,12 @@ const DoctorSidebar = () => {
               className={({ isActive }) => (isActive ? "active" : "")}
             >
               <BiSolidUserBadge /> Surgery Appointment
+            </NavLink>
+            <NavLink
+              to={"/doctor/bookambulance"}
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
+              <FaAmbulance className="me-2" /> Book Ambulance
             </NavLink>
             <NavLink
               to={"/doctor/doctorsurgery"}

@@ -36,6 +36,7 @@ import D_Consultation from './doctor/D_Consultation';
 import P_Surgeries from './patient/P_Surgeries';
 import D_SurgeryAppointment from './doctor/D_SurgeryAppointment';
 import DemoProfile from './Visitor/DemoProfile';
+import D_AmbulanceRequest from './doctor/D_AmbulanceRequest';
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
           <Route path='doctorblog' element={<D_Blog />}></Route>
           <Route path='doctorsurgery' element={<D_Surgery />}></Route>
           <Route path='doctorconsultation' element={<D_Consultation />}></Route>
+          <Route path='bookambulance' element={<D_AmbulanceRequest />}></Route>
           <Route path='calender' element={<D_Calender />}></Route>
         </Route>
         <Route path='/patientregister' element={<PatientRegister />}></Route>
