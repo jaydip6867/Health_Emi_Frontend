@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Form, Button, Alert, Modal } from "react-bootstrap";
-import { Country, State, City } from "country-state-city";
+import {  State, City } from "country-state-city";
 import axios from "axios";
 import "../Visitor/css/visitor.css";
 import { ToastContainer, toast } from 'react-toastify';
@@ -66,8 +66,6 @@ const Amb_register = () => {
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [canResendOtp, setCanResendOtp] = useState(false);
   const [resendTimer, setResendTimer] = useState(30);
-  const [uploadProgress, setUploadProgress] = useState({});
-  const [uploadedFiles, setUploadedFiles] = useState({});
 
   // Blood group options
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];

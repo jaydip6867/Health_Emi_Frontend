@@ -86,12 +86,7 @@ const DoctorProfile = () => {
     };
   }, [profilePicPreview, identityProof]);
 
-  function getalldataofcsc() {
-    setCountries(Country.getAllCountries());
-    // This would get all states, not filtered:
-    const allStates = State.getAllStates();
-    console.log("All states:", allStates);
-  }
+
 
   // When user selects a country
   const handleCountryChange = (e) => {

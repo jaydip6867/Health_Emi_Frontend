@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Button, Col, Container, Form, Row, Modal } from 'react-bootstrap'
 import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
-import { CiLock } from 'react-icons/ci'
-import { FaRegEnvelope } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import Loader from '../Loader'
@@ -18,15 +16,17 @@ const PatientRegister = () => {
   const [pat_reg, setpatreg] = useState(true);
   const [pat_otp, setpatotp] = useState(false);
 
-  const [blood_g, setbloog_g] = useState(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']);
+  
   const [patient, setpatient] = useState({ name: '', email: '', gender: '', mobile: '', pincode: '', blood_group: '', password: '' })
   const [otp, setotp] = useState('');
 
   const [showTcModal, setShowTcModal] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsContent, setTermsContent] = useState('');
-  const [shortTerms, setShortTerms] = useState('');
+  // const [shortTerms, setShortTerms] = useState('');
 
+  const blood_g = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
+  
   const patientch = (e) => {
     const { name, value } = e.target;
     setpatient(patient => ({
@@ -41,11 +41,11 @@ const PatientRegister = () => {
       const fullText = response.data.Data.patient_tc || 'No terms and conditions available.';
       setTermsContent(fullText);
       // Get first 150 characters for preview
-      setShortTerms(fullText.length > 150 ? `${fullText.substring(0, 150)}...` : fullText);
+      // setShortTerms(fullText.length > 150 ? `${fullText.substring(0, 150)}...` : fullText);
     } catch (error) {
       console.error('Error fetching terms and conditions:', error);
       setTermsContent('Failed to load terms and conditions.');
-      setShortTerms('Failed to load terms and conditions.');
+      // setShortTerms('Failed to load terms and conditions.');
     }
   };
 
