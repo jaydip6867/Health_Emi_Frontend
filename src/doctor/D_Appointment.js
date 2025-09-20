@@ -267,7 +267,7 @@ const D_Appointment = () => {
                 <span className="fw-medium" style={{ color: '#111827' }}>{row.patientname}</span>
             </div>
         ),
-        sortable: true,
+        // sortable: true,
     },
     {
         name: 'Diseases',
@@ -277,7 +277,7 @@ const D_Appointment = () => {
                 {row.surgerydetails?.name || 'General Consultation OR Not Specified'}
             </span>
         ),
-        sortable: true,
+        // sortable: true,
     },
     {
         name: 'Date & Time',
@@ -287,7 +287,7 @@ const D_Appointment = () => {
                 {row.date} , {row.time}
             </span>
         ),
-        sortable: true,
+        // sortable: true,
     },
     {
         name: 'Status',
@@ -309,7 +309,7 @@ const D_Appointment = () => {
                 </div>
             );
         },
-        sortable: true,
+        // sortable: true,
         width: '120px',
     },
     {
@@ -333,7 +333,7 @@ const D_Appointment = () => {
                 </div>
             );
         },
-        sortable: true,
+        // sortable: true,
         width: '150px'
     },
     {
