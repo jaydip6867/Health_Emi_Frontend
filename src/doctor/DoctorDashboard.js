@@ -12,6 +12,7 @@ const DoctorDashboard = () => {
 
   const [doctor, setdoctor] = useState(null)
   const [token, settoken] = useState(null)
+  console.log(token)
 
   useEffect(() => {
     var getlocaldata = localStorage.getItem('healthdoctor');
