@@ -205,6 +205,7 @@ const D_Blog = () => {
         var datasingle = bloglist.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
+        console.log(datasingle);
     }
 
     // Edit Blog display surgery in model
@@ -595,7 +596,7 @@ const D_Blog = () => {
                                         <Col xs={12}>
                                             <div className="label_box">
                                                 <span className="label_title">Image:</span>
-                                                <img src={v?.image} alt={`${v?.title} blog...`} className="w-50" style={{ objectFit: 'cover', borderRadius: '10px', maxHeight: '200px', maxWidth: '200px' }} />
+                                                {!v?.image || v?.image === '' ? <p>No Image Specified.</p> : <img src={v?.image} alt={`${v?.title} blog...`} className="w-50 img-thumbnail" style={{ objectFit: 'cover', borderRadius: '10px', maxHeight: '200px', maxWidth: '200px' }} />}
                                             </div>
                                         </Col>
                                     </Row>

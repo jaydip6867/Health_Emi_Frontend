@@ -103,7 +103,7 @@ const D_Appointment = () => {
         var datasingle = appointment.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        console.log(datasingle)
+        // console.log(datasingle)
     }
 
     // reschedule appoinetment date
@@ -449,42 +449,46 @@ const D_Appointment = () => {
                                 <Modal.Body>
                                     <Row className="g-3">
                                         <Col xs={12} md={6}>
-
-                                            {/* <div className="label_box">
-                                                <div className="label_head">
-                                                    <h5>Patient Information</h5>
-                                                </div>
-                                                <p><strong>Name:</strong> {v.patientname}</p>
-                                                <p><strong>Mobile:</strong> {v.mobile}</p>
-                                            </div> */}
                                             <Card className="mb-4 border-light">
                                                 <Card.Body>
                                                     <Card.Title className="label_head">Patient Information</Card.Title>
                                                     <Row>
                                                         <Col xs={12}>
                                                             <div className='label_box'>
-                                                                <span className="label_title">Name:</span>
+                                                                <span className="label_title">Patient Name:</span>
                                                                 <p>{v?.patientname}</p>
                                                             </div>
                                                         </Col>
                                                         <Col xs={12}>
                                                             <div className='label_box'>
-                                                                <span className="label_title">Mobile:</span>
+                                                                <span className="label_title">Patient Mobile:</span>
                                                                 <p>{v?.mobile}</p>
                                                             </div>
                                                         </Col>
                                                         <Col xs={6}>
                                                             <div className='label_box'>
                                                                 <span className="label_title">Blood Group:</span>
-                                                                <p>{v?.createdByuser?.blood_group === '' ? 'Not Defined.' : v?.createdByuser?.blood_group}</p>
+                                                                <p>{!v?.createdByuser?.blood_group ? 'Not Defined.' : v?.createdByuser?.blood_group}</p>
                                                             </div>
                                                         </Col>
                                                         <Col xs={6}>
                                                             <div className='label_box'>
                                                                 <span className="label_title">Gender:</span>
-                                                                <p>{v?.createdByuser?.gender === '' ? 'Not Defined.' : v?.createdByuser?.gender}</p>
+                                                                <p>{!v?.createdByuser?.gender ? 'Not Defined.' : v?.createdByuser?.gender}</p>
                                                             </div>
                                                         </Col>
+                                                        {!v?.alt_name ? '' : <Col xs={12}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Alternative Name:</span>
+                                                                <p>{v?.alt_name}</p>
+                                                            </div>
+                                                        </Col>}
+                                                        {!v?.alt_mobile ? '' : <Col xs={12}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Alternative Mobile:</span>
+                                                                <p>{v?.alt_mobile}</p>
+                                                            </div>
+                                                        </Col>}
                                                     </Row>
                                                 </Card.Body>
                                             </Card>
@@ -552,8 +556,8 @@ const D_Appointment = () => {
                                                     {
                                                         v?.report?.length === 0 ? <div className="label_box"><p>No Reports.</p></div> : v?.report?.map((v, i) => {
                                                             return (
-                                                                <div className='label_box' key={i}>
-                                                                    <iframe src={v?.name}></iframe>
+                                                                <div key={i}>
+                                                                    <iframe src={v?.name} className='img-thumbnail'></iframe>
                                                                 </div>
                                                             )
                                                         })

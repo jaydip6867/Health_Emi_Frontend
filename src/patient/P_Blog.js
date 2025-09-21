@@ -79,63 +79,63 @@ const P_Blog = () => {
     }
 
     // Custom table styles
-            const customTableStyles = {
-                table: {
-                    style: {
-                        backgroundColor: '#ffffff',
-                        borderRadius: '12px',
-                        overflow: 'hidden',
-                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
-                    },
+    const customTableStyles = {
+        table: {
+            style: {
+                backgroundColor: '#ffffff',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+            },
+        },
+        headCells: {
+            style: {
+                fontSize: '14px',
+                fontWeight: '600',
+                backgroundColor: '#F9FAFB',
+                color: '#374151',
+                borderBottom: '1px solid #E5E7EB',
+                paddingTop: '16px',
+                paddingBottom: '16px',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+            },
+        },
+        rows: {
+            style: {
+                borderBottom: '1px solid #F3F4F6',
+                '&:hover': {
+                    backgroundColor: '#F9FAFB',
+                    cursor: 'pointer'
                 },
-                headCells: {
-                    style: {
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        backgroundColor: '#F9FAFB',
-                        color: '#374151',
-                        borderBottom: '1px solid #E5E7EB',
-                        paddingTop: '16px',
-                        paddingBottom: '16px',
-                        paddingLeft: '16px',
-                        paddingRight: '16px',
-                    },
-                },
-                rows: {
-                    style: {
-                        borderBottom: '1px solid #F3F4F6',
-                        '&:hover': {
-                            backgroundColor: '#F9FAFB',
-                            cursor: 'pointer'
-                        },
-                        '&:last-child': {
-                            borderBottom: 'none'
-                        }
-                    },
-                },
-                cells: {
-                    style: {
-                        paddingTop: '16px',
-                        paddingBottom: '16px',
-                        paddingLeft: '16px',
-                        paddingRight: '16px',
-                        fontSize: '14px',
-                        color: '#374151'
-                    },
-                },
-                pagination: {
-                    style: {
-                        borderTop: '1px solid #E5E7EB',
-                        backgroundColor: '#F9FAFB'
-                    }
+                '&:last-child': {
+                    borderBottom: 'none'
                 }
-            };
-        
-            const renderTooltip = (label) => (props) => (
-                <Tooltip id="button-tooltip" {...props}>
-                    {label} Appointment
-                </Tooltip>
-            );
+            },
+        },
+        cells: {
+            style: {
+                paddingTop: '16px',
+                paddingBottom: '16px',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                fontSize: '14px',
+                color: '#374151'
+            },
+        },
+        pagination: {
+            style: {
+                borderTop: '1px solid #E5E7EB',
+                backgroundColor: '#F9FAFB'
+            }
+        }
+    };
+
+    const renderTooltip = (label) => (props) => (
+        <Tooltip id="button-tooltip" {...props}>
+            {label} Appointment
+        </Tooltip>
+    );
 
     // table data
     const columns = [{
@@ -146,7 +146,7 @@ const P_Blog = () => {
         width: '80px',
     }, {
         name: 'Title',
-        selector: row=> row.title || '',
+        selector: row => row.title || '',
         cell: row => row.title,
     },
     {
@@ -179,7 +179,7 @@ const P_Blog = () => {
 
     return (
         <>
-        <NavBar logindata={patient} />
+            <NavBar logindata={patient} />
             <Container fluid className='p-0 panel'>
                 <Row className='g-0'>
                     <P_Sidebar />
@@ -200,11 +200,26 @@ const P_Blog = () => {
                                     <Modal.Title>Blog Detail</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <div>
-                                        <h3>{v.title}</h3>
-                                        <p>{v.description}</p>
-                                        {v?.image && <img src={v?.image} alt={`${v?.title} blog...`} className="w-50 mx-auto" />}
-                                    </div>
+                                    <Row>
+                                        <Col xs={12}>
+                                            <div className='label_box'>
+                                                <span className="label_title">Title:</span>
+                                                <p>{v?.title}</p>
+                                            </div>
+                                        </Col>
+                                        <Col xs={12}>
+                                            <div className='label_box'>
+                                                <span className="label_title">Description:</span>
+                                                <p>{v?.description}</p>
+                                            </div>
+                                        </Col>
+                                        <Col xs={12}>
+                                            <div className="label_box">
+                                                <span className="label_title">Image:</span>
+                                                {!v?.image || v?.image === '' ? <p>No Image Specified.</p> : <img src={v?.image} alt={`${v?.title} blog...`} className="w-50 img-thumbnail" style={{ objectFit: 'cover', borderRadius: '10px', maxHeight: '200px', maxWidth: '200px' }} />}
+                                            </div>
+                                        </Col>
+                                    </Row>
                                 </Modal.Body>
                             </Modal>
                         )

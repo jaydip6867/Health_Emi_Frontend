@@ -13,7 +13,7 @@ const P_Sidebar = () => {
                     <NavLink to={'/patient/patientprofile'} className={({ isActive }) => (isActive ? 'active' : '')}><MdSpaceDashboard />Profile</NavLink>
                     {/* <NavLink to={'/patient/patientdoctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}><MdDifference />Add Appointment</NavLink> */}
                     <NavLink to={'/patient/appointment'} className={({ isActive }) => (isActive ? 'active' : '')} ><MdOutlineListAlt />View Appointment</NavLink>
-                    <NavLink to={'/patient/surgeries'} className={({ isActive }) => (isActive ? 'active' : '')} ><MdOutlineListAlt />View Surgeries</NavLink>
+                    <NavLink to={'/patient/surgeries'} className={({ isActive }) => (isActive ? 'active' : '')} ><MdOutlineListAlt />View Surgeries Appointment</NavLink>
                     <NavLink to={'/patient/blog'} className={({ isActive }) => (isActive ? 'active' : '')}><MdCardGiftcard />Blog</NavLink>
                 </div>
             </div>

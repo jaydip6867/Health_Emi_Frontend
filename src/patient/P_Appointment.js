@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Loader from '../Loader'
-import { Col, Container, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
+import { Card, Col, Container, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
 import P_Sidebar from './P_Sidebar'
 import P_nav from './P_nav'
 import NavBar from '../Visitor/Component/NavBar'
@@ -75,7 +75,7 @@ const P_Appointment = () => {
         var datasingle = appoint_data.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        // console.log(datasingle)
+        console.log(datasingle)
     }
 
 
@@ -290,12 +290,56 @@ const P_Appointment = () => {
                                     <Modal.Title>Appointment Detail</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <div>
-                                        <p><b>Patient Name :- </b><span>{v.patientname}</span></p>
-                                        <p><b>Mobile No :- </b><span>{v.mobile}</span></p>
-                                        <p><b>Surgery Name :- </b><span>{v.surgerydetails.name}</span></p>
-                                        <p><b>Date & Time :- </b><span>{v.date} , {v.time}</span></p>
-                                    </div>
+                                    <Row>
+                                        <Col xs={12} md={6}>
+                                            <Card className="mb-4 border-light">
+                                                <Card.Body>
+                                                    <Card.Title className="label_head">Doctor Information</Card.Title>
+                                                    <Row>
+                                                        <Col xs={12}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Doctor Name:</span>
+                                                                <p>{v?.doctorid?.name}</p>
+                                                            </div>
+                                                        </Col>
+                                                        <Col xs={12}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Doctor Specialty:</span>
+                                                                <p>{v?.doctorid?.specialty}</p>
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                        <Col xs={12} md={6}>
+                                            <Card className="mb-4 border-light">
+                                                <Card.Body>
+                                                    <Card.Title className="label_head">Consultation Information</Card.Title>
+                                                    <Row>
+                                                        <Col xs={12}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Consultation Name:</span>
+                                                                <p>{v?.surgerydetails?.name}</p>
+                                                            </div>
+                                                        </Col>
+                                                        <Col xs={12}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Date & Time:</span>
+                                                                <p>{v?.date} , {v?.time}</p>
+                                                            </div>
+                                                        </Col>
+                                                        <Col xs={12}>
+                                                            <div className='label_box'>
+                                                                <span className="label_title">Reason:</span>
+                                                                <p>{v?.appointment_reason}</p>
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                    </Row>
                                 </Modal.Body>
                             </Modal>
                         )

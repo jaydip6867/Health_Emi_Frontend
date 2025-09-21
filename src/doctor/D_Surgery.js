@@ -3,7 +3,9 @@ import Loader from "../Loader";
 import DoctorSidebar from "./DoctorSidebar";
 import DoctorNav from "./DoctorNav";
 import {
+  Badge,
   Button,
+  Card,
   Col,
   Container,
   Form,
@@ -25,6 +27,7 @@ import {
 import CryptoJS from "crypto-js";
 import SmartDataTable from '../components/SmartDataTable';
 import { FiChevronsRight, FiPlus, FiX } from "react-icons/fi";
+import { FaCheck } from "react-icons/fa";
 
 const D_Surgery = () => {
   const SECRET_KEY = "health-emi";
@@ -323,7 +326,7 @@ const D_Surgery = () => {
     });
     setsingleview(datasingle);
     handleShow();
-    // console.log(datasingle)
+    console.log(datasingle)
   }
 
   // display edit surgery in model
@@ -707,7 +710,7 @@ const D_Surgery = () => {
               <Col xs={12} md={12}>
                 <div className="bg-white rounded p-3 shadow">
                   <Form className="row register_doctor">
-                    <Form.Group controlId="type" className="mb-3 col-md-3">
+                    <Form.Group controlId="type" className="mb-3 col-md-4">
                       <div className="position-relative">
                         <Form.Label>Speciality Name</Form.Label>
                         <Form.Select
@@ -737,7 +740,7 @@ const D_Surgery = () => {
                                                 </Form.Select>
                                             </div>
                                         </Form.Group> */}
-                    <Form.Group className="mb-3 col-12 col-md-6">
+                    <Form.Group className="mb-3 col-12 col-md-8">
                       <Form.Label>Surgery Name</Form.Label>
                       <Form.Control
                         type="text"
@@ -750,7 +753,7 @@ const D_Surgery = () => {
 
                     <Form.Group
                       controlId="surgery_photo"
-                      className="mb-3 col-12 col-md-6"
+                      className="mb-3 col-12 col-md-3"
                     >
                       <Form.Label>Surgery Photo</Form.Label>
                       <Form.Control
@@ -859,6 +862,43 @@ const D_Surgery = () => {
                     </Form.Group>
 
                     <Form.Group
+                      controlId="days"
+                      className="mb-3 col-6 col-md-3"
+                    >
+                      <div className="position-relative">
+                        <Form.Label>completed Surgery</Form.Label>
+                        <Form.Select
+                          placeholder="Ex:- 18000"
+                          name="completed_surgery"
+                          value={surgery.completed_surgery}
+                          onChange={selsurgery}
+                        >
+                          <option value={""} selected disabled>
+                            Select Completed Surgery
+                          </option>
+                          {[
+                            "10+",
+                            "20+",
+                            "30+",
+                            "40+",
+                            "50+",
+                            "100+",
+                            "200+",
+                            "300+",
+                            "500+",
+                            "1000+",
+                            "2000+",
+                            "5000+",
+                          ].map((level) => (
+                            <option key={level} value={level}>
+                              {level}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </div>
+                    </Form.Group>
+
+                    <Form.Group
                       controlId="general_price"
                       className="mb-3 col-6 col-md-3"
                     >
@@ -915,43 +955,6 @@ const D_Surgery = () => {
                           value={surgery.delux_price}
                           onChange={selsurgery}
                         />
-                      </div>
-                    </Form.Group>
-
-                    <Form.Group
-                      controlId="days"
-                      className="mb-3 col-6 col-md-3"
-                    >
-                      <div className="position-relative">
-                        <Form.Label>completed Surgery</Form.Label>
-                        <Form.Select
-                          placeholder="Ex:- 18000"
-                          name="completed_surgery"
-                          value={surgery.completed_surgery}
-                          onChange={selsurgery}
-                        >
-                          <option value={""} selected disabled>
-                            Select Completed Surgery
-                          </option>
-                          {[
-                            "10+",
-                            "20+",
-                            "30+",
-                            "40+",
-                            "50+",
-                            "100+",
-                            "200+",
-                            "300+",
-                            "500+",
-                            "1000+",
-                            "2000+",
-                            "5000+",
-                          ].map((level) => (
-                            <option key={level} value={level}>
-                              {level}
-                            </option>
-                          ))}
-                        </Form.Select>
                       </div>
                     </Form.Group>
 
@@ -1181,62 +1184,180 @@ const D_Surgery = () => {
                   <Modal.Title>Surgery Detail</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  <div>
-                    <p>
-                      <b>Surgery Name :- </b>
-                      <span>{v?.name}</span>
-                    </p>
-                    <p>
-                      <b>General Price :- </b>
-                      <span>{v?.general_price}</span>
-                    </p>
-                    <p>
-                      <b>Semiprivate Price :- </b>
-                      <span>{v?.semiprivate_price}</span>
-                    </p>
-                    <p>
-                      <b>Private Price :- </b>
-                      <span>{v?.private_price}</span>
-                    </p>
-                    <p>
-                      <b>Delux Price :- </b>
-                      <span>{v?.delux_price}</span>
-                    </p>
-                    <p>
-                      <b>Experiance :- </b>
-                      <span>
-                        {v?.yearsof_experience} Years of experiance &{" "}
-                        {v?.completed_surgery} Completed Surgeries
-                      </span>
-                    </p>
-                    <p>
-                      <b>Surgery Features :- </b>
-                      <span>{v?.additional_features}</span>
-                    </p>
-                    <p>
-                      <b>Surgery Description :- </b>
-                      <span>{v?.description}</span>
-                    </p>
-                    <p>
-                      <b>Inclusive :- </b>
-                      <span>{v?.inclusive}</span>
-                    </p>
-                    <p>
-                      <b>Exclusive :- </b>
-                      <span>{v?.exclusive}</span>
-                    </p>
-                    <p>
-                      <b>Surgery Photo :- </b>
-                      <span>
-                        <img
-                          src={v?.surgery_photo}
-                          alt="Surgery Photo"
-                          style={{ maxWidth: "200px", maxHeight: "200px" }}
-                          className="img-thumbnail"
-                        />
-                      </span>
-                    </p>
-                  </div>
+                  <Row className="g-3">
+                    <Col xs={12} md={6}>
+                      <Card className="border-light">
+                        <Card.Body>
+                          <Card.Title className="label_head">Surgery Information</Card.Title>
+                          <Row>
+                            <Col xs={12}>
+                              <div className='label_box'>
+                                <span className="label_title">Surgery Name:</span>
+                                <p>{v?.name}</p>
+                              </div>
+                            </Col>
+                            <Col xs={12}>
+                              <div className='label_box'>
+                                <span className="label_title">Surgery Type:</span>
+                                <p>{v?.surgerytypeid?.surgerytypename || 'Not Specified'}</p>
+                              </div>
+                            </Col>
+                            <Col xs={6}>
+                              <div className='label_box'>
+                                <span className="label_title">Days of Surgery:</span>
+                                <p>{v?.days} Days</p>
+                              </div>
+                            </Col>
+                            <Col xs={6}>
+                              <div className='label_box'>
+                                <span className="label_title">Experience:</span>
+                                <p>{v?.yearsof_experience} Years</p>
+                              </div>
+                            </Col>
+                            <Col xs={12}>
+                              <div className='label_box'>
+                                <span className="label_title">Completed Surgeries:</span>
+                                <p>{v?.completed_surgery}</p>
+                              </div>
+                            </Col>
+                          </Row>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+
+                    <Col xs={12} md={6}>
+                      <Card className="mb-4 border-light">
+                        <Card.Body>
+                          <Card.Title className="label_head">Pricing Information</Card.Title>
+                          <Row>
+                            <Col xs={6}>
+                              <div className='label_box'>
+                                <span className="label_title">General Ward:</span>
+                                <p>₹{v?.general_price}</p>
+                              </div>
+                            </Col>
+                            <Col xs={6}>
+                              <div className='label_box'>
+                                <span className="label_title">Semi-Private:</span>
+                                <p>₹{v?.semiprivate_price}</p>
+                              </div>
+                            </Col>
+                            <Col xs={6}>
+                              <div className='label_box'>
+                                <span className="label_title">Private:</span>
+                                <p>₹{v?.private_price}</p>
+                              </div>
+                            </Col>
+                            <Col xs={6}>
+                              <div className='label_box'>
+                                <span className="label_title">Deluxe:</span>
+                                <p>₹{v?.delux_price}</p>
+                              </div>
+                            </Col>
+                          </Row>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+
+                    <Col xs={12} md={6}>
+                      <Card className="mb-4 border-light">
+                        <Card.Body>
+                          <Card.Title className="label_head">Features & Description</Card.Title>
+                          <Row>
+                            <Col xs={12}>
+                              <div className='label_box mb-3'>
+                                <span className="label_title">Additional Features:</span>
+                                <div className="d-flex flex-wrap gap-2">
+                                  {
+                                    v?.additional_features?.split(',')?.map((feature, index) => (
+                                      <Badge className="me-1 bg-secondary-subtle text-secondary fs-6 fw-normal px-3 py-2" key={index}>{feature}</Badge>
+                                    ))
+                                  }
+                                </div>
+                              </div>
+                            </Col>
+                            <Col xs={12}>
+                              <div className='label_box'>
+                                <span className="label_title">Description:</span>
+                                <p>{v?.description || 'No description available'}</p>
+                              </div>
+                            </Col>
+                          </Row>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+
+                    <Col xs={12} md={6}>
+                      <Card className="mb-4 border-light">
+                        <Card.Body>
+                          <Card.Title className="label_head">Surgery Photo</Card.Title>
+                          <div className='label_box text-center'>
+                            {v?.surgery_photo ? (
+                              <img
+                                src={v?.surgery_photo}
+                                alt="Surgery Photo"
+                                style={{ maxWidth: "100%", maxHeight: "200px", objectFit: "cover" }}
+                                className="img-thumbnail rounded"
+                              />
+                            ) : (
+                              <div className="text-muted">No photo available</div>
+                            )}
+                          </div>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+
+                    <Col xs={12} md={6}>
+                      <Card className="mb-4 border-light">
+                        <Card.Body>
+                          <Card.Title className="label_head">Inclusive Items</Card.Title>
+                          <div className='label_box'>
+                            {v?.inclusive ? (
+                              <ul className="list-unstyled mb-0">
+                                {v.inclusive.split(',').map((item, index) => (
+                                  <li key={index} className="mb-1">
+                                    <svg width="15" height="10" viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M1.16669 5.00016L5.33335 9.16683L13.6667 0.833496" stroke="#2E7D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+
+                                    <span className="ms-2">{item.trim()}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-muted mb-0">No inclusive items specified</p>
+                            )}
+                          </div>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+
+                    <Col xs={12} md={6}>
+                      <Card className="mb-4 border-light">
+                        <Card.Body>
+                          <Card.Title className="label_head">Exclusive Items</Card.Title>
+                          <div className='label_box'>
+                            {v?.exclusive ? (
+                              <ul className="list-unstyled mb-0">
+                                {v.exclusive.split(',').map((item, index) => (
+                                  <li key={index} className="mb-1">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M15 5L5 15" stroke="#D32F2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                      <path d="M5 5L15 15" stroke="#D32F2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+
+                                    <span className="ms-2">{item.trim()}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-muted mb-0">No exclusive items specified</p>
+                            )}
+                          </div>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </Row>
                 </Modal.Body>
               </Modal>
             );
@@ -1278,17 +1399,6 @@ const D_Surgery = () => {
                     </Form.Select>
                   </div>
                 </Form.Group>
-                {/* <Form.Group controlId="doctorcategory" className='mb-3 col-md-3'>
-                                    <div className='position-relative'>
-                                        <Form.Label>Doctor Category</Form.Label>
-                                        <Form.Select name="doctorcategory" value={edit_record.doctorcategory} onChange={seleditsurgery}>
-                                            <option value={''} selected disabled>Doctor Category</option>
-                                            {d_sel_cat?.map((v, i) => {
-                                                return (<option key={i} value={v._id} selected={edit_record.doctorcategory === v._id ? true : false}>{v.categoryname}</option>)
-                                            })}
-                                        </Form.Select>
-                                    </div>
-                                </Form.Group> */}
                 <Form.Group className="mb-3 col-12 col-md-6">
                   <Form.Label>Surgery Name</Form.Label>
                   <Form.Control
@@ -1519,20 +1629,6 @@ const D_Surgery = () => {
                     </Form.Select>
                   </div>
                 </Form.Group>
-
-                {/* <Form.Group controlId="specialty" className='mb-3 col-12 col-md-3'>
-                                    <div className='position-relative'>
-                                        <Form.Label>Features</Form.Label>
-                                        <Form.Select name="specialty" value={edit_record.specialty} onChange={seleditsurgery}>
-                                            <option value={''} selected disabled>Select Feature</option>
-                                            {['General', 'Semi Private', 'Private', 'Delux'].map((v) => (
-                                                <option key={v} value={v}>
-                                                    {v}
-                                                </option>
-                                            ))}
-                                        </Form.Select>
-                                    </div>
-                                </Form.Group> */}
                 <div className="col-12">
                   <Form.Group className="mb-4">
                     <div className="card shadow-sm">
