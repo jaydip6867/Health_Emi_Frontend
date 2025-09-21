@@ -103,7 +103,7 @@ const D_Appointment = () => {
         var datasingle = appointment.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        // console.log(datasingle)
+        console.log(datasingle)
     }
 
     // reschedule appoinetment date
@@ -543,8 +543,26 @@ const D_Appointment = () => {
                                             <Card className="border-light">
                                                 <Card.Body>
                                                     <Card.Title className="label_head">Features Available</Card.Title>
-                                                    <div className='label_box'>
-                                                        <p>{v?.surgerydetails?.additional_features}</p>
+                                                    <div className='d-flex flex-wrap gap-2'>
+                                                        {
+                                                            v?.surgerydetails?.additional_features?.split(',')?.map((feature, index) => {
+                                                                const colors = [
+                                                                    "primary", "secondary", "success", "warning", "info"
+                                                                ];
+
+                                                                // Pick a random color class
+                                                                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+                                                                return (
+                                                                    <Badge
+                                                                        className={`me-1 bg-${randomColor}-subtle text-${randomColor} fs-6 fw-normal px-3 py-2 rounded-pill`}
+                                                                        key={index}
+                                                                    >
+                                                                        {feature}
+                                                                    </Badge>
+                                                                );
+                                                            })
+                                                        }
                                                     </div>
                                                 </Card.Body>
                                             </Card>

@@ -1268,11 +1268,27 @@ const D_Surgery = () => {
                               <div className='label_box mb-3'>
                                 <span className="label_title">Additional Features:</span>
                                 <div className="d-flex flex-wrap gap-2">
+
                                   {
-                                    v?.additional_features?.split(',')?.map((feature, index) => (
-                                      <Badge className="me-1 bg-secondary-subtle text-secondary fs-6 fw-normal px-3 py-2" key={index}>{feature}</Badge>
-                                    ))
+                                    v?.additional_features?.split(',')?.map((feature, index) => {
+                                      const colors = [
+                                        "primary", "secondary", "success", "warning", "info"
+                                      ];
+
+                                      // Pick a random color class
+                                      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+                                      return (
+                                        <Badge
+                                          className={`me-1 bg-${randomColor}-subtle text-${randomColor} fs-6 fw-normal px-3 py-2 rounded-pill`}
+                                          key={index}
+                                        >
+                                          {feature}
+                                        </Badge>
+                                      );
+                                    })
                                   }
+
                                 </div>
                               </div>
                             </Col>
