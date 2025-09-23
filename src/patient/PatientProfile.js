@@ -222,7 +222,7 @@ const PatientProfile = () => {
                                     </Form>
                                 </div> : ''
                             }
-                            <Button variant='danger' className='mt-4' onClick={deletepatient}>Delete Doctor</Button>
+                            <Button variant='danger' className='mt-4' onClick={deletepatient}>Delete Patient</Button>
                         </div>
                     </Col>
                 </Row>

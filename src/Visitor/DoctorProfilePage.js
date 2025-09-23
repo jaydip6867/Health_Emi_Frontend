@@ -101,7 +101,7 @@ const DoctorProfilePage = () => {
       }
     }).then((res) => {
       setdocprofile(res.data.Data)
-      console.log('doctor ', res.data.Data)
+      // console.log('doctor ', res.data.Data)
     }).catch(function (error) {
       console.log(error);
     }).finally(() => {
@@ -119,6 +119,27 @@ const DoctorProfilePage = () => {
       navigate('/patient')
     }
     else {
+      // Validate consultation type and date/time selection
+      if (!selectedConsultationType) {
+        Swal.fire({
+          title: "Please Select Consultation Type",
+          text: "You must select a consultation type before booking.",
+          icon: "warning",
+          confirmButtonText: 'Ok'
+        });
+        return;
+      }
+
+      if (!selectedDate || !selectedTimeSlot) {
+        Swal.fire({
+          title: "Please Select Date & Time",
+          text: "You must select both date and time slot before booking.",
+          icon: "warning",
+          confirmButtonText: 'Ok'
+        });
+        return;
+      }
+
       setShow(true)
     }
   };
@@ -785,7 +806,6 @@ const DoctorProfilePage = () => {
                       variant="dark"
                       className="w-100 rounded-pill py-3 fw-bold"
                       onClick={handleShow}
-                      disabled={!selectedConsultationType || !selectedDate || !selectedTimeSlot}
                     >
                       Book Consultation
                     </Button>
@@ -1000,8 +1020,14 @@ const DoctorProfilePage = () => {
                         <Card.Body>
                           <ul>
                             {
-                              selectedService.inclusive.split(', ').map((v, i) => (
-                                <li key={i}><FaRegDotCircle className='me-2' />{v}</li>
+                              selectedService?.inclusive?.split(',').map((v, i) => (
+                                <li key={i} className="mb-1">
+                                  <svg width="15" height="10" viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.16669 5.00016L5.33335 9.16683L13.6667 0.833496" stroke="#2E7D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                  </svg>
+
+                                  <span className="ms-2">{v.trim()}</span>
+                                </li>
                               ))
                             }
                           </ul>
@@ -1016,8 +1042,15 @@ const DoctorProfilePage = () => {
                         <Card.Body>
                           <ul>
                             {
-                              selectedService.exclusive.split(', ').map((v, i) => (
-                                <li key={i}><FaRegDotCircle className='me-2' />{v}</li>
+                              selectedService.exclusive.split(',').map((v, i) => (
+                                <li key={i} className="mb-1">
+                                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15 5L5 15" stroke="#D32F2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M5 5L15 15" stroke="#D32F2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                  </svg>
+
+                                  <span className="ms-2">{v.trim()}</span>
+                                </li>
                               ))
                             }
                           </ul>

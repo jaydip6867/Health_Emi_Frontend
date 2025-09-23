@@ -37,7 +37,8 @@ const SearchBox = () => {
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/user/suggestions',
             data: {
-                "search": n
+                "search": n,
+                "city": searchinputcity
             }
         }).then((res) => {
             // console.log('suggestions = ',res.data.Data)
@@ -82,7 +83,7 @@ const SearchBox = () => {
                                 <div className='flex-grow-1 position-relative'>
                                     <FiSearch className='position-absolute icon' />
                                     <Form.Control placeholder='Search doctor & Surgery here ' autoComplete="off" value={inputValue} onChange={handleInputChange} onFocus={() => setShowList(true)} onBlur={() => setTimeout(() => setShowList(false), 50)} name='name' />
-                                    {showList && recordlist.length > 0 && (
+                                    {showList && (
                                         <ul style={{
                                             position: 'absolute',
                                             top: '40px',
@@ -96,7 +97,7 @@ const SearchBox = () => {
                                             overflowY: 'auto',
                                             zIndex: 10
                                         }}>
-                                            {recordlist.map((item, index) => (
+                                            { recordlist.length === 0 ? <p className='p-2 m-0'>No Record Found</p> : recordlist.map((item, index) => (
                                                 <li
                                                     key={index}
                                                     onClick={() => handleSelectItem(item.name)}
