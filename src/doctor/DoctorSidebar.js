@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Col } from 'react-bootstrap';
-import { BiSolidCommentAdd, BiSolidUserBadge } from 'react-icons/bi';
-import { FaUserNurse } from 'react-icons/fa';
-import { FiTrello } from 'react-icons/fi';
-import { MdCalendarMonth, MdSpaceDashboard } from 'react-icons/md';
+import { BiSolidCommentAdd } from 'react-icons/bi';
+import { MdAirlineSeatIndividualSuite, MdAssignmentAdd, MdSpaceDashboard } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { RiCalendarScheduleFill } from 'react-icons/ri';
+import { AiFillSchedule } from 'react-icons/ai';
+import { FaCalendarDays } from 'react-icons/fa6';
 
 const DoctorSidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -40,22 +41,22 @@ const DoctorSidebar = () => {
                             <MdSpaceDashboard /> Dashboard
                         </NavLink>
                         <NavLink to={'/doctor/doctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <BiSolidUserBadge /> Consultant Appointment
+                            <RiCalendarScheduleFill /> Consultant Appointment
                         </NavLink>
                         <NavLink to={'/doctor/doctorsurgeryappointment'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <BiSolidUserBadge /> Surgery Appointment
+                            <AiFillSchedule /> Surgery Appointment
                         </NavLink>
                         <NavLink to={'/doctor/doctorsurgery'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <FaUserNurse /> Surgery
+                            <MdAirlineSeatIndividualSuite /> Surgery
                         </NavLink>
                         <NavLink to={'/doctor/doctorblog'} className={({ isActive }) => (isActive ? 'active' : '')}>
                             <BiSolidCommentAdd /> Blog
                         </NavLink>
                         <NavLink to={'/doctor/doctorconsultation'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <FiTrello /> Consultation
+                            <MdAssignmentAdd /> Consultation
                         </NavLink>
                         <NavLink to={'/doctor/calender'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <MdCalendarMonth /> Calendar
+                        <FaCalendarDays /> Calendar
                         </NavLink>
                     </div>
                 </div>
