@@ -326,7 +326,7 @@ const D_Surgery = () => {
     });
     setsingleview(datasingle);
     handleShow();
-    console.log(datasingle)
+    // console.log(datasingle)
   }
 
   // display edit surgery in model
@@ -1286,7 +1286,7 @@ const D_Surgery = () => {
 
                                   {
                                     v?.additional_features?.split(',')?.map((feature, index) => {
-                                      
+
                                       return (
                                         <Badge
                                           className={`me-1 bg-success-subtle text-success fs-7 fw-normal px-3 py-2 rounded-pill`}
@@ -1329,7 +1329,7 @@ const D_Surgery = () => {
                                 {v.inclusive.split(',').map((item, index) => (
                                   <li key={index} className="mb-1">
                                     <svg width="15" height="10" viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                      <path d="M1.16669 5.00016L5.33335 9.16683L13.6667 0.833496" stroke="#2E7D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                      <path d="M1.16669 5.00016L5.33335 9.16683L13.6667 0.833496" stroke="#2E7D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
 
                                     <span className="ms-2">{item.trim()}</span>
@@ -1354,8 +1354,8 @@ const D_Surgery = () => {
                                 {v.exclusive.split(',').map((item, index) => (
                                   <li key={index} className="mb-1">
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                      <path d="M15 5L5 15" stroke="#D32F2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                      <path d="M5 5L15 15" stroke="#D32F2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                      <path d="M15 5L5 15" stroke="#D32F2F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                      <path d="M5 5L15 15" stroke="#D32F2F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
 
                                     <span className="ms-2">{item.trim()}</span>
@@ -1392,7 +1392,7 @@ const D_Surgery = () => {
                       value={s_type_name}
                       onChange={seditchange}
                     >
-                      <option selected disabled value={""}>
+                      <option value={""}>
                         Select Surgery Type
                       </option>
                       {s_type?.map((v, i) => {
