@@ -7,6 +7,7 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { RiCalendarScheduleFill } from 'react-icons/ri';
 import { AiFillSchedule } from 'react-icons/ai';
 import { FaCalendarDays } from 'react-icons/fa6';
+import { FaAmbulance } from 'react-icons/fa';
 
 const DoctorSidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -57,6 +58,9 @@ const DoctorSidebar = () => {
                         </NavLink>
                         <NavLink to={'/doctor/calender'} className={({ isActive }) => (isActive ? 'active' : '')}>
                         <FaCalendarDays /> Calendar
+                        </NavLink>
+                        <NavLink to={'/doctor/ambulance-request'} className={({ isActive }) => (isActive ? 'active' : '')}>
+                            <FaAmbulance /> Ambulance Booking
                         </NavLink>
                     </div>
                 </div>
