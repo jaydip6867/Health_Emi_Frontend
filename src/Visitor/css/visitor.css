@@ -1313,12 +1313,15 @@ h6 {
 }
 
 /* Focus states for accessibility */
-.custom-calendar .react-datepicker__header{
-    background: var(--primary-color-600) !important;
+.custom-calendar .react-datepicker__header {
+    background: var(--grayscale-color-800) !important;
+    padding: 12px 0;
 }
-.custom-calendar .react-datepicker__current-month{
+
+.custom-calendar .react-datepicker__current-month {
     color: var(--white) !important;
 }
+
 .book-appointment-btn:focus,
 .time-select:focus,
 .appointment-type-option:focus-within {
@@ -1328,25 +1331,56 @@ h6 {
 
 /* datepicker and slot */
 .custom-datepicker-container,
-.custom-datepicker-container .react-datepicker, 
-.custom-datepicker-container .react-datepicker__month-container, 
-.custom-datepicker-container .react-datepicker__day-names  {
+.custom-datepicker-container .react-datepicker,
+.custom-datepicker-container .react-datepicker__month-container,
+.custom-datepicker-container .react-datepicker__day-names {
     width: 100%;
 }
-.custom-datepicker-container .react-datepicker__day-names,.custom-datepicker-container .react-datepicker__week {
-    display: flex;
 
+.custom-datepicker-container .react-datepicker__day-names,
+.custom-datepicker-container .react-datepicker__week {
+    display: flex;
 }
+
 .custom-datepicker-container .react-datepicker__day-names {
-    background-color: var(--grayscale-color-100);
+    font-weight: 600;
+    color: var(--dark-text);
 }
+
 .custom-datepicker-container .react-datepicker__day-name {
     flex: 1;
     text-align: center;
-    padding: 10px 12px;
+    padding: 4px 12px;
 }
+
 .custom-datepicker-container .react-datepicker__day {
     flex: 1;
     text-align: center;
-    padding: 10px 12px;
+    padding: 8px 12px;
+    color: var(--grayscale-color-600);
+}
+.custom-datepicker-container .react-datepicker__day.react-datepicker__day--disabled{
+    color: var(--grayscale-color-200);
+}
+.custom-datepicker-container .react-datepicker__day.react-datepicker__day--selected{
+    color: var(--white);
+}
+.custom-datepicker-container .react-datepicker__navigation{
+    top: 8px;
+}
+
+
+.btn-hour.btn-light {
+    border: none;
+    background-color: var(--grayscale-color-50);
+}
+
+.btn-hour.btn-light:hover {
+    background-color: var(--grayscale-color-100);
+    border: none;
+}
+
+.btn-hour-active {
+    background-color: #1C2A3A;
+    color: var(--white);
 }

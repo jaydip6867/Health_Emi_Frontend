@@ -501,7 +501,7 @@ const D_SurgeryAppointment = () => {
                                             </Card>
                                             <Card className="border-light">
                                                 <Card.Body>
-                                                <Card.Title className="label_head">Medical Reports</Card.Title>
+                                                    <Card.Title className="label_head">Medical Reports</Card.Title>
                                                     {Array.isArray(v.report) ? (
                                                         <div className="d-flex flex-column gap-3" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                                             {v.report?.map((r, i) => {
@@ -601,16 +601,73 @@ const D_SurgeryAppointment = () => {
                                     <Modal.Title>Reschedule Surgery</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <p>Surgery Name :- {v?.surgerydetails.name}</p>
-                                    <Form.Label>New Appointment Date</Form.Label><br />
-                                    <DatePicker selected={selectedDate}
-                                        onChange={(date) => setSelectedDate(date)}
-                                        showTimeSelect
-                                        timeFormat="hh:mm a"
-                                        timeIntervals={15}
-                                        dateFormat="dd-MM-yyyy hh:mm a"
-                                        placeholderText="Select date and time"
-                                        minDate={new Date()} />
+                                    {/* <p>Surgery Name :- {v?.surgerydetails.name}</p> */}
+                                    {/* <Form.Label>New Appointment Date</Form.Label><br /> */}
+                                    <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                        <h5 >Select New Appointment Date & Time</h5>
+                                        <div style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            marginBottom: '20px'
+                                        }}>
+                                            <DatePicker
+                                                selected={selectedDate}
+                                                onChange={(date) => setSelectedDate(date)}
+                                                showTimeSelect
+                                                timeFormat="hh:mm aa"
+                                                timeIntervals={30}
+                                                dateFormat="MMMM d, yyyy h:mm aa"
+                                                minDate={new Date()}
+                                                inline
+                                                calendarClassName="custom-calendar"
+                                                className="custom-datepicker"
+                                                wrapperClassName="date-picker-wrapper"
+                                            />
+                                        </div>
+                                    </div>
+                                    <style jsx global>{`
+                                                                            .custom-calendar {
+                                                                                border: 1px solid #e0e0e0;
+                                                                                border-radius: 8px;
+                                                                                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                                                                                padding: 15px;
+                                                                                background: white;
+                                                                            }
+                                                                            .react-datepicker__header {
+                                                                                background-color: #f8f9fa;
+                                                                                border-bottom: 1px solid #e0e0e0;
+                                                                                position: relative;
+                                                                                padding-top: 12px;
+                                                                                display: flex;
+                                                                                justify-content: center;
+                                                                                align-items: center;
+                                                                            }
+                                                                            .react-datepicker__navigation {
+                                                                                top: 18px !important;
+                                                                                position: absolute;
+                                                                                font-weight: 500;
+                                                                            }
+                                                                            .react-datepicker__day--selected,
+                                                                            .react-datepicker__day--keyboard-selected {
+                                                                                background-color: #3f51b5;
+                                                                                color: white;
+                                                                            }
+                                                                            .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
+                                                                                background-color: #3f51b5;
+                                                                                color: white;
+                                                                            }
+                                                                            .react-datepicker__navigation--next,
+                                                                            .react-datepicker__navigation--previous {
+                                                                                border-color: #3f51b5;
+                                                                            }
+                                                                            .react-datepicker__navigation--next:hover,
+                                                                            .react-datepicker__navigation--previous:hover {
+                                                                                border-color: #303f9f;
+                                                                            }
+                                                                            .custom-calendar .react-datepicker-time__header {
+                                                                                color: #fff !important;
+                                                                            }
+                                                                        `}</style>
                                 </Modal.Body>
                                 <Modal.Footer>
                                     <Button onClick={reschedule_appointment}>Reschedule Date</Button>

@@ -1186,7 +1186,7 @@ const D_Surgery = () => {
                 <Modal.Body>
                   <Row className="g-3">
                     <Col xs={12} md={6}>
-                      <Card className="border-light">
+                      <Card className="mb-3 border-light">
                         <Card.Body>
                           <Card.Title className="label_head">Surgery Information</Card.Title>
                           <Row>
@@ -1223,10 +1223,27 @@ const D_Surgery = () => {
                           </Row>
                         </Card.Body>
                       </Card>
+                      <Card className="mb-3 border-light">
+                        <Card.Body>
+                          <Card.Title className="label_head">Surgery Photo</Card.Title>
+                          <div className='label_box text-center'>
+                            {v?.surgery_photo ? (
+                              <img
+                                src={v?.surgery_photo}
+                                alt="Surgery Photo"
+                                style={{ maxWidth: "100%", maxHeight: "200px", objectFit: "cover" }}
+                                className="img-thumbnail rounded"
+                              />
+                            ) : (
+                              <div className="text-muted">No photo available</div>
+                            )}
+                          </div>
+                        </Card.Body>
+                      </Card>
                     </Col>
 
                     <Col xs={12} md={6}>
-                      <Card className="mb-4 border-light">
+                      <Card className="mb-3 border-light">
                         <Card.Body>
                           <Card.Title className="label_head">Pricing Information</Card.Title>
                           <Row>
@@ -1257,10 +1274,8 @@ const D_Surgery = () => {
                           </Row>
                         </Card.Body>
                       </Card>
-                    </Col>
 
-                    <Col xs={12} md={6}>
-                      <Card className="mb-4 border-light">
+                      <Card className="mb-3 border-light">
                         <Card.Body>
                           <Card.Title className="label_head">Features & Description</Card.Title>
                           <Row>
@@ -1271,16 +1286,10 @@ const D_Surgery = () => {
 
                                   {
                                     v?.additional_features?.split(',')?.map((feature, index) => {
-                                      const colors = [
-                                        "primary", "secondary", "success", "warning", "info"
-                                      ];
-
-                                      // Pick a random color class
-                                      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-
+                                      
                                       return (
                                         <Badge
-                                          className={`me-1 bg-${randomColor}-subtle text-${randomColor} fs-6 fw-normal px-3 py-2 rounded-pill`}
+                                          className={`me-1 bg-success-subtle text-success fs-7 fw-normal px-3 py-2 rounded-pill`}
                                           key={index}
                                         >
                                           {feature}
@@ -1292,33 +1301,20 @@ const D_Surgery = () => {
                                 </div>
                               </div>
                             </Col>
+                          </Row>
+                        </Card.Body>
+                      </Card>
+
+                      <Card className="mb-4 border-light">
+                        <Card.Body>
+                          <Card.Title className="label_head">Description</Card.Title>
+                          <Row>
                             <Col xs={12}>
                               <div className='label_box'>
-                                <span className="label_title">Description:</span>
                                 <p>{v?.description || 'No description available'}</p>
                               </div>
                             </Col>
                           </Row>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-
-                    <Col xs={12} md={6}>
-                      <Card className="mb-4 border-light">
-                        <Card.Body>
-                          <Card.Title className="label_head">Surgery Photo</Card.Title>
-                          <div className='label_box text-center'>
-                            {v?.surgery_photo ? (
-                              <img
-                                src={v?.surgery_photo}
-                                alt="Surgery Photo"
-                                style={{ maxWidth: "100%", maxHeight: "200px", objectFit: "cover" }}
-                                className="img-thumbnail rounded"
-                              />
-                            ) : (
-                              <div className="text-muted">No photo available</div>
-                            )}
-                          </div>
                         </Card.Body>
                       </Card>
                     </Col>

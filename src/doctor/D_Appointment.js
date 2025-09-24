@@ -11,6 +11,7 @@ import SmartDataTable from '../components/SmartDataTable'
 import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye, MdEdit, MdDelete, MdMoreVert } from 'react-icons/md'
 import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
+import jsPDF from 'jspdf'
 
 const D_Appointment = () => {
     const SECRET_KEY = "health-emi";
@@ -123,7 +124,223 @@ const D_Appointment = () => {
         // console.log(data)
         handlerescheduleShow()
     }
+    const handleOpenStartAppointment = (appointmentRow) => {
+        setCurrentAppointment(appointmentRow);
+        setStartNotes('');
+        setShowStartAppointment(true);
+    };
 
+    const handleCloseStartAppointment = () => {
+        setShowStartAppointment(false);
+        setCurrentAppointment(null);
+        setStartNotes('');
+    };
+
+    const confirmStartAppointment = () => {
+        setShowStartAppointment(false);
+        setShowPrescriptionModal(true);
+    };
+
+    const [showStartAppointment, setShowStartAppointment] = useState(false);
+    const [currentAppointment, setCurrentAppointment] = useState(null);
+    const [startNotes, setStartNotes] = useState('');
+
+    const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
+    const [prescriptionData, setPrescriptionData] = useState({
+        diagnosis: '',
+        medications: '',
+        instructions: '',
+        followUp: ''
+    });
+
+    const handleClosePrescriptionModal = () => {
+        setShowPrescriptionModal(false);
+        setPrescriptionData({
+            diagnosis: '',
+            medications: '',
+            instructions: '',
+            followUp: ''
+        });
+        setCurrentAppointment(null);
+        setStartNotes('');
+    };
+
+    const handlePrescriptionChange = (field, value) => {
+        setPrescriptionData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const generatePrescriptionPDF = () => {
+        const doc = new jsPDF();
+        
+        // Set up the document
+        const pageWidth = doc.internal.pageSize.width;
+        const margin = 20;
+        let yPosition = 30;
+        
+        // Header - Clinic Name
+        doc.setFontSize(22);
+        doc.setFont('helvetica', 'bold');
+        doc.text('HEALTH EMI CLINIC', pageWidth / 2, yPosition, { align: 'center' });
+        
+        yPosition += 10;
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Medical Prescription', pageWidth / 2, yPosition, { align: 'center' });
+        
+        // Line separator
+        yPosition += 15;
+        doc.line(margin, yPosition, pageWidth - margin, yPosition);
+        
+        // Doctor Information
+        yPosition += 15;
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Doctor Information:', margin, yPosition);
+        
+        yPosition += 8;
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Dr. ${doctor?.name || 'N/A'}`, margin, yPosition);
+        
+        yPosition += 6;
+        doc.text(`Specialty: ${doctor?.specialty || 'N/A'}`, margin, yPosition);
+        
+        yPosition += 6;
+        doc.text(`Qualification: ${doctor?.qualification || 'N/A'}`, margin, yPosition);
+        
+        // Patient Information
+        yPosition += 15;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Patient Information:', margin, yPosition);
+        
+        yPosition += 8;
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Patient Name: ${currentAppointment?.patientname || 'N/A'}`, margin, yPosition);
+        
+        yPosition += 6;
+        doc.text(`Date: ${currentAppointment?.date || 'N/A'}`, margin, yPosition);
+        
+        yPosition += 6;
+        doc.text(`Time: ${currentAppointment?.time || 'N/A'}`, margin, yPosition);
+        
+        if (currentAppointment?.appointment_reason) {
+            yPosition += 6;
+            doc.text(`Reason for Visit: ${currentAppointment.appointment_reason}`, margin, yPosition);
+        }
+        
+        // Appointment Notes
+        if (startNotes) {
+            yPosition += 15;
+            doc.setFont('helvetica', 'bold');
+            doc.text('Appointment Notes:', margin, yPosition);
+            
+            yPosition += 8;
+            doc.setFont('helvetica', 'normal');
+            const notesLines = doc.splitTextToSize(startNotes, pageWidth - 2 * margin);
+            doc.text(notesLines, margin, yPosition);
+            yPosition += notesLines.length * 6;
+        }
+        
+        // Diagnosis
+        yPosition += 15;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Diagnosis:', margin, yPosition);
+        
+        yPosition += 8;
+        doc.setFont('helvetica', 'normal');
+        const diagnosisLines = doc.splitTextToSize(prescriptionData.diagnosis, pageWidth - 2 * margin);
+        doc.text(diagnosisLines, margin, yPosition);
+        yPosition += diagnosisLines.length * 6;
+        
+        // Medications
+        yPosition += 10;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Prescribed Medications:', margin, yPosition);
+        
+        yPosition += 8;
+        doc.setFont('helvetica', 'normal');
+        const medicationsLines = doc.splitTextToSize(prescriptionData.medications, pageWidth - 2 * margin);
+        doc.text(medicationsLines, margin, yPosition);
+        yPosition += medicationsLines.length * 6;
+        
+        // Instructions
+        if (prescriptionData.instructions) {
+            yPosition += 10;
+            doc.setFont('helvetica', 'bold');
+            doc.text('Instructions:', margin, yPosition);
+            
+            yPosition += 8;
+            doc.setFont('helvetica', 'normal');
+            const instructionsLines = doc.splitTextToSize(prescriptionData.instructions, pageWidth - 2 * margin);
+            doc.text(instructionsLines, margin, yPosition);
+            yPosition += instructionsLines.length * 6;
+        }
+        
+        // Follow-up
+        if (prescriptionData.followUp) {
+            yPosition += 10;
+            doc.setFont('helvetica', 'bold');
+            doc.text('Follow-up:', margin, yPosition);
+            
+            yPosition += 8;
+            doc.setFont('helvetica', 'normal');
+            const followUpLines = doc.splitTextToSize(prescriptionData.followUp, pageWidth - 2 * margin);
+            doc.text(followUpLines, margin, yPosition);
+            yPosition += followUpLines.length * 6;
+        }
+        
+        // Footer
+        yPosition += 30;
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'italic');
+        doc.text('This is a digitally generated prescription from Health EMI Clinic System', pageWidth / 2, yPosition, { align: 'center' });
+        
+        yPosition += 6;
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, pageWidth / 2, yPosition, { align: 'center' });
+        
+        // Doctor's signature area
+        yPosition += 20;
+        doc.setFont('helvetica', 'normal');
+        doc.text('Doctor\'s Signature: ________________________', pageWidth - margin - 80, yPosition);
+        
+        // Save the PDF
+        const fileName = `prescription_${currentAppointment?.patientname?.replace(/\s+/g, '_') || 'patient'}_${Date.now()}.pdf`;
+        doc.save(fileName);
+        
+        return fileName;
+    };
+    
+    const submitPrescription = () => {
+        if (!prescriptionData.diagnosis.trim() || !prescriptionData.medications.trim()) {
+            Swal.fire({
+                title: "Required Fields Missing",
+                text: "Please fill in diagnosis and medications",
+                icon: "warning",
+            });
+            return;
+        }
+    
+        // Generate and download PDF
+        const fileName = generatePrescriptionPDF();
+    
+        // Here you can add API call to save prescription
+        console.log('Prescription Data:', {
+            appointmentId: currentAppointment._id,
+            patientName: currentAppointment.patientname,
+            ...prescriptionData,
+            notes: startNotes
+        });
+    
+        Swal.fire({
+            title: "Prescription Created Successfully!",
+            text: `PDF has been downloaded as ${fileName}`,
+            icon: "success",
+        });
+    
+        handleClosePrescriptionModal();
+    };
     const formattedDateTime = selectedDate
         ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
         : '';
@@ -359,6 +576,7 @@ const D_Appointment = () => {
         width: '80px'
     }, {
         name: 'Action',
+        center: true,
         cell: row => (
             <div className="d-flex align-items-center gap-1">
                 {row.status === "Pending" && (
@@ -414,6 +632,25 @@ const D_Appointment = () => {
                             </button>
                         </OverlayTrigger>
                     </>
+                )}
+                {row.status === "Accept" && (
+                    <OverlayTrigger placement="top" overlay={renderTooltip('Start')}>
+                        <button
+                            className="btn btn-sm p-1"
+                            style={{
+                                border: 'none',
+                                backgroundColor: 'transparent',
+                                color: '#2563EB',
+                                borderRadius: '6px'
+                            }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#EFF6FF'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                            onClick={() => handleOpenStartAppointment(row)}
+                        >
+                            {/* <MdPlayArrow size={18} /> */}
+                            Start Apt.
+                        </button>
+                    </OverlayTrigger>
                 )}
 
             </div>
@@ -597,16 +834,72 @@ const D_Appointment = () => {
                                 <Modal.Header closeButton>
                                     <Modal.Title>Reschedule Surgery</Modal.Title>
                                 </Modal.Header>
-                                <Modal.Body>
-                                    <Form.Label>New Appointment Date</Form.Label><br />
-                                    <DatePicker selected={selectedDate}
-                                        onChange={(date) => setSelectedDate(date)}
-                                        showTimeSelect
-                                        timeFormat="hh:mm a"
-                                        timeIntervals={15}
-                                        dateFormat="dd-MM-yyyy hh:mm a"
-                                        placeholderText="Select date and time"
-                                        minDate={new Date()} />
+                                <Modal.Body style={{ padding: '24px' }}>
+                                    <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                        <h5 >Select New Appointment Date & Time</h5>
+                                        <div style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            marginBottom: '20px'
+                                        }}>
+                                            <DatePicker
+                                                selected={selectedDate}
+                                                onChange={(date) => setSelectedDate(date)}
+                                                showTimeSelect
+                                                timeFormat="hh:mm aa"
+                                                timeIntervals={30}
+                                                dateFormat="MMMM d, yyyy h:mm aa"
+                                                minDate={new Date()}
+                                                inline
+                                                calendarClassName="custom-calendar"
+                                                className="custom-datepicker"
+                                                wrapperClassName="date-picker-wrapper"
+                                            />
+                                        </div>
+                                    </div>
+                                    <style jsx global>{`
+                                        .custom-calendar {
+                                            border: 1px solid #e0e0e0;
+                                            border-radius: 8px;
+                                            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                                            padding: 15px;
+                                            background: white;
+                                        }
+                                        .react-datepicker__header {
+                                            background-color: #f8f9fa;
+                                            border-bottom: 1px solid #e0e0e0;
+                                            position: relative;
+                                            padding-top: 12px;
+                                            display: flex;
+                                            justify-content: center;
+                                            align-items: center;
+                                        }
+                                        .react-datepicker__navigation {
+                                            top: 18px !important;
+                                            position: absolute;
+                                            font-weight: 500;
+                                        }
+                                        .react-datepicker__day--selected,
+                                        .react-datepicker__day--keyboard-selected {
+                                            background-color: #3f51b5;
+                                            color: white;
+                                        }
+                                        .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
+                                            background-color: #3f51b5;
+                                            color: white;
+                                        }
+                                        .react-datepicker__navigation--next,
+                                        .react-datepicker__navigation--previous {
+                                            border-color: #3f51b5;
+                                        }
+                                        .react-datepicker__navigation--next:hover,
+                                        .react-datepicker__navigation--previous:hover {
+                                            border-color: #303f9f;
+                                        }
+                                        .custom-calendar .react-datepicker-time__header {
+                                            color: #fff !important;
+                                        }
+                                    `}</style>
                                 </Modal.Body>
                                 <Modal.Footer>
                                     <Button onClick={reschedule_appointment}>Reschedule Date</Button>
@@ -615,6 +908,158 @@ const D_Appointment = () => {
                         )
                     })
                 }
+                {/* Start Appointment Modal */}
+                <Modal show={showStartAppointment} onHide={handleCloseStartAppointment} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Start Appointment</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {currentAppointment ? (
+                            <div className='d-flex flex-column gap-2'>
+                                <div className='d-flex justify-content-between'>
+                                    <span className='text-muted'>Patient</span>
+                                    <span className='fw-semibold'>{currentAppointment.patientname}</span>
+                                </div>
+                                <div className='d-flex justify-content-between'>
+                                    <span className='text-muted'>Date</span>
+                                    <span className='fw-semibold'>{currentAppointment.date}</span>
+                                </div>
+                                <div className='d-flex justify-content-between'>
+                                    <span className='text-muted'>Time</span>
+                                    <span className='fw-semibold'>{currentAppointment.time}</span>
+                                </div>
+                                <div>
+                                    <span className='text-muted d-block'>Reason</span>
+                                    <span>{currentAppointment.appointment_reason || 'Not provided'}</span>
+                                </div>
+                                <Form.Group className='mt-3'>
+                                    <Form.Label>Notes</Form.Label>
+                                    <Form.Control
+                                        as='textarea'
+                                        rows={3}
+                                        placeholder='Add notes for this appointment'
+                                        value={startNotes}
+                                        onChange={(e) => setStartNotes(e.target.value)}
+                                    />
+                                </Form.Group>
+                            </div>
+                        ) : (
+                            <p className='text-muted mb-0'>No appointment selected.</p>
+                        )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant='secondary' onClick={handleCloseStartAppointment}>
+                            Close
+                        </Button>
+                        <Button variant='primary' onClick={confirmStartAppointment} disabled={!currentAppointment}>
+                            Start Appointment
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                {/* Prescription Writing Modal */}
+                <Modal show={showPrescriptionModal} onHide={handleClosePrescriptionModal} centered size="lg">
+                    <Modal.Header closeButton>
+                        <Modal.Title>Write Prescription</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {currentAppointment ? (
+                            <div className='d-flex flex-column gap-3'>
+                                {/* Patient Info Header */}
+                                <div className='bg-light p-3 rounded'>
+                                    <div className='row'>
+                                        <div className='col-md-6'>
+                                            <strong>Patient:</strong> {currentAppointment.patientname}
+                                        </div>
+                                        <div className='col-md-6'>
+                                            <strong>Date:</strong> {currentAppointment.date}
+                                        </div>
+                                    </div>
+                                    <div className='row mt-2'>
+                                        <div className='col-md-6'>
+                                            <strong>Time:</strong> {currentAppointment.time}
+                                        </div>
+                                        <div className='col-md-6'>
+                                            <strong>Reason:</strong> {currentAppointment.appointment_reason || 'Not provided'}
+                                        </div>
+                                    </div>
+                                    {startNotes && (
+                                        <div className='mt-2'>
+                                            <strong>Notes:</strong> {startNotes}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Prescription Form */}
+                                <Form>
+                                    <Row>
+                                        <Col md={6}>
+                                            <Form.Group className='mb-3'>
+                                                <Form.Label><strong>Diagnosis *</strong></Form.Label>
+                                                <Form.Control
+                                                    as='textarea'
+                                                    rows={3}
+                                                    placeholder='Enter diagnosis...'
+                                                    value={prescriptionData.diagnosis}
+                                                    onChange={(e) => handlePrescriptionChange('diagnosis', e.target.value)}
+                                                    required
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group className='mb-3'>
+                                                <Form.Label><strong>Medications *</strong></Form.Label>
+                                                <Form.Control
+                                                    as='textarea'
+                                                    rows={3}
+                                                    placeholder='Enter medications with dosage...'
+                                                    value={prescriptionData.medications}
+                                                    onChange={(e) => handlePrescriptionChange('medications', e.target.value)}
+                                                    required
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+
+                                    <Form.Group className='mb-3'>
+                                        <Form.Label><strong>Instructions</strong></Form.Label>
+                                        <Form.Control
+                                            as='textarea'
+                                            rows={3}
+                                            placeholder='Enter special instructions for patient...'
+                                            value={prescriptionData.instructions}
+                                            onChange={(e) => handlePrescriptionChange('instructions', e.target.value)}
+                                        />
+                                    </Form.Group>
+
+                                    <Form.Group className='mb-3'>
+                                        <Form.Label><strong>Follow-up</strong></Form.Label>
+                                        <Form.Control
+                                            type='text'
+                                            placeholder='Next appointment or follow-up instructions...'
+                                            value={prescriptionData.followUp}
+                                            onChange={(e) => handlePrescriptionChange('followUp', e.target.value)}
+                                        />
+                                    </Form.Group>
+                                </Form>
+                            </div>
+                        ) : (
+                            <p className='text-muted mb-0'>No appointment data available.</p>
+                        )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant='secondary' onClick={handleClosePrescriptionModal}>
+                            Cancel
+                        </Button>
+                        <Button
+                            variant='primary'
+                            onClick={submitPrescription}
+                            disabled={!prescriptionData.diagnosis.trim() || !prescriptionData.medications.trim()}
+                        >
+                            Save Prescription
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </Container >
             {loading ? <Loader /> : ''
             }

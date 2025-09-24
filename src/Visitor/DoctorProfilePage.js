@@ -627,7 +627,7 @@ const DoctorProfilePage = () => {
 
             {/* Sidebar - Book Consultation */}
             <Col lg={4}>
-              <div className="position-sticky" style={{ top: '20px' }}>
+              <div>
                 {/* Consultation Type Selection */}
                 <Card className="mb-4 border-0" style={{ borderRadius: '15px', backgroundColor: 'transparent' }}>
                   <Card.Body className="p-4">
@@ -753,7 +753,7 @@ const DoctorProfilePage = () => {
                           borderRadius: '8px',
                           border: '1px solid #e9ecef'
                         }}>
-                          <h6 className="fw-bold mb-3 text-center">Time Slots</h6>
+                          <h6 className="fw-bold mb-3 text-center">Select Hour</h6>
                           {selectedDate ? (
                             <div>
                               <Row className="g-2">
@@ -764,11 +764,11 @@ const DoctorProfilePage = () => {
                                         selectedTimeSlot === slot.time
                                           ? "dark"
                                           : slot.available
-                                            ? "outline-primary"
+                                            ? "light"
                                             : "outline-danger"
                                       }
                                       size="sm"
-                                      className="w-100"
+                                      className="w-100 btn-hour"
                                       disabled={!slot.available}
                                       onClick={() => handleTimeSlotSelect(slot)}
                                       style={{
@@ -879,41 +879,6 @@ const DoctorProfilePage = () => {
                       <Form.Label>Reports</Form.Label>
                       <Form.Control type='file' value={apt_data.report} name='report' onChange={appchangedata}></Form.Control>
                     </Col>
-                    {/* <Col xs={12} md={4}>
-                      <Form.Check
-                        label={`Home Visit - ${doctor_profile.consultationsDetails.home_visit_price}`}
-                        type="radio"
-                        name="visit_types"
-                        value={"home_visit"}
-                        onChange={appchangedata}
-                      />
-                      <Form.Check
-                        label={`Clinic Visit - ${doctor_profile.consultationsDetails.clinic_visit_price}`}
-                        type="radio"
-                        name="visit_types"
-                        value={"clinic_visit"}
-                        onChange={appchangedata}
-                      />
-                      <Form.Check
-                        label={`EOPD - ${doctor_profile.consultationsDetails.eopd_price}`}
-                        type="radio"
-                        name="visit_types"
-                        value={"eopd"}
-                        onChange={appchangedata}
-                      />
-                    </Col> */}
-                    {/* <Col xs={'auto'}>
-                      <Form.Label>Appointment Date</Form.Label>
-                      <br /> */}
-
-                    {/* {selectedTimeSlot && (
-                        <div className="p-2 bg-success bg-opacity-10 rounded text-center">
-                          <small className="text-success fw-bold">
-                            ✓ Selected: {format(selectedDate, 'dd/MM/yyyy')} at {selectedTimeSlot}
-                          </small>
-                        </div>
-                      )}
-                    </Col> */}
                   </Row>
                 </Form>
               </Col>
