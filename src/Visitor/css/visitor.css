@@ -1305,6 +1305,14 @@ h6 {
     animation: fadeInUp 0.8s ease-out;
 }
 
+.check_room_type{
+    border: 1px solid transparent;
+}
+.check_room_type.active{
+    border-color: var(--primary-color-600);
+    box-shadow: 0 5px 10px var(--grayscale-color-100) !important;
+}
+
 /* Smooth transitions for interactive elements */
 .verification-badge,
 .clinic-appointment-details,
@@ -1367,6 +1375,13 @@ h6 {
 }
 .custom-datepicker-container .react-datepicker__navigation{
     top: 8px;
+}
+.custom-datepicker-container .react-datepicker__day--today{
+    border: 1px solid #1C2A3A;
+}
+.custom-datepicker-container .react-datepicker__day--selected{
+    background-color: #1C2A3A;
+    color: var(--white);
 }
 
 

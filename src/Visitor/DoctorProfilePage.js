@@ -395,7 +395,7 @@ const DoctorProfilePage = () => {
               <Card className="mb-4 border-0 shadow-sm" style={{ backgroundColor: '#fff', borderRadius: '15px' }}>
                 <Card.Body className="p-4">
                   <Row className="align-items-center">
-                    <Col md={3}>
+                    <Col md={'auto'}>
                       <div className="position-relative">
                         {doctor_profile.profile_pic === "" ? (
                           <Image
@@ -431,7 +431,7 @@ const DoctorProfilePage = () => {
                         <small className="text-muted">{doctor_profile.email}</small>
                       </div>
                     </Col>
-                    <Col md={5}>
+                    <Col md={4} className='ms-auto'>
                       <Row className="g-3">
                         <Col xs={6}>
                           <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
@@ -521,7 +521,7 @@ const DoctorProfilePage = () => {
                     to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. {doctor_profile.name}, a dedicated cardiologist, brings a
                     wealth of experience to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. {doctor_profile.name}, a dedicated
                     {doctor_profile.specialty}, brings a wealth of experience to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. {doctor_profile.name}, a dedicated
-                    {doctor_profile.specialty}, brings a wealth of experience to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. <span className="text-primary fw-bold" style={{ cursor: 'pointer' }}>read more</span>
+                    {/* {doctor_profile.specialty}, brings a wealth of experience to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. <span className="text-primary fw-bold" style={{ cursor: 'pointer' }}>read more</span> */}
                   </p>
                 </Card.Body>
               </Card>
@@ -630,7 +630,7 @@ const DoctorProfilePage = () => {
               <div>
                 {/* Consultation Type Selection */}
                 <Card className="mb-4 border-0" style={{ borderRadius: '15px', backgroundColor: 'transparent' }}>
-                  <Card.Body className="p-4">
+                  <Card.Body className="p-0">
                     <h6 className="fw-bold mb-3 text-muted">Select Consultation Type</h6>
                     <Row className="g-3">
                       <Col xs={4}>
@@ -645,7 +645,7 @@ const DoctorProfilePage = () => {
                         />
                         <label
                           htmlFor="clinic_visit"
-                          className={`text-center p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'clinic_visit' ? 'bg-primary-subtle' : ''
+                          className={`text-center check_room_type p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'clinic_visit' ? 'active' : ''
                             }`}
                           style={{ cursor: 'pointer' }}
                         >
@@ -674,7 +674,7 @@ const DoctorProfilePage = () => {
                         />
                         <label
                           htmlFor="home_visit"
-                          className={`text-center p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'home_visit' ? 'bg-primary-subtle' : ''
+                          className={`text-center p-3 bg-white check_room_type rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'home_visit' ? 'active' : ''
                             }`}
                           style={{ cursor: 'pointer' }}
                         >
@@ -703,7 +703,7 @@ const DoctorProfilePage = () => {
                         />
                         <label
                           htmlFor="eopd"
-                          className={`text-center p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'eopd' ? 'bg-primary-subtle' : ''
+                          className={`text-center p-3 bg-white check_room_type rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'eopd' ? 'active' : ''
                             }`}
                           style={{ cursor: 'pointer' }}
                         >
