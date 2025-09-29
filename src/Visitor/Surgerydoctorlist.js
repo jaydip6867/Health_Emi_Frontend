@@ -92,11 +92,6 @@ const Surgerydoctorlist = () => {
                     </Col>
                     <Col xs='auto'>
                         <Form.Select className='rounded-pill outline-secondary'>
-                            <option>Availability</option>
-                        </Form.Select>
-                    </Col>
-                    <Col xs='auto'>
-                        <Form.Select className='rounded-pill outline-secondary'>
                             <option>Consult Type</option>
                         </Form.Select>
                     </Col>

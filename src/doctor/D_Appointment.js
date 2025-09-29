@@ -529,30 +529,30 @@ const D_Appointment = () => {
         // sortable: true,
         width: '120px',
     },
-    {
-        name: 'Payment Status',
-        selector: row => row.payment_status,
-        cell: row => {
-            const statusInfo = getStatusBadge(row.payment_status);
-            return (
-                <div className="d-flex align-items-center gap-2">
-                    <div
-                        className="rounded-circle"
-                        style={{
-                            width: '8px',
-                            height: '8px',
-                            backgroundColor: statusInfo.dot
-                        }}
-                    ></div>
-                    <span style={{ color: '#6B7280', fontSize: '14px' }}>
-                        {statusInfo.text}
-                    </span>
-                </div>
-            );
-        },
-        // sortable: true,
-        width: '150px'
-    },
+    // {
+    //     name: 'Payment Status',
+    //     selector: row => row.payment_status,
+    //     cell: row => {
+    //         const statusInfo = getStatusBadge(row.payment_status);
+    //         return (
+    //             <div className="d-flex align-items-center gap-2">
+    //                 <div
+    //                     className="rounded-circle"
+    //                     style={{
+    //                         width: '8px',
+    //                         height: '8px',
+    //                         backgroundColor: statusInfo.dot
+    //                     }}
+    //                 ></div>
+    //                 <span style={{ color: '#6B7280', fontSize: '14px' }}>
+    //                     {statusInfo.text}
+    //                 </span>
+    //             </div>
+    //         );
+    //     },
+    //     // sortable: true,
+    //     width: '150px'
+    // },
     {
         name: 'View',
         cell: row => (

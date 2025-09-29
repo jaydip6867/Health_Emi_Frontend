@@ -101,7 +101,7 @@ const DoctorProfilePage = () => {
       }
     }).then((res) => {
       setdocprofile(res.data.Data)
-      // console.log('doctor ', res.data.Data)
+      console.log('doctor ', res.data.Data)
     }).catch(function (error) {
       console.log(error);
     }).finally(() => {
@@ -446,7 +446,7 @@ const DoctorProfilePage = () => {
 
                               </div>
                               <div className="d-flex flex-column mt-1">
-                                <span className="fw-bold">2,000+</span>
+                                <span className="fw-bold">{!doctor_profile?.completedappointment  ? 0 : doctor_profile?.completedappointment}+</span>
                                 <small className="text-muted">Consultant</small>
                               </div>
                             </div>
@@ -464,7 +464,7 @@ const DoctorProfilePage = () => {
 
                               </div>
                               <div className="d-flex flex-column mt-1">
-                                <span className="fw-bold">6</span>
+                                <span className="fw-bold">{!doctor_profile?.surgeriesDetails || doctor_profile?.surgeriesDetails?.length === 0 ? "0" : doctor_profile?.surgeriesDetails?.length}</span>
                                 <small className="text-muted">Surgeries</small>
                               </div>
                             </div>
@@ -481,7 +481,7 @@ const DoctorProfilePage = () => {
 
                               </div>
                               <div className="d-flex flex-column mt-1">
-                                <span className="fw-bold">10+ Years</span>
+                                <span className="fw-bold">{!doctor_profile?.experience ? '0 Years' : doctor_profile?.experience}</span>
                                 <small className="text-muted">Experience</small>
                               </div>
                             </div>
@@ -498,7 +498,7 @@ const DoctorProfilePage = () => {
 
                               </div>
                               <div className="d-flex flex-column mt-1">
-                                <span className="fw-bold">5</span>
+                                <span className="fw-bold">{!doctor_profile?.averageRating ? 0 : doctor_profile?.averageRating}</span>
                                 <small className="text-muted">Rating</small>
                               </div>
                             </div>
@@ -591,7 +591,35 @@ const DoctorProfilePage = () => {
               <Card className="mb-4 border-0 shadow-sm" style={{ borderRadius: '15px' }}>
                 <Card.Body className="p-4">
                   <h5 className="fw-bold mb-4">Reviews</h5>
-                  <div className='card p-3 shadow'>
+                  {
+                    doctor_profile?.allReviewData?.length > 0 ? (
+                      doctor_profile?.allReviewData?.map((v, i) => {
+                        return (
+                          <div className='card p-3 shadow mb-3' key={i}>
+                            <div className="d-flex align-items-center pb-2 border-bottom">
+                              <Image
+                                src={v?.createdBy?.profile_pic || require("../assets/image/doctor_img.jpg")}
+                                roundedCircle
+                                width={50}
+                                height={50}
+                                className="me-3 review_pic"
+                              />
+                              <div>
+                                <h6 className="fw-bold mb-1">{v?.createdBy?.name}</h6>
+                              </div>
+                            </div>
+                            <p className="mt-3 mb-0">
+                              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec metus vel ante
+                              consectetur bibendum. Nullam nec metus vel ante consectetur bibendum.
+                            </p>
+                          </div>
+                        )
+                      })
+                    ) : (
+                      <p>No reviews available</p>
+                    )
+                  }
+                  {/* <div className='card p-3 shadow'>
                     <div className="d-flex align-items-start mb-3 pb-2 border-bottom">
                       <Image
                         src={require("../assets/image/doctor_img.jpg")}
@@ -620,7 +648,7 @@ const DoctorProfilePage = () => {
                       with dentists but after getting my treatment done here I have overcome my fears. The doctor is very
                       good in her work and also knows how to take care of my teeth after treatment.
                     </p>
-                  </div>
+                  </div> */}
                 </Card.Body>
               </Card>
             </Col>
