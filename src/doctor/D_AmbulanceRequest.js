@@ -13,7 +13,7 @@ import { FaAmbulance, FaLocationArrow, FaMapMarkerAlt, FaRoute } from 'react-ico
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
-import 'leaflet-control-geocoder/dist/Control.Geocoder.js';
+import 'leaflet-control-geocoder';
 // Fix default marker icons for production builds
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
