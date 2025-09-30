@@ -126,14 +126,13 @@ const D_Appointment = () => {
     }
     const handleOpenStartAppointment = (appointmentRow) => {
         setCurrentAppointment(appointmentRow);
-        setStartNotes('');
         setShowStartAppointment(true);
+        console.log(appointmentRow)
     };
 
     const handleCloseStartAppointment = () => {
         setShowStartAppointment(false);
         setCurrentAppointment(null);
-        setStartNotes('');
     };
 
     const confirmStartAppointment = () => {
@@ -143,7 +142,6 @@ const D_Appointment = () => {
 
     const [showStartAppointment, setShowStartAppointment] = useState(false);
     const [currentAppointment, setCurrentAppointment] = useState(null);
-    const [startNotes, setStartNotes] = useState('');
 
     const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
     const [prescriptionData, setPrescriptionData] = useState({
@@ -162,7 +160,6 @@ const D_Appointment = () => {
             followUp: ''
         });
         setCurrentAppointment(null);
-        setStartNotes('');
     };
 
     const handlePrescriptionChange = (field, value) => {
@@ -174,145 +171,134 @@ const D_Appointment = () => {
 
     const generatePrescriptionPDF = () => {
         const doc = new jsPDF();
-        
+
         // Set up the document
         const pageWidth = doc.internal.pageSize.width;
         const margin = 20;
         let yPosition = 30;
-        
+
         // Header - Clinic Name
         doc.setFontSize(22);
         doc.setFont('helvetica', 'bold');
         doc.text('HEALTH EMI CLINIC', pageWidth / 2, yPosition, { align: 'center' });
-        
+
         yPosition += 10;
         doc.setFontSize(14);
         doc.setFont('helvetica', 'normal');
         doc.text('Medical Prescription', pageWidth / 2, yPosition, { align: 'center' });
-        
+
         // Line separator
         yPosition += 15;
         doc.line(margin, yPosition, pageWidth - margin, yPosition);
-        
+
         // Doctor Information
         yPosition += 15;
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
         doc.text('Doctor Information:', margin, yPosition);
-        
+
         yPosition += 8;
         doc.setFont('helvetica', 'normal');
         doc.text(`Dr. ${doctor?.name || 'N/A'}`, margin, yPosition);
-        
-        yPosition += 6;
-        doc.text(`Specialty: ${doctor?.specialty || 'N/A'}`, margin, yPosition);
-        
-        yPosition += 6;
-        doc.text(`Qualification: ${doctor?.qualification || 'N/A'}`, margin, yPosition);
-        
+
+        // yPosition += 6;
+        // doc.text(`Specialty: ${doctor?.specialty || 'N/A'}`, margin, yPosition);
+
+        // yPosition += 6;
+        // doc.text(`Qualification: ${doctor?.qualification || 'N/A'}`, margin, yPosition);
+
         // Patient Information
         yPosition += 15;
         doc.setFont('helvetica', 'bold');
         doc.text('Patient Information:', margin, yPosition);
-        
+
         yPosition += 8;
         doc.setFont('helvetica', 'normal');
         doc.text(`Patient Name: ${currentAppointment?.patientname || 'N/A'}`, margin, yPosition);
-        
+
         yPosition += 6;
         doc.text(`Date: ${currentAppointment?.date || 'N/A'}`, margin, yPosition);
-        
+
         yPosition += 6;
         doc.text(`Time: ${currentAppointment?.time || 'N/A'}`, margin, yPosition);
-        
+
         if (currentAppointment?.appointment_reason) {
             yPosition += 6;
             doc.text(`Reason for Visit: ${currentAppointment.appointment_reason}`, margin, yPosition);
         }
-        
-        // Appointment Notes
-        if (startNotes) {
-            yPosition += 15;
-            doc.setFont('helvetica', 'bold');
-            doc.text('Appointment Notes:', margin, yPosition);
-            
-            yPosition += 8;
-            doc.setFont('helvetica', 'normal');
-            const notesLines = doc.splitTextToSize(startNotes, pageWidth - 2 * margin);
-            doc.text(notesLines, margin, yPosition);
-            yPosition += notesLines.length * 6;
-        }
-        
+
         // Diagnosis
         yPosition += 15;
         doc.setFont('helvetica', 'bold');
         doc.text('Diagnosis:', margin, yPosition);
-        
+
         yPosition += 8;
         doc.setFont('helvetica', 'normal');
         const diagnosisLines = doc.splitTextToSize(prescriptionData.diagnosis, pageWidth - 2 * margin);
         doc.text(diagnosisLines, margin, yPosition);
         yPosition += diagnosisLines.length * 6;
-        
+
         // Medications
         yPosition += 10;
         doc.setFont('helvetica', 'bold');
         doc.text('Prescribed Medications:', margin, yPosition);
-        
+
         yPosition += 8;
         doc.setFont('helvetica', 'normal');
         const medicationsLines = doc.splitTextToSize(prescriptionData.medications, pageWidth - 2 * margin);
         doc.text(medicationsLines, margin, yPosition);
         yPosition += medicationsLines.length * 6;
-        
+
         // Instructions
         if (prescriptionData.instructions) {
             yPosition += 10;
             doc.setFont('helvetica', 'bold');
             doc.text('Instructions:', margin, yPosition);
-            
+
             yPosition += 8;
             doc.setFont('helvetica', 'normal');
             const instructionsLines = doc.splitTextToSize(prescriptionData.instructions, pageWidth - 2 * margin);
             doc.text(instructionsLines, margin, yPosition);
             yPosition += instructionsLines.length * 6;
         }
-        
+
         // Follow-up
         if (prescriptionData.followUp) {
             yPosition += 10;
             doc.setFont('helvetica', 'bold');
             doc.text('Follow-up:', margin, yPosition);
-            
+
             yPosition += 8;
             doc.setFont('helvetica', 'normal');
             const followUpLines = doc.splitTextToSize(prescriptionData.followUp, pageWidth - 2 * margin);
             doc.text(followUpLines, margin, yPosition);
             yPosition += followUpLines.length * 6;
         }
-        
+
         // Footer
         yPosition += 30;
         doc.setFontSize(10);
         doc.setFont('helvetica', 'italic');
         doc.text('This is a digitally generated prescription from Health EMI Clinic System', pageWidth / 2, yPosition, { align: 'center' });
-        
+
         yPosition += 6;
-        doc.text(`Generated on: ${new Date().toLocaleString()}`, pageWidth / 2, yPosition, { align: 'center' });
-        
+        doc.text(`Generated on: ${new Date().toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`, pageWidth / 2, yPosition, { align: 'center' });
+
         // Doctor's signature area
         yPosition += 20;
         doc.setFont('helvetica', 'normal');
-        doc.text('Doctor\'s Signature: ________________________', pageWidth - margin - 80, yPosition);
-        
-        // Save the PDF
+        doc.text('Doctor\'s Signature: '+`${doctor?.name || 'N/A'}`, pageWidth - margin - 80, yPosition);
+
+        // Generate filename and return blob for upload
         const fileName = `prescription_${currentAppointment?.patientname?.replace(/\s+/g, '_') || 'patient'}_${Date.now()}.pdf`;
-        doc.save(fileName);
-        
-        return fileName;
+
+        // Return as Blob for upload (no local download)
+        const pdfBlob = doc.output('blob');
+
+        return { pdfBlob, fileName };
     };
-    
-    const submitPrescription = () => {
+
+    const submitPrescription = async () => {
         if (!prescriptionData.diagnosis.trim() || !prescriptionData.medications.trim()) {
             Swal.fire({
                 title: "Required Fields Missing",
@@ -321,25 +307,79 @@ const D_Appointment = () => {
             });
             return;
         }
-    
-        // Generate and download PDF
-        const fileName = generatePrescriptionPDF();
-    
-        // Here you can add API call to save prescription
-        console.log('Prescription Data:', {
-            appointmentId: currentAppointment._id,
-            patientName: currentAppointment.patientname,
-            ...prescriptionData,
-            notes: startNotes
-        });
-    
-        Swal.fire({
-            title: "Prescription Created Successfully!",
-            text: `PDF has been downloaded as ${fileName}`,
-            icon: "success",
-        });
-    
-        handleClosePrescriptionModal();
+
+        try {
+            setloading(true);
+
+            // Generate PDF and return blob for upload
+            const { pdfBlob, fileName } = generatePrescriptionPDF();
+
+            // Create a proper File object with correct MIME type
+            const pdfFile = new File([pdfBlob], fileName, {
+                type: 'application/pdf',
+                lastModified: Date.now()
+            });
+            // Create FormData and append the PDF file
+            const formData = new FormData();
+            formData.append('file', pdfFile);
+
+            // Upload PDF to API
+            const uploadResponse = await axios({
+                method: 'post',
+                url: 'https://healtheasy-o25g.onrender.com/user/upload/multiple',
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                data: formData,
+            });
+
+            console.log('Upload Response:', uploadResponse.data);
+
+            // Get the uploaded file URL from response (extract single URL from array)
+            const uploadedFileUrl = Array.isArray(uploadResponse.data.Data)
+                ? uploadResponse.data?.Data[0]?.path || uploadResponse.data?.Data[0]?.url
+                : uploadResponse.data.Data.url || uploadResponse.data.Data;
+
+            // Wait for upload to complete, then complete appointment with prescription URL
+            if (uploadedFileUrl) {
+                const completeResponse = await axios({
+                    method: 'post',
+                    url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/complete',
+                    headers: {
+                        Authorization: token,
+                    },
+                    data: {
+                        appointmentid: currentAppointment?._id,
+                        payment_mode: 'Cash',
+                        totalamount: 1000,
+                        doctor_remark: uploadedFileUrl
+                    }
+                });
+
+                console.log('Complete Appointment Response:', completeResponse.data);
+
+                Swal.fire({
+                    title: "Appointment Completed Successfully!",
+                    text: `Prescription has been uploaded and appointment marked as complete`,
+                    icon: "success",
+                });
+
+                // Refresh appointment list
+                appointmentlist();
+                handleClosePrescriptionModal();
+            } else {
+                throw new Error('Failed to get uploaded file URL');
+            }
+        } catch (error) {
+            console.error('Error completing appointment:', error);
+            Swal.fire({
+                title: "Failed",
+                text: error.response?.data?.Message || "Failed to complete appointment. Please try again.",
+                icon: "error",
+            });
+        } finally {
+            setloading(false);
+        }
     };
     const formattedDateTime = selectedDate
         ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
@@ -352,6 +392,7 @@ const D_Appointment = () => {
         // console.log(apt_data, datePart, timeWithMeridiem )
         // console.log(schedule_data)
 
+        setloading(true);
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/reschedule',
@@ -366,13 +407,21 @@ const D_Appointment = () => {
         }).then((res) => {
             // console.log('doctor ', res.data.Data)
             Swal.fire({
-                title: "Appointment Rescheduled Done...",
+                title: "Appointment Rescheduled Successfully!",
+                text: `New appointment time: ${datePart} at ${timeWithMeridiem}`,
                 icon: "success",
             });
             appointmentlist()
             handlerescheduleClose()
         }).catch(function (error) {
             console.log(error);
+            // Show error alert with specific message
+            Swal.fire({
+                title: "Reschedule Failed!",
+                text: error.response?.data?.Message || "This time slot may already be booked or unavailable. Please select a different time.",
+                icon: "error",
+                confirmButtonText: "Try Again"
+            });
         }).finally(() => {
             setloading(false)
         });
@@ -667,9 +716,9 @@ const D_Appointment = () => {
                     <DoctorSidebar />
                     <Col xs={12} md={9} lg={10} className='p-3'>
                         <DoctorNav doctorname={doctor && doctor.name} />
-                        <div className='bg-white rounded p-2'>
+                        <div className='bg-white rounded p-3'>
                             <h5 className='mb-4'>All Appointment</h5>
-                            <div className='p-3'>
+                            <div>
                                 <SmartDataTable columns={columns} data={appointment ? appointment : []} pagination customStyles={customTableStyles} />
                             </div>
                         </div>
@@ -809,13 +858,50 @@ const D_Appointment = () => {
                                                 <Card.Body>
                                                     <Card.Title className="label_head">Reports</Card.Title>
                                                     {
-                                                        v?.report?.length === 0 ? <div className="label_box"><p>No Reports.</p></div> : v?.report?.map((v, i) => {
-                                                            return (
-                                                                <div key={i}>
-                                                                    <iframe src={v?.name} className='img-thumbnail'></iframe>
-                                                                </div>
-                                                            )
-                                                        })
+                                                        !v?.report || v?.report?.length === 0 ? (
+                                                            <div className="label_box"><p>No Reports.</p></div>
+                                                        ) : (
+                                                            <div className='d-flex flex-column gap-2'>
+                                                                {v?.report?.map((report, idx) => {
+                                                                    const isPDF = report?.type?.toUpperCase() === 'PDF' || report?.type?.toUpperCase() === 'DOC' || report?.type?.toUpperCase() === 'DOCX';
+                                                                    const viewerUrl = `https://drive.google.com/viewerng/viewer?url=${encodeURIComponent(report?.path)}`;
+                                                                    return (
+                                                                        <div key={idx} className='border rounded p-2'>
+                                                                            <div className='d-flex justify-content-between align-items-center mb-2'>
+                                                                                <Badge bg="info" className='text-uppercase'>{report?.type || 'Document'}</Badge>
+                                                                                {isPDF && (
+                                                                                    <a 
+                                                                                        href={viewerUrl} 
+                                                                                        target="_blank" 
+                                                                                        rel="noopener noreferrer"
+                                                                                        className='btn btn-sm btn-primary'
+                                                                                    >
+                                                                                        <MdOutlineRemoveRedEye className='me-1' />
+                                                                                        View Report
+                                                                                    </a>
+                                                                                )}
+                                                                            </div>
+                                                                            {isPDF ? (
+                                                                                // <iframe 
+                                                                                //     src={viewerUrl}
+                                                                                //     className='w-100 border-0 rounded'
+                                                                                //     style={{ height: '300px' }}
+                                                                                //     title={`Report ${idx + 1}`}
+                                                                                // ></iframe>
+                                                                                <></>
+                                                                            ) : (
+                                                                                <img 
+                                                                                    src={report?.path}
+                                                                                    alt={`Report ${idx + 1}`}
+                                                                                    className='w-100 rounded img-thumbnail'
+                                                                                    style={{ maxHeight: '300px', objectFit: 'contain' }}
+                                                                                />
+                                                                            )}
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )
                                                     }
                                                 </Card.Body>
                                             </Card>
@@ -917,7 +1003,7 @@ const D_Appointment = () => {
                         {currentAppointment ? (
                             <div className='d-flex flex-column gap-2'>
                                 <div className='d-flex justify-content-between'>
-                                    <span className='text-muted'>Patient</span>
+                                    <span className='text-muted'>Patient Name</span>
                                     <span className='fw-semibold'>{currentAppointment.patientname}</span>
                                 </div>
                                 <div className='d-flex justify-content-between'>
@@ -932,16 +1018,6 @@ const D_Appointment = () => {
                                     <span className='text-muted d-block'>Reason</span>
                                     <span>{currentAppointment.appointment_reason || 'Not provided'}</span>
                                 </div>
-                                <Form.Group className='mt-3'>
-                                    <Form.Label>Notes</Form.Label>
-                                    <Form.Control
-                                        as='textarea'
-                                        rows={3}
-                                        placeholder='Add notes for this appointment'
-                                        value={startNotes}
-                                        onChange={(e) => setStartNotes(e.target.value)}
-                                    />
-                                </Form.Group>
                             </div>
                         ) : (
                             <p className='text-muted mb-0'>No appointment selected.</p>
@@ -983,11 +1059,6 @@ const D_Appointment = () => {
                                             <strong>Reason:</strong> {currentAppointment.appointment_reason || 'Not provided'}
                                         </div>
                                     </div>
-                                    {startNotes && (
-                                        <div className='mt-2'>
-                                            <strong>Notes:</strong> {startNotes}
-                                        </div>
-                                    )}
                                 </div>
 
                                 {/* Prescription Form */}

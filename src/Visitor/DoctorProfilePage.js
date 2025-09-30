@@ -150,44 +150,80 @@ const DoctorProfilePage = () => {
     setShowServiceModal(true);
   };
 
-  var app_obj = { alt_mobile: '', surgeryid: '', appointment_reason: '', report: '', visit_types: '' }
+  var app_obj = { alt_mobile: '', surgeryid: '', appointment_reason: '', report: [], visit_types: '' }
   const [apt_data, setaptdata] = useState(app_obj)
 
   function appchangedata(e) {
-    const { name, value } = e.target;
+    const { name, value, type, files } = e.target;
     setaptdata(apt_data => ({
       ...apt_data,
-      [name]: value
+      [name]: type === 'file' ? files : value
     }))
   }
 
-  function appointmentbtn(id) {
+  async function appointmentbtn(id) {
     if (patient) {
-      // Split at the space before the time
-      const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
-      // Combine time + meridiem
-      const timeWithMeridiem = `${timePart} ${meridiem}`;
-      console.log(apt_data, datePart, timeWithMeridiem, selectedConsultationType)
-      setloading(true)
-      axios({
-        method: 'post',
-        url: 'https://healtheasy-o25g.onrender.com/user/appointments/save',
-        headers: {
-          Authorization: token
-        },
-        data: {
-          "patientname": patient.name,
-          "mobile": patient.mobile,
-          "alt_mobile": apt_data.alt_mobile,
-          "date": datePart,
-          "time": timeWithMeridiem,
-          "surgeryid": apt_data.surgeryid,
-          "appointment_reason": apt_data.appointment_reason,
-          "report": apt_data.report,
-          "doctorid": id,
-          "visit_types": selectedConsultationType
+      try {
+        setloading(true);
+        const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
+        const timeWithMeridiem = `${timePart} ${meridiem}`;
+        
+        let reportUrls = [];
+        
+        // Upload report file first if exists
+        if (apt_data.report && apt_data.report.length > 0) {
+          const formData = new FormData();
+          
+          // Handle single or multiple files
+          if (apt_data.report instanceof FileList || Array.isArray(apt_data.report)) {
+            Array.from(apt_data.report).forEach(file => {
+              formData.append('file', file);
+            });
+          } else {
+            formData.append('file', apt_data.report);
+          }
+          
+          const uploadResponse = await axios.post(
+            'https://healtheasy-o25g.onrender.com/user/upload/multiple',
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              }
+            }
+          );
+          
+          console.log('Upload Response:', uploadResponse.data);
+          
+          // Extract URLs from response
+          if (uploadResponse.data.Status === 200 && uploadResponse.data.Data) {
+            reportUrls = uploadResponse.data.Data
+          }
         }
-      }).then((res) => {
+        
+        console.log('Report URLs to save:', reportUrls);
+        
+        // Now save appointment with uploaded report URLs
+        const response = await axios({
+          method: 'post',
+          url: 'https://healtheasy-o25g.onrender.com/user/appointments/save',
+          headers: {
+            Authorization: token
+          },
+          data: {
+            patientname: patient.name,
+            mobile: patient.mobile,
+            alt_mobile: apt_data.alt_mobile,
+            date: datePart,
+            time: timeWithMeridiem,
+            surgeryid: apt_data.surgeryid,
+            appointment_reason: apt_data.appointment_reason,
+            ...(reportUrls.length > 0 && { report: reportUrls }), // Only add report if array is not empty
+            doctorid: id,
+            visit_types: selectedConsultationType
+          }
+        });
+        
         Swal.fire({
           title: "Appointment Add Successfully...",
           icon: "success",
@@ -195,15 +231,17 @@ const DoctorProfilePage = () => {
         }).then((result) => {
           navigate('/patient/appointment');
         });
-      }).catch(function (error) {
+        
+      } catch (error) {
+        console.error('Error:', error);
         Swal.fire({
           title: "Something Went Wrong.",
-          text: "Something Is Missing. Please Check Details...",
+          text: error.response?.data?.Message || "Something Is Missing. Please Check Details...",
           icon: "error",
         });
-      }).finally(() => {
-        setloading(false)
-      });
+      } finally {
+        setloading(false);
+      }
     } else {
       // navigate('/patient')
     }
@@ -299,6 +337,7 @@ const DoctorProfilePage = () => {
           }
         }
       );
+      console.log(response.data)
 
       if (response.data.Status === 200 && response.data.Data) {
         return response.data.Data.map(item => item.path || item.url);
@@ -905,7 +944,7 @@ const DoctorProfilePage = () => {
                     </Col>
                     <Col xs={4}>
                       <Form.Label>Reports</Form.Label>
-                      <Form.Control type='file' value={apt_data.report} name='report' onChange={appchangedata}></Form.Control>
+                      <Form.Control type='file' name='report' onChange={appchangedata}></Form.Control>
                     </Col>
                   </Row>
                 </Form>

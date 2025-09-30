@@ -8,7 +8,7 @@ import { BiSolidCommentAdd } from 'react-icons/bi';
 
 const P_Sidebar = () => {
     return (
-        <Col xs={12} sm={3} lg={2} className='position-sticky top-0 p-3 pe-0'>
+        <Col xs={12} sm={3} lg={2} className='position-sticky top-0 pe-0'>
             <div className='bg-white min-vh-100 rounded shadow'>
                 {/* <div className='px-3'><h4 className='p-3 m-0 border-bottom text-center'>Health Patient</h4></div> */}
                 <div className='sidebar_nav mt-3 ps-3 py-3'>

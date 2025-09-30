@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Loader from '../Loader'
-import { Card, Col, Container, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
+import { Badge, Button, Card, Col, Container, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
 import P_Sidebar from './P_Sidebar'
 import P_nav from './P_nav'
 import NavBar from '../Visitor/Component/NavBar'
@@ -9,7 +9,7 @@ import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import SmartDataTable from '../components/SmartDataTable'
-import { MdOutlineRemoveRedEye } from 'react-icons/md'
+import { MdOutlineRemoveRedEye, MdDownload, MdVisibility } from 'react-icons/md'
 
 const P_Appointment = () => {
     const SECRET_KEY = "health-emi";
@@ -77,6 +77,19 @@ const P_Appointment = () => {
         handleShow()
         console.log(datasingle)
     }
+
+    // Download PDF function
+    const handleDownloadPDF = (pdfUrl, patientName) => {
+        if (!pdfUrl) return;
+        
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = `prescription_${patientName?.replace(/\s+/g, '_') || 'patient'}_${Date.now()}.pdf`;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
 
     // Generate initials for profile picture fallback
@@ -339,6 +352,51 @@ const P_Appointment = () => {
                                                 </Card.Body>
                                             </Card>
                                         </Col>
+                                        
+                                        {/* Prescription Section */}
+                                        {v?.doctor_remark && (
+                                            <Col xs={12}>
+                                                <Card className="mb-4 border-light">
+                                                    <Card.Body>
+                                                        <div className="d-flex justify-content-between align-items-center mb-3">
+                                                            <Card.Title className="label_head mb-0">Prescription</Card.Title>
+                                                            <div className="d-flex gap-2">
+                                                                <Button
+                                                                    variant="outline-primary"
+                                                                    size="sm"
+                                                                    onClick={() => window.open(v.doctor_remark, '_blank')}
+                                                                    className="d-flex align-items-center gap-2"
+                                                                >
+                                                                    <MdVisibility size={18} />
+                                                                    View PDF
+                                                                </Button>
+                                                                <Button
+                                                                    variant="primary"
+                                                                    size="sm"
+                                                                    onClick={() => handleDownloadPDF(v.doctor_remark, patient?.name)}
+                                                                    className="d-flex align-items-center gap-2"
+                                                                >
+                                                                    <MdDownload size={18} />
+                                                                    Download
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                        <div className="border rounded p-2" style={{ backgroundColor: '#f8f9fa' }}>
+                                                            <iframe
+                                                                src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`}
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '400px',
+                                                                    border: 'none',
+                                                                    borderRadius: '4px'
+                                                                }}
+                                                                title="Prescription PDF"
+                                                            />
+                                                        </div>
+                                                    </Card.Body>
+                                                </Card>
+                                            </Col>
+                                        )}
                                     </Row>
                                 </Modal.Body>
                             </Modal>
