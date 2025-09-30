@@ -34,6 +34,11 @@ const Surgerydoctorlist = () => {
     var { id } = useParams()
     const d_id = atob(decodeURIComponent(id))
     const [doctor_list, setdoclist] = useState([])
+    // Filters state
+    const [genderFilter, setGenderFilter] = useState('')
+    const [feeFilter, setFeeFilter] = useState('') // e.g. '0-1000','1000-2000','2000-5000','5000-15000','15000+'
+    const [typeFilter, setTypeFilter] = useState('') // consult type
+    const [expFilter, setExpFilter] = useState('') // e.g. '0+','1+'...
 
     useEffect(() => {
         // console.log('id = ', d_id)
@@ -60,6 +65,46 @@ const Surgerydoctorlist = () => {
         });
     }
 
+    // Helpers for filters
+    const withinFeeRange = (doc, range) => {
+        if (!range) return true
+        const fee = Number(doc?.consultation_fee ?? doc?.fee ?? doc?.fees)
+        if (Number.isNaN(fee)) return false
+        if (range === '15000+') return fee >= 15000
+        const [min, max] = range.split('-').map(n => Number(n))
+        return fee >= min && fee <= max
+    }
+
+    const matchesGender = (doc, g) => {
+        if (!g) return true
+        const val = (doc?.gender || doc?.Gender || '').toString().toLowerCase()
+        return val === g.toLowerCase()
+    }
+
+    const matchesType = (doc, t) => {
+        if (!t) return true
+        const val = (doc?.consultType || doc?.consult_type || doc?.consultation_type || '').toString().toLowerCase()
+        if (Array.isArray(doc?.consultation_modes)) {
+            return doc.consultation_modes.map(v => v.toString().toLowerCase()).includes(t.toLowerCase())
+        }
+        return val.includes(t.toLowerCase())
+    }
+
+    const meetsExperience = (doc, threshold) => {
+        if (!threshold) return true
+        const years = Number(doc?.experience ?? doc?.exp_years)
+        if (Number.isNaN(years)) return false
+        const min = Number(threshold.replace('+',''))
+        return years >= min
+    }
+
+    const filteredDoctors = doctor_list.filter(doc =>
+        matchesGender(doc, genderFilter)
+        && withinFeeRange(doc, feeFilter)
+        && matchesType(doc, typeFilter)
+        && meetsExperience(doc, expFilter)
+    )
+
     return (
         <>
             <NavBar logindata={patient} />
@@ -68,36 +113,40 @@ const Surgerydoctorlist = () => {
 
             {/* filter by below list */}
             <Container>
-                <Row className='justify-content-center'>
+                <Row className='justify-content-center align-items-center g-2'>
                     <Col xs='auto'>
-                        <Button variant='secondary' className='rounded-pill'><MdFilterListAlt className='fs-5' />Filter</Button>
+                        <Button variant='secondary' className='rounded-pill'><MdFilterListAlt className='fs-5' /> Filter</Button>
                     </Col>
                     <Col xs='auto'>
-                        <Form.Select className='rounded-pill outline-secondary'>
-                            <option>Gender</option>
-                            <option>Male</option>
-                            <option>Female</option>
-                            <option>Other</option>
+                        <Form.Select className='rounded-pill outline-secondary' value={genderFilter} onChange={(e)=>setGenderFilter(e.target.value)}>
+                            <option value=''>Gender</option>
+                            <option value='male'>Male</option>
+                            <option value='female'>Female</option>
+                            <option value='other'>Other</option>
                         </Form.Select>
                     </Col>
                     <Col xs='auto'>
-                        <Form.Select className='rounded-pill outline-secondary'>
-                            <option>Fees</option>
-                            <option>0 - 1000</option>
-                            <option>1000 - 2000</option>
-                            <option>2000 - 5000</option>
-                            <option>5000 - 15000</option>
-                            <option>15000 up</option>
+                        <Form.Select className='rounded-pill outline-secondary' value={feeFilter} onChange={(e)=>setFeeFilter(e.target.value)}>
+                            <option value=''>Fees</option>
+                            <option value='0-1000'>0 - 1000</option>
+                            <option value='1000-2000'>1000 - 2000</option>
+                            <option value='2000-5000'>2000 - 5000</option>
+                            <option value='5000-15000'>5000 - 15000</option>
+                            <option value='15000+'>15000 up</option>
                         </Form.Select>
                     </Col>
                     <Col xs='auto'>
-                        <Form.Select className='rounded-pill outline-secondary'>
-                            <option>Consult Type</option>
+                        <Form.Select className='rounded-pill outline-secondary' value={typeFilter} onChange={(e)=>setTypeFilter(e.target.value)}>
+                            <option value=''>Consult Type</option>
+                            <option value='in-person'>In-person</option>
+                            <option value='video'>Video</option>
+                            <option value='chat'>Chat</option>
+                            <option value='call'>Call</option>
                         </Form.Select>
                     </Col>
                     <Col xs='auto'>
-                        <Form.Select className='rounded-pill outline-secondary'>
-                            <option>Experience</option>
+                        <Form.Select className='rounded-pill outline-secondary' value={expFilter} onChange={(e)=>setExpFilter(e.target.value)}>
+                            <option value=''>Experience</option>
                             {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
                                 <option key={level} value={level}>
                                     {level} years
@@ -105,13 +154,17 @@ const Surgerydoctorlist = () => {
                             ))}
                         </Form.Select>
                     </Col>
+                    <Col xs='auto'>
+                        <Button variant='outline-secondary' className='rounded-pill' onClick={()=>{setGenderFilter('');setFeeFilter('');setTypeFilter('');setExpFilter('')}}>Clear</Button>
+                    </Col>
                 </Row>
             </Container>
+
             {/* doctor list section */}
             <section className='py-5'>
                 <Container>
                     <h2 className='mb-5'>{doctor_list && doctor_list[0]?.surgerytypeid?.surgerytypename} Doctors List</h2>
-                    {doctor_list.length <= 0 ? <Col>No Doctor Found...</Col> : doctor_list.map((doc, i) => (
+                    {filteredDoctors.length <= 0 ? <Col>No Doctor Found...</Col> : filteredDoctors.map((doc, i) => (
                         <DoctorListComponents details={doc} key={i} />
                     ))}
                 </Container>

@@ -69,7 +69,7 @@ const Home = () => {
               <Card className='functionality_box'>
                 <Card.Img src={require('./assets/find-doctor-image.png')} alt='video consultant' />
                 <Card.Body>
-                  <Card.Title>Find Doctor <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
+                  <Card.Title><Link to='/compare-doctor' className='d-flex align-items-center w-100 justify-content-between'>Compare Doctor <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
                 </Card.Body>
               </Card>
             </Col>
@@ -77,7 +77,7 @@ const Home = () => {
               <Card className='functionality_box'>
                 <Card.Img src={require('./assets/video-consultant-image.png')} alt='video consultant' />
                 <Card.Body>
-                  <Card.Title>Video Consultant <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
+                  <Card.Title><Link to='/consult' className='d-flex align-items-center w-100 justify-content-between'>Video Consultant <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
                 </Card.Body>
               </Card>
             </Col>
@@ -85,7 +85,7 @@ const Home = () => {
               <Card className='functionality_box'>
                 <Card.Img variant="top" src={require('./assets/surgeries-image.png')} alt='video consultant' />
                 <Card.Body>
-                  <Card.Title>Surgeries <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
+                <Card.Title><Link to='/surgery' className='d-flex align-items-center w-100 justify-content-between'>Surgeries <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
                 </Card.Body>
               </Card>
             </Col>
