@@ -57,7 +57,7 @@ const Surgerydoctorlist = () => {
             }
         }).then((res) => {
             setdoclist(res.data.Data)
-            // console.log('doctor ', res.data.Data)
+            console.log('doctor ', res.data.Data)
         }).catch(function (error) {
             console.log(error);
         }).finally(() => {
@@ -80,7 +80,6 @@ const Surgerydoctorlist = () => {
         const val = (doc?.gender || doc?.Gender || '').toString().toLowerCase()
         return val === g.toLowerCase()
     }
-
     const matchesType = (doc, t) => {
         if (!t) return true
         const val = (doc?.consultType || doc?.consult_type || doc?.consultation_type || '').toString().toLowerCase()
@@ -92,9 +91,17 @@ const Surgerydoctorlist = () => {
 
     const meetsExperience = (doc, threshold) => {
         if (!threshold) return true
-        const years = Number(doc?.experience ?? doc?.exp_years)
+        const raw = doc?.experience ?? doc?.exp_years
+        let years = NaN
+        if (typeof raw === 'number') {
+            years = raw
+        } else if (typeof raw === 'string') {
+            // Extract the first integer from strings like "4+ years", "10 years", "7-9 years"
+            const match = raw.match(/(\d+)/)
+            if (match) years = Number(match[1])
+        }
         if (Number.isNaN(years)) return false
-        const min = Number(threshold.replace('+',''))
+        const min = Number(String(threshold).replace('+', ''))
         return years >= min
     }
 
@@ -138,10 +145,9 @@ const Surgerydoctorlist = () => {
                     <Col xs='auto'>
                         <Form.Select className='rounded-pill outline-secondary' value={typeFilter} onChange={(e)=>setTypeFilter(e.target.value)}>
                             <option value=''>Consult Type</option>
-                            <option value='in-person'>In-person</option>
-                            <option value='video'>Video</option>
-                            <option value='chat'>Chat</option>
-                            <option value='call'>Call</option>
+                            <option value='clinic_visit'>Clinic Visit</option>
+                            <option value='home_visit'>Home Visit</option>
+                            <option value='eopd'>EOPD</option>
                         </Form.Select>
                     </Col>
                     <Col xs='auto'>
