@@ -193,7 +193,7 @@ const DoctorProfilePage = () => {
             }
           );
           
-          console.log('Upload Response:', uploadResponse.data);
+          // console.log('Upload Response:', uploadResponse.data);
           
           // Extract URLs from response
           if (uploadResponse.data.Status === 200 && uploadResponse.data.Data) {
@@ -201,7 +201,7 @@ const DoctorProfilePage = () => {
           }
         }
         
-        console.log('Report URLs to save:', reportUrls);
+        // console.log('Report URLs to save:', reportUrls);
         
         // Now save appointment with uploaded report URLs
         const response = await axios({

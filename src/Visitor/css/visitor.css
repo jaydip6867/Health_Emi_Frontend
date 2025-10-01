@@ -729,13 +729,24 @@ h6 {
     margin: auto;
 }
 
-/* ======================== DOCTOR PROFILE SECTION CSS ======================== */
+/*Doctor list responsive tweaks */
+@media (max-width: 768px) {
+    .doctor_card {
+        padding: 1.25rem !important;
+    }
 
-/* Doctor Profile Main Container */
-.doctor-profile-section {
-    background: linear-gradient(135deg, #f8fffe 0%, #f0f9ff 100%);
-    min-height: 100vh;
-    padding: 2rem 0;
+    .doctor_img img {
+        height: 160px;
+        width: 160px;
+        max-width: 160px;
+        max-height: 160px;
+    }
+
+    .doctor-profile-section {
+        background: linear-gradient(135deg, #f8fffe 0%, #f0f9ff 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
 }
 
 /* Doctor Profile Card */
@@ -1305,10 +1316,11 @@ h6 {
     animation: fadeInUp 0.8s ease-out;
 }
 
-.check_room_type{
+.check_room_type {
     border: 1px solid transparent;
 }
-.check_room_type.active{
+
+.check_room_type.active {
     border-color: var(--primary-color-600);
     box-shadow: 0 5px 10px var(--grayscale-color-100) !important;
 }
@@ -1367,19 +1379,24 @@ h6 {
     padding: 8px 12px;
     color: var(--grayscale-color-600);
 }
-.custom-datepicker-container .react-datepicker__day.react-datepicker__day--disabled{
+
+.custom-datepicker-container .react-datepicker__day.react-datepicker__day--disabled {
     color: var(--grayscale-color-200);
 }
-.custom-datepicker-container .react-datepicker__day.react-datepicker__day--selected{
+
+.custom-datepicker-container .react-datepicker__day.react-datepicker__day--selected {
     color: var(--white);
 }
-.custom-datepicker-container .react-datepicker__navigation{
+
+.custom-datepicker-container .react-datepicker__navigation {
     top: 8px;
 }
-.custom-datepicker-container .react-datepicker__day--today{
+
+.custom-datepicker-container .react-datepicker__day--today {
     border: 1px solid #1C2A3A;
 }
-.custom-datepicker-container .react-datepicker__day--selected{
+
+.custom-datepicker-container .react-datepicker__day--selected {
     background-color: #1C2A3A;
     color: var(--white);
 }
@@ -1399,7 +1416,8 @@ h6 {
     background-color: #1C2A3A;
     color: var(--white);
 }
-.review_pic{
+
+.review_pic {
     width: 50px;
     height: 50px;
     object-fit: cover;

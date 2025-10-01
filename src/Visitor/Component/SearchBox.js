@@ -68,13 +68,9 @@ const SearchBox = () => {
                     <Row className='justify-content-center searchbox'>
                         <Col xs={12} md={10} lg={8}>
                             <div
-                                className='p-3 p-md-4 rounded-4 shadow-sm'
-                                style={{
-                                    background: 'linear-gradient(135deg, #eef7ff 0%, #ffffff 60%)',
-                                    border: '1px solid rgba(0,0,0,0.06)'
-                                }}
+                                className='rounded-4'
                             >
-                                <InputGroup className='align-items-stretch'>
+                                <div className='d-flex align-items-stretch'>
                                     <div className='position-relative d-flex align-items-center' style={{ maxWidth: 180 }}>
                                         <FiMapPin className='position-absolute' style={{ left: 12, color: '#6b7280' }} />
                                         <Form.Select
@@ -157,17 +153,7 @@ const SearchBox = () => {
                                             </ul>
                                         )}
                                     </div>
-
-                                    <div className='d-flex'>
-                                        <Button
-                                            variant='primary'
-                                            className='rounded-pill px-4'
-                                            onClick={() => { setShowList(true); getsuggestion(inputValue) }}
-                                        >
-                                            Search
-                                        </Button>
-                                    </div>
-                                </InputGroup>
+                                </div>
                             </div>
                         </Col>
                     </Row>

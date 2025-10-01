@@ -13,11 +13,12 @@ const DoctorListComponents = ({ details }) => {
             >
                 <Row className="g-3">
                     <Col xs={12} md={2}>
-                        <div style={{ Width: "100", height: "auto", borderRadius: "15px" }}>
+                        <div className="doctor_img d-flex justify-content-center">
                             <img
                                 src={details?.profile_pic} // Use a relevant doctor image URL or local path here
                                 alt={`Dr. ${details?.name}`}
                                 className="rounded-3 img-fluid"
+                                style={{ maxWidth: "100%", maxHeight: "auto" }}
                             />
                         </div>
                     </Col>
@@ -31,17 +32,17 @@ const DoctorListComponents = ({ details }) => {
                                 <PiStethoscopeBold className="text-dark me-2" />
                                 {details?.specialty}
                             </Card.Text>
-                            <Card.Text className="fs-7" style={{ lineHeight: 1.2 }}>
+                            <Card.Text className="fs-7" style={{lineHeight: 1.2}}>
                                 <MdLocationOn className="text-dark me-2" />
                                 {details?.city}, {details?.state}, {details?.country}, {details?.pincode}
                             </Card.Text>
                         </Card.Body>
                     </Col>
-                    <Col xs={12} md={'auto'} className=" d-flex align-items-center  ms-auto">
+                    <Col xs={12} md={'auto'} className=" d-flex align-items-center ms-auto">
                         <Button
                             variant="light"
-                            className="d-flex align-items-center gap-5"
-                            style={{ borderRadius: "20px", whiteSpace: "nowrap" }}
+                            className="doctor-btn d-flex align-items-center gap-3 text-nowrap"
+                            style={{ borderRadius: "20px" }}
                         >
                             See More <span style={{ width: 30, height: 30 }} className="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white"><MdArrowOutward size={20} /></span>
                         </Button>
