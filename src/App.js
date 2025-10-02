@@ -40,6 +40,7 @@ import D_AmbulanceRequest from './doctor/D_AmbulanceRequest';
 import CompareDoctor from './Visitor/CompareDoctor';
 import Amb_Request from './Ambulance/Amb_Request';
 import 'leaflet/dist/leaflet.css';
+import Amb_Ridedetails from './Ambulance/Amb_Ridedetails';
 function App() {
   return (
     <div className="App">
@@ -87,6 +88,7 @@ function App() {
           <Route path='forgotambulance'  element={<Amb_Forgot />}></Route>
           <Route path='profileambulance'  element={<Amb_Profile />}></Route>
           <Route path='ambrequests'  element={<Amb_Request />}></Route>
+          <Route path="rides/:id" element={<Amb_Ridedetails />} />
         </Route>
         <Route path='*' element={<NotFound />} />
       </Routes>

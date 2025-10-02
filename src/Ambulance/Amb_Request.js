@@ -17,7 +17,9 @@ import Amb_Nav from './Amb_Nav';
 import Amb_Sidebar from './Amb_Sidebar';
 import '../../src/amb_request.css';
 
+
 const Amb_Request = () => {
+  const [ambulance, setambulance] = useState(null)
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
@@ -117,20 +119,11 @@ const Amb_Request = () => {
               variant="outline-primary"
               size="sm"
               className="d-flex align-items-center"
-              onClick={() => console.log('View details:', getValue())}
+              onClick={() => navigate(`/ambulance/rides/${getValue()}`)}
             >
-              <FaInfoCircle className="me-1" /> Details
+              <FaInfoCircle className="me-1" /> Ride Details
             </Button>
-            {row.original.status === 'notified' && (
-              <Button
-                variant="success"
-                size="sm"
-                className="d-flex align-items-center"
-                onClick={() => handleAcceptRequest(getValue())}
-              >
-                Accept
-              </Button>
-            )}
+          
           </div>
         ),
       },
@@ -170,7 +163,7 @@ const Amb_Request = () => {
         const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
         const decrypted = bytes.toString(CryptoJS.enc.Utf8);
         const data = JSON.parse(decrypted);
-        
+        setambulance(data.ambulanceData);
         const response = await axios.post(
           'https://healtheasy-o25g.onrender.com/ambulance/ambulancerequest/list',
           {},
@@ -193,30 +186,7 @@ const Amb_Request = () => {
     fetchRequests();
   }, [navigate]);
 
-  const handleAcceptRequest = async (requestId) => {
-    try {
-      const getlocaldata = localStorage.getItem("healthambulance");
-      const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
-      const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
-      await axios.put(
-        `https://healtheasy-o25g.onrender.com/ambulance/ambulancerequest/${requestId}/accept`,
-        {},
-        {
-          headers: {
-            'Authorization': `Bearer ${data.accessToken}`
-          }
-        }
-      );
-      
-      // Update local state
-      setRequests(requests.map(req => 
-        req._id === requestId ? { ...req, status: 'accepted' } : req
-      ));
-    } catch (error) {
-      console.error('Error accepting request:', error);
-    }
-  };
 
   // Handle search
   const handleSearch = (e) => {
@@ -237,7 +207,7 @@ const Amb_Request = () => {
       <Row className="g-0">
         <Amb_Sidebar />
         <Col xs={12} sm={9} lg={10} className="p-3">
-          <Amb_Nav ambulancename={localStorage.getItem('ambulanceName')} />
+          <Amb_Nav ambulancename={ambulance?.fullname} />
           <Card className="shadow-sm">
             <Card.Header className="bg-white d-flex justify-content-between align-items-center">
               <h5 className="mb-0">
