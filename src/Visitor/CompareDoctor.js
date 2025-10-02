@@ -6,7 +6,7 @@ import { MdCompare, MdClear, MdLocalHospital, MdSchool, MdVerified, MdLocationOn
 import axios from 'axios'
 import Loader from '../Loader'
 import CryptoJS from "crypto-js";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const CompareDoctor = () => {
     const SECRET_KEY = "health-emi";
@@ -162,12 +162,12 @@ const CompareDoctor = () => {
                                         <ul className='list-unstyled mt-3 mb-0'>
                                             <li className='py-2 border-bottom'>Profile</li>
                                             <li className='py-2 border-bottom'>Experience</li>
-                                            {/* <li className='py-2 border-bottom'>Consultation Fee</li> */}
+                                            <li className='py-2 border-bottom'>Consultation Fee</li>
+                                            <li className='py-2 border-bottom'>Surgeries</li>
                                             <li className='py-2 border-bottom'>Hospitals</li>
                                             <li className='py-2 border-bottom'>Qualification</li>
                                             <li className='py-2 border-bottom'>Approval Status</li>
                                             <li className='py-2 border-bottom'>Sub Specialty</li>
-                                            {/* <li className='py-2 border-bottom'>Location</li> */}
                                         </ul>
                                     </Col>
                                     {/* Doctor A */}
@@ -182,16 +182,32 @@ const CompareDoctor = () => {
                                                     </div>
                                                 </div>
                                                 <div className='py-2 border-bottom'>{d?.experience ? `${d.experience} yrs` : '—'}</div>
-                                                {/* <div className='py-2 border-bottom d-flex align-items-center gap-1'>{d?.consultation_fee ? (<><MdCurrencyRupee />{d.consultation_fee}</>) : '—'}</div> */}
+                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'>
+                                                    <MdCurrencyRupee />
+                                                    {(() => {
+                                                        const cd = d?.consultationsDetails;
+                                                        if (!cd) return '—';
+                                                        const parts = [
+                                                            cd?.clinic_visit_price ? `Clinic ₹${cd.clinic_visit_price}` : null,
+                                                            cd?.home_visit_price ? `Home ₹${cd.home_visit_price}` : null,
+                                                            cd?.eopd_price ? `EOPD ₹${cd.eopd_price}` : null,
+                                                        ].filter(Boolean);
+                                                        return parts.length ? parts.join(' | ') : '—';
+                                                    })()}
+                                                </div>
+                                                <div className='py-2 border-bottom'>
+                                                    {Array.isArray(d?.surgeriesDetails) && d.surgeriesDetails.length > 0
+                                                        ? d.surgeriesDetails.map(s => s?.name || s).join(', ')
+                                                        : '—'}
+                                                </div>
                                                 <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdLocalHospital className='text-danger' />{Array.isArray(d?.hospitals) && d.hospitals.length > 0 ? d.hospitals.map(h => h?.name || h).join(', ') : (d?.hospitalname || '—')}</div>
-                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdSchool className='text-warning' />{Array.isArray(d?.qualifications) && d.qualifications.length > 0 ? d.qualifications.join(', ') : (d?.qualification || '—')}</div>
-                                                <div className='py-2 border-bottom'>{typeof d?.approval_status !== 'undefined' ? String(d.approval_status) : (typeof d?.isApproved !== 'undefined' ? (d.isApproved ? 'Approved' : 'Pending') : '—')}</div>
+                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdSchool className='text-warning' />{d?.qualifications}</div>
+                                                <div className='py-2 border-bottom'>{d?.approval_status}</div>
                                                 <div className='py-2 border-bottom'>{typeof d?.sub_specialty !== 'undefined' ? String(d.sub_specialty) : '—'}</div>
-                                                {/* <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdLocationOn />{[d?.city, d?.state, d?.country].filter(Boolean).join(', ') || '—'}</div> */}
+                                                <div className='py-2 border-bottom'><Link to={`/doctorprofile/${encodeURIComponent(btoa(d._id))}`} className='text-primary'>View Profile</Link></div>
                                             </div>
                                         )})()}
                                     </Col>
-                                    {/* Doctor B */}
                                     <Col xs={12} md={5}>
                                         {(() => { const d = selectedDoctors[1]; return (
                                             <div>
@@ -203,12 +219,29 @@ const CompareDoctor = () => {
                                                     </div>
                                                 </div>
                                                 <div className='py-2 border-bottom'>{d?.experience ? `${d.experience} yrs` : '—'}</div>
-                                                {/* <div className='py-2 border-bottom d-flex align-items-center gap-1'>{d?.consultation_fee ? (<><MdCurrencyRupee />{d.consultation_fee}</>) : '—'}</div> */}
+                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'>
+                                                    <MdCurrencyRupee />
+                                                    {(() => {
+                                                        const cd = d?.consultationsDetails;
+                                                        if (!cd) return '—';
+                                                        const parts = [
+                                                            cd?.clinic_visit_price ? `Clinic ₹${cd.clinic_visit_price}` : null,
+                                                            cd?.home_visit_price ? `Home ₹${cd.home_visit_price}` : null,
+                                                            cd?.eopd_price ? `EOPD ₹${cd.eopd_price}` : null,
+                                                        ].filter(Boolean);
+                                                        return parts.length ? parts.join(' | ') : '—';
+                                                    })()}
+                                                </div>
+                                                <div className='py-2 border-bottom'>
+                                                    {Array.isArray(d?.surgeriesDetails) && d.surgeriesDetails.length > 0
+                                                        ? d.surgeriesDetails.map(s => s?.name || s).join(', ')
+                                                        : '—'}
+                                                </div>
                                                 <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdLocalHospital className='text-danger' />{Array.isArray(d?.hospitals) && d.hospitals.length > 0 ? d.hospitals.map(h => h?.name || h).join(', ') : (d?.hospitalname || '—')}</div>
-                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdSchool className='text-warning' />{Array.isArray(d?.qualifications) && d.qualifications.lngth > 0 ? d.qualifications.join(', ') : (d?.qualification || '—')}</div>
+                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdSchool className='text-warning' />{Array.isArray(d?.qualifications) && d.qualifications.length > 0 ? d.qualifications.join(', ') : (d?.qualification || '—')}</div>
                                                 <div className='py-2 border-bottom'>{typeof d?.approval_status !== 'undefined' ? String(d.approval_status) : (typeof d?.isApproved !== 'undefined' ? (d.isApproved ? 'Approved' : 'Pending') : '—')}</div>
                                                 <div className='py-2 border-bottom'>{typeof d?.sub_specialty !== 'undefined' ? String(d.sub_specialty) : '—'}</div>
-                                                {/* <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdLocationOn />{[d?.city, d?.state, d?.country].filter(Boolean).join(', ') || '—'}</div> */}
+                                                <div className='py-2 border-bottom'><Link to={`/doctorprofile/${encodeURIComponent(btoa(d._id))}`} className='text-primary'>View Profile</Link></div>
                                             </div>
                                         )})()}
                                     </Col>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import NavBar from './Component/NavBar'
 import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap'
 import Loader from '../Loader'
@@ -40,12 +40,115 @@ const Surgerydoctorlist = () => {
     const [typeFilter, setTypeFilter] = useState('') // consult type
     const [expFilter, setExpFilter] = useState('') // e.g. '0+','1+'...
 
+    // Lightweight custom dropdown (no external deps)
+    const CustomDropdown = ({ options, value, onChange, placeholder = 'Select', minWidth = 180 }) => {
+        const [open, setOpen] = useState(false)
+        const ref = useRef(null)
+
+        useEffect(() => {
+            const onDocClick = (e) => {
+                if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+            }
+            document.addEventListener('mousedown', onDocClick)
+            return () => document.removeEventListener('mousedown', onDocClick)
+        }, [])
+
+        const selected = options.find(o => o.value === value)
+
+        return (
+            <div ref={ref} style={{ position: 'relative', minWidth }}>
+                <button
+                    type='button'
+                    className='btn btn-light border rounded-pill d-flex align-items-center justify-content-between w-100'
+                    onClick={() => setOpen(o => !o)}
+                    style={{
+                        padding: '8px 14px',
+                        color: selected ? '#212529' : '#6c757d',
+                        backgroundColor: '#fff'
+                    }}
+                >
+                    <span className='text-truncate' style={{ maxWidth: minWidth - 40 }}>
+                        {selected ? selected.label : placeholder}
+                    </span>
+                    <span className='ms-2' style={{ lineHeight: 0 }}>▾</span>
+                </button>
+
+                {open && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: '100%',
+                            left: 0,
+                            right: 0,
+                            zIndex: 1050,
+                            marginTop: 6,
+                            background: '#fff',
+                            borderRadius: 14,
+                            boxShadow: '0 6px 24px rgba(0,0,0,0.12)',
+                            border: '1px solid rgba(0,0,0,0.06)'
+                        }}
+                    >
+                        <div style={{ maxHeight: 260, overflowY: 'auto', padding: '6px 4px' }}>
+                            {options.map(opt => (
+                                <div
+                                    key={opt.value}
+                                    role='button'
+                                    onClick={() => { onChange(opt.value); setOpen(false) }}
+                                    style={{
+                                        margin: '6px 8px',
+                                        padding: '10px 12px',
+                                        borderRadius: 12,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        background: (value === opt.value) ? '#f1f6ff' : '#fff',
+                                        border: '1px solid rgba(0,0,0,0.06)',
+                                        cursor: 'pointer'
+                                    }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fbff' }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.background = (value === opt.value) ? '#f1f6ff' : '#fff' }}
+                                >
+                                    <span style={{ color: '#212529' }}>{opt.label}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        )
+    }
+
+    // Option lists for filters
+    const genderOptions = [
+        { value: '', label: 'Gender' },
+        { value: 'male', label: 'Male' },
+        { value: 'female', label: 'Female' },
+        { value: 'other', label: 'Other' },
+    ]
+    const typeOptions = [
+        { value: '', label: 'Consult Type' },
+        { value: 'clinic_visit', label: 'Clinic Visit' },
+        { value: 'home_visit', label: 'Home Visit' },
+        { value: 'eopd', label: 'EOPD' },
+    ]
+    const feeOptions = [
+        { value: '', label: 'Fees' },
+        { value: '0-1000', label: '0 - 1000' },
+        { value: '1000-2000', label: '1000 - 2000' },
+        { value: '2000-5000', label: '2000 - 5000' },
+        { value: '5000-15000', label: '5000 - 15000' },
+        { value: '15000+', label: '15000 up' },
+    ]
+    const expOptions = ['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map(level => ({ value: level, label: `${level} years` }))
+
     useEffect(() => {
-        // console.log('id = ', d_id)
         setloading(true)
         if (d_id) {
             getdoctorlist(d_id)
+        } else {
+            setloading(false)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [d_id])
 
     const getdoctorlist = async (d) => {
@@ -66,13 +169,73 @@ const Surgerydoctorlist = () => {
     }
 
     // Helpers for filters
+    // Resolve a consult price from consultationsDetails based on a given type
+    const getConsultPrice = (doc, type) => {
+        const cd = doc?.consultationsDetails || doc?.consultations_details
+        if (!cd) return undefined
+        const map = {
+            clinic_visit: 'clinic_visit_price',
+            home_visit: 'home_visit_price',
+            eopd: 'eopd_price',
+        }
+        const key = map[type]
+        if (!key) return undefined
+        const value = Number(cd[key])
+        return Number.isNaN(value) ? undefined : value
+    }
+
+    // Collect all available consult prices for a doctor as numbers
+    const getAllConsultPrices = (doc) => {
+        const prices = []
+        const cd = doc?.consultationsDetails || doc?.consultations_details
+        if (cd) {
+            ;['clinic_visit_price', 'home_visit_price', 'eopd_price']
+                .forEach(k => {
+                    const v = Number(cd[k])
+                    if (!Number.isNaN(v)) prices.push(v)
+                })
+        }
+        const legacy = Number(doc?.consultation_fee ?? doc?.fee ?? doc?.fees)
+        if (!Number.isNaN(legacy)) prices.push(legacy)
+        return prices
+    }
+
+    // Determine the baseline fee to compare against range
+    const resolveFeeForRange = (doc) => {
+        // If a type is selected, use that specific price
+        if (typeFilter) {
+            const v = getConsultPrice(doc, typeFilter)
+            return typeof v === 'number' ? v : undefined
+        }
+        // Otherwise use the minimum available consult price for the doctor
+        const cd = doc?.consultationsDetails || doc?.consultations_details
+        if (cd) {
+            const candidates = [cd?.clinic_visit_price, cd?.home_visit_price, cd?.eopd_price]
+                .map(n => Number(n))
+                .filter(v => !Number.isNaN(v))
+            if (candidates.length > 0) return Math.min(...candidates)
+        }
+        // Fallback to any legacy fields if consultationsDetails is not present
+        const legacy = Number(doc?.consultation_fee ?? doc?.fee ?? doc?.fees)
+        return Number.isNaN(legacy) ? undefined : legacy
+    }
+
     const withinFeeRange = (doc, range) => {
         if (!range) return true
-        const fee = Number(doc?.consultation_fee ?? doc?.fee ?? doc?.fees)
-        if (Number.isNaN(fee)) return false
-        if (range === '15000+') return fee >= 15000
+        // If a type is selected, use that specific fee only
+        if (typeFilter) {
+            const fee = resolveFeeForRange(doc)
+            if (typeof fee !== 'number') return false
+            if (range === '15000+') return fee >= 15000
+            const [min, max] = range.split('-').map(n => Number(n))
+            return fee >= min && fee <= max
+        }
+        // Otherwise, include the doctor if ANY available consult price falls within range
+        const prices = getAllConsultPrices(doc)
+        if (prices.length === 0) return false
+        if (range === '15000+') return prices.some(p => p >= 15000)
         const [min, max] = range.split('-').map(n => Number(n))
-        return fee >= min && fee <= max
+        return prices.some(p => p >= min && p <= max)
     }
 
     const matchesGender = (doc, g) => {
@@ -82,6 +245,21 @@ const Surgerydoctorlist = () => {
     }
     const matchesType = (doc, t) => {
         if (!t) return true
+        // Prefer consultationsDetails keys if present
+        const cd = doc?.consultationsDetails || doc?.consultations_details
+        if (cd) {
+            const map = {
+                clinic_visit: 'clinic_visit_price',
+                home_visit: 'home_visit_price',
+                eopd: 'eopd_price',
+            }
+            const key = map[t.toLowerCase()]
+            if (key && Object.prototype.hasOwnProperty.call(cd, key)) {
+                const v = Number(cd[key])
+                return !Number.isNaN(v) && v > 0
+            }
+        }
+        // Fallbacks for older structures
         const val = (doc?.consultType || doc?.consult_type || doc?.consultation_type || '').toString().toLowerCase()
         if (Array.isArray(doc?.consultation_modes)) {
             return doc.consultation_modes.map(v => v.toString().toLowerCase()).includes(t.toLowerCase())
@@ -96,7 +274,6 @@ const Surgerydoctorlist = () => {
         if (typeof raw === 'number') {
             years = raw
         } else if (typeof raw === 'string') {
-            // Extract the first integer from strings like "4+ years", "10 years", "7-9 years"
             const match = raw.match(/(\d+)/)
             if (match) years = Number(match[1])
         }
@@ -125,43 +302,40 @@ const Surgerydoctorlist = () => {
                         <Button variant='secondary' className='rounded-pill'><MdFilterListAlt className='fs-5' /> Filter</Button>
                     </Col>
                     <Col xs='auto'>
-                        <Form.Select className='rounded-pill outline-secondary' value={genderFilter} onChange={(e)=>setGenderFilter(e.target.value)}>
-                            <option value=''>Gender</option>
-                            <option value='male'>Male</option>
-                            <option value='female'>Female</option>
-                            <option value='other'>Other</option>
-                        </Form.Select>
+                        <CustomDropdown
+                            options={genderOptions}
+                            value={genderFilter}
+                            onChange={setGenderFilter}
+                            placeholder='Gender'
+                            minWidth={200}
+                        />
                     </Col>
                     <Col xs='auto'>
-                        <Form.Select className='rounded-pill outline-secondary' value={feeFilter} onChange={(e)=>setFeeFilter(e.target.value)}>
-                            <option value=''>Fees</option>
-                            <option value='0-1000'>0 - 1000</option>
-                            <option value='1000-2000'>1000 - 2000</option>
-                            <option value='2000-5000'>2000 - 5000</option>
-                            <option value='5000-15000'>5000 - 15000</option>
-                            <option value='15000+'>15000 up</option>
-                        </Form.Select>
+                        <CustomDropdown
+                            options={typeOptions}
+                            value={typeFilter}
+                            onChange={setTypeFilter}
+                            placeholder='Consult Type'
+                        />
                     </Col>
                     <Col xs='auto'>
-                        <Form.Select className='rounded-pill outline-secondary' value={typeFilter} onChange={(e)=>setTypeFilter(e.target.value)}>
-                            <option value=''>Consult Type</option>
-                            <option value='clinic_visit'>Clinic Visit</option>
-                            <option value='home_visit'>Home Visit</option>
-                            <option value='eopd'>EOPD</option>
-                        </Form.Select>
+                        <CustomDropdown
+                            options={feeOptions}
+                            value={feeFilter}
+                            onChange={setFeeFilter}
+                            placeholder='Fees'
+                        />
                     </Col>
                     <Col xs='auto'>
-                        <Form.Select className='rounded-pill outline-secondary' value={expFilter} onChange={(e)=>setExpFilter(e.target.value)}>
-                            <option value=''>Experience</option>
-                            {['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map((level) => (
-                                <option key={level} value={level}>
-                                    {level} years
-                                </option>
-                            ))}
-                        </Form.Select>
+                        <CustomDropdown
+                            options={[{ value: '', label: 'Experience' }, ...expOptions]}
+                            value={expFilter}
+                            onChange={setExpFilter}
+                            placeholder='Experience'
+                        />
                     </Col>
                     <Col xs='auto'>
-                        <Button variant='outline-secondary' className='rounded-pill' onClick={()=>{setGenderFilter('');setFeeFilter('');setTypeFilter('');setExpFilter('')}}>Clear</Button>
+                        <Button variant='outline-secondary' className='rounded-pill' onClick={() => { setGenderFilter(''); setFeeFilter(''); setTypeFilter(''); setExpFilter('') }}>Clear</Button>
                     </Col>
                 </Row>
             </Container>
