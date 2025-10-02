@@ -25,6 +25,7 @@ const DoctorDashboard = () => {
     }
     else {
       setdoctor(data.doctorData);
+      console.log(data.accessToken)
       settoken(`Bearer ${data.accessToken}`)
     }
   }, [navigate])

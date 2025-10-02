@@ -26,6 +26,7 @@ const Amb_dashboard = () => {
     }
     else {
       setambulance(data.ambulanceData);
+      console.log(data.accessToken)
       settoken(`Bearer ${data.accessToken}`)
     }
 
