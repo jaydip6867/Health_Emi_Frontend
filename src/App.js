@@ -38,7 +38,8 @@ import D_SurgeryAppointment from './doctor/D_SurgeryAppointment';
 import DemoProfile from './Visitor/DemoProfile';
 import D_AmbulanceRequest from './doctor/D_AmbulanceRequest';
 import CompareDoctor from './Visitor/CompareDoctor';
-
+import Amb_Request from './Ambulance/Amb_Request';
+import 'leaflet/dist/leaflet.css';
 function App() {
   return (
     <div className="App">
@@ -85,6 +86,7 @@ function App() {
           <Route path='ambdashboard'  element={<Amb_dashboard />}></Route>
           <Route path='forgotambulance'  element={<Amb_Forgot />}></Route>
           <Route path='profileambulance'  element={<Amb_Profile />}></Route>
+          <Route path='ambrequests'  element={<Amb_Request />}></Route>
         </Route>
         <Route path='*' element={<NotFound />} />
       </Routes>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Col } from 'react-bootstrap'
-import { MdCalendarMonth, MdCardGiftcard, MdDifference, MdDiversity1, MdSpaceDashboard } from 'react-icons/md'
+import { MdCalendarMonth, MdCardGiftcard, MdDifference, MdDiversity1, MdLocalHospital, MdSpaceDashboard } from 'react-icons/md'
 import { NavLink } from 'react-router-dom'
 
 const Amb_dashboard = () => {
@@ -10,6 +10,13 @@ const Amb_dashboard = () => {
                 <div className='px-3'><h5 className='py-3 m-0 border-bottom text-center'>Health Ambulance</h5></div>
                 <div className='sidebar_nav mt-3 ps-3'>
                     <NavLink to={'/ambulance/ambdashboard'} className={({ isActive }) => (isActive ? 'active' : '')}><MdSpaceDashboard /> Dashboard</NavLink>
+                    <NavLink 
+                        to='/ambulance/ambrequests' 
+                        className={({ isActive }) => (isActive ? 'active' : '')}
+                    >
+                        <MdLocalHospital className="me-2" /> Ambulance Requests
+                    </NavLink>
+                    
                     {/* <NavLink to={'/doctor/doctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}><MdDifference />Appointment</NavLink> */}
                     {/* <NavLink to={'/doctor/doctorsurgery'} className={({ isActive }) => (isActive ? 'active' : '')} ><MdDiversity1 />Surgery</NavLink> */}
                     {/* <NavLink to={'/doctor/doctorblog'} className={({ isActive }) => (isActive ? 'active' : '')} ><MdCardGiftcard />Blog</NavLink> */}
