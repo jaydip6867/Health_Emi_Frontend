@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
+import 'leaflet/dist/leaflet.css';
 import DoctorRegister from './doctor/DoctorRegister';
 import DoctorLogin from './doctor/DoctorLogin';
 import DoctorForgot from './doctor/DoctorForgot';
