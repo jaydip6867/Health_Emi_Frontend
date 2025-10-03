@@ -571,6 +571,7 @@ const D_AmbulanceRequest = () => {
           text: "Your request has been submitted successfully.",
           icon: "success",
         });
+        navigate(`/doctor/ambulance-request/status/${res.data.Data.requestId}`);
       })
       .catch((error) => {
         console.error(error);
