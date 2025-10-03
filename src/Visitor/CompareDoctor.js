@@ -132,8 +132,13 @@ const CompareDoctor = () => {
                                     <div className='small text-muted'>Selected</div>
                                     <div>
                                         {selectedDoctors.map((d) => (
-                                            <Badge bg='primary' key={d._id} className='me-2 rounded-pill'>
+                                            <Badge bg='primary' key={d._id} className='me-2 rounded-pill d-inline-flex align-items-center'>
                                                 Dr. {d.name}
+                                                <Button variant='link' size='sm' className='text-white p-0 ms-2'
+                                                    onClick={() => setSelectedDoctors(prev => prev.filter(x => x._id !== d._id))}
+                                                >
+                                                    ×
+                                                </Button>
                                             </Badge>
                                         ))}
                                         {selectedDoctors.length === 0 && <span className='text-muted'>None</span>}
@@ -151,8 +156,8 @@ const CompareDoctor = () => {
                     {/* Comparison section (matrix) */}
                     <section className='mt-5'>
                         <h5 className='mb-3 d-flex align-items-center gap-2'><MdCompare /> Comparison</h5>
-                        {selectedDoctors.length < 2 ? (
-                            <div className='text-muted'>Select two doctors to compare.</div>
+                        {selectedDoctors.length === 0 ? (
+                            <div className='text-muted'>Select doctors to compare.</div>
                         ) : (
                             <Card className='p-3 shadow-sm rounded-4'>
                                 <Row className='g-4'>
@@ -164,7 +169,9 @@ const CompareDoctor = () => {
                                             <li className='py-2 border-bottom'>Experience</li>
                                             <li className='py-2 border-bottom'>Consultation Fee</li>
                                             <li className='py-2 border-bottom'>Surgeries</li>
-                                            <li className='py-2 border-bottom'>Hospitals</li>
+                                            {selectedDoctors.length === 1 && (
+                                                <li className='py-2 border-bottom text-muted'>Select second doctor</li>
+                                            )}
                                             <li className='py-2 border-bottom'>Qualification</li>
                                             <li className='py-2 border-bottom'>Approval Status</li>
                                             <li className='py-2 border-bottom'>Sub Specialty</li>
@@ -209,7 +216,11 @@ const CompareDoctor = () => {
                                         )})()}
                                     </Col>
                                     <Col xs={12} md={5}>
-                                        {(() => { const d = selectedDoctors[1]; return (
+                                        {(() => { const d = selectedDoctors[1]; if (!d) return (
+                                            <div className='text-muted small border rounded-3 p-3 h-100 d-flex align-items-center justify-content-center'>
+                                                Select another doctor to compare
+                                            </div>
+                                        ); return (
                                             <div>
                                                 <div className='d-flex gap-3 align-items-center py-2 border-bottom'>
                                                     <img src={d?.profile_pic} alt={`Dr. ${d?.name}`} className='rounded-3' style={{ width: 56, height: 56, objectFit: 'cover' }} />
@@ -284,6 +295,7 @@ const CompareDoctor = () => {
                                                             size='sm'
                                                             className='rounded-pill'
                                                             onClick={() => handleSelectDoctor(doc)}
+                                                            disabled={!isSelected && selectedDoctors.length >= 2}
                                                         >
                                                             {isSelected ? 'Remove' : (selectedDoctors.length >= 2 ? 'Max Selected' : 'Add to Compare')}
                                                         </Button>
