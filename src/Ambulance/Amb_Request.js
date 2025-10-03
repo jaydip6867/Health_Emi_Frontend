@@ -96,7 +96,7 @@ const Amb_Request = () => {
             case 'notified': return <Badge bg="warning" className="text-dark">Pending</Badge>;
             case 'accepted': return <Badge bg="success">Accepted</Badge>;
             case 'completed': return <Badge bg="info">Completed</Badge>;
-            case 'rejected': return <Badge bg="danger">Rejected</Badge>;
+            case 'cancelled': return <Badge bg="danger">Rejected</Badge>;
             default: return <Badge bg="secondary">{status}</Badge>;
           }
         },

@@ -566,11 +566,11 @@ const D_AmbulanceRequest = () => {
           drop_longitude: "",
           drop_latitude: "",
         });
-        Swal.fire({
-          title: "Ambulance Requested",
-          text: "Your request has been submitted successfully.",
-          icon: "success",
-        });
+        // Swal.fire({
+        //   title: "Ambulance Requested",
+        //   text: "Your request has been submitted successfully.",
+        //   icon: "success",
+        // });
         navigate(`/doctor/ambulance-request/status/${res.data.Data.requestId}`);
       })
       .catch((error) => {
