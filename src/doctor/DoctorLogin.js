@@ -5,7 +5,6 @@ import { Col, Container, Row, Button, Form } from 'react-bootstrap';
 
 import './css/doctor.css';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { CiLock } from 'react-icons/ci';
 import DoctorTestimonial from './DoctorTestimonial';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
@@ -76,9 +75,9 @@ const DoctorLogin = () => {
     return (
         <div className='min-vh-100 d-flex align-items-center panel'>
             <Container className='py-3'>
-                <Row className='align-items-center'>
+                <Row className='align-items-center justify-content-center'>
                     <DoctorTestimonial />
-                    <Col md={5}>
+                    <Col md={8} lg={5}>
                         <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
                             <div className='text-center'>
                                 <h3>Doctor - Sign In</h3>

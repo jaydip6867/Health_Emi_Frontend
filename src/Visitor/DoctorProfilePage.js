@@ -440,14 +440,14 @@ const DoctorProfilePage = () => {
                           <Image
                             src={require("../assets/image/doctor_img.jpg")}
                             roundedCircle
-                            className="border border-3 border-white shadow"
+                            className="border border-3 border-white shadow mx-auto"
                             style={{ width: '200px', height: '200px', objectFit: 'cover' }}
                           />
                         ) : (
                           <Image
                             src={doctor_profile?.profile_pic}
                             roundedCircle
-                            className="border border-3 border-white shadow"
+                            className="border border-3 border-white shadow mx-auto"
                             style={{ width: '200px', height: '200px', objectFit: 'cover' }}
                             alt={doctor_profile?.name}
                             onError={(e) => {
@@ -457,7 +457,7 @@ const DoctorProfilePage = () => {
                         )}
                       </div>
                     </Col>
-                    <Col md={4}>
+                    <Col md={7} xl={4} className='mt-3 mt-md-0'>
                       <h3 className="fw-bold">Dr. {doctor_profile.name}</h3>
                       <hr />
                       <p className="text-dark mb-2">{doctor_profile.specialty} ({doctor_profile.qualification})</p>
@@ -470,7 +470,7 @@ const DoctorProfilePage = () => {
                         <small className="text-muted">{doctor_profile.email}</small>
                       </div>
                     </Col>
-                    <Col md={4} className='ms-auto'>
+                    <Col md={12} xl={4} className='ms-xl-auto mt-3 mt-xl-0'>
                       <Row className="g-3">
                         <Col xs={6}>
                           <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">

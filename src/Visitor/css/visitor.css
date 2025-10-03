@@ -1422,3 +1422,29 @@ h6 {
     height: 50px;
     object-fit: cover;
 }
+
+/* ================= Doctor Profile: Responsive Tweaks ================= */
+/* Make avatar smaller on small screens, overriding inline size */
+@media (max-width: 575.98px) {
+  .doctor-profile-section img.rounded-circle {
+    width: 120px !important;
+    height: 120px !important;
+    object-fit: cover;
+  }
+
+  /* Improve sidebar cards spacing */
+  .doctor-profile-section .card .p-4 {
+    padding: 1rem !important;
+  }
+
+  /* Time slot buttons: tighter size on mobile */
+  .doctor-profile-section .btn-hour {
+    font-size: 11px !important;
+    padding: 6px 4px !important;
+  }
+
+  /* Ensure time slot grid wraps nicely */
+  .doctor-profile-section .time-slots-container .row {
+    row-gap: 0.5rem;
+  }
+}

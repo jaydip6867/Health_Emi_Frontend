@@ -917,10 +917,10 @@ const DoctorRegister = () => {
   return (
     <div className="min-vh-100 d-flex align-items-center panel">
       <Container className="py-3">
-        <Row>
+        <Row className="align-items-center justify-content-center">
           <DoctorTestimonial />
           {doc_reg === true ? (
-            <Col md={5}>
+            <Col md={8} lg={5}>
               <div className="register_doctor bg-white p-3 py-3 px-4 rounded">
                 <div className="text-center">
                   <h3>Doctor - Sign up</h3>
@@ -1082,7 +1082,7 @@ const DoctorRegister = () => {
             ""
           )}
           {doc_otp === true ? (
-            <Col md={5}>
+            <Col md={8} lg={5}>
               <div className="register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100">
                 <div className="text-center">
                   <h3>OTP Verification</h3>
@@ -1146,7 +1146,7 @@ const DoctorRegister = () => {
             ""
           )}
           {doc_reg2 === true ? (
-            <Col md={5}>
+            <Col md={8} lg={5}>
               <div className="register_doctor bg-white p-3 py-3 px-4 rounded">
                 <div className="text-center">
                   <h3>Doctor Profile Details</h3>

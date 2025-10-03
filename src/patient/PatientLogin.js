@@ -4,12 +4,11 @@ import { Button, Col, Container, Form, Row } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
 import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
-import { CiLock } from 'react-icons/ci'
-import { FaRegEnvelope } from 'react-icons/fa'
 import Loader from '../Loader'
 import { toast, ToastContainer } from 'react-toastify'
 import axios from 'axios'
 import CryptoJS from "crypto-js";
+import DoctorTestimonial from '../doctor/DoctorTestimonial'
 
 const PatientLogin = () => {
 
@@ -63,7 +62,8 @@ const PatientLogin = () => {
             <NavBar />
             <div className='spacer-y d-flex align-items-center panel'>
                 <Container>
-                    <Row className='justify-content-center'>
+                    <Row className='justify-content-center align-items-center'>
+                        <DoctorTestimonial />
                         <Col md={8} lg={5}>
                             <div className='register_doctor bg-white p-3 py-3 px-4 rounded-4 shadow'>
                                 <div className='text-center'>
