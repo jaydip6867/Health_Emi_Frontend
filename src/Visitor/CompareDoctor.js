@@ -172,6 +172,7 @@ const CompareDoctor = () => {
                                             {selectedDoctors.length === 1 && (
                                                 <li className='py-2 border-bottom text-muted'>Select second doctor</li>
                                             )}
+                                            <li className='py-2 border-bottom'>hospitals</li>
                                             <li className='py-2 border-bottom'>Qualification</li>
                                             <li className='py-2 border-bottom'>Approval Status</li>
                                             <li className='py-2 border-bottom'>Sub Specialty</li>

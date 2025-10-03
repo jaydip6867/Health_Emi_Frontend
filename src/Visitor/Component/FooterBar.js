@@ -49,9 +49,9 @@ const FooterBar = () => {
               </div>
             </Col>
 
-            <Col lg={6} md={6}>
+            <Col lg={6} md={12}>
               <Row className="g-2">
-                <Col lg={4} md={6} className="footer-links">
+                <Col sm={4} xs={6} className="footer-links">
                   <h4>Pages</h4>
                   <ul>
                     <li>
@@ -69,7 +69,7 @@ const FooterBar = () => {
                   </ul>
                 </Col>
 
-                <Col lg={4} md={6} className="footer-links">
+                <Col sm={4} xs={6} className="footer-links">
                   <h4>For Patients</h4>
                   <ul>
                     <li>
@@ -86,7 +86,7 @@ const FooterBar = () => {
                     </li>
                   </ul>
                 </Col>
-                <Col lg={4} md={6} className="footer-links">
+                <Col sm={4} xs={6} className="footer-links">
                   <h4>More Pages</h4>
                   <ul>
                     <li>
