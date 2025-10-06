@@ -2,6 +2,7 @@ import { Button, Card, Col, Row } from "react-bootstrap"
 import { MdArrowOutward, MdLocationOn } from "react-icons/md"
 import { PiStethoscopeBold } from "react-icons/pi"
 import { Link } from "react-router-dom"
+import defaultDoctorImg from "../../assets/image/doctor_img.jpg"
 
 const DoctorListComponents = ({ details }) => {
     // console.log(details)
@@ -15,10 +16,11 @@ const DoctorListComponents = ({ details }) => {
                     <Col xs={12} md={2}>
                         <div className="doctor_img d-flex justify-content-center">
                             <img
-                                src={details?.profile_pic} // Use a relevant doctor image URL or local path here
-                                alt={`Dr. ${details?.name}`}
+                                src={details?.profile_pic || defaultDoctorImg}
+                                alt={`Dr. ${details?.name || 'Doctor'}`}
                                 className="rounded-3 img-fluid"
                                 style={{ maxWidth: "100%", maxHeight: "auto" }}
+                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultDoctorImg; }}
                             />
                         </div>
                     </Col>

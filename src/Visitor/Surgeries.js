@@ -5,7 +5,9 @@ import { Card, Container, Image } from 'react-bootstrap'
 import Loader from '../Loader'
 import axios from 'axios'
 import CryptoJS from "crypto-js";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Speciality from './Component/Speciality'
+import defaultSurgeryIcon from '../assets/image/consultant.png'
 
 const Surgeries = () => {
     const SECRET_KEY = "health-emi";
@@ -27,7 +29,8 @@ const Surgeries = () => {
         }
     }, [navigate])
     const [loading, setloading] = useState(false)
-    // const [surgerylist, setsurgerylist] = useState([])
+    const [surgerylist, setsurgerylist] = useState([])
+
     useEffect(() => {
         setloading(true)
         getsurgerydata()
@@ -41,114 +44,49 @@ const Surgeries = () => {
                 "search": ''
             }
         }).then((res) => {
-            console.log(res)
-            // setsurgerylist(res.data.Data.docs)
+            const data = res?.data?.Data || [];
+            setsurgerylist(data);
         }).catch(function (error) {
             console.log(error);
+            setsurgerylist([]);
         }).finally(() => {
             setloading(false)
         });
     }
+
     return (
         <>
-            <NavBar logindata={patient}/>
+            <NavBar logindata={patient} />
             {/* surgery list section */}
             <section className='py-5'>
                 <Container>
                     <div className='text-center sec_head'>
                         <h3>We are experts in Surgical solutions for 50+ ailments.</h3>
                     </div>
+                    {/* <Speciality /> */}
                     <div className='rounded-4 border border-secondary-subtle p-4'>
                         <h5>Popular Surgeries</h5>
-                        <div className='d-flex gap-5 text-center mt-4 flex-wrap'>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
-                            <div className='surgery_list_box'>
-                                <img src={require('../assets/image/heart-dease.png')} alt='surgery' />
-                                <p>Piles</p>
-                            </div>
+                        <div className='d-flex gap-4 text-center mt-4 flex-wrap'>
+                            {
+                                surgerylist.map((item) => {
+                                    const name = item?.name;
+                                    const img = item?.surgery_photo;
+                                    // Surgerydoctorlist expects a surgerytypeid in the API body.
+                                    // Prefer nested id if available, fallback to string field or surgery id to avoid crashes.
+                                    const typeId = item?.surgerytypeid?._id || item?.surgerytypeid || item?._id;
+                                    return (
+                                        <Link to={`/surgery/${encodeURIComponent(btoa(typeId))}`} className='surgery_list_box' key={item?._id}>
+                                            <img
+                                                src={img || defaultSurgeryIcon}
+                                                alt={name}
+                                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultSurgeryIcon; }}
+                                            />
+                                            <p className='mt-2 fw-semibold text-capitalize'>{name}</p>
+                                        </Link>
+                                    )
+                                })}
                         </div>
                     </div>
-                </Container>
-            </section>
-            {/* benefit & explained */}
-            <section className='py-5 border-top border-5'>
-                <Container>
-                    <h4 className='mb-4'>Practo Care Benefits</h4>
                     <Card className='border-0 py-3 border-bottom w-50'>
                         <div className="d-flex align-items-center">
                             <div>
