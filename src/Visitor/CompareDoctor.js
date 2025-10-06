@@ -88,6 +88,19 @@ const CompareDoctor = () => {
         setSelectedDoctors(prev => [...prev, doc])
     }
 
+    const [secondDocQuery, setSecondDocQuery] = useState('')
+
+    const secondDoctorMatches = React.useMemo(() => {
+        if (selectedDoctors.length !== 1) return []
+        const q = secondDocQuery.trim().toLowerCase()
+        if (!q) return []
+        const firstId = selectedDoctors[0]?._id
+        return doctors
+          .filter(d => d && d._id !== firstId)
+          .filter(d => (d?.name || '').toLowerCase().includes(q))
+          .slice(0, 10)
+      }, [secondDocQuery, selectedDoctors, doctors])
+
     return (
         <>
             <NavBar logindata={patient} />
@@ -115,8 +128,9 @@ const CompareDoctor = () => {
                                 onChange={(e) => {
                                     setSelectedSurgery(e.target.value)
                                     setSelectedDoctors([]) // reset selection on surgery change
+                                    setSecondDocQuery('')  // clear search query
                                     console.log(e.target.value)
-                                }}
+                                  }}
                             >
                                 <option value=''>Select surgery...</option>
                                 {surgeryOptions.length > 0 && surgeryOptions.map((s) => (

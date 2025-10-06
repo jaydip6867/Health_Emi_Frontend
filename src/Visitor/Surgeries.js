@@ -18,10 +18,11 @@ const Surgeries = () => {
 
     useEffect(() => {
         var getlocaldata = localStorage.getItem('PatientLogin');
+        let data = null;
         if (getlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-            var data = JSON.parse(decrypted);
+            try { data = JSON.parse(decrypted) } catch (e) { data = null }
         }
         if (data) {
             setpatient(data.userData);
@@ -30,21 +31,39 @@ const Surgeries = () => {
     }, [navigate])
     const [loading, setloading] = useState(false)
     const [surgerylist, setsurgerylist] = useState([])
+    const [allSurgeries, setAllSurgeries] = useState([])
+    const [searchTerm, setSearchTerm] = useState('')
 
     useEffect(() => {
         setloading(true)
         getsurgerydata()
     }, [])
 
-    const getsurgerydata = async () => {
+    // Client-side filter on search term (no API calls)
+    useEffect(() => {
+        const term = searchTerm.trim().toLowerCase()
+        if (!term) {
+            setsurgerylist(allSurgeries)
+            return
+        }
+        const filtered = allSurgeries.filter((item) => {
+            const name = (item?.name || '').toLowerCase()
+            const type = (item?.surgerytypeid?.name || item?.surgerytypeid || '').toString().toLowerCase()
+            return name.includes(term) || type.includes(term)
+        })
+        setsurgerylist(filtered)
+    }, [searchTerm, allSurgeries])
+
+    const getsurgerydata = async (q = '') => {
         await axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/user/surgeries/list',
             data: {
-                "search": ''
+                "search": q
             }
         }).then((res) => {
             const data = res?.data?.Data || [];
+            setAllSurgeries(data);
             setsurgerylist(data);
         }).catch(function (error) {
             console.log(error);
@@ -53,7 +72,6 @@ const Surgeries = () => {
             setloading(false)
         });
     }
-
     return (
         <>
             <NavBar logindata={patient} />
@@ -65,8 +83,19 @@ const Surgeries = () => {
                     </div>
                     {/* <Speciality /> */}
                     <div className='rounded-4 border border-secondary-subtle p-4'>
-                        <h5>Popular Surgeries</h5>
-                        <div className='d-flex gap-4 text-center mt-4 flex-wrap'>
+                        <div className='mb-3'>
+                            <h4 className='mb-0 text-center'>Popular Surgeries</h4>
+                        </div>
+                        <div className='d-flex justify-content-center'>
+                            <input
+                                type='text'
+                                className='form-control w-75'
+                                placeholder='Search surgeries...'
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div className='d-flex gap-3 text-center mt-4 flex-wrap'>
                             {
                                 surgerylist.map((item) => {
                                     const name = item?.name;
@@ -84,66 +113,15 @@ const Surgeries = () => {
                                             <p className='mt-2 fw-semibold text-capitalize'>{name}</p>
                                         </Link>
                                     )
-                                })}
+                                })
+                            }
+                            {
+                                !loading && surgerylist.length === 0 && (
+                                    <p className='text-muted w-100 text-center m-0'>No surgeries found.</p>
+                                )
+                            }
                         </div>
                     </div>
-                    <Card className='border-0 py-3 border-bottom w-50'>
-                        <div className="d-flex align-items-center">
-                            <div>
-                                <Image src={require('../assets/image/Sergeon.png')} className='benefit_img' alt='benefit sergeon' />
-                            </div>
-                            <Card.Body className="px-2 py-0">
-                                {/* Doctor Name & Favorite Icon */}
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <Card.Title className="mb-1 fs-6 fw-bold">Expert surgeons</Card.Title>
-                                </div>
-
-                                {/* Specialty */}
-                                <Card.Text className="mb-0 text-secondary" style={{ fontSize: '0.9rem' }}>
-                                    Qualified & Experienced Specialists
-                                </Card.Text>
-
-                            </Card.Body>
-                        </div>
-                    </Card>
-                    <Card className='border-0 py-2 border-bottom w-50'>
-                        <div className="d-flex align-items-center">
-                            <div>
-                                <Image src={require('../assets/image/Sergeon.png')} className='benefit_img' alt='benefit sergeon' />
-                            </div>
-                            <Card.Body className="px-2 py-0">
-                                {/* Doctor Name & Favorite Icon */}
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <Card.Title className="mb-1 fs-6 fw-bold">Expert surgeons</Card.Title>
-                                </div>
-
-                                {/* Specialty */}
-                                <Card.Text className="mb-0 text-secondary" style={{ fontSize: '0.9rem' }}>
-                                    Qualified & Experienced Specialists
-                                </Card.Text>
-
-                            </Card.Body>
-                        </div>
-                    </Card>
-                    <Card className='border-0 py-2 border-bottom w-50'>
-                        <div className="d-flex align-items-center">
-                            <div>
-                                <Image src={require('../assets/image/Sergeon.png')} className='benefit_img' alt='benefit sergeon' />
-                            </div>
-                            <Card.Body className="px-2 py-0">
-                                {/* Doctor Name & Favorite Icon */}
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <Card.Title className="mb-1 fs-6 fw-bold">Expert surgeons</Card.Title>
-                                </div>
-
-                                {/* Specialty */}
-                                <Card.Text className="mb-0 text-secondary" style={{ fontSize: '0.9rem' }}>
-                                    Qualified & Experienced Specialists
-                                </Card.Text>
-
-                            </Card.Body>
-                        </div>
-                    </Card>
                 </Container>
             </section>
             {/* benefit & explained */}
