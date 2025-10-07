@@ -89,16 +89,15 @@ const CompareDoctor = () => {
     }
 
     const [secondDocQuery, setSecondDocQuery] = useState('')
+    const [secondDocOpen, setSecondDocOpen] = useState(false)
 
     const secondDoctorMatches = React.useMemo(() => {
         if (selectedDoctors.length !== 1) return []
         const q = secondDocQuery.trim().toLowerCase()
-        if (!q) return []
         const firstId = selectedDoctors[0]?._id
-        return doctors
-          .filter(d => d && d._id !== firstId)
-          .filter(d => (d?.name || '').toLowerCase().includes(q))
-          .slice(0, 10)
+        const base = doctors.filter(d => d && d._id !== firstId)
+        const filtered = q ? base.filter(d => (d?.name || '').toLowerCase().includes(q)) : base
+        return filtered.slice(0, 20)
       }, [secondDocQuery, selectedDoctors, doctors])
 
     return (
@@ -140,7 +139,7 @@ const CompareDoctor = () => {
                                 ))}
                             </Form.Select>
                         </Col>
-                        <Col xs={12} md={'auto'} className='d-flex align-items-end'>
+                        {/* <Col xs={12} md={'auto'} className='d-flex align-items-end'>
                             <div className='d-flex align-items-center gap-3'>
                                 <div>
                                     <div className='small text-muted'>Selected</div>
@@ -164,7 +163,7 @@ const CompareDoctor = () => {
                                     </Button>
                                 )}
                             </div>
-                        </Col>
+                        </Col> */}
                     </Row>
 
                     {/* Comparison section (matrix) */}
@@ -179,7 +178,7 @@ const CompareDoctor = () => {
                                     <Col xs={12} md={3}>
                                         <div className='text-muted small'>Criteria</div>
                                         <ul className='list-unstyled mt-3 mb-0'>
-                                            <li className='py-2 border-bottom'>Profile</li>
+                                            <li className='pb-2 border-bottom'>Profile</li>
                                             <li className='py-2 border-bottom'>Experience</li>
                                             <li className='py-2 border-bottom'>Consultation Fee</li>
                                             <li className='py-2 border-bottom'>Surgeries</li>
@@ -195,7 +194,16 @@ const CompareDoctor = () => {
                                     {/* Doctor A */}
                                     <Col xs={12} md={4}>
                                         {(() => { const d = selectedDoctors[0]; return (
-                                            <div>
+                                            <div className='position-relative'>
+                                                <Button
+                                                    variant='link'
+                                                    className='position-absolute top-0 end-0 text-danger p-1'
+                                                    style={{ zIndex: 10 }}
+                                                    onClick={() => setSelectedDoctors(prev => prev.filter(x => x._id !== d._id))}
+                                                    title='Remove doctor'
+                                                >
+                                                    <MdClear size={20} />
+                                                </Button>
                                                 <div className='d-flex gap-3 align-items-center py-2 border-bottom'>
                                                     <img src={d?.profile_pic} alt={`Dr. ${d?.name}`} className='rounded-3' style={{ width: 56, height: 56, objectFit: 'cover' }} />
                                                     <div>
@@ -223,7 +231,7 @@ const CompareDoctor = () => {
                                                         : '—'}
                                                 </div>
                                                 <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdLocalHospital className='text-danger' />{Array.isArray(d?.hospitals) && d.hospitals.length > 0 ? d.hospitals.map(h => h?.name || h).join(', ') : (d?.hospitalname || '—')}</div>
-                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdSchool className='text-warning' />{d?.qualifications}</div>
+                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdSchool className='text-warning' />{Array.isArray(d?.qualifications) && d.qualifications.length > 0 ? d.qualifications.join(', ') : (d?.qualification || '—')}</div>
                                                 <div className='py-2 border-bottom'>{d?.approval_status}</div>
                                                 <div className='py-2 border-bottom'>{typeof d?.sub_specialty !== 'undefined' ? String(d.sub_specialty) : '—'}</div>
                                                 <div className='py-2 border-bottom'><Link to={`/doctorprofile/${encodeURIComponent(btoa(d._id))}`} className='text-primary'>View Profile</Link></div>
@@ -232,11 +240,62 @@ const CompareDoctor = () => {
                                     </Col>
                                     <Col xs={12} md={5}>
                                         {(() => { const d = selectedDoctors[1]; if (!d) return (
-                                            <div className='text-muted small border rounded-3 p-3 h-100 d-flex align-items-center justify-content-center'>
-                                                Select another doctor to compare
+                                            <div className='border rounded-3 p-3 h-100'>
+                                                <div className='text-muted small mb-3 text-center'>
+                                                    Select another doctor to compare
+                                                </div>
+                                                <Form.Control
+                                                    type='text'
+                                                    placeholder='Search doctor by name...'
+                                                    value={secondDocQuery}
+                                                    onChange={(e) => setSecondDocQuery(e.target.value)}
+                                                    onFocus={() => setSecondDocOpen(true)}
+                                                    onClick={() => setSecondDocOpen(true)}
+                                                    onBlur={() => setTimeout(() => setSecondDocOpen(false), 120)}
+                                                    className='rounded-pill mb-2'
+                                                />
+                                                {secondDocOpen && secondDoctorMatches.length > 0 && (
+                                                    <div className='border rounded-3 mt-2' style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                                                        {secondDoctorMatches.map((doc) => (
+                                                            <div
+                                                                key={doc._id}
+                                                                className='p-2 border-bottom cursor-pointer hover-bg-light d-flex gap-2 align-items-center'
+                                                                style={{ cursor: 'pointer' }}
+                                                                onClick={() => {
+                                                                    handleSelectDoctor(doc)
+                                                                    setSecondDocQuery('')
+                                                                    setSecondDocOpen(false)
+                                                                }}
+                                                            >
+                                                                <img
+                                                                    src={doc?.profile_pic}
+                                                                    alt={`Dr. ${doc?.name}`}
+                                                                    className='rounded-circle border'
+                                                                    style={{ width: 40, height: 40, objectFit: 'cover' }}
+                                                                />
+                                                                <div className='flex-grow-1'>
+                                                                    <div className='fw-semibold small'>Dr. {doc?.name}</div>
+                                                                    <div className='text-muted' style={{ fontSize: '0.75rem' }}>{doc?.specialty || '—'}</div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                {secondDocOpen && secondDocQuery.trim() && secondDoctorMatches.length === 0 && (
+                                                    <div className='text-muted small text-center mt-2'>No doctors found</div>
+                                                )}
                                             </div>
                                         ); return (
-                                            <div>
+                                            <div className='position-relative'>
+                                                <Button
+                                                    variant='link'
+                                                    className='position-absolute top-0 end-0 text-danger p-1'
+                                                    style={{ zIndex: 10 }}
+                                                    onClick={() => setSelectedDoctors(prev => prev.filter(x => x._id !== d._id))}
+                                                    title='Remove doctor'
+                                                >
+                                                    <MdClear size={20} />
+                                                </Button>
                                                 <div className='d-flex gap-3 align-items-center py-2 border-bottom'>
                                                     <img src={d?.profile_pic} alt={`Dr. ${d?.name}`} className='rounded-3' style={{ width: 56, height: 56, objectFit: 'cover' }} />
                                                     <div>

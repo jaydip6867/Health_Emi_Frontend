@@ -67,17 +67,22 @@ const SearchBox = () => {
                 <Container>
                     <Row className='justify-content-center searchbox'>
                         <Col xs={12} md={10} lg={8}>
-                            <div
-                                className='rounded-4'
-                            >
+                            <div className='rounded-4'>
                                 <div className='d-flex align-items-stretch'>
                                     <div className='position-relative d-flex align-items-center' style={{ maxWidth: 180 }}>
                                         <FiMapPin className='position-absolute' style={{ left: 12, color: '#6b7280' }} />
                                         <Form.Select
                                             className='rounded-pill ps-5 pe-4 py-2 border-0'
                                             value={searchinputcity}
-                                            onChange={(e) => setsearchinputcity(e.target.value)}
-                                            onFocus={() => setShowList(true)}
+                                            onChange={(e) => {
+                                                const v = e.target.value;
+                                                setsearchinputcity(v);
+                                                // Refresh suggestions for current input, but do not open list here
+                                                if (inputValue && inputValue.trim().length > 0) {
+                                                    getsuggestion(inputValue);
+                                                }
+                                            }}
+                                            onFocus={() => setShowList(false)}
                                             name='city'
                                             style={{ background: '#f3f4f6' }}
                                         >
