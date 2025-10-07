@@ -10,6 +10,8 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import Loader from "../Loader";
 import { Country, State, City } from "country-state-city";
+import NavBar from "../Visitor/Component/NavBar";
+import FooterBar from "../Visitor/Component/FooterBar";
 
 const DoctorRegister = () => {
   var navigate = useNavigate();
@@ -915,6 +917,8 @@ const DoctorRegister = () => {
   );
 
   return (
+    <>
+    <NavBar />
     <div className="min-vh-100 d-flex align-items-center panel">
       <Container className="py-3">
         <Row className="align-items-center justify-content-center">
@@ -1714,6 +1718,8 @@ const DoctorRegister = () => {
       {loading ? <Loader /> : ""}
       <TermsAndConditionsModal />
     </div>
+    <FooterBar />
+    </>
   );
 };
 

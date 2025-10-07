@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Col, Container, Row, Button, Form } from 'react-bootstrap';
-// import './css/doctor.css';
+import NavBar from '../Visitor/Component/NavBar';
+import FooterBar from '../Visitor/Component/FooterBar';
 import { Link, useNavigate } from 'react-router-dom';
-import { CiLock } from 'react-icons/ci';
-import { FaRegEnvelope } from 'react-icons/fa';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import Loader from '../Loader';
@@ -83,6 +82,8 @@ const Amb_Forgot = () => {
     }
 
     return (
+        <>
+        <NavBar />
         <div className='min-vh-100 d-flex align-items-center panel'>
             <Container className='py-3'>
                 <Row className='align-items-center justify-content-center'>
@@ -98,7 +99,6 @@ const Amb_Forgot = () => {
                                     <Form.Group controlId="Email" className='position-relative mb-3'>
                                         <Form.Label>Email Address</Form.Label>
                                         <Form.Control placeholder="Email Address" name='email' value={email} onChange={(e) => setemail(e.target.value)} className='frm_input' />
-                                        <FaRegEnvelope className='icon_input' />
                                     </Form.Group>
 
                                     <Button type="button" onClick={emailotpforgot} className='d-block w-100 theme_btn my-3 mt-4'>
@@ -142,7 +142,6 @@ const Amb_Forgot = () => {
                                     <Form.Group controlId="password" className='position-relative mb-3'>
                                         <Form.Label>New Password</Form.Label>
                                         <Form.Control type='password' placeholder="New Password" name='newpassword' value={newps} onChange={(e) => setnewps(e.target.value)} className='frm_input' />
-                                        <CiLock className='icon_input' />
                                     </Form.Group>
 
                                     <Button type="button" onClick={resetps} className='d-block w-100 theme_btn my-3 mt-4'>
@@ -158,6 +157,8 @@ const Amb_Forgot = () => {
             <ToastContainer />
             {loading ? <Loader/> : ''}
         </div>
+        <FooterBar />
+        </>
     )
 }
 

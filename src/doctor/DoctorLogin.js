@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { Col, Container, Row, Button, Form } from 'react-bootstrap';
-
+import NavBar from '../Visitor/Component/NavBar';
+import FooterBar from '../Visitor/Component/FooterBar';
 import './css/doctor.css';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import DoctorTestimonial from './DoctorTestimonial';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import Loader from '../Loader';
-import { FaRegEnvelope } from 'react-icons/fa';
 import CryptoJS from "crypto-js";
 
 const DoctorLogin = () => {
@@ -73,6 +73,8 @@ const DoctorLogin = () => {
     }
 
     return (
+        <>
+        <NavBar />
         <div className='min-vh-100 d-flex align-items-center panel'>
             <Container className='py-3'>
                 <Row className='align-items-center justify-content-center'>
@@ -113,6 +115,8 @@ const DoctorLogin = () => {
             <ToastContainer />
             {loading ? <Loader /> : ''}
         </div>
+        <FooterBar />
+        </>
     )
 }
 

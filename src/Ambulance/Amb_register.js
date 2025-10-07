@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Form, Button, Alert, Modal } from "react-bootstrap";
 import { Country, State, City } from "country-state-city";
+import NavBar from '../Visitor/Component/NavBar';
+import FooterBar from '../Visitor/Component/FooterBar';
 import axios from "axios";
 import "../Visitor/css/visitor.css";
 import { ToastContainer, toast } from 'react-toastify';
@@ -683,6 +685,7 @@ const Amb_register = () => {
 
   return (
     <>
+    <NavBar />
       <div className="min-vh-100 d-flex align-items-center" style={{ backgroundColor: "#F5FDFF", paddingTop: "2rem", paddingBottom: "2rem" }}>
         <Container className="py-4">
           <Row className="justify-content-center">
@@ -1353,6 +1356,7 @@ const Amb_register = () => {
         draggable
         pauseOnHover
       />
+      <FooterBar />
     </>
   );
 };
