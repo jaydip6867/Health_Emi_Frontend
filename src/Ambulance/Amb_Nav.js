@@ -20,7 +20,9 @@ const Amb_Nav = (name) => {
 
                             <Dropdown.Menu>
                                 <NavLink to={'/ambulance/profileambulance'} className='text-decoration-none d-block text-center p-2 profile_nav'>Profile</NavLink>
-                                <Button className='btn-navbar' onClick={() => (localStorage.removeItem('healthambulance'), navigate('/ambulance'))}>Logout</Button>
+                                <Button className='btn-navbar' onClick={() => (localStorage.removeItem('healthambulance'),localStorage.removeItem('ambulance_socket'),localStorage.removeItem('lastAmbulanceRequest'), navigate('/ambulance'))}>
+                                    Logout
+                                    </Button>
 
                             </Dropdown.Menu>
                         </Dropdown>
