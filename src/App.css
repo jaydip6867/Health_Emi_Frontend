@@ -228,6 +228,24 @@
   background-color: #22409941;
 }
 
+.surgery_list_box{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  width: 120px;
+}
+
+.surgery_list_box p{
+  margin: 10px 0 0 0;
+  font-size: 14px;
+  color: #2c2c2c;
+}
+
+.surgery_list_box:hover img{
+  box-shadow: 0 4px 10px rgba(34, 64, 153, 0.2);
+}
+
 .benefit_img {
   width: 50px;
   height: 50px;

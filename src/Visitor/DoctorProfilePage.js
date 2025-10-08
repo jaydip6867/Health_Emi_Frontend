@@ -101,9 +101,9 @@ const DoctorProfilePage = () => {
       }
     }).then((res) => {
       setdocprofile(res.data.Data)
-      console.log('doctor ', res.data.Data)
+      // console.log('doctor ', res.data.Data)
     }).catch(function (error) {
-      console.log(error);
+      // console.log(error);
     }).finally(() => {
       setloading(false)
     });
@@ -167,13 +167,13 @@ const DoctorProfilePage = () => {
         setloading(true);
         const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
         const timeWithMeridiem = `${timePart} ${meridiem}`;
-        
+
         let reportUrls = [];
-        
+
         // Upload report file first if exists
         if (apt_data.report && apt_data.report.length > 0) {
           const formData = new FormData();
-          
+
           // Handle single or multiple files
           if (apt_data.report instanceof FileList || Array.isArray(apt_data.report)) {
             Array.from(apt_data.report).forEach(file => {
@@ -182,7 +182,7 @@ const DoctorProfilePage = () => {
           } else {
             formData.append('file', apt_data.report);
           }
-          
+
           const uploadResponse = await axios.post(
             'https://healtheasy-o25g.onrender.com/user/upload/multiple',
             formData,
@@ -192,17 +192,17 @@ const DoctorProfilePage = () => {
               }
             }
           );
-          
+
           // console.log('Upload Response:', uploadResponse.data);
-          
+
           // Extract URLs from response
           if (uploadResponse.data.Status === 200 && uploadResponse.data.Data) {
             reportUrls = uploadResponse.data.Data
           }
         }
-        
+
         // console.log('Report URLs to save:', reportUrls);
-        
+
         // Now save appointment with uploaded report URLs
         const response = await axios({
           method: 'post',
@@ -223,7 +223,7 @@ const DoctorProfilePage = () => {
             visit_types: selectedConsultationType
           }
         });
-        
+
         Swal.fire({
           title: "Appointment Add Successfully...",
           icon: "success",
@@ -231,9 +231,9 @@ const DoctorProfilePage = () => {
         }).then((result) => {
           navigate('/patient/appointment');
         });
-        
+
       } catch (error) {
-        console.error('Error:', error);
+        // console.error('Error:', error);
         Swal.fire({
           title: "Something Went Wrong.",
           text: error.response?.data?.Message || "Something Is Missing. Please Check Details...",
@@ -337,14 +337,14 @@ const DoctorProfilePage = () => {
           }
         }
       );
-      console.log(response.data)
+      // console.log(response.data)
 
       if (response.data.Status === 200 && response.data.Data) {
         return response.data.Data.map(item => item.path || item.url);
       }
       return [];
     } catch (error) {
-      console.error('Error uploading report files:', error);
+      // console.error('Error uploading report files:', error);
       Swal.fire({
         title: "Upload Error",
         text: error.response.data.Message,
@@ -382,7 +382,7 @@ const DoctorProfilePage = () => {
           report: reportUrls // Pass the array of uploaded file URLs
         }
 
-        console.log('Surgery data with reports:', surg_data)
+        // console.log('Surgery data with reports:', surg_data)
 
         const response = await axios({
           method: 'post',
@@ -411,7 +411,7 @@ const DoctorProfilePage = () => {
           text: "Something Is Missing. Please Check Details...",
           icon: "error",
         });
-        console.log(error)
+        // console.log(error)
       } finally {
         setloading(false)
       }
@@ -485,7 +485,7 @@ const DoctorProfilePage = () => {
 
                               </div>
                               <div className="d-flex flex-column mt-1">
-                                <span className="fw-bold">{!doctor_profile?.completedappointment  ? 0 : doctor_profile?.completedappointment}+</span>
+                                <span className="fw-bold">{!doctor_profile?.completedappointment ? 0 : doctor_profile?.completedappointment}+</span>
                                 <small className="text-muted">Consultant</small>
                               </div>
                             </div>
@@ -586,9 +586,9 @@ const DoctorProfilePage = () => {
                                 />
                               </Col>
                               <Col xs={7}>
-                                <h6 className="fw-bold mb-1 border-bottom pb-2">{surgery.name}</h6>
-                                <p className="text-muted small mb-1">{surgery.surgery_type || 'Surgery Type'}</p>
-                                <p className="text-muted small mb-0">Days of Surgery</p>
+                                <h6 className="fw-bold mb-1 border-bottom pb-2">{surgery?.name}</h6>
+                                <p className="text-muted small mb-1">{surgery?.surgerytypeid?.surgerytypename || 'Surgery Type'}</p>
+                                <p className="text-muted small mb-0">{surgery?.days + ' Days of Surgery'}</p>
                               </Col>
                             </Row>
                           </Card.Body>
@@ -643,13 +643,31 @@ const DoctorProfilePage = () => {
                                 height={50}
                                 className="me-3 review_pic"
                               />
-                              <div>
-                                <h6 className="fw-bold mb-1">{v?.createdBy?.name}</h6>
+                              <div className="flex-grow-1">
+                                <div className="d-flex align-items-center mt-1">
+                                <h6 className="fw-bold mb-1">{v?.appointmentid?.patientname}</h6>
+                                  <div className='ms-auto'>
+                                    {[...Array(5)].map((_, idx) => {
+                                      const num = Number(v?.rating);
+                                      const clamped = Number.isFinite(num) ? Math.max(0, Math.min(5, num)) : 0;
+                                      const filled = Math.round(clamped);
+                                      return (
+                                        <BsStarFill
+                                          key={idx}
+                                          className={(idx < filled ? 'text-warning' : 'text-secondary') + ' me-1'}
+                                          size={14}
+                                        />
+                                      );
+                                    })}
+                                    <span className="small text-muted ms-2">
+                                      {Number.isFinite(Number(v?.rating)) ? Number(v?.rating).toFixed(1) : '0.0'}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                             <p className="mt-3 mb-0">
-                              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec metus vel ante
-                              consectetur bibendum. Nullam nec metus vel ante consectetur bibendum.
+                              {v?.description}
                             </p>
                           </div>
                         )
@@ -696,9 +714,9 @@ const DoctorProfilePage = () => {
             <Col lg={4}>
               <div>
                 {/* Consultation Type Selection */}
-                <Card className="mb-4 border-0" style={{ borderRadius: '15px', backgroundColor: 'transparent' }}>
+                <Card className="mb-4 border-0 p-4 shadow-sm" style={{ borderRadius: '15px', backgroundColor: 'transparent' }}>
                   <Card.Body className="p-0">
-                    <h6 className="fw-bold mb-3 text-muted">Select Consultation Type</h6>
+                    <h5 className="fw-bold mb-4 text-center">Select Consultation Type</h5>
                     <Row className="g-3">
                       <Col xs={4}>
                         <input
@@ -1055,7 +1073,7 @@ const DoctorProfilePage = () => {
                               selectedService?.inclusive?.split(',').map((v, i) => (
                                 <li key={i} className="mb-1">
                                   <svg width="15" height="10" viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M1.16669 5.00016L5.33335 9.16683L13.6667 0.833496" stroke="#2E7D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M1.16669 5.00016L5.33335 9.16683L13.6667 0.833496" stroke="#2E7D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                   </svg>
 
                                   <span className="ms-2">{v.trim()}</span>
@@ -1077,8 +1095,8 @@ const DoctorProfilePage = () => {
                               selectedService.exclusive.split(',').map((v, i) => (
                                 <li key={i} className="mb-1">
                                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 5L5 15" stroke="#D32F2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path d="M5 5L15 15" stroke="#D32F2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M15 5L5 15" stroke="#D32F2F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M5 5L15 15" stroke="#D32F2F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                   </svg>
 
                                   <span className="ms-2">{v.trim()}</span>

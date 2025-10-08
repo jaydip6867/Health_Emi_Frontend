@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import "../doctor/css/doctor.css";
-import { Link, useNavigate } from "react-router-dom";
-import Loader from "../Loader";
-import { toast, ToastContainer } from "react-toastify";
-import axios from "axios";
+import React, { useEffect, useState } from 'react'
+import { Button, Col, Container, Form, Row } from 'react-bootstrap'
+import '../doctor/css/doctor.css'
+import NavBar from '../Visitor/Component/NavBar';
+import FooterBar from '../Visitor/Component/FooterBar';
+import { Link, useNavigate } from 'react-router-dom'
+import Loader from '../Loader'
+import { toast, ToastContainer } from 'react-toastify'
+import axios from 'axios'
 import CryptoJS from "crypto-js";
 import { io } from "socket.io-client";
 
@@ -148,31 +150,23 @@ const Amb_login = () => {
                     </p>
                   </div>
 
-                  <Button
-                    onClick={ambulancesignin}
-                    type="button"
-                    className="btn btn-primary d-block w-100 theme_btn mt-4"
-                  >
-                    Sign In
-                  </Button>
-                </Form>
-                <div className="form_bottom_div text-center mt-3">
-                  <p>
-                    Don't have an Account?{" "}
-                    <Link to={"ambregister"} className="form-link">
-                      Sign Up
-                    </Link>{" "}
-                  </p>
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </Container>
-        <ToastContainer />
-        {loading ? <Loader /> : ""}
-      </div>
-    </>
-  );
-};
+                                    <Button onClick={ambulancesignin} type="button" className='btn btn-primary d-block w-100 theme_btn mt-4'>
+                                        Sign In
+                                    </Button>
+                                </Form>
+                                <div className='form_bottom_div text-center mt-3'>
+                                    <p>Don't have an Account? <Link to={'ambregister'} className='form-link'>Sign Up</Link> </p>
+                                </div>
+                            </div>
+                        </Col>
+                    </Row>
+                </Container>
+                <ToastContainer />
+                {loading ? <Loader /> : ''}
+            </div>
+            <FooterBar />
+        </>
+    )
+}
 
 export default Amb_login;
