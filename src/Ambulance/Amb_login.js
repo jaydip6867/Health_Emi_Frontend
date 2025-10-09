@@ -54,14 +54,15 @@ const Amb_login = () => {
         const ambulanceId = res.data.Data.ambulanceData._id;
 
         socket.emit("init", { channelid: ambulance_channelid });
-        localStorage.setItem(
-          "ambulance_socket",
-          JSON.stringify({
-            channelId: ambulance_channelid,
-            ambulanceId: ambulanceId,
-          })
-        );
 
+        const ambulance_socket = {
+          channelId: ambulance_channelid,
+          ambulanceId: ambulanceId
+        };
+        
+        // Store it in localStorage
+        localStorage.setItem("ambulance_socket", JSON.stringify(ambulance_socket));
+        
         if ("geolocation" in navigator) {
           let loginLoction = navigator.geolocation.watchPosition(
             (position) => {

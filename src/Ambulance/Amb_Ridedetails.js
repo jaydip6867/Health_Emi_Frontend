@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { io } from "socket.io-client";
 import {
   Container,
   Row,
@@ -28,6 +29,7 @@ import "../../src/amb_request.css";
 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { parseJSON } from "date-fns";
 const MySwal = withReactContent(Swal);
 
 const Amb_Ridedetails = () => {
@@ -45,7 +47,7 @@ const Amb_Ridedetails = () => {
     loading: true,
     error: null,
   });
-
+  let startRide;
   const mapContainer = useRef(null);
   const map = useRef(null);
   const markers = useRef({
@@ -53,7 +55,8 @@ const Amb_Ridedetails = () => {
     drop: null,
     ambulance: null,
   });
-
+  const [refreshInterval, setRefreshInterval] = useState(null);
+  const [rideStatus, setRideStatus] = useState("");
   const SECRET_KEY = "health-emi";
 
   const fetchRideDetails = async () => {
@@ -106,24 +109,32 @@ const Amb_Ridedetails = () => {
 
   // Update ambulance marker when location changes
   const updateAmbulanceMarker = (location) => {
-    if (!map.current || !markers.current) return;
+    if (!map.current) return;
 
-    if (!markers.current.ambulance && map.current) {
+    if (!markers.current.ambulance) {
       markers.current.ambulance = new maplibregl.Marker({
-        color: "#0000FF",
-        rotation: 45,
+        element: createAmbulanceIcon(),
+        rotationAlignment: "map",
+        rotation: 0,
       })
         .setLngLat([location.lng, location.lat])
-        .setPopup(
-          new maplibregl.Popup().setHTML("<strong>Your Ambulance</strong>")
-        )
         .addTo(map.current);
-    } else if (markers.current.ambulance) {
+    } else {
       markers.current.ambulance.setLngLat([location.lng, location.lat]);
     }
 
-    // Update map view to include all markers
+    // Update the map view to include all markers
     fitMapToMarkers();
+  };
+
+  // Add this helper function for the ambulance icon
+  const createAmbulanceIcon = () => {
+    const el = document.createElement("div");
+    el.className = "ambulance-marker";
+    el.innerHTML = "🚑"; // Using ambulance emoji as icon
+    el.style.fontSize = "24px";
+    el.style.transform = "rotate(0deg)";
+    return el;
   };
 
   // Fit map to show all markers
@@ -191,14 +202,13 @@ const Amb_Ridedetails = () => {
     };
   }, []);
 
- 
   // Initialize map when component mounts and ride data is available
   useEffect(() => {
     if (!ride || !mapContainer.current) return;
-  
+
     let mapInstance;
     let mapLoaded = false;
-  
+
     try {
       mapInstance = new maplibregl.Map({
         container: mapContainer.current,
@@ -207,18 +217,18 @@ const Amb_Ridedetails = () => {
           currentLocation.lng || ride.pickuplocation.coordinates[0],
           currentLocation.lat || ride.pickuplocation.coordinates[1],
         ],
-        zoom: 12,
+        zoom: 5,
         attributionControl: false,
         maxZoom: 18,
         minZoom: 10,
         preserveDrawingBuffer: true,
       });
-  
+
       mapInstance.addControl(new maplibregl.NavigationControl());
-  
+
       mapInstance.on("load", () => {
         mapLoaded = true;
-  
+
         // 🟢 Pickup Marker
         markers.current.pickup = new maplibregl.Marker({ color: "#FF0000" })
           .setLngLat([
@@ -231,7 +241,7 @@ const Amb_Ridedetails = () => {
             )
           )
           .addTo(mapInstance);
-  
+
         // 🟢 Drop Marker
         markers.current.drop = new maplibregl.Marker({ color: "#00AA00" })
           .setLngLat([
@@ -244,12 +254,14 @@ const Amb_Ridedetails = () => {
             )
           )
           .addTo(mapInstance);
-  
+
         // 🟢 Ambulance Marker
         if (currentLocation.lat && currentLocation.lng) {
           markers.current.ambulance = new maplibregl.Marker({
             color: "#0000FF",
-            rotation: 45,
+            element: createAmbulanceIcon(),
+            rotationAlignment: "map",
+            rotation: 0,
           })
             .setLngLat([currentLocation.lng, currentLocation.lat])
             .setPopup(
@@ -257,17 +269,17 @@ const Amb_Ridedetails = () => {
             )
             .addTo(mapInstance);
         }
-  
+
         fitMapToMarkers();
       });
-  
+
       map.current = mapInstance;
     } catch (error) {
       console.error("Error initializing map:", error);
       if (mapInstance) mapInstance.remove();
       return;
     }
-  
+
     return () => {
       // 🛡️ Cleanup only after map has loaded
       if (!mapInstance) return;
@@ -280,8 +292,29 @@ const Amb_Ridedetails = () => {
       map.current = null;
     };
   }, [ride]);
-  
+  // Add this effect to handle auto-refresh
+  useEffect(() => {
+    if (ride) {
+      setRideStatus(ride.status);
 
+      // Start auto-refresh if ride is in progress
+      if (ride.status === "accepted" && !refreshInterval) {
+        const interval = setInterval(() => {
+          fetchRideDetails();
+        }, 10000); // Refresh every 10 seconds
+        setRefreshInterval(interval);
+      } else if (ride.status !== "accepted" && refreshInterval) {
+        clearInterval(refreshInterval);
+        setRefreshInterval(null);
+      }
+    }
+
+    return () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    };
+  }, [ride, refreshInterval]);
   useEffect(() => {
     fetchRideDetails();
   }, [id, navigate]);
@@ -352,6 +385,43 @@ const Amb_Ridedetails = () => {
 
         // Refresh ride details to show updated status
         fetchRideDetails();
+
+        //soket
+        const socket = io("https://healtheasy-o25g.onrender.com");
+
+        const storedData = localStorage.getItem("ambulance_socket");
+
+        const ambulanceSocket = JSON.parse(storedData);
+        console.log(ambulanceSocket.channelId);
+        console.log(ambulanceSocket.ambulanceId);
+
+        const ambulance_channelid = ambulanceSocket.channelId;
+        const ambulanceId = ambulanceSocket.ambulanceId;
+
+        socket.emit("init", { channelid: ambulance_channelid });
+
+        if ("geolocation" in navigator) {
+          startRide = navigator.geolocation.watchPosition(
+            (position) => {
+              const lat = position.coords.latitude;
+              const lng = position.coords.longitude;
+
+              socket.emit("update-ambulance-location", {
+                ambulanceId: ambulanceId,
+                lat,
+                lng,
+              });
+            },
+            (error) => console.error("❌ GPS Error:", error),
+            {
+              enableHighAccuracy: true,
+              maximumAge: 0,
+              timeout: 5000,
+            }
+          );
+        } else {
+          console.error("❌ Geolocation not supported in this browser.");
+        }
       } else {
         throw new Error(response.data.message || "Failed to accept ride");
       }
@@ -417,7 +487,7 @@ const Amb_Ridedetails = () => {
           confirmButtonText: "OK",
           confirmButtonColor: "#0d6efd",
         });
-
+        navigator.geolocation.clearWatch(startRide);
         // Navigate back to list
         navigate("/ambulance/ambrequests");
       } else {
@@ -582,10 +652,47 @@ const Amb_Ridedetails = () => {
                     <div className="text-muted small mb-1">Status</div>
                     <div>{getStatusBadge(ride.status)}</div>
                   </div>
+                  
                 </Card.Body>
               </Card>
             </Col>
-
+            <Col xs={12}>
+              <Card className="mb-4">
+                <Card.Header className="bg-light py-3 d-flex justify-content-between align-items-center">
+                  <h5 className="mb-0">Ride Map</h5>
+                  {currentLocation.loading && (
+                    <small className="text-muted">
+                      <Spinner animation="border" size="sm" className="me-2" />
+                      Getting your location...
+                    </small>
+                  )}
+                  {currentLocation.error && (
+                    <small className="text-danger">
+                      {currentLocation.error}
+                    </small>
+                  )}
+                </Card.Header>
+                <Card.Body className="p-0">
+                  {ride?.pickuplocation?.coordinates &&
+                  ride?.droplocation?.coordinates ? (
+                    <div
+                      ref={mapContainer}
+                      style={{
+                        width: "100%",
+                        height: "75vh",
+                        minHeight: "400px",
+                        borderRadius: "8px",
+                        overflow: "hidden",
+                      }}
+                    />
+                  ) : (
+                    <div className="text-center p-4">
+                      <p>Map data not available</p>
+                    </div>
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
             {/* Pickup Location */}
             <Col md={6}>
               <Card className="h-100">
@@ -622,42 +729,6 @@ const Amb_Ridedetails = () => {
                       <div>Longitude: {ride.droplocation.coordinates[0]}</div>
                     </div>
                   )} */}
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col xs={12}>
-              <Card className="mb-4">
-                <Card.Header className="bg-light py-3 d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">Ride Map</h5>
-                  {currentLocation.loading && (
-                    <small className="text-muted">
-                      <Spinner animation="border" size="sm" className="me-2" />
-                      Getting your location...
-                    </small>
-                  )}
-                  {currentLocation.error && (
-                    <small className="text-danger">
-                      {currentLocation.error}
-                    </small>
-                  )}
-                </Card.Header>
-                <Card.Body className="p-0">
-                  {ride?.pickuplocation?.coordinates &&
-                  ride?.droplocation?.coordinates ? (
-                    <div
-                      ref={mapContainer}
-                      style={{
-                        width: "100%",
-                        height: "400px",
-                        borderRadius: "8px",
-                      }}
-                    />
-                  ) : (
-                    <div className="text-center p-4">
-                      <p>Map data not available</p>
-                    </div>
-                  )}
                 </Card.Body>
               </Card>
             </Col>
