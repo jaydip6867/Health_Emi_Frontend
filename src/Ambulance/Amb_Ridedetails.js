@@ -682,7 +682,7 @@ const Amb_Ridedetails = () => {
                         height: "75vh",
                         minHeight: "400px",
                         borderRadius: "8px",
-                        overflow: "hidden",
+                        overflow: "hidden !important",
                       }}
                     />
                   ) : (
