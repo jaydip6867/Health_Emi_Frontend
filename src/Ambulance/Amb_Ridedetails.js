@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import {
   Container,
   Row,
@@ -37,7 +39,23 @@ const Amb_Ridedetails = () => {
   const [ambulance, setAmbulance] = useState(null);
   const [isCompleting, setIsCompleting] = useState(false);
   const [isAccepting, setIsAccepting] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState({
+    lat: 0,
+    lng: 0,
+    loading: true,
+    error: null,
+  });
+
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+  const markers = useRef({
+    pickup: null,
+    drop: null,
+    ambulance: null,
+  });
+
   const SECRET_KEY = "health-emi";
+
   const fetchRideDetails = async () => {
     try {
       const getlocaldata = localStorage.getItem("healthambulance");
@@ -85,6 +103,185 @@ const Amb_Ridedetails = () => {
       setLoading(false);
     }
   };
+
+  // Update ambulance marker when location changes
+  const updateAmbulanceMarker = (location) => {
+    if (!map.current || !markers.current) return;
+
+    if (!markers.current.ambulance && map.current) {
+      markers.current.ambulance = new maplibregl.Marker({
+        color: "#0000FF",
+        rotation: 45,
+      })
+        .setLngLat([location.lng, location.lat])
+        .setPopup(
+          new maplibregl.Popup().setHTML("<strong>Your Ambulance</strong>")
+        )
+        .addTo(map.current);
+    } else if (markers.current.ambulance) {
+      markers.current.ambulance.setLngLat([location.lng, location.lat]);
+    }
+
+    // Update map view to include all markers
+    fitMapToMarkers();
+  };
+
+  // Fit map to show all markers
+  const fitMapToMarkers = () => {
+    if (!map.current || !ride) return;
+
+    const bounds = new maplibregl.LngLatBounds();
+
+    // Add pickup and drop points
+    bounds.extend([
+      ride.pickuplocation.coordinates[0],
+      ride.pickuplocation.coordinates[1],
+    ]);
+    bounds.extend([
+      ride.droplocation.coordinates[0],
+      ride.droplocation.coordinates[1],
+    ]);
+
+    // Add current location if available
+    if (currentLocation.lat !== 0 && currentLocation.lng !== 0) {
+      bounds.extend([currentLocation.lng, currentLocation.lat]);
+    }
+
+    map.current.fitBounds(bounds, { padding: 100 });
+  };
+  // Get current location
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setCurrentLocation((prev) => ({
+        ...prev,
+        loading: false,
+        error: "Geolocation is not supported by your browser",
+      }));
+      return;
+    }
+
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const newLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          loading: false,
+          error: null,
+        };
+        setCurrentLocation(newLocation);
+        updateAmbulanceMarker(newLocation);
+      },
+      (error) => {
+        console.error("Error getting location:", error);
+        setCurrentLocation((prev) => ({
+          ...prev,
+          loading: false,
+          error: "Unable to retrieve your location",
+        }));
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 10000,
+        timeout: 5000,
+      }
+    );
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
+  }, []);
+
+ 
+  // Initialize map when component mounts and ride data is available
+  useEffect(() => {
+    if (!ride || !mapContainer.current) return;
+  
+    let mapInstance;
+    let mapLoaded = false;
+  
+    try {
+      mapInstance = new maplibregl.Map({
+        container: mapContainer.current,
+        style: "https://tiles.stadiamaps.com/styles/osm_bright.json",
+        center: [
+          currentLocation.lng || ride.pickuplocation.coordinates[0],
+          currentLocation.lat || ride.pickuplocation.coordinates[1],
+        ],
+        zoom: 12,
+        attributionControl: false,
+        maxZoom: 18,
+        minZoom: 10,
+        preserveDrawingBuffer: true,
+      });
+  
+      mapInstance.addControl(new maplibregl.NavigationControl());
+  
+      mapInstance.on("load", () => {
+        mapLoaded = true;
+  
+        // 🟢 Pickup Marker
+        markers.current.pickup = new maplibregl.Marker({ color: "#FF0000" })
+          .setLngLat([
+            ride.pickuplocation.coordinates[0],
+            ride.pickuplocation.coordinates[1],
+          ])
+          .setPopup(
+            new maplibregl.Popup().setHTML(
+              `<strong>Pickup:</strong> ${ride.pickupaddress}`
+            )
+          )
+          .addTo(mapInstance);
+  
+        // 🟢 Drop Marker
+        markers.current.drop = new maplibregl.Marker({ color: "#00AA00" })
+          .setLngLat([
+            ride.droplocation.coordinates[0],
+            ride.droplocation.coordinates[1],
+          ])
+          .setPopup(
+            new maplibregl.Popup().setHTML(
+              `<strong>Drop:</strong> ${ride.dropaddress}`
+            )
+          )
+          .addTo(mapInstance);
+  
+        // 🟢 Ambulance Marker
+        if (currentLocation.lat && currentLocation.lng) {
+          markers.current.ambulance = new maplibregl.Marker({
+            color: "#0000FF",
+            rotation: 45,
+          })
+            .setLngLat([currentLocation.lng, currentLocation.lat])
+            .setPopup(
+              new maplibregl.Popup().setHTML("<strong>Your Ambulance</strong>")
+            )
+            .addTo(mapInstance);
+        }
+  
+        fitMapToMarkers();
+      });
+  
+      map.current = mapInstance;
+    } catch (error) {
+      console.error("Error initializing map:", error);
+      if (mapInstance) mapInstance.remove();
+      return;
+    }
+  
+    return () => {
+      // 🛡️ Cleanup only after map has loaded
+      if (!mapInstance) return;
+      if (mapLoaded) {
+        mapInstance.remove();
+      } else {
+        // Wait for load to complete before removing
+        mapInstance.once("load", () => mapInstance.remove());
+      }
+      map.current = null;
+    };
+  }, [ride]);
+  
+
   useEffect(() => {
     fetchRideDetails();
   }, [id, navigate]);
@@ -398,13 +595,13 @@ const Amb_Ridedetails = () => {
                 </Card.Header>
                 <Card.Body>
                   <p className="mb-3">{ride.pickupaddress}</p>
-                  {ride.pickuplocation?.coordinates && (
+                  {/* {ride.pickuplocation?.coordinates && (
                     <div className="bg-light p-3 rounded">
                       <div className="text-muted small mb-1">Coordinates</div>
                       <div>Latitude: {ride.pickuplocation.coordinates[1]}</div>
                       <div>Longitude: {ride.pickuplocation.coordinates[0]}</div>
                     </div>
-                  )}
+                  )} */}
                 </Card.Body>
               </Card>
             </Col>
@@ -418,11 +615,47 @@ const Amb_Ridedetails = () => {
                 </Card.Header>
                 <Card.Body>
                   <p className="mb-3">{ride.dropaddress}</p>
-                  {ride.droplocation?.coordinates && (
+                  {/* {ride.droplocation?.coordinates && (
                     <div className="bg-light p-3 rounded">
                       <div className="text-muted small mb-1">Coordinates</div>
                       <div>Latitude: {ride.droplocation.coordinates[1]}</div>
                       <div>Longitude: {ride.droplocation.coordinates[0]}</div>
+                    </div>
+                  )} */}
+                </Card.Body>
+              </Card>
+            </Col>
+
+            <Col xs={12}>
+              <Card className="mb-4">
+                <Card.Header className="bg-light py-3 d-flex justify-content-between align-items-center">
+                  <h5 className="mb-0">Ride Map</h5>
+                  {currentLocation.loading && (
+                    <small className="text-muted">
+                      <Spinner animation="border" size="sm" className="me-2" />
+                      Getting your location...
+                    </small>
+                  )}
+                  {currentLocation.error && (
+                    <small className="text-danger">
+                      {currentLocation.error}
+                    </small>
+                  )}
+                </Card.Header>
+                <Card.Body className="p-0">
+                  {ride?.pickuplocation?.coordinates &&
+                  ride?.droplocation?.coordinates ? (
+                    <div
+                      ref={mapContainer}
+                      style={{
+                        width: "100%",
+                        height: "400px",
+                        borderRadius: "8px",
+                      }}
+                    />
+                  ) : (
+                    <div className="text-center p-4">
+                      <p>Map data not available</p>
                     </div>
                   )}
                 </Card.Body>
