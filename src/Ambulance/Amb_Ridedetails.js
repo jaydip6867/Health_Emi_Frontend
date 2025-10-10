@@ -54,8 +54,8 @@ const Amb_Ridedetails = () => {
     drop: null,
     ambulance: null,
   });
-  const [refreshInterval, setRefreshInterval] = useState(null);
-  const [rideStatus, setRideStatus] = useState("");
+ 
+  
   const SECRET_KEY = "health-emi";
 
   const fetchRideDetails = async () => {
@@ -291,29 +291,7 @@ const Amb_Ridedetails = () => {
       map.current = null;
     };
   }, [ride]);
-  // Add this effect to handle auto-refresh
-  useEffect(() => {
-    if (ride) {
-      setRideStatus(ride.status);
 
-      // Start auto-refresh if ride is in progress
-      if (ride.status === "accepted" && !refreshInterval) {
-        const interval = setInterval(() => {
-          fetchRideDetails();
-        }, 10000); // Refresh every 10 seconds
-        setRefreshInterval(interval);
-      } else if (ride.status !== "accepted" && refreshInterval) {
-        clearInterval(refreshInterval);
-        setRefreshInterval(null);
-      }
-    }
-
-    return () => {
-      if (refreshInterval) {
-        clearInterval(refreshInterval);
-      }
-    };
-  }, [ride, refreshInterval]);
   useEffect(() => {
     fetchRideDetails();
   }, [id, navigate]);

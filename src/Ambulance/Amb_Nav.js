@@ -3,7 +3,7 @@ import { Button, Col, Container, Dropdown, Row } from 'react-bootstrap'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 const Amb_Nav = (name) => {
-    console.log(name)
+
     var navigate = useNavigate();
     return (
         // <Col xs={12} sm={10} className='p-3'>
