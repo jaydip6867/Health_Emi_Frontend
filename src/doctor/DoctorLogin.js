@@ -59,6 +59,8 @@ const DoctorLogin = () => {
             data: frmdoctor
         }).then((res) => {
             const encrypted = CryptoJS.AES.encrypt(JSON.stringify(res.data.Data), SECRET_KEY).toString();
+          
+            localStorage.setItem('doctor_chanelid', res.data.Data.doctorData.channelid)
             localStorage.setItem('healthdoctor', encrypted)
             // toast('Doctor Login successfully...', { className: 'custom-toast-success' })
             // console.log(res)
