@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import maplibregl from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
 import { io } from "socket.io-client";
 import {
   Container,
@@ -106,253 +104,6 @@ const Amb_Ridedetails = () => {
     }
   };
 
-  // Update ambulance marker when location changes
-  const updateAmbulanceMarker = (location) => {
-    if (!map.current) return;
-
-    if (!markers.current.ambulance) {
-      markers.current.ambulance = new maplibregl.Marker({
-        element: createAmbulanceIcon(),
-        rotationAlignment: "map",
-        rotation: 0,
-      })
-        .setLngLat([location.lng, location.lat])
-        .addTo(map.current);
-    } else {
-      markers.current.ambulance.setLngLat([location.lng, location.lat]);
-    }
-
-    // Update the map view to include all markers
-    fitMapToMarkers();
-  };
-
-  // Add this helper function for the ambulance icon
-  const createAmbulanceIcon = () => {
-    const el = document.createElement("div");
-    el.className = "ambulance-marker";
-    el.innerHTML = "🚑"; // Using ambulance emoji as icon
-    el.style.fontSize = "24px";
-    el.style.transform = "rotate(0deg)";
-    return el;
-  };
-
-  // Fit map to show all markers
-  const fitMapToMarkers = () => {
-    if (!map.current || !ride) return;
-
-    const bounds = new maplibregl.LngLatBounds();
-
-    // Add pickup and drop points
-    bounds.extend([
-      ride.pickuplocation.coordinates[0],
-      ride.pickuplocation.coordinates[1],
-    ]);
-    bounds.extend([
-      ride.droplocation.coordinates[0],
-      ride.droplocation.coordinates[1],
-    ]);
-
-    // Add current location if available
-    if (currentLocation.lat !== 0 && currentLocation.lng !== 0) {
-      bounds.extend([currentLocation.lng, currentLocation.lat]);
-    }
-
-    map.current.fitBounds(bounds, { padding: 100 });
-  };
-
-  const getCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      console.error("Geolocation is not supported by your browser");
-      setCurrentLocation(prev => ({
-        ...prev,
-        loading: false,
-        error: "Geolocation is not supported by your browser"
-      }));
-      return;
-    }
-  
-    setCurrentLocation(prev => ({ ...prev, loading: true }));
-  
-    // Try with high accuracy first
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const newLocation = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-          loading: false,
-          error: null,
-        };
-        setCurrentLocation(newLocation);
-        updateAmbulanceMarker(newLocation);
-      },
-      (error) => {
-        console.warn("High accuracy location failed, trying with lower accuracy...", error);
-        
-        // Fallback to lower accuracy if high accuracy fails
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const newLocation = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-              loading: false,
-              error: null,
-            };
-            setCurrentLocation(newLocation);
-            updateAmbulanceMarker(newLocation);
-          },
-          (fallbackError) => {
-            console.error("Fallback location error:", fallbackError);
-            setCurrentLocation(prev => ({
-              ...prev,
-              loading: false,
-              error: getLocationErrorMessage(fallbackError)
-            }));
-            
-            // Use a default location or IP-based location as last resort
-            fetch('https://ipapi.co/json/')
-              .then(response => response.json())
-              .then(data => {
-                if (data.latitude && data.longitude) {
-                  const ipLocation = {
-                    lat: data.latitude,
-                    lng: data.longitude,
-                    loading: false,
-                    error: "Using approximate location",
-                  };
-                  setCurrentLocation(ipLocation);
-                  updateAmbulanceMarker(ipLocation);
-                }
-              })
-              .catch(ipError => {
-                console.error("IP-based location failed:", ipError);
-              });
-          },
-          {
-            enableHighAccuracy: false, // Lower accuracy
-            maximumAge: 0,
-            timeout: 10000
-          }
-        );
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 15000
-      }
-    );
-  };
-  
-  // Helper function to get user-friendly error messages
-  const getLocationErrorMessage = (error) => {
-    switch(error.code) {
-      case error.PERMISSION_DENIED:
-        return "Location access was denied. Please enable location services and refresh the page.";
-      case error.POSITION_UNAVAILABLE:
-        return "Location information is unavailable. Please check your connection or try again later.";
-      case error.TIMEOUT:
-        return "The request to get your location timed out. Please try again.";
-      default:
-        return "An unknown error occurred while getting your location.";
-    }
-  };
-  
-  // Call this function when your component mounts
-  useEffect(() => {
-    getCurrentLocation();
-  }, []);
-  
-
-
-  // Initialize map when component mounts and ride data is available
-  useEffect(() => {
-    if (!ride || !mapContainer.current) return;
-
-    let mapInstance;
-    let mapLoaded = false;
-
-    try {
-      mapInstance = new maplibregl.Map({
-        container: mapContainer.current,
-        style: "https://tiles.stadiamaps.com/styles/osm_bright.json",
-        center: [
-          currentLocation.lng || ride.pickuplocation.coordinates[0],
-          currentLocation.lat || ride.pickuplocation.coordinates[1],
-        ],
-        zoom: 5,
-        attributionControl: false,
-        maxZoom: 18,
-        minZoom: 10,
-        preserveDrawingBuffer: true,
-      });
-
-      mapInstance.addControl(new maplibregl.NavigationControl());
-
-      mapInstance.on("load", () => {
-        mapLoaded = true;
-
-        // 🟢 Pickup Marker
-        markers.current.pickup = new maplibregl.Marker({ color: "#FF0000" })
-          .setLngLat([
-            ride.pickuplocation.coordinates[0],
-            ride.pickuplocation.coordinates[1],
-          ])
-          .setPopup(
-            new maplibregl.Popup().setHTML(
-              `<strong>Pickup:</strong> ${ride.pickupaddress}`
-            )
-          )
-          .addTo(mapInstance);
-
-        // 🟢 Drop Marker
-        markers.current.drop = new maplibregl.Marker({ color: "#00AA00" })
-          .setLngLat([
-            ride.droplocation.coordinates[0],
-            ride.droplocation.coordinates[1],
-          ])
-          .setPopup(
-            new maplibregl.Popup().setHTML(
-              `<strong>Drop:</strong> ${ride.dropaddress}`
-            )
-          )
-          .addTo(mapInstance);
-
-        // 🟢 Ambulance Marker
-        if (currentLocation.lat && currentLocation.lng) {
-          markers.current.ambulance = new maplibregl.Marker({
-            color: "#0000FF",
-            element: createAmbulanceIcon(),
-            rotationAlignment: "map",
-            rotation: 0,
-          })
-            .setLngLat([currentLocation.lng, currentLocation.lat])
-            .setPopup(
-              new maplibregl.Popup().setHTML("<strong>Your Ambulance</strong>")
-            )
-            .addTo(mapInstance);
-        }
-
-        fitMapToMarkers();
-      });
-
-      map.current = mapInstance;
-    } catch (error) {
-      console.error("Error initializing map:", error);
-      if (mapInstance) mapInstance.remove();
-      return;
-    }
-
-    return () => {
-      // 🛡️ Cleanup only after map has loaded
-      if (!mapInstance) return;
-      if (mapLoaded) {
-        mapInstance.remove();
-      } else {
-        // Wait for load to complete before removing
-        mapInstance.once("load", () => mapInstance.remove());
-      }
-      map.current = null;
-    };
-  }, [ride]);
 
   useEffect(() => {
     fetchRideDetails();
@@ -695,43 +446,7 @@ const Amb_Ridedetails = () => {
                 </Card.Body>
               </Card>
             </Col>
-            <Col xs={12}>
-              <Card className="mb-4">
-                <Card.Header className="bg-light py-3 d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">Ride Map</h5>
-                  {currentLocation.loading && (
-                    <small className="text-muted">
-                      <Spinner animation="border" size="sm" className="me-2" />
-                      Getting your location...
-                    </small>
-                  )}
-                  {currentLocation.error && (
-                    <small className="text-danger">
-                      {currentLocation.error}
-                    </small>
-                  )}
-                </Card.Header>
-                <Card.Body className="p-0">
-                  {ride?.pickuplocation?.coordinates &&
-                  ride?.droplocation?.coordinates ? (
-                    <div
-                      ref={mapContainer}
-                      style={{
-                        width: "100%",
-                        height: "75vh",
-                        minHeight: "400px",
-                        borderRadius: "8px",
-                        overflow: "hidden !important",
-                      }}
-                    />
-                  ) : (
-                    <div className="text-center p-4">
-                      <p>Map data not available</p>
-                    </div>
-                  )}
-                </Card.Body>
-              </Card>
-            </Col>
+           
             {/* Pickup Location */}
             <Col md={6}>
               <Card className="h-100">
@@ -741,13 +456,13 @@ const Amb_Ridedetails = () => {
                 </Card.Header>
                 <Card.Body>
                   <p className="mb-3">{ride.pickupaddress}</p>
-                  {/* {ride.pickuplocation?.coordinates && (
+                  {ride.pickuplocation?.coordinates && (
                     <div className="bg-light p-3 rounded">
                       <div className="text-muted small mb-1">Coordinates</div>
                       <div>Latitude: {ride.pickuplocation.coordinates[1]}</div>
                       <div>Longitude: {ride.pickuplocation.coordinates[0]}</div>
                     </div>
-                  )} */}
+                  )}
                 </Card.Body>
               </Card>
             </Col>
@@ -761,13 +476,13 @@ const Amb_Ridedetails = () => {
                 </Card.Header>
                 <Card.Body>
                   <p className="mb-3">{ride.dropaddress}</p>
-                  {/* {ride.droplocation?.coordinates && (
+                  {ride.droplocation?.coordinates && (
                     <div className="bg-light p-3 rounded">
                       <div className="text-muted small mb-1">Coordinates</div>
                       <div>Latitude: {ride.droplocation.coordinates[1]}</div>
                       <div>Longitude: {ride.droplocation.coordinates[0]}</div>
                     </div>
-                  )} */}
+                  )}
                 </Card.Body>
               </Card>
             </Col>
