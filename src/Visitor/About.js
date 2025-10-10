@@ -38,7 +38,6 @@ const About = () => {
             <section className='breadcrumb_Sec'>
                 <Container>
                     <h2>About us</h2>
-                    {/* <h4>CodeZil is on a mission to make quality healthcare affordable and accessible for over a billion+ Indians.</h4> */}
                 </Container>
             </section>
             {/* offer section */}
