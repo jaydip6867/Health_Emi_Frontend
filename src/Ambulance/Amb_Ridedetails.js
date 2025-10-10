@@ -159,18 +159,22 @@ const Amb_Ridedetails = () => {
 
     map.current.fitBounds(bounds, { padding: 100 });
   };
-  // Get current location
-  useEffect(() => {
+
+  const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-      setCurrentLocation((prev) => ({
+      console.error("Geolocation is not supported by your browser");
+      setCurrentLocation(prev => ({
         ...prev,
         loading: false,
-        error: "Geolocation is not supported by your browser",
+        error: "Geolocation is not supported by your browser"
       }));
       return;
     }
-
-    const watchId = navigator.geolocation.watchPosition(
+  
+    setCurrentLocation(prev => ({ ...prev, loading: true }));
+  
+    // Try with high accuracy first
+    navigator.geolocation.getCurrentPosition(
       (position) => {
         const newLocation = {
           lat: position.coords.latitude,
@@ -182,24 +186,82 @@ const Amb_Ridedetails = () => {
         updateAmbulanceMarker(newLocation);
       },
       (error) => {
-        console.error("Error getting location:", error);
-        setCurrentLocation((prev) => ({
-          ...prev,
-          loading: false,
-          error: "Unable to retrieve your location",
-        }));
+        console.warn("High accuracy location failed, trying with lower accuracy...", error);
+        
+        // Fallback to lower accuracy if high accuracy fails
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const newLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+              loading: false,
+              error: null,
+            };
+            setCurrentLocation(newLocation);
+            updateAmbulanceMarker(newLocation);
+          },
+          (fallbackError) => {
+            console.error("Fallback location error:", fallbackError);
+            setCurrentLocation(prev => ({
+              ...prev,
+              loading: false,
+              error: getLocationErrorMessage(fallbackError)
+            }));
+            
+            // Use a default location or IP-based location as last resort
+            fetch('https://ipapi.co/json/')
+              .then(response => response.json())
+              .then(data => {
+                if (data.latitude && data.longitude) {
+                  const ipLocation = {
+                    lat: data.latitude,
+                    lng: data.longitude,
+                    loading: false,
+                    error: "Using approximate location",
+                  };
+                  setCurrentLocation(ipLocation);
+                  updateAmbulanceMarker(ipLocation);
+                }
+              })
+              .catch(ipError => {
+                console.error("IP-based location failed:", ipError);
+              });
+          },
+          {
+            enableHighAccuracy: false, // Lower accuracy
+            maximumAge: 0,
+            timeout: 10000
+          }
+        );
       },
       {
         enableHighAccuracy: true,
-        maximumAge: 10000,
-        timeout: 5000,
+        maximumAge: 0,
+        timeout: 15000
       }
     );
-
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
-    };
+  };
+  
+  // Helper function to get user-friendly error messages
+  const getLocationErrorMessage = (error) => {
+    switch(error.code) {
+      case error.PERMISSION_DENIED:
+        return "Location access was denied. Please enable location services and refresh the page.";
+      case error.POSITION_UNAVAILABLE:
+        return "Location information is unavailable. Please check your connection or try again later.";
+      case error.TIMEOUT:
+        return "The request to get your location timed out. Please try again.";
+      default:
+        return "An unknown error occurred while getting your location.";
+    }
+  };
+  
+  // Call this function when your component mounts
+  useEffect(() => {
+    getCurrentLocation();
   }, []);
+  
+
 
   // Initialize map when component mounts and ride data is available
   useEffect(() => {
