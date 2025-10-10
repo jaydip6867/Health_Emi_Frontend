@@ -29,7 +29,6 @@ import "../../src/amb_request.css";
 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { parseJSON } from "date-fns";
 const MySwal = withReactContent(Swal);
 
 const Amb_Ridedetails = () => {
