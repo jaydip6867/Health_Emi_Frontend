@@ -5,12 +5,13 @@ import NavBar from './Component/NavBar'
 import FooterBar from './Component/FooterBar'
 import AppDownload from './Component/AppDownload'
 import Loader from '../Loader'
-import { FiArrowUpRight} from 'react-icons/fi'
+import { FiArrowUpRight } from 'react-icons/fi'
 import Testimonial from './Component/Testimonial'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom';
 import SearchBox from './Component/SearchBox'
 import Speciality from './Component/Speciality'
+import HomeSlider from './Component/HomeSlider'
 
 const Home = () => {
 
@@ -31,17 +32,17 @@ const Home = () => {
     if (data) {
       setpatient(data.userData);
       settoken(`Bearer ${data.accessToken}`)
-  }
+    }
   }, [navigate])
 
-  
+
 
   return (
     <>
       <NavBar logindata={patient} />
       {/* search by city and doctor name or surgery */}
-        <SearchBox/>
-      <section>
+
+      {/* <section>
         <Container>
           <div className='banner_sec radius-20'>
             <Row className='align-items-center'>
@@ -62,6 +63,10 @@ const Home = () => {
             </Row>
           </div>
         </Container>
+      </section> */}
+      <section className='position-relative'>
+        <HomeSlider />
+        <SearchBox />
       </section>
       <section className='spacer-y'>
         <Container>
@@ -86,7 +91,7 @@ const Home = () => {
               <Card className='functionality_box'>
                 <Card.Img variant="top" src={require('./assets/surgeries-image.png')} alt='video consultant' />
                 <Card.Body>
-                <Card.Title><Link to='/surgery' className='d-flex align-items-center w-100 justify-content-between'>Surgeries <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
+                  <Card.Title><Link to='/surgery' className='d-flex align-items-center w-100 justify-content-between'>Surgeries <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
                 </Card.Body>
               </Card>
             </Col>
