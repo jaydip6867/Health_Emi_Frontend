@@ -258,7 +258,7 @@ const Amb_Ridedetails = () => {
     const dy = coords[nextIdx][0] - lat;
     const dx = coords[nextIdx][1] - lng;
     const angleRad = Math.atan2(dy, dx);
-    const angleDeg = angleRad * 180 / Math.PI; // CSS degrees
+    const angleDeg = angleRad * 180 / Math.PI;
     return [angleDeg, nearestIdx];
   };
 
