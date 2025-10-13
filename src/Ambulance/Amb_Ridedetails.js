@@ -27,7 +27,49 @@ import "../../src/amb_request.css";
 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+
+// Leaflet + Routing imports
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-routing-machine';
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
+
 const MySwal = withReactContent(Swal);
+
+// Fix default marker icons (for bundlers)
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
+// Custom ambulance icon
+const ambulanceIcon = new L.Icon({
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/12349/12349613.png',
+  iconSize: [40, 40],
+  iconAnchor: [20, 20],
+  className: 'ambulance-icon',
+});
+
+// Pickup (red) and Drop (green) icons
+const pickupIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
+
+const dropIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
 const Amb_Ridedetails = () => {
   const { id } = useParams();
@@ -46,15 +88,252 @@ const Amb_Ridedetails = () => {
   });
   let startRide;
   const mapContainer = useRef(null);
-  const map = useRef(null);
+  const map = useRef(null); // L.Map instance
   const markers = useRef({
     pickup: null,
     drop: null,
     ambulance: null,
+    currentCircle: null,
   });
- 
-  
+  const routeControlRef = useRef(null);
+  const watchIdRef = useRef(null);
+  const lastTargetRef = useRef(null);
+  const routeCoordsRef = useRef([]); // [[lat, lng], ...] for heading calculation
+  const [liveSpeed, setLiveSpeed] = useState(0);
+
   const SECRET_KEY = "health-emi";
+
+  // Persist current navigation leg across refresh
+  const STORAGE_KEY = 'amb_route_state';
+  const saveRouteState = (state) => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+  };
+  const getRouteState = () => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch { return null; }
+  };
+  const clearRouteState = () => {
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+  };
+
+  // Initialize Leaflet map when ride is loaded
+  useEffect(() => {
+    if (!ride) return;
+    const container = document.getElementById('rideMap');
+    if (!container) return;
+
+    if (!map.current) {
+      map.current = L.map('rideMap');
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors',
+      }).addTo(map.current);
+    }
+
+    // Add pickup & drop markers
+    if (ride?.pickuplocation?.coordinates) {
+      const [plng, plat] = ride.pickuplocation.coordinates;
+      const platlng = L.latLng(plat, plng);
+      if (!markers.current.pickup) {
+        markers.current.pickup = L.marker(platlng, { icon: pickupIcon }).addTo(map.current).bindPopup('Pickup');
+      } else {
+        markers.current.pickup.setLatLng(platlng);
+      }
+      map.current.setView(platlng, 14);
+    }
+    if (ride?.droplocation?.coordinates) {
+      const [dlng, dlat] = ride.droplocation.coordinates;
+      const dlatlng = L.latLng(dlat, dlng);
+      if (!markers.current.drop) {
+        markers.current.drop = L.marker(dlatlng, { icon: dropIcon }).addTo(map.current).bindPopup('Drop');
+      } else {
+        markers.current.drop.setLatLng(dlatlng);
+      }
+    }
+
+    // Try to show current location once
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setCurrentLocation({ lat: latitude, lng: longitude, loading: false, error: null });
+          const cur = L.latLng(latitude, longitude);
+          if (!markers.current.ambulance) {
+            markers.current.ambulance = L.marker(cur, { icon: ambulanceIcon }).addTo(map.current).bindPopup('You');
+          } else {
+            markers.current.ambulance.setLatLng(cur);
+          }
+          if (!markers.current.currentCircle) {
+            markers.current.currentCircle = L.circle(cur, { radius: 80, color: '#1E88E5', fillOpacity: 0.25 }).addTo(map.current);
+          } else {
+            markers.current.currentCircle.setLatLng(cur);
+          }
+        },
+        (err) => {
+          setCurrentLocation((p) => ({ ...p, loading: false, error: err?.message || 'Location error' }));
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    }
+
+    // Resume unfinished leg after refresh
+    const saved = getRouteState();
+    if (saved && saved.rideId === ride?._id && saved.target?.lat && saved.target?.lng) {
+      try {
+        const resumeLL = L.latLng(saved.target.lat, saved.target.lng);
+        startWatchToTarget(resumeLL, () => {});
+      } catch {}
+    }
+
+    return () => {
+      // do not destroy map to preserve across rerenders
+    };
+  }, [ride]);
+
+  // Draw or update route
+  const drawRoute = (fromLatLng, toLatLng) => {
+    if (!map.current) return;
+
+    // If control exists, just update waypoints (avoid tearing it down mid-requests)
+    if (routeControlRef.current) {
+      try {
+        routeControlRef.current.setWaypoints([fromLatLng, toLatLng]);
+        return;
+      } catch (e) {
+        // Fallback to recreate if updating fails
+        try { map.current && map.current.removeControl(routeControlRef.current); } catch {}
+        routeControlRef.current = null;
+      }
+    }
+
+    // Create once
+    const ctrl = L.Routing.control({
+      waypoints: [fromLatLng, toLatLng],
+      addWaypoints: false,
+      draggableWaypoints: false,
+      fitSelectedRoutes: true,
+      show: false,
+      lineOptions: { styles: [{ color: '#0d6efd', weight: 6, opacity: 0.9 }] },
+      router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1' }),
+      createMarker: () => null,
+    });
+
+    ctrl.on('routesfound', (e) => {
+      try {
+        const coords = e?.routes?.[0]?.coordinates || [];
+        routeCoordsRef.current = coords.map(c => [c.lat, c.lng]);
+      } catch {}
+    });
+
+    ctrl.on('routingerror', () => {
+      // Retry after a short delay but only if map/control still valid
+      setTimeout(() => {
+        if (!map.current) return;
+        if (routeControlRef.current === ctrl) {
+          try {
+            const cur = (currentLocation.lat && currentLocation.lng)
+              ? L.latLng(currentLocation.lat, currentLocation.lng)
+              : fromLatLng;
+            ctrl.setWaypoints([cur, toLatLng]);
+          } catch {}
+        }
+      }, 2000);
+    });
+
+    ctrl.addTo(map.current);
+    routeControlRef.current = ctrl;
+  };
+
+  // Helpers: heading based on nearest route coordinate
+  const computeHeading = (lat, lng, coords) => {
+    if (!coords || coords.length === 0) return [0, 0];
+    let nearestIdx = 0;
+    let min = Infinity;
+    for (let i = 0; i < coords.length; i++) {
+      const dLat = lat - coords[i][0];
+      const dLng = lng - coords[i][1];
+      const d = Math.hypot(dLat, dLng);
+      if (d < min) { min = d; nearestIdx = i; }
+    }
+    const nextIdx = Math.min(nearestIdx + 1, coords.length - 1);
+    const dy = coords[nextIdx][0] - lat;
+    const dx = coords[nextIdx][1] - lng;
+    const angleRad = Math.atan2(dy, dx);
+    const angleDeg = angleRad * 180 / Math.PI; // CSS degrees
+    return [angleDeg, nearestIdx];
+  };
+
+  // Start watching position and navigate to a target
+  const startWatchToTarget = (targetLatLng, onArrive) => {
+    if (!navigator.geolocation) return;
+    if (watchIdRef.current) navigator.geolocation.clearWatch(watchIdRef.current);
+
+    lastTargetRef.current = targetLatLng;
+    saveRouteState({ rideId: ride?._id, target: { lat: targetLatLng.lat, lng: targetLatLng.lng } });
+
+    // initial route from current to target
+    const cur = L.latLng(currentLocation.lat || 0, currentLocation.lng || 0);
+    drawRoute(cur, targetLatLng);
+
+    watchIdRef.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        const { latitude, longitude, speed } = pos.coords;
+        setCurrentLocation({ lat: latitude, lng: longitude, loading: false, error: null });
+        setLiveSpeed(speed ? speed * 3.6 : 0);
+        const here = L.latLng(latitude, longitude);
+
+        if (markers.current.ambulance) {
+          markers.current.ambulance.setLatLng(here);
+        } else if (map.current) {
+          markers.current.ambulance = L.marker(here, { icon: ambulanceIcon }).addTo(map.current);
+        }
+        if (markers.current.currentCircle) {
+          markers.current.currentCircle.setLatLng(here);
+        } else if (map.current) {
+          markers.current.currentCircle = L.circle(here, { radius: 80, color: '#1E88E5', fillOpacity: 0.25 }).addTo(map.current);
+        }
+        map.current?.panTo(here, { animate: true });
+
+        // Rotate ambulance marker toward next route point
+        try {
+          const el = markers.current.ambulance?.getElement?.();
+          if (el && routeCoordsRef.current?.length) {
+            const [angle] = computeHeading(latitude, longitude, routeCoordsRef.current);
+            el.style.transformOrigin = 'center';
+            el.style.transform = `rotate(${angle}deg)`;
+          }
+        } catch {}
+
+        // arrival check (within 50m)
+        if (here.distanceTo(targetLatLng) <= 50) {
+          if (watchIdRef.current) navigator.geolocation.clearWatch(watchIdRef.current);
+          watchIdRef.current = null;
+          clearRouteState();
+          if (typeof onArrive === 'function') onArrive();
+        }
+      },
+      (err) => {
+        setCurrentLocation((p) => ({ ...p, error: err?.message || 'Location error' }));
+      },
+      { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 }
+    );
+  };
+
+  const stopWatchAndClearRoute = () => {
+    if (watchIdRef.current) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+    }
+    if (routeControlRef.current) {
+      try {
+        // Clear waypoints first to prevent LRM trying to remove non-existing layers
+        routeControlRef.current.setWaypoints([]);
+      } catch {}
+      try { map.current && map.current.removeControl(routeControlRef.current); } catch {}
+      routeControlRef.current = null;
+    }
+    routeCoordsRef.current = [];
+    clearRouteState();
+  };
 
   const fetchRideDetails = async () => {
     try {
@@ -243,9 +522,60 @@ const Amb_Ridedetails = () => {
       confirmButtonText: "Yes, accept ride",
       cancelButtonText: "No, cancel",
       reverseButtons: true,
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        handleAcceptRide();
+        try {
+          setIsAccepting(true);
+          await handleAcceptRide();
+          setRide((prev) => prev ? { ...prev, status: 'accepted' } : prev);
+          MySwal.fire({
+            title: 'Ride Accepted',
+            text: 'Navigation will start now.',
+            icon: 'success',
+            toast: true,
+            position: 'top',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          // Start navigation: current -> pickup
+          if (ride?.pickuplocation?.coordinates) {
+            const [plng, plat] = ride.pickuplocation.coordinates;
+            const pickupLL = L.latLng(plat, plng);
+            // ensure we have a current fix first
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(() => {
+                startWatchToTarget(pickupLL, () => {
+                  // on arrival at pickup, switch to drop
+                  if (ride?.droplocation?.coordinates) {
+                    const [dlng, dlat] = ride.droplocation.coordinates;
+                    const dropLL = L.latLng(dlat, dlng);
+                    startWatchToTarget(dropLL, () => {
+                      // arrived at drop
+                      stopWatchAndClearRoute();
+                      MySwal.fire({ title: 'Ride Completed', text: 'Reached destination.', icon: 'success' });
+                    });
+                  }
+                });
+              }, () => {
+                // fallback start even if immediate fix fails
+                startWatchToTarget(pickupLL, () => {
+                  if (ride?.droplocation?.coordinates) {
+                    const [dlng, dlat] = ride.droplocation.coordinates;
+                    const dropLL = L.latLng(dlat, dlng);
+                    startWatchToTarget(dropLL, () => {
+                      stopWatchAndClearRoute();
+                      MySwal.fire({ title: 'Ride Completed', text: 'Reached destination.', icon: 'success' });
+                    });
+                  }
+                });
+              }, { enableHighAccuracy: true, timeout: 8000 });
+            }
+          }
+        } catch (e) {
+          MySwal.fire({ title: 'Failed to accept', text: 'Please try again.', icon: 'error' });
+        } finally {
+          setIsAccepting(false);
+        }
       }
     });
   };
@@ -446,7 +776,17 @@ const Amb_Ridedetails = () => {
                 </Card.Body>
               </Card>
             </Col>
-           
+            <Col md={12}>
+              <Card className="h-100 mb-4">
+                <Card.Header className="bg-light py-3 d-flex justify-content-between align-items-center">
+                  <h5 className="mb-0">Live Map & Route</h5>
+                  <span className="badge bg-primary">{liveSpeed.toFixed(1)} km/h</span>
+                </Card.Header>
+                <Card.Body style={{ height: '480px', padding: 0 }}>
+                  <div id="rideMap" style={{ height: '100%', width: '100%' }} />
+                </Card.Body>
+              </Card>
+            </Col>
             {/* Pickup Location */}
             <Col md={6}>
               <Card className="h-100">
