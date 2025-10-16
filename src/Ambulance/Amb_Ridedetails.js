@@ -273,14 +273,18 @@ const Amb_Ridedetails = () => {
     // initial route from current to target
     const cur = L.latLng(currentLocation.lat || 0, currentLocation.lng || 0);
     drawRoute(cur, targetLatLng);
+    let lastRouteUpdate = Date.now();
+    const ROUTE_UPDATE_INTERVAL = 5000; // Update route every 5 seconds
 
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
         const { latitude, longitude, speed } = pos.coords;
+        const now = Date.now();
         setCurrentLocation({ lat: latitude, lng: longitude, loading: false, error: null });
         setLiveSpeed(speed ? speed * 3.6 : 0);
         const here = L.latLng(latitude, longitude);
 
+        // Update ambulance position and map view
         if (markers.current.ambulance) {
           markers.current.ambulance.setLatLng(here);
         } else if (map.current) {
@@ -292,6 +296,23 @@ const Amb_Ridedetails = () => {
           markers.current.currentCircle = L.circle(here, { radius: 80, color: '#1E88E5', fillOpacity: 0.25 }).addTo(map.current);
         }
         map.current?.panTo(here, { animate: true });
+
+        // Update route periodically to show remaining path
+        if (now - lastRouteUpdate > ROUTE_UPDATE_INTERVAL) {
+          lastRouteUpdate = now;
+          // Redraw route from current position to target
+          if (routeControlRef.current) {
+            try {
+              routeControlRef.current.setWaypoints([here, targetLatLng]);
+            } catch (e) {
+              console.error('Error updating route:', e);
+              // If update fails, redraw the entire route
+              drawRoute(here, targetLatLng);
+            }
+          } else {
+            drawRoute(here, targetLatLng);
+          }
+        }
 
         // Rotate ambulance marker toward next route point
         try {
@@ -308,6 +329,14 @@ const Amb_Ridedetails = () => {
           if (watchIdRef.current) navigator.geolocation.clearWatch(watchIdRef.current);
           watchIdRef.current = null;
           clearRouteState();
+          // Remove the route when destination is reached
+          if (routeControlRef.current) {
+            try {
+              routeControlRef.current.setWaypoints([]);
+              map.current?.removeControl(routeControlRef.current);
+              routeControlRef.current = null;
+            } catch {}
+          }
           if (typeof onArrive === 'function') onArrive();
         }
       },
