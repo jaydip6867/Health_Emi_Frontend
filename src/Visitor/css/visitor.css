@@ -1571,3 +1571,9 @@ h6 {
     row-gap: 0.5rem;
   }
 }
+
+.slider-img {
+    width: 100%;
+    aspect-ratio: 16/6;
+    object-fit: cover;
+}

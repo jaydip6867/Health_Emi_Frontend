@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
@@ -13,22 +13,14 @@ const HomeSlider = () => {
         slidesToShow: 1,
         slidesToScroll: 1,
       };
-
-      useEffect(() => {
-        // axios
-      }, [])
   return (
     <>
         <Slider {...settings}>
-            <div>
-                <img src={require("../assets/banner/banner1.jpg")} alt="" />
-            </div>
-            <div>
-                <img src={require("../assets/banner/banner2.jpg")} alt="" />
-            </div>
-            <div>
-                <img src={require("../assets/banner/banner3.jpg")} alt="" />
-            </div>  
+            {banner.map((item, index) => (
+                <div key={index}>
+                    <img src={item.path} alt={'banner title'+index} className='slider-img d-block' />
+                </div>
+            ))} 
         </Slider>
     </>
   )
