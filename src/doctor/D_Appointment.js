@@ -146,9 +146,10 @@ const D_Appointment = () => {
     const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
     const [prescriptionData, setPrescriptionData] = useState({
         diagnosis: '',
-        medications: '',
         instructions: '',
-        followUp: '',
+        bp: '',
+        complain: '',
+        pasHistory: '',
         prescriptionItems: []
     });
 
@@ -168,11 +169,35 @@ const D_Appointment = () => {
         evDose: 0,
         ntDose: 0,
         days: 1,
-        quantity: 0
+        quantity: 0,
+        instruction: '-SELECT-'
     });
 
     const medicineTypes = [
         'tablet', 'capsule', 'syrup', 'injection', 'drops', 'inhaler', 'ointment', 'cream'
+    ];
+
+    const instructionOptions = [
+        '-SELECT-',
+        'After Breakfast',
+        'After Lunch',
+        'After Dinner',
+        'Before Breakfast',
+        'Before Lunch',
+        'Before Dinner',
+        'After Breakfast, Lunch and Dinner',
+        'After Breakfast and Dinner',
+        'Before Breakfast and Before Dinner',
+        'Subcutaneous at 10 PM in night',
+        'Sublingual/Chewable',
+        'To apply as explained',
+        'Mix with 1 lit of drinking water',
+        'Twice a day',
+        'Once a day',
+        'Three times a day',
+        'On empty stomach in morning',
+        'SOS For Fever',
+        'SOS For Abdominal Pain'
     ];
 
     const handlePrescriptionChange = (field, value) => {
@@ -224,7 +249,8 @@ const D_Appointment = () => {
             evDose: 1,
             ntDose: 1,
             days: 1,
-            quantity: 0
+            quantity: 0,
+            instruction: '-SELECT-'
         });
     };
 
@@ -238,11 +264,10 @@ const D_Appointment = () => {
     const submitPrescription = async () => {
         // Validate: require diagnosis AND (at least one item OR medications text)
         const hasItems = prescriptionData.prescriptionItems && prescriptionData.prescriptionItems.length > 0;
-        const medsTextTyped = (prescriptionData.medications || '').trim();
-        if (!prescriptionData.diagnosis.trim() || (!hasItems && !medsTextTyped)) {
+        if (!prescriptionData.diagnosis.trim() || !hasItems) {
             Swal.fire({
                 title: 'Required Fields Missing',
-                text: 'Please enter diagnosis and add at least one medicine or notes.',
+                text: 'Please enter diagnosis and add at least one medicine.',
                 icon: 'warning'
             });
             return;
@@ -251,17 +276,18 @@ const D_Appointment = () => {
         try {
             setloading(true);
 
-            // Build medications text from items if present, otherwise use typed meds text
+            // Build medications text from items
             const itemsText = (prescriptionData.prescriptionItems || []).map(item => {
                 const times = [];
                 if (item.mo) times.push(`MO(${item.moDose})`);
                 if (item.an) times.push(`AN(${item.anDose})`);
                 if (item.ev) times.push(`EV(${item.evDose})`);
                 if (item.nt) times.push(`NT(${item.ntDose})`);
-                return `${item.medicine} (${item.type}) - ${times.join(', ')} - ${item.days} days - Qty: ${item.quantity}`;
+                const instr = item.instruction && item.instruction !== '-SELECT-' ? ` - Instr: ${item.instruction}` : '';
+                return `${item.medicine} (${item.type}) - ${times.join(', ')} - ${item.days} days - Qty: ${item.quantity}${instr}`;
             }).join('\n');
 
-            const medicationsText = hasItems ? itemsText : medsTextTyped;
+            const medicationsText = itemsText;
 
             // Generate PDF with medicationsText and return blob for upload
             const { pdfBlob, fileName } = generatePrescriptionPDF(medicationsText);
@@ -308,7 +334,7 @@ const D_Appointment = () => {
             handleClosePrescriptionModal();
 
             // Reset form
-            setPrescriptionData({ diagnosis: '', medications: '', instructions: '', followUp: '', prescriptionItems: [] });
+            setPrescriptionData({ diagnosis: '', instructions: '', bp: '', complain: '', pasHistory: '', prescriptionItems: [] });
         } catch (error) {
             console.error('Error completing appointment:', error);
             Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to complete appointment.', 'error');
@@ -375,22 +401,43 @@ const D_Appointment = () => {
         doc.text(`Date: ${currentAppointment?.date || 'N/A'}   Time: ${currentAppointment?.time || 'N/A'}`, margin + 6, y + 24);
         y = boxStartY + 36;
 
-        // Section: Diagnosis
-        ensureY(48);
-        const diagH = 12 + doc.splitTextToSize(prescriptionData.diagnosis || 'N/A', boxWidth - 12).length * 6 + 10;
-        doc.roundedRect(margin, y, boxWidth, diagH, 3, 3, 'FD');
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(text.r, text.g, text.b);
-        doc.setFontSize(12);
-        doc.text('Diagnosis', margin + 6, y + 10);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(text.r, text.g, text.b);
-        const dLines = doc.splitTextToSize(prescriptionData.diagnosis || 'N/A', boxWidth - 12);
-        doc.text(dLines, margin + 6, y + 20);
-        y += diagH + 8;
+        // Section: Clinical Notes (BP, Complain, Past History, Diagnosis)
+        const bpVal = (prescriptionData.bp || '').toString().trim();
+        const complainVal = (prescriptionData.complain || '').toString().trim();
+        const pastHistoryVal = (prescriptionData.pasHistory || '').toString().trim();
+        const diagnosisVal = (prescriptionData.diagnosis || '').toString().trim();
+        if (bpVal || complainVal || pastHistoryVal || diagnosisVal) {
+            ensureY(48);
+            const notesLines = [];
+            if (bpVal) notesLines.push(`BP: ${bpVal}`);
+            if (complainVal) {
+                const cLines = doc.splitTextToSize(`Complain: ${complainVal}`, boxWidth - 12);
+                notesLines.push(...cLines);
+            }
+            if (pastHistoryVal) {
+                const pLines = doc.splitTextToSize(`Past History: ${pastHistoryVal}`, boxWidth - 12);
+                notesLines.push(...pLines);
+            }
+            if (diagnosisVal) {
+                const dLines = doc.splitTextToSize(`Diagnosis: ${diagnosisVal}`, boxWidth - 12);
+                notesLines.push(...dLines);
+            }
+            const cnH = 12 + notesLines.length * 6 + 10;
+            doc.setFillColor(255, 255, 255);
+            doc.roundedRect(margin, y, boxWidth, cnH, 3, 3, 'FD');
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(text.r, text.g, text.b);
+            doc.setFontSize(12);
+            doc.text('Clinical Notes', margin + 6, y + 10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(text.r, text.g, text.b);
+            doc.text(notesLines, margin + 6, y + 20);
+            y += cnH + 8;
+        }
+
 
         // Section: Medications (table-like)
-        const meds = (medicationsText ?? prescriptionData.medications ?? '').toString().trim();
+        const meds = (medicationsText || '').toString().trim();
         if (meds) {
             ensureY(48);
             // header height and row height
@@ -405,14 +452,16 @@ const D_Appointment = () => {
             tableY += 16;
 
             // Column headers
-            const col1 = margin + 6;           // Medicine
-            const col2 = margin + boxWidth * 0.55; // Schedule
-            const col3 = margin + boxWidth * 0.82; // Days/Qty
+            const col1 = margin + 6;                 // Medicine
+            const col2 = margin + boxWidth * 0.45;   // Schedule
+            const col3 = margin + boxWidth * 0.68;   // Instruction
+            const col4 = margin + boxWidth * 0.85;   // Days/Qty
             doc.setFontSize(10);
             doc.setTextColor(muted.r, muted.g, muted.b);
             doc.text('Medicine', col1, tableY);
             doc.text('Schedule', col2, tableY, { align: 'left' });
-            doc.text('Days / Qty', col3, tableY, { align: 'left' });
+            doc.text('Instruction', col3, tableY, { align: 'left' });
+            doc.text('Days / Qty', col4, tableY, { align: 'left' });
             tableY += 6;
 
             doc.setDrawColor(border.r, border.g, border.b);
@@ -424,16 +473,24 @@ const D_Appointment = () => {
                     doc.setFillColor(252, 252, 253);
                     doc.rect(margin, tableY - 5, boxWidth, rowH + 2, 'F');
                 }
-                // Try to split the line "Name (type) - schedule - X days - Qty: Y"
+                // Parse parts from "Name (type) - schedule - X days - Qty: Y - Instr: Z"
                 const parts = line.split(' - ');
-                const medPart = parts[0] || line;
-                const schedPart = parts[1] || '';
+                let medPart = parts[0] || line;
+                let schedPart = parts[1] || '';
+                // extract instruction part if present
+                let instrPart = '';
+                const instrIdx = parts.findIndex(p => p.startsWith('Instr: '));
+                if (instrIdx >= 0) {
+                    instrPart = parts[instrIdx].replace('Instr: ', '');
+                    parts.splice(instrIdx, 1);
+                }
                 const rightPart = (parts[2] ? parts[2] : '') + (parts[3] ? `, ${parts[3]}` : '');
                 doc.setTextColor(text.r, text.g, text.b);
                 doc.setFont('helvetica', 'normal');
                 doc.text(medPart, col1, tableY);
                 doc.text(schedPart, col2, tableY);
-                doc.text(rightPart, col3, tableY);
+                doc.text(instrPart || '-', col3, tableY);
+                doc.text(rightPart, col4, tableY);
                 tableY += rowH;
             });
 
@@ -1152,7 +1209,7 @@ const D_Appointment = () => {
                 </Modal>
 
                 {/* Prescription Writing Modal */}
-                <Modal show={showPrescriptionModal} onHide={handleClosePrescriptionModal} centered size="lg">
+                <Modal show={showPrescriptionModal} onHide={handleClosePrescriptionModal} centered size="xl">
                     <Modal.Header closeButton>
                         <Modal.Title>Prescription Box</Modal.Title>
                     </Modal.Header>
@@ -1184,9 +1241,19 @@ const D_Appointment = () => {
                                     <Row>
                                         <Col md={6}>
                                             <Form.Group className='mb-3'>
+                                                <Form.Label><strong>BP *</strong></Form.Label>
+                                                <Form.Control
+                                                    type='text'
+                                                    placeholder='Enter BP...'
+                                                    value={prescriptionData.bp}
+                                                    onChange={(e) => handlePrescriptionChange('bp', e.target.value)}
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group className='mb-3'>
                                                 <Form.Label><strong>Diagnosis *</strong></Form.Label>
                                                 <Form.Control
-                                                    as='textarea'
                                                     rows={3}
                                                     placeholder='Enter diagnosis...'
                                                     value={prescriptionData.diagnosis}
@@ -1196,18 +1263,40 @@ const D_Appointment = () => {
                                             </Form.Group>
                                         </Col>
                                         <Col md={6}>
-                                            <Form.Group className='mb-3'>
-                                                <Form.Label><strong>Additional Notes</strong></Form.Label>
+                                            <Form.Group className='mb-3 mt-3'>
+                                                <Form.Label><strong>Complain *</strong></Form.Label>
                                                 <Form.Control
                                                     as='textarea'
                                                     rows={3}
-                                                    placeholder='Any additional notes...'
-                                                    value={prescriptionData.medications}
-                                                    onChange={(e) => handlePrescriptionChange('medications', e.target.value)}
+                                                    placeholder='Enter complain...'
+                                                    value={prescriptionData.complain}
+                                                    onChange={(e) => handlePrescriptionChange('complain', e.target.value)}
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group className='mb-3 mt-3'>
+                                                <Form.Label><strong>Pas History *</strong></Form.Label>
+                                                <Form.Control
+                                                    as='textarea'
+                                                    rows={3}
+                                                    placeholder='Enter past history...'
+                                                    value={prescriptionData.pasHistory}
+                                                    onChange={(e) => handlePrescriptionChange('pasHistory', e.target.value)}
                                                 />
                                             </Form.Group>
                                         </Col>
                                     </Row>
+                                    <Form.Group className='mb-3'>
+                                        <Form.Label><strong>Instructions</strong></Form.Label>
+                                        <Form.Control
+                                            as='textarea'
+                                            rows={2}
+                                            placeholder='Enter special instructions for patient...'
+                                            value={prescriptionData.instructions}
+                                            onChange={(e) => handlePrescriptionChange('instructions', e.target.value)}
+                                        />
+                                    </Form.Group>
 
                                     <Card className='mb-4'>
                                         <Card.Header className='bg-light'>
@@ -1215,17 +1304,6 @@ const D_Appointment = () => {
                                         </Card.Header>
                                         <Card.Body>
                                             <Row className='g-2 mb-3'>
-                                                <Col md={3}>
-                                                    <Form.Group>
-                                                        <Form.Label>Medicine Name *</Form.Label>
-                                                        <Form.Control
-                                                            type='text'
-                                                            placeholder='e.g. Paracetamol'
-                                                            value={newPrescriptionItem.medicine}
-                                                            onChange={(e) => handleNewItemChange('medicine', e.target.value)}
-                                                        />
-                                                    </Form.Group>
-                                                </Col>
                                                 <Col md={2}>
                                                     <Form.Group>
                                                         <Form.Label>Type</Form.Label>
@@ -1241,7 +1319,18 @@ const D_Appointment = () => {
                                                         </Form.Select>
                                                     </Form.Group>
                                                 </Col>
-                                                <Col md={5}>
+                                                <Col md={3}>
+                                                    <Form.Group>
+                                                        <Form.Label>Medicine Name *</Form.Label>
+                                                        <Form.Control
+                                                            type='text'
+                                                            placeholder='e.g. Paracetamol'
+                                                            value={newPrescriptionItem.medicine}
+                                                            onChange={(e) => handleNewItemChange('medicine', e.target.value)}
+                                                        />
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={4}>
                                                     <Form.Group>
                                                         <Form.Label>Dosage (Check when to take)</Form.Label>
                                                         <div className='d-flex flex-wrap gap-3'>
@@ -1275,6 +1364,19 @@ const D_Appointment = () => {
                                                     </Form.Group>
                                                 </Col>
                                                 <Col md={2}>
+                                                    <Form.Group>
+                                                        <Form.Label>Instruction</Form.Label>
+                                                        <Form.Select
+                                                            value={newPrescriptionItem.instruction}
+                                                            onChange={(e) => handleNewItemChange('instruction', e.target.value)}
+                                                        >
+                                                            {instructionOptions.map(opt => (
+                                                                <option key={opt} value={opt}>{opt}</option>
+                                                            ))}
+                                                        </Form.Select>
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={1}>
                                                     <Form.Group>
                                                         <Form.Label>Days</Form.Label>
                                                         <Form.Control
@@ -1349,26 +1451,8 @@ const D_Appointment = () => {
                                         </Card.Body>
                                     </Card>
 
-                                    <Form.Group className='mb-3'>
-                                        <Form.Label><strong>Instructions</strong></Form.Label>
-                                        <Form.Control
-                                            as='textarea'
-                                            rows={2}
-                                            placeholder='Enter special instructions for patient...'
-                                            value={prescriptionData.instructions}
-                                            onChange={(e) => handlePrescriptionChange('instructions', e.target.value)}
-                                        />
-                                    </Form.Group>
 
-                                    <Form.Group className='mb-3'>
-                                        <Form.Label><strong>Follow-up</strong></Form.Label>
-                                        <Form.Control
-                                            type='text'
-                                            placeholder='Next appointment or follow-up instructions...'
-                                            value={prescriptionData.followUp}
-                                            onChange={(e) => handlePrescriptionChange('followUp', e.target.value)}
-                                        />
-                                    </Form.Group>
+
                                 </Form>
                             </div>
                         ) : (
@@ -1384,7 +1468,7 @@ const D_Appointment = () => {
                             onClick={submitPrescription}
                             disabled={
                                 !prescriptionData.diagnosis.trim() ||
-                                ((prescriptionData.prescriptionItems?.length || 0) === 0 && !prescriptionData.medications.trim())
+                                (prescriptionData.prescriptionItems?.length || 0) === 0
                             }
                         >
                             Save Prescription
