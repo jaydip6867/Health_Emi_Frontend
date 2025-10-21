@@ -148,19 +148,32 @@ const D_Appointment = () => {
         diagnosis: '',
         medications: '',
         instructions: '',
-        followUp: ''
+        followUp: '',
+        prescriptionItems: []
     });
 
     const handleClosePrescriptionModal = () => {
         setShowPrescriptionModal(false);
-        setPrescriptionData({
-            diagnosis: '',
-            medications: '',
-            instructions: '',
-            followUp: ''
-        });
-        setCurrentAppointment(null);
     };
+
+    const [newPrescriptionItem, setNewPrescriptionItem] = useState({
+        medicine: '',
+        type: 'tablet',
+        mo: false,
+        an: false,
+        ev: false,
+        nt: false,
+        moDose: 0,
+        anDose: 0,
+        evDose: 0,
+        ntDose: 0,
+        days: 1,
+        quantity: 0
+    });
+
+    const medicineTypes = [
+        'tablet', 'capsule', 'syrup', 'injection', 'drops', 'inhaler', 'ointment', 'cream'
+    ];
 
     const handlePrescriptionChange = (field, value) => {
         setPrescriptionData(prev => ({
@@ -169,141 +182,68 @@ const D_Appointment = () => {
         }));
     };
 
-    const generatePrescriptionPDF = () => {
-        const doc = new jsPDF();
+    const handleNewItemChange = (field, value) => {
+        setNewPrescriptionItem(prev => {
+            const updatedItem = {
+                ...prev,
+                [field]: value
+            };
 
-        // Set up the document
-        const pageWidth = doc.internal.pageSize.width;
-        const margin = 20;
-        let yPosition = 30;
+            // Calculate quantity when relevant fields change
+            if (['mo', 'an', 'ev', 'nt', 'moDose', 'anDose', 'evDose', 'ntDose', 'days'].includes(field)) {
+                let total = 0;
+                if (updatedItem.mo) total += parseInt(updatedItem.moDose || 0);
+                if (updatedItem.an) total += parseInt(updatedItem.anDose || 0);
+                if (updatedItem.ev) total += parseInt(updatedItem.evDose || 0);
+                if (updatedItem.nt) total += parseInt(updatedItem.ntDose || 0);
+                updatedItem.quantity = total * parseInt(updatedItem.days || 1);
+            }
 
-        // Header - Clinic Name
-        doc.setFontSize(22);
-        doc.setFont('helvetica', 'bold');
-        doc.text('HEALTH EMI CLINIC', pageWidth / 2, yPosition, { align: 'center' });
+            return updatedItem;
+        });
+    };
 
-        yPosition += 10;
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Medical Prescription', pageWidth / 2, yPosition, { align: 'center' });
+    const addPrescriptionItem = () => {
+        if (!newPrescriptionItem.medicine.trim()) return;
 
-        // Line separator
-        yPosition += 15;
-        doc.line(margin, yPosition, pageWidth - margin, yPosition);
+        setPrescriptionData(prev => ({
+            ...prev,
+            prescriptionItems: [...prev.prescriptionItems, { ...newPrescriptionItem }]
+        }));
 
-        // Doctor Information
-        yPosition += 15;
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Doctor Information:', margin, yPosition);
+        // Reset the form
+        setNewPrescriptionItem({
+            medicine: '',
+            type: 'tablet',
+            mo: false,
+            an: false,
+            ev: false,
+            nt: false,
+            moDose: 1,
+            anDose: 1,
+            evDose: 1,
+            ntDose: 1,
+            days: 1,
+            quantity: 0
+        });
+    };
 
-        yPosition += 8;
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Dr. ${doctor?.name || 'N/A'}`, margin, yPosition);
-
-        // yPosition += 6;
-        // doc.text(`Specialty: ${doctor?.specialty || 'N/A'}`, margin, yPosition);
-
-        // yPosition += 6;
-        // doc.text(`Qualification: ${doctor?.qualification || 'N/A'}`, margin, yPosition);
-
-        // Patient Information
-        yPosition += 15;
-        doc.setFont('helvetica', 'bold');
-        doc.text('Patient Information:', margin, yPosition);
-
-        yPosition += 8;
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Patient Name: ${currentAppointment?.patientname || 'N/A'}`, margin, yPosition);
-
-        yPosition += 6;
-        doc.text(`Date: ${currentAppointment?.date || 'N/A'}`, margin, yPosition);
-
-        yPosition += 6;
-        doc.text(`Time: ${currentAppointment?.time || 'N/A'}`, margin, yPosition);
-
-        if (currentAppointment?.appointment_reason) {
-            yPosition += 6;
-            doc.text(`Reason for Visit: ${currentAppointment.appointment_reason}`, margin, yPosition);
-        }
-
-        // Diagnosis
-        yPosition += 15;
-        doc.setFont('helvetica', 'bold');
-        doc.text('Diagnosis:', margin, yPosition);
-
-        yPosition += 8;
-        doc.setFont('helvetica', 'normal');
-        const diagnosisLines = doc.splitTextToSize(prescriptionData.diagnosis, pageWidth - 2 * margin);
-        doc.text(diagnosisLines, margin, yPosition);
-        yPosition += diagnosisLines.length * 6;
-
-        // Medications
-        yPosition += 10;
-        doc.setFont('helvetica', 'bold');
-        doc.text('Prescribed Medications:', margin, yPosition);
-
-        yPosition += 8;
-        doc.setFont('helvetica', 'normal');
-        const medicationsLines = doc.splitTextToSize(prescriptionData.medications, pageWidth - 2 * margin);
-        doc.text(medicationsLines, margin, yPosition);
-        yPosition += medicationsLines.length * 6;
-
-        // Instructions
-        if (prescriptionData.instructions) {
-            yPosition += 10;
-            doc.setFont('helvetica', 'bold');
-            doc.text('Instructions:', margin, yPosition);
-
-            yPosition += 8;
-            doc.setFont('helvetica', 'normal');
-            const instructionsLines = doc.splitTextToSize(prescriptionData.instructions, pageWidth - 2 * margin);
-            doc.text(instructionsLines, margin, yPosition);
-            yPosition += instructionsLines.length * 6;
-        }
-
-        // Follow-up
-        if (prescriptionData.followUp) {
-            yPosition += 10;
-            doc.setFont('helvetica', 'bold');
-            doc.text('Follow-up:', margin, yPosition);
-
-            yPosition += 8;
-            doc.setFont('helvetica', 'normal');
-            const followUpLines = doc.splitTextToSize(prescriptionData.followUp, pageWidth - 2 * margin);
-            doc.text(followUpLines, margin, yPosition);
-            yPosition += followUpLines.length * 6;
-        }
-
-        // Footer
-        yPosition += 30;
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'italic');
-        doc.text('This is a digitally generated prescription from Health EMI Clinic System', pageWidth / 2, yPosition, { align: 'center' });
-
-        yPosition += 6;
-        doc.text(`Generated on: ${new Date().toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`, pageWidth / 2, yPosition, { align: 'center' });
-
-        // Doctor's signature area
-        yPosition += 20;
-        doc.setFont('helvetica', 'normal');
-        doc.text('Doctor\'s Signature: '+`${doctor?.name || 'N/A'}`, pageWidth - margin - 80, yPosition);
-
-        // Generate filename and return blob for upload
-        const fileName = `prescription_${currentAppointment?.patientname?.replace(/\s+/g, '_') || 'patient'}_${Date.now()}.pdf`;
-
-        // Return as Blob for upload (no local download)
-        const pdfBlob = doc.output('blob');
-
-        return { pdfBlob, fileName };
+    const removePrescriptionItem = (index) => {
+        setPrescriptionData(prev => ({
+            ...prev,
+            prescriptionItems: prev.prescriptionItems.filter((_, i) => i !== index)
+        }));
     };
 
     const submitPrescription = async () => {
-        if (!prescriptionData.diagnosis.trim() || !prescriptionData.medications.trim()) {
+        // Validate: require diagnosis AND (at least one item OR medications text)
+        const hasItems = prescriptionData.prescriptionItems && prescriptionData.prescriptionItems.length > 0;
+        const medsTextTyped = (prescriptionData.medications || '').trim();
+        if (!prescriptionData.diagnosis.trim() || (!hasItems && !medsTextTyped)) {
             Swal.fire({
-                title: "Required Fields Missing",
-                text: "Please fill in diagnosis and medications",
-                icon: "warning",
+                title: 'Required Fields Missing',
+                text: 'Please enter diagnosis and add at least one medicine or notes.',
+                icon: 'warning'
             });
             return;
         }
@@ -311,14 +251,27 @@ const D_Appointment = () => {
         try {
             setloading(true);
 
-            // Generate PDF and return blob for upload
-            const { pdfBlob, fileName } = generatePrescriptionPDF();
+            // Build medications text from items if present, otherwise use typed meds text
+            const itemsText = (prescriptionData.prescriptionItems || []).map(item => {
+                const times = [];
+                if (item.mo) times.push(`MO(${item.moDose})`);
+                if (item.an) times.push(`AN(${item.anDose})`);
+                if (item.ev) times.push(`EV(${item.evDose})`);
+                if (item.nt) times.push(`NT(${item.ntDose})`);
+                return `${item.medicine} (${item.type}) - ${times.join(', ')} - ${item.days} days - Qty: ${item.quantity}`;
+            }).join('\n');
+
+            const medicationsText = hasItems ? itemsText : medsTextTyped;
+
+            // Generate PDF with medicationsText and return blob for upload
+            const { pdfBlob, fileName } = generatePrescriptionPDF(medicationsText);
 
             // Create a proper File object with correct MIME type
             const pdfFile = new File([pdfBlob], fileName, {
                 type: 'application/pdf',
                 lastModified: Date.now()
             });
+
             // Create FormData and append the PDF file
             const formData = new FormData();
             formData.append('file', pdfFile);
@@ -327,59 +280,224 @@ const D_Appointment = () => {
             const uploadResponse = await axios({
                 method: 'post',
                 url: 'https://healtheasy-o25g.onrender.com/user/upload/multiple',
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                headers: { 'Content-Type': 'multipart/form-data' },
                 data: formData,
             });
 
-            console.log('Upload Response:', uploadResponse.data);
+            const uploadedFileUrl = Array.isArray(uploadResponse.data?.Data)
+                ? uploadResponse.data?.Data?.[0]?.path || uploadResponse.data?.Data?.[0]?.url
+                : uploadResponse.data?.Data?.url || uploadResponse.data?.Data;
 
-            // Get the uploaded file URL from response (extract single URL from array)
-            const uploadedFileUrl = Array.isArray(uploadResponse.data.Data)
-                ? uploadResponse.data?.Data[0]?.path || uploadResponse.data?.Data[0]?.url
-                : uploadResponse.data.Data.url || uploadResponse.data.Data;
+            if (!uploadedFileUrl) throw new Error('Failed to get uploaded file URL');
 
-            // Wait for upload to complete, then complete appointment with prescription URL
-            if (uploadedFileUrl) {
-                const completeResponse = await axios({
-                    method: 'post',
-                    url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/complete',
-                    headers: {
-                        Authorization: token,
-                    },
-                    data: {
-                        appointmentid: currentAppointment?._id,
-                        payment_mode: 'Cash',
-                        totalamount: 1000,
-                        doctor_remark: uploadedFileUrl
-                    }
-                });
+            // Mark appointment complete with prescription URL
+            await axios({
+                method: 'post',
+                url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/complete',
+                headers: { Authorization: token },
+                data: {
+                    appointmentid: currentAppointment?._id,
+                    payment_mode: 'Cash',
+                    totalamount: 1000,
+                    doctor_remark: uploadedFileUrl
+                }
+            });
 
-                console.log('Complete Appointment Response:', completeResponse.data);
+            Swal.fire('Success', 'Prescription saved and appointment completed!', 'success');
+            appointmentlist();
+            handleClosePrescriptionModal();
 
-                Swal.fire({
-                    title: "Appointment Completed Successfully!",
-                    text: `Prescription has been uploaded and appointment marked as complete`,
-                    icon: "success",
-                });
-
-                // Refresh appointment list
-                appointmentlist();
-                handleClosePrescriptionModal();
-            } else {
-                throw new Error('Failed to get uploaded file URL');
-            }
+            // Reset form
+            setPrescriptionData({ diagnosis: '', medications: '', instructions: '', followUp: '', prescriptionItems: [] });
         } catch (error) {
             console.error('Error completing appointment:', error);
-            Swal.fire({
-                title: "Failed",
-                text: error.response?.data?.Message || "Failed to complete appointment. Please try again.",
-                icon: "error",
-            });
+            Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to complete appointment.', 'error');
         } finally {
             setloading(false);
         }
+    };
+
+    const generatePrescriptionPDF = (medicationsText) => {
+        const doc = new jsPDF();
+
+        const pageWidth = doc.internal.pageSize.width;
+        const pageHeight = doc.internal.pageSize.height;
+        const margin = 16;
+        let y = 0;
+
+        const primary = { r: 37, g: 99, b: 235 }; // Tailwind blue-600
+        const text = { r: 17, g: 24, b: 39 };      // zinc-900
+        const muted = { r: 107, g: 114, b: 128 };  // zinc-500
+        const light = { r: 243, g: 244, b: 246 };  // zinc-100
+        const border = { r: 229, g: 231, b: 235 }; // zinc-200
+
+        const ensureY = (delta) => {
+            if (y + delta > pageHeight - margin) {
+                doc.addPage();
+                y = margin;
+            }
+        };
+
+        // Header band
+        doc.setFillColor(primary.r, primary.g, primary.b);
+        doc.rect(0, 0, pageWidth, 36, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(18);
+        doc.text('HEALTH EMI CLINIC', margin, 22);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(11);
+        doc.text('Medical Prescription', margin, 32);
+
+        // Doctor mini-card
+        doc.setTextColor(255, 255, 255);
+        const rightX = pageWidth - margin;
+        doc.setFontSize(10);
+        doc.text(`Dr. ${doctor?.name || 'N/A'}`, rightX, 18, { align: 'right' });
+        doc.text(`${new Date().toLocaleDateString()}`, rightX, 28, { align: 'right' });
+
+        y = 44;
+
+        // Section: Patient Info box
+        doc.setDrawColor(border.r, border.g, border.b);
+        doc.setFillColor(255, 255, 255);
+        const boxWidth = pageWidth - 2 * margin;
+        const boxStartY = y;
+        doc.roundedRect(margin, y, boxWidth, 28, 3, 3, 'FD');
+        doc.setTextColor(text.r, text.g, text.b);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.text('Patient Information', margin + 6, y + 9);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(muted.r, muted.g, muted.b);
+        doc.setFontSize(10);
+        doc.text(`Name: ${currentAppointment?.patientname || 'N/A'}`, margin + 6, y + 18);
+        doc.text(`Date: ${currentAppointment?.date || 'N/A'}   Time: ${currentAppointment?.time || 'N/A'}`, margin + 6, y + 24);
+        y = boxStartY + 36;
+
+        // Section: Diagnosis
+        ensureY(48);
+        const diagH = 12 + doc.splitTextToSize(prescriptionData.diagnosis || 'N/A', boxWidth - 12).length * 6 + 10;
+        doc.roundedRect(margin, y, boxWidth, diagH, 3, 3, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(text.r, text.g, text.b);
+        doc.setFontSize(12);
+        doc.text('Diagnosis', margin + 6, y + 10);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(text.r, text.g, text.b);
+        const dLines = doc.splitTextToSize(prescriptionData.diagnosis || 'N/A', boxWidth - 12);
+        doc.text(dLines, margin + 6, y + 20);
+        y += diagH + 8;
+
+        // Section: Medications (table-like)
+        const meds = (medicationsText ?? prescriptionData.medications ?? '').toString().trim();
+        if (meds) {
+            ensureY(48);
+            // header height and row height
+            const rowH = 8;
+            let tableY = y;
+            // Title bar
+            doc.setFillColor(light.r, light.g, light.b);
+            doc.roundedRect(margin, tableY, boxWidth, 12, 3, 3, 'FD');
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(text.r, text.g, text.b);
+            doc.text('Prescribed Medications', margin + 6, tableY + 8);
+            tableY += 16;
+
+            // Column headers
+            const col1 = margin + 6;           // Medicine
+            const col2 = margin + boxWidth * 0.55; // Schedule
+            const col3 = margin + boxWidth * 0.82; // Days/Qty
+            doc.setFontSize(10);
+            doc.setTextColor(muted.r, muted.g, muted.b);
+            doc.text('Medicine', col1, tableY);
+            doc.text('Schedule', col2, tableY, { align: 'left' });
+            doc.text('Days / Qty', col3, tableY, { align: 'left' });
+            tableY += 6;
+
+            doc.setDrawColor(border.r, border.g, border.b);
+            const items = meds.split('\n').filter(Boolean);
+            items.forEach((line, idx) => {
+                ensureY(rowH + 6);
+                // Alternate row background
+                if (idx % 2 === 0) {
+                    doc.setFillColor(252, 252, 253);
+                    doc.rect(margin, tableY - 5, boxWidth, rowH + 2, 'F');
+                }
+                // Try to split the line "Name (type) - schedule - X days - Qty: Y"
+                const parts = line.split(' - ');
+                const medPart = parts[0] || line;
+                const schedPart = parts[1] || '';
+                const rightPart = (parts[2] ? parts[2] : '') + (parts[3] ? `, ${parts[3]}` : '');
+                doc.setTextColor(text.r, text.g, text.b);
+                doc.setFont('helvetica', 'normal');
+                doc.text(medPart, col1, tableY);
+                doc.text(schedPart, col2, tableY);
+                doc.text(rightPart, col3, tableY);
+                tableY += rowH;
+            });
+
+            y = tableY + 6;
+        }
+
+        // Section: Instructions
+        if (prescriptionData.instructions) {
+            ensureY(36);
+            const iLines = doc.splitTextToSize(prescriptionData.instructions, boxWidth - 12);
+            const instH = 12 + iLines.length * 6 + 10;
+            // Soft amber background for Instructions
+            doc.setFillColor(239, 246, 255);
+            doc.roundedRect(margin, y, boxWidth, instH, 3, 3, 'FD');
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(text.r, text.g, text.b);
+            doc.setFontSize(12);
+            doc.text('Instructions', margin + 6, y + 10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(text.r, text.g, text.b);
+            doc.text(iLines, margin + 6, y + 20);
+            y += instH + 8;
+        }
+
+        // Section: Follow-up
+        if (prescriptionData.followUp) {
+            ensureY(28);
+            const fLines = doc.splitTextToSize(prescriptionData.followUp, boxWidth - 12);
+            const fH = 12 + fLines.length * 6 + 10;
+            // Soft blue background for Follow-up
+            doc.setFillColor(239, 246, 255);
+            doc.roundedRect(margin, y, boxWidth, fH, 3, 3, 'FD');
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(text.r, text.g, text.b);
+            doc.setFontSize(12);
+            doc.text('Follow-up', margin + 6, y + 10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(text.r, text.g, text.b);
+            doc.text(fLines, margin + 6, y + 20);
+            y += fH + 8;
+        }
+
+        // Footer
+        ensureY(40);
+        doc.setTextColor(muted.r, muted.g, muted.b);
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(9);
+        doc.text('This is a digitally generated prescription from Health EMI Clinic System', pageWidth / 2, y, { align: 'center' });
+        y += 6;
+        doc.text(`Generated on: ${new Date().toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`, pageWidth / 2, y, { align: 'center' });
+
+        // Signature line
+        y += 16;
+        doc.setDrawColor(border.r, border.g, border.b);
+        doc.line(pageWidth - margin - 70, y, pageWidth - margin, y);
+        y += 6;
+        doc.setTextColor(text.r, text.g, text.b);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Dr. ${doctor?.name || 'N/A'}`, pageWidth - margin - 35, y, { align: 'center' });
+
+        // Output
+        const fileName = `prescription_${currentAppointment?.patientname?.replace(/\s+/g, '_') || 'patient'}_${Date.now()}.pdf`;
+        const pdfBlob = doc.output('blob');
+        return { pdfBlob, fileName };
     };
     const formattedDateTime = selectedDate
         ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
@@ -870,9 +988,9 @@ const D_Appointment = () => {
                                                                             <div className='d-flex justify-content-between align-items-center mb-2'>
                                                                                 <Badge bg="info" className='text-uppercase'>{report?.type || 'Document'}</Badge>
                                                                                 {isPDF && (
-                                                                                    <a 
-                                                                                        href={viewerUrl} 
-                                                                                        target="_blank" 
+                                                                                    <a
+                                                                                        href={viewerUrl}
+                                                                                        target="_blank"
                                                                                         rel="noopener noreferrer"
                                                                                         className='btn btn-sm btn-primary'
                                                                                     >
@@ -890,7 +1008,7 @@ const D_Appointment = () => {
                                                                                 // ></iframe>
                                                                                 <></>
                                                                             ) : (
-                                                                                <img 
+                                                                                <img
                                                                                     src={report?.path}
                                                                                     alt={`Report ${idx + 1}`}
                                                                                     className='w-100 rounded img-thumbnail'
@@ -1036,7 +1154,7 @@ const D_Appointment = () => {
                 {/* Prescription Writing Modal */}
                 <Modal show={showPrescriptionModal} onHide={handleClosePrescriptionModal} centered size="lg">
                     <Modal.Header closeButton>
-                        <Modal.Title>Write Prescription</Modal.Title>
+                        <Modal.Title>Prescription Box</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         {currentAppointment ? (
@@ -1079,24 +1197,163 @@ const D_Appointment = () => {
                                         </Col>
                                         <Col md={6}>
                                             <Form.Group className='mb-3'>
-                                                <Form.Label><strong>Medications *</strong></Form.Label>
+                                                <Form.Label><strong>Additional Notes</strong></Form.Label>
                                                 <Form.Control
                                                     as='textarea'
                                                     rows={3}
-                                                    placeholder='Enter medications with dosage...'
+                                                    placeholder='Any additional notes...'
                                                     value={prescriptionData.medications}
                                                     onChange={(e) => handlePrescriptionChange('medications', e.target.value)}
-                                                    required
                                                 />
                                             </Form.Group>
                                         </Col>
                                     </Row>
 
+                                    <Card className='mb-4'>
+                                        <Card.Header className='bg-light'>
+                                            <h6 className='mb-0'>Prescription Items</h6>
+                                        </Card.Header>
+                                        <Card.Body>
+                                            <Row className='g-2 mb-3'>
+                                                <Col md={3}>
+                                                    <Form.Group>
+                                                        <Form.Label>Medicine Name *</Form.Label>
+                                                        <Form.Control
+                                                            type='text'
+                                                            placeholder='e.g. Paracetamol'
+                                                            value={newPrescriptionItem.medicine}
+                                                            onChange={(e) => handleNewItemChange('medicine', e.target.value)}
+                                                        />
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={2}>
+                                                    <Form.Group>
+                                                        <Form.Label>Type</Form.Label>
+                                                        <Form.Select
+                                                            value={newPrescriptionItem.type}
+                                                            onChange={(e) => handleNewItemChange('type', e.target.value)}
+                                                        >
+                                                            {medicineTypes.map(type => (
+                                                                <option key={type} value={type}>
+                                                                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                                                                </option>
+                                                            ))}
+                                                        </Form.Select>
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={5}>
+                                                    <Form.Group>
+                                                        <Form.Label>Dosage (Check when to take)</Form.Label>
+                                                        <div className='d-flex flex-wrap gap-3'>
+                                                            {[
+                                                                { id: 'mo', label: 'MO' },
+                                                                { id: 'an', label: 'AN' },
+                                                                { id: 'ev', label: 'EV' },
+                                                                { id: 'nt', label: 'NT' }
+                                                            ].map(time => (
+                                                                <div key={time.id} className='d-flex align-items-center'>
+                                                                    <Form.Check
+                                                                        type='checkbox'
+                                                                        id={`${time.id}-check`}
+                                                                        checked={newPrescriptionItem[time.id]}
+                                                                        onChange={(e) => handleNewItemChange(time.id, e.target.checked)}
+                                                                        className='me-1'
+                                                                    />
+                                                                    <Form.Label htmlFor={`${time.id}-check`} className='mb-0 me-2'>{time.label}</Form.Label>
+                                                                    <Form.Control
+                                                                        type='number'
+                                                                        min='0'
+                                                                        size='sm'
+                                                                        style={{ width: '50px' }}
+                                                                        value={newPrescriptionItem[`${time.id}Dose`]}
+                                                                        onChange={(e) => handleNewItemChange(`${time.id}Dose`, Math.max(0, e.target.value))}
+                                                                        disabled={!newPrescriptionItem[time.id]}
+                                                                    />
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={2}>
+                                                    <Form.Group>
+                                                        <Form.Label>Days</Form.Label>
+                                                        <Form.Control
+                                                            type='number'
+                                                            min='1'
+                                                            value={newPrescriptionItem.days}
+                                                            onChange={(e) => handleNewItemChange('days', Math.max(1, e.target.value))}
+                                                        />
+                                                    </Form.Group>
+                                                </Col>
+                                            </Row>
+
+                                            <div className='d-flex justify-content-between align-items-center mb-3'>
+                                                <div>
+                                                    <strong>Total Quantity: {newPrescriptionItem.quantity} {newPrescriptionItem.type}s</strong>
+                                                </div>
+                                                <Button
+                                                    variant='primary'
+                                                    size='sm'
+                                                    onClick={addPrescriptionItem}
+                                                    disabled={!newPrescriptionItem.medicine.trim() || !['mo', 'an', 'ev', 'nt'].some(t => newPrescriptionItem[t])}
+                                                >
+                                                    Add to Prescription
+                                                </Button>
+                                            </div>
+
+                                            {prescriptionData.prescriptionItems.length > 0 && (
+                                                <Table striped bordered size='sm' className='mt-3'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Medicine</th>
+                                                            <th>Type</th>
+                                                            <th>Dosage</th>
+                                                            <th>Days</th>
+                                                            <th>Qty</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {prescriptionData.prescriptionItems.map((item, index) => (
+                                                            <tr key={index}>
+                                                                <td>{item.medicine}</td>
+                                                                <td>{item.type}</td>
+                                                                <td>
+                                                                    {[
+                                                                        { id: 'mo', label: 'MO' },
+                                                                        { id: 'an', label: 'AN' },
+                                                                        { id: 'ev', label: 'EV' },
+                                                                        { id: 'nt', label: 'NT' }
+                                                                    ]
+                                                                        .filter(time => item[time.id])
+                                                                        .map(time => `${time.label}(${item[`${time.id}Dose`]})`)
+                                                                        .join(', ')}
+                                                                </td>
+                                                                <td>{item.days}</td>
+                                                                <td>{item.quantity} {item.type}s</td>
+                                                                <td>
+                                                                    <Button
+                                                                        variant='link'
+                                                                        size='sm'
+                                                                        className='text-danger p-0'
+                                                                        onClick={() => removePrescriptionItem(index)}
+                                                                    >
+                                                                        <MdClose size={18} />
+                                                                    </Button>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </Table>
+                                            )}
+                                        </Card.Body>
+                                    </Card>
+
                                     <Form.Group className='mb-3'>
                                         <Form.Label><strong>Instructions</strong></Form.Label>
                                         <Form.Control
                                             as='textarea'
-                                            rows={3}
+                                            rows={2}
                                             placeholder='Enter special instructions for patient...'
                                             value={prescriptionData.instructions}
                                             onChange={(e) => handlePrescriptionChange('instructions', e.target.value)}
@@ -1125,7 +1382,10 @@ const D_Appointment = () => {
                         <Button
                             variant='primary'
                             onClick={submitPrescription}
-                            disabled={!prescriptionData.diagnosis.trim() || !prescriptionData.medications.trim()}
+                            disabled={
+                                !prescriptionData.diagnosis.trim() ||
+                                ((prescriptionData.prescriptionItems?.length || 0) === 0 && !prescriptionData.medications.trim())
+                            }
                         >
                             Save Prescription
                         </Button>
