@@ -21,6 +21,7 @@ const Amb_register = () => {
     city: "",
     address: "",
     ambulance_type: "",
+    ambulance_category: "",
     rc_no: "",
     rc_pic: null,
     blood_group: "",
@@ -73,6 +74,9 @@ const Amb_register = () => {
 
   // Blood group options
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+  // Ambulance category options
+  const ambulanceCategories = ["Ambulance", "Bike", "Rickshaw", "Cab"];
 
   // Experience options
   const experienceOptions = [
@@ -295,7 +299,7 @@ const Amb_register = () => {
     const newErrors = {};
     const requiredFields = [
       'fullname', 'email', 'mobile', 'password', 'gender', 'state', 'city',
-      'address', 'ambulance_type', 'rc_no', 'blood_group', 'dob',
+      'address', 'ambulance_type', 'ambulance_category', 'rc_no', 'blood_group', 'dob',
       'insurance_expiry', 'insurance_holder', 'polution_expiry', 'vehicle_no',
       'experience', 'ambulance_fitness_expiry'
     ];
@@ -511,6 +515,7 @@ const Amb_register = () => {
         city: "",
         address: "",
         ambulance_type: "",
+        ambulance_category: "",
         rc_no: "",
         rc_pic: null,
         blood_group: "",
@@ -906,6 +911,30 @@ const Amb_register = () => {
                                 {errors.ambulance_type}
                               </div>
                             )}
+                          </Form.Group>
+                        </Col>
+
+                        {/* Ambulance Category */}
+                        <Col md={6} className="mb-3">
+                          <Form.Group>
+                            <Form.Label className="fw-semibold text-dark">Ambulance Category *</Form.Label>
+                            <Form.Select
+                              name="ambulance_category"
+                              value={formData.ambulance_category}
+                              onChange={handleInputChange}
+                              isInvalid={!!errors.ambulance_category}
+                              className="py-2"
+                            >
+                              <option value="">Select ambulance category</option>
+                              {ambulanceCategories.map((category) => (
+                                <option key={category} value={category}>
+                                  {category}
+                                </option>
+                              ))}
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                              {errors.ambulance_category}
+                            </Form.Control.Feedback>
                           </Form.Group>
                         </Col>
 
