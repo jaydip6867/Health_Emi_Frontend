@@ -17,7 +17,7 @@ const HomeSlider = () => {
       useEffect(() => {
         axios.get("https://healtheasy-o25g.onrender.com/user/banner")
         .then((res) => {
-            console.log(res.data.Data.banners);
+            // console.log(res.data.Data.banners);
             setBanner(res.data.Data.banners);
         })
         .catch((err) => {

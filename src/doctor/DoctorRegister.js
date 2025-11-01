@@ -47,7 +47,7 @@ const DoctorRegister = () => {
     setCountries(Country.getAllCountries());
     // This would get all states, not filtered:
     const allStates = State.getAllStates();
-    console.log("All states:", allStates);
+    // console.log("All states:", allStates);
   }
 
   // When user selects a country
@@ -487,7 +487,7 @@ const DoctorRegister = () => {
         throw new Error(response.data.Message || "Failed to update profile");
       }
     } catch (error) {
-      console.error("Error:", error);
+      // console.error("Error:", error);
       toast.error(
         error.response?.data?.Message ||
         error.message ||
@@ -603,7 +603,7 @@ const DoctorRegister = () => {
   };
 
   function otpverifydone() {
-    console.log(frmdoctor);
+    // console.log(frmdoctor);
     setloading(true);
     axios({
       method: "post",
@@ -619,12 +619,12 @@ const DoctorRegister = () => {
         });
         setdocotp(false);
         setdocreg2(true);
-        console.log(res);
+        // console.log(res);
         localStorage.setItem("doctordetail", JSON.stringify(res));
         // Navigate('/doctor')
       })
       .catch(function (error) {
-        console.log(error);
+        // console.log(error);
         toast(error, { className: "custom-toast-error" });
       })
       .finally(() => {
@@ -681,7 +681,7 @@ const DoctorRegister = () => {
         setdcategory(res.data.Data);
       })
       .catch(function (error) {
-        console.log(error);
+        // console.log(error);
         // toast(error.response.data.Message, { className: 'custom-toast-error' })
       })
       .finally(() => {
@@ -700,12 +700,12 @@ const DoctorRegister = () => {
     // var data = {...frmdocprofile};
     // data.specialty = s_name[0].surgerytypename;
     // setdocprofile(data)
-    setsname(s_name.surgerytypename);
+    setsname(e.target.value);
     var d_data = d_category.filter((v, i) => {
       return v.surgerytypeid?._id === e.target.value;
     });
     setdselcat(d_data);
-    console.log(e.target.value, d_data, frmdocprofile);
+    // console.log(e.target.value, d_data, frmdocprofile);
 
     // Clear validation error for specialty
     if (profileValidationErrors.specialty) {
@@ -720,7 +720,7 @@ const DoctorRegister = () => {
     var sub_name = d_sel_cat.filter((v) => {
       return v._id === e.target.value;
     });
-    setsubname(sub_name[0].categoryname);
+    setsubname(e.target.value);
     // console.log(sub_name[0].categoryname)
     setdocprofile({
       ...frmdocprofile,
@@ -858,7 +858,7 @@ const DoctorRegister = () => {
         fullText.length > 150 ? `${fullText.substring(0, 150)}...` : fullText
       );
     } catch (error) {
-      console.error("Error fetching terms and conditions:", error);
+      // console.error("Error fetching terms and conditions:", error);
       setTermsContent("Failed to load terms and conditions.");
       setShortTerms("Failed to load terms and conditions.");
     }
@@ -1209,7 +1209,7 @@ const DoctorRegister = () => {
                             : ""
                           }`}
                       >
-                        <option value={""} selected disabled>
+                        <option value="" disabled>
                           Doctor Category
                         </option>
                         {d_sel_cat?.map((v, i) => {
