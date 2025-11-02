@@ -343,6 +343,7 @@ const D_Appointment = () => {
         }
     };
 
+    // PDF generator redesigned to match sample layout
     const generatePrescriptionPDF = (medicationsText) => {
         const doc = new jsPDF();
 
@@ -351,11 +352,12 @@ const D_Appointment = () => {
         const margin = 16;
         let y = 0;
 
-        const primary = { r: 37, g: 99, b: 235 }; // Tailwind blue-600
-        const text = { r: 17, g: 24, b: 39 };      // zinc-900
-        const muted = { r: 107, g: 114, b: 128 };  // zinc-500
-        const light = { r: 243, g: 244, b: 246 };  // zinc-100
-        const border = { r: 229, g: 231, b: 235 }; // zinc-200
+        // Palette matching the sample
+        const teal = { r: 22, g: 164, b: 152 };
+        const navy = { r: 19, g: 30, b: 49 };
+        const gray600 = { r: 75, g: 85, b: 99 };
+        const gray800 = { r: 31, g: 41, b: 55 };
+        const border = { r: 229, g: 231, b: 235 };
 
         const ensureY = (delta) => {
             if (y + delta > pageHeight - margin) {
@@ -364,208 +366,183 @@ const D_Appointment = () => {
             }
         };
 
-        // Header band
-        doc.setFillColor(primary.r, primary.g, primary.b);
-        doc.rect(0, 0, pageWidth, 36, 'F');
-        doc.setFont('helvetica', 'bold');
+        // Header teal band
+        doc.setFillColor(teal.r, teal.g, teal.b);
+        doc.rect(0, 0, pageWidth, 46, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(18);
-        doc.text('HEALTH EMI CLINIC', margin, 22);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(26);
+        const doctorName = `Dr. ${doctor?.name || ''}`.trim() || 'Dr. -';
+        doc.text(doctorName, pageWidth / 2, 22, { align: 'center' });
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(11);
-        doc.text('Medical Prescription', margin, 32);
-
-        // Doctor mini-card
-        doc.setTextColor(255, 255, 255);
-        const rightX = pageWidth - margin;
-        doc.setFontSize(10);
-        doc.text(`Dr. ${doctor?.name || 'N/A'}`, rightX, 18, { align: 'right' });
-        doc.text(`${new Date().toLocaleDateString()}`, rightX, 28, { align: 'right' });
-
-        y = 44;
-
-        // Section: Patient Info box
-        doc.setDrawColor(border.r, border.g, border.b);
-        doc.setFillColor(255, 255, 255);
-        const boxWidth = pageWidth - 2 * margin;
-        const boxStartY = y;
-        doc.roundedRect(margin, y, boxWidth, 28, 3, 3, 'FD');
-        doc.setTextColor(text.r, text.g, text.b);
-        doc.setFont('helvetica', 'bold');
         doc.setFontSize(12);
-        doc.text('Patient Information', margin + 6, y + 9);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(muted.r, muted.g, muted.b);
-        doc.setFontSize(10);
-        doc.text(`Name: ${currentAppointment?.patientname || 'N/A'}`, margin + 6, y + 18);
-        doc.text(`Date: ${currentAppointment?.date || 'N/A'}   Time: ${currentAppointment?.time || 'N/A'}`, margin + 6, y + 24);
-        y = boxStartY + 36;
-
-        // Section: Clinical Notes (BP, Complain, Past History, Diagnosis)
-        const bpVal = (prescriptionData.bp || '').toString().trim();
-        const complainVal = (prescriptionData.complain || '').toString().trim();
-        const pastHistoryVal = (prescriptionData.pasHistory || '').toString().trim();
-        const diagnosisVal = (prescriptionData.diagnosis || '').toString().trim();
-        if (bpVal || complainVal || pastHistoryVal || diagnosisVal) {
-            ensureY(48);
-            const notesLines = [];
-            if (bpVal) notesLines.push(`BP: ${bpVal}`);
-            if (complainVal) {
-                const cLines = doc.splitTextToSize(`Complain: ${complainVal}`, boxWidth - 12);
-                notesLines.push(...cLines);
-            }
-            if (pastHistoryVal) {
-                const pLines = doc.splitTextToSize(`Past History: ${pastHistoryVal}`, boxWidth - 12);
-                notesLines.push(...pLines);
-            }
-            if (diagnosisVal) {
-                const dLines = doc.splitTextToSize(`Diagnosis: ${diagnosisVal}`, boxWidth - 12);
-                notesLines.push(...dLines);
-            }
-            const cnH = 12 + notesLines.length * 6 + 10;
-            doc.setFillColor(255, 255, 255);
-            doc.roundedRect(margin, y, boxWidth, cnH, 3, 3, 'FD');
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(text.r, text.g, text.b);
-            doc.setFontSize(12);
-            doc.text('Clinical Notes', margin + 6, y + 10);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(text.r, text.g, text.b);
-            doc.text(notesLines, margin + 6, y + 20);
-            y += cnH + 8;
+        const degreeLine = doctor?.degree ? `(${doctor.degree})` : '';
+        if (degreeLine) doc.text(degreeLine, pageWidth / 2, 32, { align: 'center' });
+        const contact = [doctor?.email, doctor?.mobile || doctor?.phone].filter(Boolean).join('   •   ');
+        if (contact) {
+            doc.setFontSize(10);
+            doc.text(contact, pageWidth / 2, 40, { align: 'center' });
         }
 
+        y = 58;
 
-        // Section: Medications (table-like)
-        const meds = (medicationsText || '').toString().trim();
-        if (meds) {
-            ensureY(48);
-            // header height and row height
-            const rowH = 8;
-            let tableY = y;
-            // Title bar
-            doc.setFillColor(light.r, light.g, light.b);
-            doc.roundedRect(margin, tableY, boxWidth, 12, 3, 3, 'FD');
+        // Patient info rounded dark panel
+        const pillH = 22;
+        const pillW = pageWidth - margin * 2;
+        doc.setFillColor(navy.r, navy.g, navy.b);
+        doc.roundedRect(margin, y, pillW, pillH, 5, 5, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        const patient = currentAppointment?.patientname || 'N/A';
+        const dt = `${currentAppointment?.date || ''}${currentAppointment?.time ? `, ${currentAppointment.time}` : ''}`.trim();
+        doc.text(`Patient Name :`, margin + 8, y + 7);
+        doc.text(patient, margin + 45, y + 7);
+        doc.text(`Date :`, pageWidth - margin - 90, y + 7);
+        doc.setFont('helvetica', 'normal');
+        doc.text(dt || '-', pageWidth - margin - 20, y + 7, { align: 'right' });
+        y += pillH + 10;
+
+        const boxW = pageWidth - margin * 2;
+
+        // Helper to draw light section box with label and content
+        const section = (label, content) => {
+            if (!content) return;
+            ensureY(34);
+            const lines = doc.splitTextToSize(content, boxW - 12);
+            const h = 16 + lines.length * 6;
+            doc.setFillColor(246, 249, 255);
+            doc.roundedRect(margin, y, boxW, h, 4, 4, 'F');
+            doc.setTextColor(gray600.r, gray600.g, gray600.b);
             doc.setFont('helvetica', 'bold');
-            doc.setTextColor(text.r, text.g, text.b);
-            doc.text('Prescribed Medications', margin + 6, tableY + 8);
-            tableY += 16;
+            doc.setFontSize(11);
+            doc.text(`${label} :`, margin + 8, y + 9);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(gray800.r, gray800.g, gray800.b);
+            doc.text(lines, margin + 8, y + 16);
+            y += h + 8;
+        };
 
-            // Column headers
-            const col1 = margin + 6;                 // Medicine
-            const col2 = margin + boxWidth * 0.45;   // Schedule
-            const col3 = margin + boxWidth * 0.68;   // Instruction
-            const col4 = margin + boxWidth * 0.85;   // Days/Qty
-            doc.setFontSize(10);
-            doc.setTextColor(muted.r, muted.g, muted.b);
-            doc.text('Medicine', col1, tableY);
-            doc.text('Schedule', col2, tableY, { align: 'left' });
-            doc.text('Instruction', col3, tableY, { align: 'left' });
-            doc.text('Days / Qty', col4, tableY, { align: 'left' });
-            tableY += 6;
+        const complainVal = (prescriptionData.complain || '').trim();
+        const pastHistoryVal = (prescriptionData.pasHistory || '').trim();
+        const diagnosisVal = (prescriptionData.diagnosis || '').trim();
+        section('Complains', complainVal);
+        section('Past History', pastHistoryVal);
+        section('Dignosis', diagnosisVal);
 
-            doc.setDrawColor(border.r, border.g, border.b);
-            const items = meds.split('\n').filter(Boolean);
-            items.forEach((line, idx) => {
+        // Medicines table styled
+        const rows = (prescriptionData.prescriptionItems || []).map((item, idx) => {
+            const scheduleParts = [];
+            if (item.mo) scheduleParts.push(`MO(${item.moDose})`);
+            if (item.an) scheduleParts.push(`AN(${item.anDose})`);
+            if (item.ev) scheduleParts.push(`EV(${item.evDose})`);
+            if (item.nt) scheduleParts.push(`NT(${item.ntDose})`);
+            return {
+                no: idx + 1,
+                type: (item.type || '').toString().trim() || '-',
+                med: `${item.medicine || ''}`.trim(),
+                sched: scheduleParts.join(', '),
+                instr: item.instruction && item.instruction !== '-SELECT-' ? item.instruction : '-',
+                days: `${item.days || '-'}`,
+                qty: `${item.quantity || '-'}`,
+            };
+        });
+
+        if (rows.length > 0) {
+            ensureY(60);
+            let tableY = y;
+            // header bar
+            doc.setFillColor(navy.r, navy.g, navy.b);
+            doc.roundedRect(margin, tableY, boxW, 12, 3, 3, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.text('No.', margin + 6, tableY + 10);
+            doc.text('Type', margin + 18, tableY + 8);
+            doc.text('Medicine', margin + 42, tableY + 8);
+            doc.text('Schedule', margin + boxW * 0.52, tableY + 8);
+            doc.text('Instruction', margin + boxW * 0.72, tableY + 8);
+            doc.text('Days', margin + boxW * 0.89, tableY + 8);
+            doc.text('Qty', margin + boxW * 0.95, tableY + 8);
+            tableY += 14;
+
+            // rows
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(0, 0, 0);
+            const rowH = 8;
+            rows.forEach((r, i) => {
                 ensureY(rowH + 6);
-                // Alternate row background
-                if (idx % 2 === 0) {
-                    doc.setFillColor(252, 252, 253);
-                    doc.rect(margin, tableY - 5, boxWidth, rowH + 2, 'F');
+                if (i % 2 === 0) {
+                    doc.setFillColor(252, 253, 255);
+                    doc.rect(margin, tableY - 6, boxW, rowH + 4, 'F');
                 }
-                // Parse parts from "Name (type) - schedule - X days - Qty: Y - Instr: Z"
-                const parts = line.split(' - ');
-                let medPart = parts[0] || line;
-                let schedPart = parts[1] || '';
-                // extract instruction part if present
-                let instrPart = '';
-                const instrIdx = parts.findIndex(p => p.startsWith('Instr: '));
-                if (instrIdx >= 0) {
-                    instrPart = parts[instrIdx].replace('Instr: ', '');
-                    parts.splice(instrIdx, 1);
-                }
-                const rightPart = (parts[2] ? parts[2] : '') + (parts[3] ? `, ${parts[3]}` : '');
-                doc.setTextColor(text.r, text.g, text.b);
-                doc.setFont('helvetica', 'normal');
-                doc.text(medPart, col1, tableY);
-                doc.text(schedPart, col2, tableY);
-                doc.text(instrPart || '-', col3, tableY);
-                doc.text(rightPart, col4, tableY);
-                tableY += rowH;
+                doc.text(`${r.no}`, margin + 6, tableY);
+                doc.text(r.type, margin + 18, tableY);
+                const medLines = doc.splitTextToSize(r.med, boxW * 0.45 - 6);
+                doc.text(medLines, margin + 42, tableY);
+                doc.text(r.sched || '-', margin + boxW * 0.52, tableY);
+                const instrLines = doc.splitTextToSize(r.instr || '-', boxW * 0.15);
+                doc.text(instrLines, margin + boxW * 0.72, tableY);
+                doc.text(`${r.days}`, margin + boxW * 0.89, tableY);
+                doc.text(`${r.qty}`, margin + boxW * 0.95, tableY);
+                tableY += Math.max(rowH, (medLines.length - 1) * 6 + rowH);
             });
-
             y = tableY + 6;
         }
 
-        // Section: Instructions
-        if (prescriptionData.instructions) {
+        // Instructions card (bulleted look)
+        if ((prescriptionData.instructions || '').trim()) {
             ensureY(36);
-            const iLines = doc.splitTextToSize(prescriptionData.instructions, boxWidth - 12);
-            const instH = 12 + iLines.length * 6 + 10;
-            // Soft amber background for Instructions
+            const txt = (prescriptionData.instructions || '').trim();
+            const bulletLines = doc.splitTextToSize(txt, boxW - 20);
+            const h = 16 + bulletLines.length * 6 + 6;
             doc.setFillColor(239, 246, 255);
-            doc.roundedRect(margin, y, boxWidth, instH, 3, 3, 'FD');
+            doc.roundedRect(margin, y, boxW, h, 4, 4, 'F');
             doc.setFont('helvetica', 'bold');
-            doc.setTextColor(text.r, text.g, text.b);
-            doc.setFontSize(12);
-            doc.text('Instructions', margin + 6, y + 10);
+            doc.setFontSize(11);
+            doc.setTextColor(gray600.r, gray600.g, gray600.b);
+            doc.text('Instructions :', margin + 8, y + 9);
             doc.setFont('helvetica', 'normal');
-            doc.setTextColor(text.r, text.g, text.b);
-            doc.text(iLines, margin + 6, y + 20);
-            y += instH + 8;
+            doc.setTextColor(gray800.r, gray800.g, gray800.b);
+            // render with simple bullets
+            let by = y + 16;
+            bulletLines.forEach((ln) => {
+                doc.circle(margin + 10, by - 2.5, 0.7, 'F');
+                doc.text(ln, margin + 14, by);
+                by += 6;
+            });
+            y += h + 6;
         }
 
-        // Section: Follow-up
-        if (prescriptionData.followUp) {
-            ensureY(28);
-            const fLines = doc.splitTextToSize(prescriptionData.followUp, boxWidth - 12);
-            const fH = 12 + fLines.length * 6 + 10;
-            // Soft blue background for Follow-up
-            doc.setFillColor(239, 246, 255);
-            doc.roundedRect(margin, y, boxWidth, fH, 3, 3, 'FD');
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(text.r, text.g, text.b);
-            doc.setFontSize(12);
-            doc.text('Follow-up', margin + 6, y + 10);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(text.r, text.g, text.b);
-            doc.text(fLines, margin + 6, y + 20);
-            y += fH + 8;
-        }
+        // Watermark
+        doc.setTextColor(225, 231, 239);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(34);
+        doc.text('HEALTH EASY EMI', margin, pageHeight - 22);
 
-        // Footer
-        ensureY(40);
-        doc.setTextColor(muted.r, muted.g, muted.b);
-        doc.setFont('helvetica', 'italic');
-        doc.setFontSize(9);
-        doc.text('This is a digitally generated prescription from Health EMI Clinic System', pageWidth / 2, y, { align: 'center' });
-        y += 6;
-        doc.text(`Generated on: ${new Date().toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`, pageWidth / 2, y, { align: 'center' });
-
-        // Signature line
-        y += 16;
+        // Signature area
         doc.setDrawColor(border.r, border.g, border.b);
-        doc.line(pageWidth - margin - 70, y, pageWidth - margin, y);
-        y += 6;
-        doc.setTextColor(text.r, text.g, text.b);
+        doc.line(pageWidth - margin - 70, pageHeight - 30, pageWidth - margin, pageHeight - 30);
+        doc.setTextColor(gray800.r, gray800.g, gray800.b);
         doc.setFont('helvetica', 'normal');
-        doc.text(`Dr. ${doctor?.name || 'N/A'}`, pageWidth - margin - 35, y, { align: 'center' });
+        doc.setFontSize(10);
+        doc.text('Signature', pageWidth - margin - 70, pageHeight - 26);
+        doc.setFont('helvetica', 'bold');
+        doc.text(doctorName, pageWidth - margin - 35, pageHeight - 18, { align: 'center' });
 
-        // Output
         const fileName = `prescription_${currentAppointment?.patientname?.replace(/\s+/g, '_') || 'patient'}_${Date.now()}.pdf`;
         const pdfBlob = doc.output('blob');
         return { pdfBlob, fileName };
     };
+
+    // Reschedule helpers (restored)
     const formattedDateTime = selectedDate
         ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
         : '';
-    const reschedule_appointment = (date) => {
-        // Split at the space before the time
+
+    const reschedule_appointment = () => {
         const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
-        // Combine time + meridiem
         const timeWithMeridiem = `${timePart} ${meridiem}`;
-        // console.log(apt_data, datePart, timeWithMeridiem )
-        // console.log(schedule_data)
 
         setloading(true);
         axios({
@@ -580,28 +557,25 @@ const D_Appointment = () => {
                 time: timeWithMeridiem
             }
         }).then((res) => {
-            // console.log('doctor ', res.data.Data)
             Swal.fire({
-                title: "Appointment Rescheduled Successfully!",
+                title: 'Appointment Rescheduled Successfully!',
                 text: `New appointment time: ${datePart} at ${timeWithMeridiem}`,
-                icon: "success",
+                icon: 'success',
             });
-            appointmentlist()
-            handlerescheduleClose()
+            appointmentlist();
+            handlerescheduleClose();
         }).catch(function (error) {
             console.log(error);
-            // Show error alert with specific message
             Swal.fire({
-                title: "Reschedule Failed!",
-                text: error.response?.data?.Message || "This time slot may already be booked or unavailable. Please select a different time.",
-                icon: "error",
-                confirmButtonText: "Try Again"
+                title: 'Reschedule Failed!',
+                text: error.response?.data?.Message || 'This time slot may already be booked or unavailable. Please select a different time.',
+                icon: 'error',
+                confirmButtonText: 'Try Again'
             });
         }).finally(() => {
-            setloading(false)
+            setloading(false);
         });
-
-    }
+    };
 
     const renderTooltip = (label) => (props) => (
         <Tooltip id="button-tooltip" {...props}>

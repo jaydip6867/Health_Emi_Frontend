@@ -987,13 +987,18 @@ const D_Surgery = () => {
                               type="text"
                               value={inclusiveInput}
                               onChange={(e) =>
-                                setInclusiveInput(e.target.value)
+                                setInclusiveInput(e.target.value.replace(/,/g, ''))
                               }
                               placeholder="Type and press Enter to add item"
                               onKeyPress={(e) =>
                                 e.key === "Enter" &&
                                 (e.preventDefault(), handleAddInclusive())
                               }
+                              onKeyDown={(e) => {
+                                if (e.key === ',') {
+                                  e.preventDefault();
+                                }
+                              }}
                               className="form-control"
                               style={{ fontSize: "0.95rem" }}
                             />
@@ -1061,13 +1066,18 @@ const D_Surgery = () => {
                               type="text"
                               value={exclusiveInput}
                               onChange={(e) =>
-                                setExclusiveInput(e.target.value)
+                                setExclusiveInput(e.target.value.replace(/,/g, ''))
                               }
                               placeholder="Type and press Enter to add item"
                               onKeyPress={(e) =>
                                 e.key === "Enter" &&
                                 (e.preventDefault(), handleAddExclusive())
                               }
+                              onKeyDown={(e) => {
+                                if (e.key === ',') {
+                                  e.preventDefault();
+                                }
+                              }}
                               className="form-control"
                               style={{ fontSize: "0.95rem" }}
                             />
@@ -1326,7 +1336,7 @@ const D_Surgery = () => {
                           <div className='label_box'>
                             {v?.inclusive ? (
                               <ul className="list-unstyled mb-0">
-                                {v.inclusive.split(',').map((item, index) => (
+                                {v.inclusive.split(', ').map((item, index) => (
                                   <li key={index} className="mb-1">
                                     <svg width="15" height="10" viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                                       <path d="M1.16669 5.00016L5.33335 9.16683L13.6667 0.833496" stroke="#2E7D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -1655,12 +1665,17 @@ const D_Surgery = () => {
                           <Form.Control
                             type="text"
                             value={inclusiveInput}
-                            onChange={(e) => setInclusiveInput(e.target.value)}
+                            onChange={(e) => setInclusiveInput(e.target.value.replace(/,/g, ''))}
                             placeholder="Type and press Enter to add item"
                             onKeyPress={(e) =>
                               e.key === "Enter" &&
                               (e.preventDefault(), handleAddInclusive())
                             }
+                            onKeyDown={(e) => {
+                              if (e.key === ',') {
+                                e.preventDefault();
+                              }
+                            }}
                             className="form-control"
                             style={{ fontSize: "0.95rem" }}
                           />
@@ -1728,12 +1743,17 @@ const D_Surgery = () => {
                           <Form.Control
                             type="text"
                             value={exclusiveInput}
-                            onChange={(e) => setExclusiveInput(e.target.value)}
+                            onChange={(e) => setExclusiveInput(e.target.value.replace(/,/g, ''))}
                             placeholder="Type and press Enter to add item"
                             onKeyPress={(e) =>
                               e.key === "Enter" &&
                               (e.preventDefault(), handleAddExclusive())
                             }
+                            onKeyDown={(e) => {
+                              if (e.key === ',') {
+                                e.preventDefault();
+                              }
+                            }}
                             className="form-control"
                             style={{ fontSize: "0.95rem" }}
                           />
