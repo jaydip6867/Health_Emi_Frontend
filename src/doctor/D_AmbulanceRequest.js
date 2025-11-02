@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Form, Row, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import DoctorSidebar from "./DoctorSidebar";
 import DoctorNav from "./DoctorNav";
@@ -70,6 +70,19 @@ const D_AmbulanceRequest = () => {
     dropaddress: "",
     drop_longitude: "",
     drop_latitude: "",
+  });
+
+  const [showDetails, setShowDetails] = useState(false);
+  const [details, setDetails] = useState({
+    name: "",
+    mobile: "",
+    pickup_house_number: "",
+    drop_house_number: "",
+    book_for: "myself",
+    ambulance_type: "Ambulance",
+    price: "",
+    gst_per: 18,
+    distance: 0,
   });
 
   // Map state/refs
@@ -508,12 +521,27 @@ const D_AmbulanceRequest = () => {
     return true;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) {
-      Swal.fire({ title: "Please fill all fields", icon: "warning" });
-      return;
-    }
+  const haversineKm = (lat1, lon1, lat2, lon2) => {
+    const toRad = (v) => (v * Math.PI) / 180;
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Number((R * c).toFixed(2));
+  };
+
+  const validateDetails = () => {
+    if (!details.name || !details.mobile || !details.price) return false;
+    if (!/^\+?\d{7,15}$/.test(String(details.mobile))) return false;
+    if (isNaN(Number(details.price))) return false;
+    return true;
+  };
+
+  const performSave = async () => {
     setLoading(true);
     await axios({
       method: "post",
@@ -528,11 +556,18 @@ const D_AmbulanceRequest = () => {
         dropaddress: form.dropaddress,
         drop_longitude: Number(form.drop_longitude),
         drop_latitude: Number(form.drop_latitude),
+        name: details.name,
+        mobile: details.mobile,
+        pickup_house_number: details.pickup_house_number,
+        drop_house_number: details.drop_house_number,
+        book_for: details.book_for,
+        ambulance_type: details.ambulance_type,
+        price: Number(details.price),
+        gst_per: Number(details.gst_per),
+        distance: Number(details.distance),
       },
     })
       .then((res) => {
-    
-
         if (res.data && res.data.Data) {
           localStorage.setItem(
             "lastAmbulanceRequest",
@@ -543,21 +578,16 @@ const D_AmbulanceRequest = () => {
             })
           );
         }
-        // Clear the map markers
         if (mapRef.current) {
-          // Remove pickup marker
           if (pickupMarkerRef.current) {
             mapRef.current.removeLayer(pickupMarkerRef.current);
             pickupMarkerRef.current = null;
           }
-          // Remove drop marker
           if (dropMarkerRef.current) {
             mapRef.current.removeLayer(dropMarkerRef.current);
             dropMarkerRef.current = null;
           }
         }
-
-        // Reset the form
         setForm({
           pickupaddress: "",
           pickup_longitude: "",
@@ -566,11 +596,17 @@ const D_AmbulanceRequest = () => {
           drop_longitude: "",
           drop_latitude: "",
         });
-        // Swal.fire({
-        //   title: "Ambulance Requested",
-        //   text: "Your request has been submitted successfully.",
-        //   icon: "success",
-        // });
+        setDetails({
+          name: "",
+          mobile: "",
+          pickup_house_number: "",
+          drop_house_number: "",
+          book_for: "",
+          ambulance_type: "Ambulance",
+          price: "",
+          gst_per: 18,
+          distance: 0,
+        });
         navigate(`/doctor/ambulance-request/status/${res.data.Data.requestId}`);
       })
       .catch((error) => {
@@ -584,6 +620,22 @@ const D_AmbulanceRequest = () => {
         });
       })
       .finally(() => setLoading(false));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) {
+      Swal.fire({ title: "Please fill all fields", icon: "warning" });
+      return;
+    }
+    const dist = haversineKm(
+      Number(form.pickup_latitude),
+      Number(form.pickup_longitude),
+      Number(form.drop_latitude),
+      Number(form.drop_longitude)
+    );
+    setDetails((prev) => ({ ...prev, distance: dist, gst_per: 18 }));
+    setShowDetails(true);
   };
 
   return (
@@ -906,6 +958,137 @@ const D_AmbulanceRequest = () => {
           </Col>
         </Row>
       </Container>
+      <Modal show={showDetails} onHide={() => setShowDetails(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Passenger & Fare Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Row className="g-3">
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control
+                    value={details.name}
+                    onChange={(e) => setDetails((p) => ({ ...p, name: e.target.value }))}
+                    placeholder="Full name"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Mobile</Form.Label>
+                  <Form.Control
+                    value={details.mobile}
+                    onChange={(e) => setDetails((p) => ({ ...p, mobile: e.target.value }))}
+                    placeholder="e.g. +911234567890"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Pickup House No.</Form.Label>
+                  <Form.Control
+                    value={details.pickup_house_number}
+                    onChange={(e) => setDetails((p) => ({ ...p, pickup_house_number: e.target.value }))}
+                    placeholder="House/Flat no."
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Drop House No.</Form.Label>
+                  <Form.Control
+                    value={details.drop_house_number}
+                    onChange={(e) => setDetails((p) => ({ ...p, drop_house_number: e.target.value }))}
+                    placeholder="House/Flat no."
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Book For</Form.Label>
+                  <div>
+                    {["myself", "other"].map((opt) => (
+                      <Form.Check
+                        inline
+                        key={opt}
+                        type="radio"
+                        label={opt}
+                        name="book_for"
+                        checked={details.book_for === opt}
+                        onChange={() => setDetails((p) => ({ ...p, book_for: opt }))}
+                      />
+                    ))}
+                  </div>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Ambulance Type</Form.Label>
+                  <div>
+                    {["Ambulance", "Bike", "Rickshaw", "Cab"].map((t) => (
+                      <Form.Check
+                        inline
+                        key={t}
+                        type="radio"
+                        label={t}
+                        name="ambulance_type"
+                        checked={details.ambulance_type === t}
+                        onChange={() => setDetails((p) => ({ ...p, ambulance_type: t }))}
+                      />
+                    ))}
+                  </div>
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label>Distance (km)</Form.Label>
+                  <Form.Control value={details.distance} readOnly />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label>Price</Form.Label>
+                  <Form.Control
+                    value={details.price}
+                    onChange={(e) => setDetails((p) => ({ ...p, price: e.target.value }))}
+                    placeholder="Base fare"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label>GST %</Form.Label>
+                  <Form.Control
+                    value={details.gst_per}
+                    readOnly
+                    disabled
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDetails(false)}>
+            Cancel
+          </Button>
+          <Button
+            style={{ backgroundColor: "#4F46E5" }}
+            onClick={() => {
+              if (!validateDetails()) {
+                Swal.fire({ title: "Fill required fields correctly", icon: "warning" });
+                return;
+              }
+              setShowDetails(false);
+              performSave();
+            }}
+          >
+            Confirm & Request
+          </Button>
+        </Modal.Footer>
+      </Modal>
       {loading ? <Loader /> : ""}
     </>
   );
