@@ -189,58 +189,58 @@ const Amb_Ridedetails = () => {
     };
   }, [ride]);
 
-  // Draw or update route
-  const drawRoute = (fromLatLng, toLatLng) => {
+  // Draw or update route with multiple waypoints (current -> pickup -> drop)
+  const drawRoute = async (fromLatLng, toLatLng, viaPoint = null) => {
     if (!map.current) return;
 
-    // If control exists, just update waypoints (avoid tearing it down mid-requests)
+    // Clean up existing route if any
     if (routeControlRef.current) {
-      try {
-        routeControlRef.current.setWaypoints([fromLatLng, toLatLng]);
-        return;
-      } catch (e) {
-        // Fallback to recreate if updating fails
-        try { map.current && map.current.removeControl(routeControlRef.current); } catch {}
-        routeControlRef.current = null;
-      }
+      try { map.current.removeLayer(routeControlRef.current); } catch {}
+      routeControlRef.current = null;
     }
 
-    // Create once
-    const ctrl = L.Routing.control({
-      waypoints: [fromLatLng, toLatLng],
-      addWaypoints: false,
-      draggableWaypoints: false,
-      fitSelectedRoutes: true,
-      show: false,
-      lineOptions: { styles: [{ color: '#0d6efd', weight: 6, opacity: 0.9 }] },
-      router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1' }),
-      createMarker: () => null,
-    });
-
-    ctrl.on('routesfound', (e) => {
-      try {
-        const coords = e?.routes?.[0]?.coordinates || [];
-        routeCoordsRef.current = coords.map(c => [c.lat, c.lng]);
-      } catch {}
-    });
-
-    ctrl.on('routingerror', () => {
-      // Retry after a short delay but only if map/control still valid
-      setTimeout(() => {
-        if (!map.current) return;
-        if (routeControlRef.current === ctrl) {
-          try {
-            const cur = (currentLocation.lat && currentLocation.lng)
-              ? L.latLng(currentLocation.lat, currentLocation.lng)
-              : fromLatLng;
-            ctrl.setWaypoints([cur, toLatLng]);
-          } catch {}
-        }
-      }, 2000);
-    });
-
-    ctrl.addTo(map.current);
-    routeControlRef.current = ctrl;
+    try {
+      // Format coordinates for OSRM API
+      let coords = `${fromLatLng.lng},${fromLatLng.lat}`;
+      
+      // Add via point if provided (pickup location)
+      if (viaPoint) {
+        coords += `;${viaPoint.lng},${viaPoint.lat}`;
+      }
+      
+      // Add final destination (drop location)
+      coords += `;${toLatLng.lng},${toLatLng.lat}`;
+      
+      const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.routes && data.routes.length > 0) {
+        const route = data.routes[0];
+        const routeCoordinates = route.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+        routeCoordsRef.current = routeCoordinates;
+        
+        // Draw the route on the map
+        const routeLayer = L.geoJSON({
+          type: 'Feature',
+          properties: {},
+          geometry: route.geometry
+        }, {
+          style: {
+            color: '#0d6efd',
+            weight: 6,
+            opacity: 0.9
+          }
+        }).addTo(map.current);
+        
+        routeControlRef.current = routeLayer;
+      }
+    } catch (error) {
+      console.error('Error drawing route:', error);
+      // Retry after a delay
+      setTimeout(() => drawRoute(fromLatLng, toLatLng, viaPoint), 2000);
+    }
   };
 
   // Helpers: heading based on nearest route coordinate
@@ -270,9 +270,32 @@ const Amb_Ridedetails = () => {
     lastTargetRef.current = targetLatLng;
     saveRouteState({ rideId: ride?._id, target: { lat: targetLatLng.lat, lng: targetLatLng.lng } });
 
-    // initial route from current to target
+    // Get pickup and drop locations from ride data
+    let pickupLatLng = null;
+    let dropLatLng = null;
+    
+    if (ride?.pickuplocation?.coordinates) {
+      const [plng, plat] = ride.pickuplocation.coordinates;
+      pickupLatLng = L.latLng(plat, plng);
+    }
+    
+    if (ride?.droplocation?.coordinates) {
+      const [dlng, dlat] = ride.droplocation.coordinates;
+      dropLatLng = L.latLng(dlat, dlng);
+    }
+
+    // Determine if we're going to pickup or drop location
+    const isGoingToPickup = targetLatLng === pickupLatLng;
+    
+    // initial route from current to target, including via points if needed
     const cur = L.latLng(currentLocation.lat || 0, currentLocation.lng || 0);
-    drawRoute(cur, targetLatLng);
+    
+    // If going to pickup and we have a drop location, include it in the route
+    const viaPoint = isGoingToPickup && dropLatLng ? pickupLatLng : null;
+    const finalTarget = isGoingToPickup && dropLatLng ? dropLatLng : targetLatLng;
+    
+    drawRoute(cur, finalTarget, viaPoint);
+    
     let lastRouteUpdate = Date.now();
     const ROUTE_UPDATE_INTERVAL = 5000; // Update route every 5 seconds
 
