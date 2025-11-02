@@ -9,9 +9,11 @@ import CryptoJS from "crypto-js";
 import Loader from "../Loader";
 import {
   FaAmbulance,
+  FaHome,
   FaLocationArrow,
   FaMapMarkerAlt,
   FaRoute,
+  FaUserPlus,
 } from "react-icons/fa";
 
 // Leaflet (no react-leaflet) imports
@@ -79,7 +81,7 @@ const D_AmbulanceRequest = () => {
     pickup_house_number: "",
     drop_house_number: "",
     book_for: "myself",
-    ambulance_type: "Ambulance",
+    ambulance_type: "",
     price: "",
     gst_per: 18,
     distance: 0,
@@ -928,12 +930,90 @@ const D_AmbulanceRequest = () => {
                         </Button>
                       </Col>
                     </Row>
+               
+                    {/* House Numbers and Booking For Section */}
+                    <div className="mt-4 p-3 rounded" style={{ backgroundColor: '#f8f9fa', border: '1px solid #e9ecef' }}>
+                      <h6 className="mb-3" style={{ color: '#495057', fontWeight: 600 }}>Additional Details</h6>
+                      <Row className="g-3">
+                        <Col md={6}>
+                          <Form.Group>
+                            <Form.Label className="d-flex align-items-center">
+                              <FaHome className="me-2" style={{ color: '#4F46E5' }} />
+                              Pickup House/Flat No.
+                            </Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="Enter house/flat number"
+                              value={details.pickup_house_number}
+                              onChange={(e) => setDetails(p => ({ ...p, pickup_house_number: e.target.value }))}
+                              className="border-0 shadow-sm"
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                          <Form.Group>
+                            <Form.Label className="d-flex align-items-center">
+                              <FaHome className="me-2" style={{ color: '#4F46E5' }} />
+                              Drop House/Flat No.
+                            </Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="Enter house/flat number"
+                              value={details.drop_house_number}
+                              onChange={(e) => setDetails(p => ({ ...p, drop_house_number: e.target.value }))}
+                              className="border-0 shadow-sm"
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col md={12}>
+                          <Form.Group>
+                            <Form.Label className="d-flex align-items-center mb-2">
+                              <FaUserPlus className="me-2" style={{ color: '#4F46E5' }} />
+                              Booking For
+                            </Form.Label>
+                            <div className="d-flex gap-4">
+                              {['myself', 'other'].map((option) => (
+                                <div 
+                                  key={option}
+                                  className={`d-flex align-items-center p-2 rounded ${details.book_for === option ? 'bg-primary text-white' : 'bg-white shadow-sm'}`}
+                                  style={{
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    border: `1px solid ${details.book_for === option ? '#4F46E5' : '#dee2e6'}`,
+                                    flex: 1,
+                                    justifyContent: 'center'
+                                  }}
+                                  onClick={() => setDetails(p => ({ ...p, book_for: option }))}
+                                >
+                                  <Form.Check
+                                    type="radio"
+                                    id={`book_for_${option}`}
+                                    name="book_for"
+                                    label={option.charAt(0).toUpperCase() + option.slice(1)}
+                                    checked={details.book_for === option}
+                                    onChange={() => {}}
+                                    className="me-2"
+                                    style={{ cursor: 'pointer' }}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                    </div>
 
-                    <div className="d-flex justify-content-end mt-2">
+                    <div className="d-flex justify-content-end mt-4">
                       <Button
                         type="submit"
-                        className="px-4"
-                        style={{ backgroundColor: "#4F46E5" }}
+                        className="px-4 py-2"
+                        style={{ 
+                          backgroundColor: "#4F46E5",
+                          border: 'none',
+                          fontWeight: 500,
+                          borderRadius: '8px',
+                          boxShadow: '0 2px 4px rgba(79, 70, 229, 0.2)'
+                        }}
                         disabled={loading || !token}
                       >
                         {loading ? (
@@ -943,6 +1023,7 @@ const D_AmbulanceRequest = () => {
                             aria-hidden="true"
                           ></span>
                         ) : null}
+                        <FaAmbulance className="me-2" />
                         Request Ambulance
                       </Button>
                     </div>

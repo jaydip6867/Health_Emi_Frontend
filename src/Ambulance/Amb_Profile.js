@@ -34,7 +34,7 @@ const Amb_Profile = () => {
         const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
         const decrypted = bytes.toString(CryptoJS.enc.Utf8);
         const data = JSON.parse(decrypted);
-
+        console.log(data.accessToken);
         if (!data || !data.accessToken) {
           navigate("/ambulance");
           return;
