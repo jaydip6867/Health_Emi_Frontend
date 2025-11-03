@@ -1046,15 +1046,15 @@ const D_AmbulanceRequest = () => {
                             <h6 className="m-0">Select Vehicle</h6>
                           </div>
                           <div className="small text-muted">
-                            Est. Fare: {details.price !== "" && details.price !== null ? `₹${details.price}` : "—"} • Dist: {details.distance || 0} km
+                            {/* Est. Fare: {details.price !== "" && details.price !== null ? `₹${details.price}` : "—"} */}• Dist: {details.distance || 0} km 
                           </div>
                         </div>
                         <div className="bg-white">
                           {[
-                            { key: "Ambulance", label: "Ambulance", icon: <FaAmbulance size={28} className="me-3" /> , sub: "Emergency medical van", eta: "2 min" },
-                            { key: "Bike", label: "Bike", icon: <FaMotorcycle size={28} className="me-3" /> , sub: "Beat the traffic on a bike", eta: "6 min" },
-                            { key: "Rickshaw", label: "Rickshaw", icon: <FaCar size={28} className="me-3" /> , sub: "Quick auto ride in town", eta: "2 min" },
-                            { key: "Cab", label: "Cab", icon: <FaCar size={28} className="me-3" /> , sub: "Comfy, economical cars", eta: "2 min" },
+                            { key: "Ambulance", label: "Ambulance", icon: <FaAmbulance size={28} className="me-3" /> , sub: "Emergency medical van"},
+                            { key: "Bike", label: "Bike", icon: <FaMotorcycle size={28} className="me-3" /> , sub: "Beat the traffic on a bike" },
+                            { key: "Rickshaw", label: "Rickshaw", icon: <FaCar size={28} className="me-3" /> , sub: "Quick auto ride in town"},
+                            { key: "Cab", label: "Cab", icon: <FaCar size={28} className="me-3" /> , sub: "Comfy, economical cars"},
                           ].map((opt, idx) => {
                             const price = vehiclePrices ? vehiclePrices[opt.key] : null;
                             const selected = details.ambulance_type === opt.key;
@@ -1080,7 +1080,7 @@ const D_AmbulanceRequest = () => {
                                 </div>
                                 <div className="text-end">
                                   <div className="fw-semibold">{price !== undefined && price !== null ? `₹${price}` : "—"}</div>
-                                  <div className="text-muted" style={{ fontSize: "0.8rem" }}>{opt.eta}</div>
+                                  <div className="text-muted" style={{ fontSize: "0.8rem" }}>GST incl.</div>
                                 </div>
                               </div>
                             );
@@ -1184,7 +1184,7 @@ const D_AmbulanceRequest = () => {
                 </Form.Group>
               </Col>
               
-              <Col md={4}>
+              {/* <Col md={4}> 
                 <Form.Group>
                   <Form.Label>Distance (km)</Form.Label>
                   <Form.Control value={details.distance} readOnly />
@@ -1209,7 +1209,7 @@ const D_AmbulanceRequest = () => {
                     disabled
                   />
                 </Form.Group>
-              </Col>
+              </Col>*/}
             </Row>
           </Form>
         </Modal.Body>
