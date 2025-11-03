@@ -535,11 +535,53 @@ const D_AmbulanceRequest = () => {
   };
 
   const validateDetails = () => {
-    if (!details.name || !details.mobile || !details.price) return false;
+    if (!details.name || !details.mobile) return false;
     if (!/^\+?\d{7,15}$/.test(String(details.mobile))) return false;
+    if (details.price === "" || details.price === null || details.price === undefined) return false;
     if (isNaN(Number(details.price))) return false;
     return true;
   };
+
+  const fetchPrice = async (type, distanceKm) => {
+    if (!token) return;
+    try {
+      const res = await axios({
+        method: "post",
+        url: "https://healtheasy-o25g.onrender.com/doctor/ambulancerequests/getprice",
+        headers: { Authorization: token },
+        data: { distance: distanceKm },
+      });
+      const payload = res.data.Data;
+      // console.log(res.data.Data);
+      const typeKeyMap = {
+        Ambulance: "ambulance_price",
+        Bike: "bike_price",
+        Rickshaw: "rickshaw_price",
+        Cab: "cab_price",
+      };
+      const key = typeKeyMap[type] || "ambulance_price";
+      const nextPrice = payload[key];
+      const nextGst = payload.gst_per;
+      setDetails((p) => ({
+        ...p,
+        price:
+          nextPrice !== undefined && nextPrice !== null && !isNaN(Number(nextPrice))
+            ? Number(nextPrice)
+            : p.price,
+        gst_per:
+          nextGst !== undefined && nextGst !== null && !isNaN(Number(nextGst))
+            ? Number(nextGst)
+            : p.gst_per,
+      }));
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    if (!showDetails) return;
+    if (!details.ambulance_type) return;
+    fetchPrice(details.ambulance_type, details.distance);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showDetails, details.ambulance_type, token]);
 
   const performSave = async () => {
     setLoading(true);
@@ -1053,7 +1095,7 @@ const D_AmbulanceRequest = () => {
                   <Form.Control
                     value={details.price}
                     onChange={(e) => setDetails((p) => ({ ...p, price: e.target.value }))}
-                    placeholder="Base fare"
+                    placeholder="Base fare" disabled
                   />
                 </Form.Group>
               </Col>
