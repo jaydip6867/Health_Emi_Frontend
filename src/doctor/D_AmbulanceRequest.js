@@ -12,6 +12,8 @@ import {
   FaLocationArrow,
   FaMapMarkerAlt,
   FaRoute,
+  FaMotorcycle,
+  FaCar,
 } from "react-icons/fa";
 
 // Leaflet (no react-leaflet) imports
@@ -105,6 +107,8 @@ const D_AmbulanceRequest = () => {
   const [dropSuggestions, setDropSuggestions] = useState([]);
   const [showDropSuggestions, setShowDropSuggestions] = useState(false);
   const dropDebounceRef = useRef(null);
+
+  const [vehiclePrices, setVehiclePrices] = useState(null);
 
   // Reverse geocode via Nominatim (returns display name string)
   const reverseGeocode = async (lng, lat) => {
@@ -542,6 +546,31 @@ const D_AmbulanceRequest = () => {
     return true;
   };
 
+  // Auto compute distance once both locations are available
+  useEffect(() => {
+    const hasPickup =
+      form.pickup_latitude && form.pickup_longitude && form.pickupaddress;
+    const hasDrop = form.drop_latitude && form.drop_longitude && form.dropaddress;
+    if (hasPickup && hasDrop) {
+      const dist = haversineKm(
+        Number(form.pickup_latitude),
+        Number(form.pickup_longitude),
+        Number(form.drop_latitude),
+        Number(form.drop_longitude)
+      );
+      setDetails((p) => ({ ...p, distance: dist }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.pickup_latitude, form.pickup_longitude, form.drop_latitude, form.drop_longitude, form.pickupaddress, form.dropaddress]);
+
+  // Fetch all vehicle prices when distance is available
+  useEffect(() => {
+    if (Number(details.distance) > 0 && token) {
+      fetchAllPrices(details.distance);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [details.distance, token]);
+
   const fetchPrice = async (type, distanceKm) => {
     if (!token) return;
     try {
@@ -572,6 +601,35 @@ const D_AmbulanceRequest = () => {
           nextGst !== undefined && nextGst !== null && !isNaN(Number(nextGst))
             ? Number(nextGst)
             : p.gst_per,
+      }));
+    } catch (e) {}
+  };
+
+  const fetchAllPrices = async (distanceKm) => {
+    if (!token) return;
+    try {
+      const res = await axios({
+        method: "post",
+        url: "https://healtheasy-o25g.onrender.com/doctor/ambulancerequests/getprice",
+        headers: { Authorization: token },
+        data: { distance: Math.round(distanceKm) },
+      });
+      const p = res.data?.Data || {};
+      const prices = {
+        Ambulance: p.ambulance_price,
+        Bike: p.bike_price,
+        Rickshaw: p.rickshaw_price,
+        Cab: p.cab_price,
+      };
+      setVehiclePrices(prices);
+      console.log(distanceKm, res.data);
+      setDetails((prev) => ({
+        ...prev,
+        price:
+          prices[prev.ambulance_type] !== undefined && prices[prev.ambulance_type] !== null
+            ? Number(prices[prev.ambulance_type])
+            : prev.price,
+        gst_per: p.gst_per !== undefined && p.gst_per !== null ? Number(p.gst_per) : prev.gst_per,
       }));
     } catch (e) {}
   };
@@ -679,6 +737,14 @@ const D_AmbulanceRequest = () => {
     setDetails((prev) => ({ ...prev, distance: dist, gst_per: 18 }));
     setShowDetails(true);
   };
+
+  const hasBothLocations =
+    !!form.pickupaddress &&
+    !!form.dropaddress &&
+    !!form.pickup_latitude &&
+    !!form.pickup_longitude &&
+    !!form.drop_latitude &&
+    !!form.drop_longitude;
 
   return (
     <>
@@ -971,6 +1037,58 @@ const D_AmbulanceRequest = () => {
                       </Col>
                     </Row>
 
+                    {/* Vehicle type selection moved from modal to here */}
+                    {hasBothLocations && (
+                      <div className="mt-2">
+                        <div className="d-flex align-items-center justify-content-between mb-2" style={{ color: "#374151" }}>
+                          <div className="d-flex align-items-center">
+                            <FaAmbulance className="me-2" />
+                            <h6 className="m-0">Select Vehicle</h6>
+                          </div>
+                          <div className="small text-muted">
+                            Est. Fare: {details.price !== "" && details.price !== null ? `₹${details.price}` : "—"} • Dist: {details.distance || 0} km
+                          </div>
+                        </div>
+                        <div className="bg-white">
+                          {[
+                            { key: "Ambulance", label: "Ambulance", icon: <FaAmbulance size={28} className="me-3" /> , sub: "Emergency medical van", eta: "2 min" },
+                            { key: "Bike", label: "Bike", icon: <FaMotorcycle size={28} className="me-3" /> , sub: "Beat the traffic on a bike", eta: "6 min" },
+                            { key: "Rickshaw", label: "Rickshaw", icon: <FaCar size={28} className="me-3" /> , sub: "Quick auto ride in town", eta: "2 min" },
+                            { key: "Cab", label: "Cab", icon: <FaCar size={28} className="me-3" /> , sub: "Comfy, economical cars", eta: "2 min" },
+                          ].map((opt, idx) => {
+                            const price = vehiclePrices ? vehiclePrices[opt.key] : null;
+                            const selected = details.ambulance_type === opt.key;
+                            return (
+                              <div
+                                key={opt.key}
+                                className={`d-flex align-items-center justify-content-between p-3 border rounded ${selected ? "shadow-sm" : ""} mt-2`}
+                                style={{ cursor: "pointer", backgroundColor: selected ? "#EEF2FF" : "#fff" }}
+                                onClick={() =>
+                                  setDetails((p) => ({
+                                    ...p,
+                                    ambulance_type: opt.key,
+                                    price: price !== undefined && price !== null ? Number(price) : p.price,
+                                  }))
+                                }
+                              >
+                                <div className="d-flex align-items-center">
+                                  {opt.icon}
+                                  <div>
+                                    <div className="fw-semibold">{opt.label}</div>
+                                    <div className="text-muted" style={{ fontSize: "0.8rem" }}>{opt.sub}</div>
+                                  </div>
+                                </div>
+                                <div className="text-end">
+                                  <div className="fw-semibold">{price !== undefined && price !== null ? `₹${price}` : "—"}</div>
+                                  <div className="text-muted" style={{ fontSize: "0.8rem" }}>{opt.eta}</div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="d-flex justify-content-end mt-2">
                       <Button
                         type="submit"
@@ -1065,24 +1183,7 @@ const D_AmbulanceRequest = () => {
                   </div>
                 </Form.Group>
               </Col>
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Ambulance Type</Form.Label>
-                  <div>
-                    {["Ambulance", "Bike", "Rickshaw", "Cab"].map((t) => (
-                      <Form.Check
-                        inline
-                        key={t}
-                        type="radio"
-                        label={t}
-                        name="ambulance_type"
-                        checked={details.ambulance_type === t}
-                        onChange={() => setDetails((p) => ({ ...p, ambulance_type: t }))}
-                      />
-                    ))}
-                  </div>
-                </Form.Group>
-              </Col>
+              
               <Col md={4}>
                 <Form.Group>
                   <Form.Label>Distance (km)</Form.Label>
