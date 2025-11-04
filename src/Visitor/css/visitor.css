@@ -1577,3 +1577,24 @@ h6 {
     aspect-ratio: 16/6;
     object-fit: cover;
 }
+
+.ambulance_banner{
+    /* padding: 5rem 0; */
+    background: #E6DFD0;
+    /* background-image: url('../assets/book-ambulance-banner.png');
+    background-position: right;
+    background-size: auto 100%;
+    background-repeat: no-repeat; */
+}
+.ambulance_gradient{
+    position: relative;
+}
+.ambulance_gradient::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, rgb(230, 223, 208) 0%, rgba(230, 223, 208,0) 100%);
+}

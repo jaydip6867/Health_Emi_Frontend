@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Card, Col, Container, Row } from 'react-bootstrap'
+import { Card, Col, Container, Row } from 'react-bootstrap'
 import NavBar from './Component/NavBar'
 import FooterBar from './Component/FooterBar'
 import AppDownload from './Component/AppDownload'
@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import SearchBox from './Component/SearchBox'
 import Speciality from './Component/Speciality'
 import HomeSlider from './Component/HomeSlider'
+import FunctionalitySec from './Component/FunctionalitySec'
 
 const Home = () => {
 
@@ -69,42 +70,7 @@ const Home = () => {
         <SearchBox />
       </section>
       <section className='spacer-y'>
-        <Container>
-          <Row className='justify-content-center g-4'>
-            <Col xs={12} sm={6} lg={3}>
-              <Card className='functionality_box'>
-                <Card.Img src={require('./assets/find-doctor-image.png')} alt='video consultant' />
-                <Card.Body>
-                  <Card.Title><Link to='/compare-doctor' className='d-flex align-items-center w-100 justify-content-between'>Compare Doctor <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col xs={12} sm={6} lg={3}>
-              <Card className='functionality_box'>
-                <Card.Img src={require('./assets/video-consultant-image.png')} alt='video consultant' />
-                <Card.Body>
-                  <Card.Title><Link to='/consult' className='d-flex align-items-center w-100 justify-content-between'>Video Consultant <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col xs={12} sm={6} lg={3}>
-              <Card className='functionality_box'>
-                <Card.Img variant="top" src={require('./assets/surgeries-image.png')} alt='video consultant' />
-                <Card.Body>
-                  <Card.Title><Link to='/surgery' className='d-flex align-items-center w-100 justify-content-between'>Surgeries <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col xs={12} sm={6} lg={3}>
-              <Card className='functionality_box'>
-                <Card.Img src={require('./assets/book-ambulance-image.png')} alt='video consultant' />
-                <Card.Body>
-                  <Card.Title>Book Ambulance <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-        </Container>
+        <FunctionalitySec />
       </section>
       {/* testimonial section */}
       <section className='spacer-t position-relative'>

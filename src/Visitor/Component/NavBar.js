@@ -64,6 +64,13 @@ const NavBar = ({ logindata }) => {
               >
                 Home
               </Link>
+              <Link
+                to="/ambulancepage"
+                className={`nav-link ${isActive('/ambulancepage')}`}
+                onClick={closeNav}
+              >
+                Ambulance
+              </Link>
               {/* <Link
                 to="/about"
                 className={`nav-link ${isActive('/about')}`}
