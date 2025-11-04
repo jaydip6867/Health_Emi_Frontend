@@ -86,6 +86,7 @@ const D_AmbulanceRequest = () => {
     price: "",
     gst_per: 18,
     distance: 0,
+    platform_fee: 50,
   });
 
   // Map state/refs
@@ -666,6 +667,7 @@ const D_AmbulanceRequest = () => {
         price: Number(details.price),
         gst_per: Number(details.gst_per),
         distance: Number(details.distance),
+        platform_fee: Number(details.platform_fee),
       },
     })
       .then((res) => {
@@ -707,6 +709,7 @@ const D_AmbulanceRequest = () => {
           price: "",
           gst_per: 18,
           distance: 0,
+          platform_fee: 50,
         });
         navigate(`/doctor/ambulance-request/status/${res.data.Data.requestId}`);
       })
@@ -1189,6 +1192,17 @@ const D_AmbulanceRequest = () => {
                       />
                     ))}
                   </div>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Platform Fee (₹)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    min="0"
+                    value={details.platform_fee}
+                    onChange={(e) => setDetails((p) => ({ ...p, platform_fee: e.target.value }))}
+                  />
                 </Form.Group>
               </Col>
               

@@ -100,6 +100,29 @@ const Amb_Ridedetails = () => {
   const lastTargetRef = useRef(null);
   const routeCoordsRef = useRef([]); // [[lat, lng], ...] for heading calculation
   const [liveSpeed, setLiveSpeed] = useState(0);
+  const socketRef = useRef(null);
+  const ambulanceMetaRef = useRef({ channelId: null, ambulanceId: null });
+
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem("ambulance_socket");
+      if (storedData) {
+        const parsed = JSON.parse(storedData);
+        ambulanceMetaRef.current = { channelId: parsed.channelId, ambulanceId: parsed.ambulanceId };
+        const s = io("https://healtheasy-o25g.onrender.com");
+        socketRef.current = s;
+        if (parsed.channelId) {
+          s.emit("init", { channelid: parsed.channelId });
+        }
+        s.on("connect_error", (err) => console.error("Socket connect_error:", err?.message || err));
+      }
+    } catch (e) {
+      console.error("Failed to init socket:", e);
+    }
+    return () => {
+      try { socketRef.current?.disconnect(); } catch {}
+    };
+  }, []);
 
   const SECRET_KEY = "health-emi";
 
@@ -307,6 +330,20 @@ const Amb_Ridedetails = () => {
         setLiveSpeed(speed ? speed * 3.6 : 0);
         const here = L.latLng(latitude, longitude);
 
+        // Emit live location via socket for server/clients
+        try {
+          const ambId = ambulanceMetaRef.current?.ambulanceId;
+          if (ambId && socketRef.current) {
+            socketRef.current.emit("ambulanceLocationUpdate", {
+              ambulanceId: ambId,
+              lat: latitude,
+              lng: longitude,
+            });
+          }
+        } catch (e) {
+          console.error("Socket emit failed:", e);
+        }
+
         // Update ambulance position and map view
         if (markers.current.ambulance) {
           markers.current.ambulance.setLatLng(here);
@@ -508,41 +545,11 @@ const Amb_Ridedetails = () => {
         fetchRideDetails();
 
         //soket
-        const socket = io("https://healtheasy-o25g.onrender.com");
-
-        const storedData = localStorage.getItem("ambulance_socket");
-
-        const ambulanceSocket = JSON.parse(storedData);
-        console.log(ambulanceSocket.channelId);
-        console.log(ambulanceSocket.ambulanceId);
-
-        const ambulance_channelid = ambulanceSocket.channelId;
-        const ambulanceId = ambulanceSocket.ambulanceId;
-
-        socket.emit("init", { channelid: ambulance_channelid });
-
-        if ("geolocation" in navigator) {
-          startRide = navigator.geolocation.watchPosition(
-            (position) => {
-              const lat = position.coords.latitude;
-              const lng = position.coords.longitude;
-
-              socket.emit("update-ambulance-location", {
-                ambulanceId: ambulanceId,
-                lat,
-                lng,
-              });
-            },
-            (error) => console.error("❌ GPS Error:", error),
-            {
-              enableHighAccuracy: true,
-              maximumAge: 0,
-              timeout: 5000,
-            }
-          );
-        } else {
-          console.error("❌ Geolocation not supported in this browser.");
-        }
+        try {
+          // Socket is initialized in a component effect and location emits occur
+          // inside the existing navigator.geolocation.watchPosition handler.
+          // No additional setup needed here.
+        } catch {}
       } else {
         throw new Error(response.data.message || "Failed to accept ride");
       }
@@ -659,7 +666,7 @@ const Amb_Ridedetails = () => {
           confirmButtonText: "OK",
           confirmButtonColor: "#0d6efd",
         });
-        navigator.geolocation.clearWatch(startRide);
+        stopWatchAndClearRoute();
         // Navigate back to list
         navigate("/ambulance/ambrequests");
       } else {
@@ -830,10 +837,10 @@ const Amb_Ridedetails = () => {
             </Col>
             <Col md={12}>
               <Card className="h-100 mb-4">
-                <Card.Header className="bg-light py-3 d-flex justify-content-between align-items-center">
+                {/* <Card.Header className="bg-light py-3 d-flex justify-content-between align-items-center">
                   <h5 className="mb-0">Live Map & Route</h5>
                   <span className="badge bg-primary">{liveSpeed.toFixed(1)} km/h</span>
-                </Card.Header>
+                </Card.Header> */}
                 <Card.Body style={{ height: '480px', padding: 0 }}>
                   <div id="rideMap" style={{ height: '100%', width: '100%' }} />
                 </Card.Body>
