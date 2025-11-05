@@ -1579,12 +1579,16 @@ h6 {
 }
 
 .ambulance_banner{
-    /* padding: 5rem 0; */
-    background: #E6DFD0;
-    /* background-image: url('../assets/book-ambulance-banner.png');
-    background-position: right;
-    background-size: auto 100%;
-    background-repeat: no-repeat; */
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5rem 0;
+    /* background: #E6DFD0; */
+    background-image: url('../assets/book-ambulance-banner.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 .ambulance_gradient{
     position: relative;
@@ -1597,4 +1601,23 @@ h6 {
     width: 50%;
     height: 100%;
     background: linear-gradient(90deg, rgb(230, 223, 208) 0%, rgba(230, 223, 208,0) 100%);
+}
+.service_amb *{
+    color: var(--grayscale-color-800)
+}
+.heading_sec{
+    color: var(--primary-color-950)
+}
+.feature_icon_sec img{
+    width: 50px;
+    height: auto
+}
+.matter_bg{
+    background-color: var(--primary-color-50);
+}
+.matter_bg h3{
+    color: var(--primary-color-600)
+}
+.matter_bg span{
+    color: var(--primary-color-800)
 }
