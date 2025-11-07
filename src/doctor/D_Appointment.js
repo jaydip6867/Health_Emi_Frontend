@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+
 import { Badge, Button, Card, Col, Container, Dropdown, Form, ListGroup, ListGroupItem, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
 import DoctorNav from './DoctorNav'
@@ -12,6 +13,7 @@ import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye, MdEdit, MdD
 import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
 import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
 
 const D_Appointment = () => {
     const SECRET_KEY = "health-emi";
@@ -20,7 +22,6 @@ const D_Appointment = () => {
 
     const [doctor, setdoctor] = useState(null)
     const [token, settoken] = useState(null)
-
 
     useEffect(() => {
         var getlocaldata = localStorage.getItem('healthdoctor');
@@ -289,8 +290,8 @@ const D_Appointment = () => {
 
             const medicationsText = itemsText;
 
-            // Generate PDF with medicationsText and return blob for upload
-            const { pdfBlob, fileName } = generatePrescriptionPDF(medicationsText);
+            // Generate PDF from hidden template and return blob for upload
+            const { pdfBlob, fileName } = await generatePrescriptionPDF();
 
             // Create a proper File object with correct MIME type
             const pdfFile = new File([pdfBlob], fileName, {
@@ -343,196 +344,39 @@ const D_Appointment = () => {
         }
     };
 
-    // PDF generator redesigned to match sample layout
-    const generatePrescriptionPDF = (medicationsText) => {
-        const doc = new jsPDF();
+    const printRef = useRef(null);
 
-        const pageWidth = doc.internal.pageSize.width;
-        const pageHeight = doc.internal.pageSize.height;
-        const margin = 16;
-        let y = 0;
-
-        // Palette matching the sample
-        const teal = { r: 22, g: 164, b: 152 };
-        const navy = { r: 19, g: 30, b: 49 };
-        const gray600 = { r: 75, g: 85, b: 99 };
-        const gray800 = { r: 31, g: 41, b: 55 };
-        const border = { r: 229, g: 231, b: 235 };
-
-        const ensureY = (delta) => {
-            if (y + delta > pageHeight - margin) {
-                doc.addPage();
-                y = margin;
-            }
-        };
-
-        // Header teal band
-        doc.setFillColor(teal.r, teal.g, teal.b);
-        doc.rect(0, 0, pageWidth, 46, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(26);
-        const doctorName = `Dr. ${doctor?.name || ''}`.trim() || 'Dr. -';
-        doc.text(doctorName, pageWidth / 2, 22, { align: 'center' });
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(12);
-        const degreeLine = doctor?.degree ? `(${doctor.degree})` : '';
-        if (degreeLine) doc.text(degreeLine, pageWidth / 2, 32, { align: 'center' });
-        const contact = [doctor?.email, doctor?.mobile || doctor?.phone].filter(Boolean).join('   •   ');
-        if (contact) {
-            doc.setFontSize(10);
-            doc.text(contact, pageWidth / 2, 40, { align: 'center' });
-        }
-
-        y = 58;
-
-        // Patient info rounded dark panel
-        const pillH = 22;
-        const pillW = pageWidth - margin * 2;
-        doc.setFillColor(navy.r, navy.g, navy.b);
-        doc.roundedRect(margin, y, pillW, pillH, 5, 5, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(11);
-        const patient = currentAppointment?.patientname || 'N/A';
-        const dt = `${currentAppointment?.date || ''}${currentAppointment?.time ? `, ${currentAppointment.time}` : ''}`.trim();
-        doc.text(`Patient Name :`, margin + 8, y + 7);
-        doc.text(patient, margin + 45, y + 7);
-        doc.text(`Date :`, pageWidth - margin - 90, y + 7);
-        doc.setFont('helvetica', 'normal');
-        doc.text(dt || '-', pageWidth - margin - 20, y + 7, { align: 'right' });
-        y += pillH + 10;
-
-        const boxW = pageWidth - margin * 2;
-
-        // Helper to draw light section box with label and content
-        const section = (label, content) => {
-            if (!content) return;
-            ensureY(34);
-            const lines = doc.splitTextToSize(content, boxW - 12);
-            const h = 16 + lines.length * 6;
-            doc.setFillColor(246, 249, 255);
-            doc.roundedRect(margin, y, boxW, h, 4, 4, 'F');
-            doc.setTextColor(gray600.r, gray600.g, gray600.b);
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(11);
-            doc.text(`${label} :`, margin + 8, y + 9);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(gray800.r, gray800.g, gray800.b);
-            doc.text(lines, margin + 8, y + 16);
-            y += h + 8;
-        };
-
-        const complainVal = (prescriptionData.complain || '').trim();
-        const pastHistoryVal = (prescriptionData.pasHistory || '').trim();
-        const diagnosisVal = (prescriptionData.diagnosis || '').trim();
-        section('Complains', complainVal);
-        section('Past History', pastHistoryVal);
-        section('Dignosis', diagnosisVal);
-
-        // Medicines table styled
-        const rows = (prescriptionData.prescriptionItems || []).map((item, idx) => {
-            const scheduleParts = [];
-            if (item.mo) scheduleParts.push(`MO(${item.moDose})`);
-            if (item.an) scheduleParts.push(`AN(${item.anDose})`);
-            if (item.ev) scheduleParts.push(`EV(${item.evDose})`);
-            if (item.nt) scheduleParts.push(`NT(${item.ntDose})`);
-            return {
-                no: idx + 1,
-                type: (item.type || '').toString().trim() || '-',
-                med: `${item.medicine || ''}`.trim(),
-                sched: scheduleParts.join(', '),
-                instr: item.instruction && item.instruction !== '-SELECT-' ? item.instruction : '-',
-                days: `${item.days || '-'}`,
-                qty: `${item.quantity || '-'}`,
-            };
-        });
-
-        if (rows.length > 0) {
-            ensureY(60);
-            let tableY = y;
-            // header bar
-            doc.setFillColor(navy.r, navy.g, navy.b);
-            doc.roundedRect(margin, tableY, boxW, 12, 3, 3, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(11);
-            doc.text('No.', margin + 6, tableY + 10);
-            doc.text('Type', margin + 18, tableY + 8);
-            doc.text('Medicine', margin + 42, tableY + 8);
-            doc.text('Schedule', margin + boxW * 0.52, tableY + 8);
-            doc.text('Instruction', margin + boxW * 0.72, tableY + 8);
-            doc.text('Days', margin + boxW * 0.89, tableY + 8);
-            doc.text('Qty', margin + boxW * 0.95, tableY + 8);
-            tableY += 14;
-
-            // rows
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(0, 0, 0);
-            const rowH = 8;
-            rows.forEach((r, i) => {
-                ensureY(rowH + 6);
-                if (i % 2 === 0) {
-                    doc.setFillColor(252, 253, 255);
-                    doc.rect(margin, tableY - 6, boxW, rowH + 4, 'F');
-                }
-                doc.text(`${r.no}`, margin + 6, tableY);
-                doc.text(r.type, margin + 18, tableY);
-                const medLines = doc.splitTextToSize(r.med, boxW * 0.45 - 6);
-                doc.text(medLines, margin + 42, tableY);
-                doc.text(r.sched || '-', margin + boxW * 0.52, tableY);
-                const instrLines = doc.splitTextToSize(r.instr || '-', boxW * 0.15);
-                doc.text(instrLines, margin + boxW * 0.72, tableY);
-                doc.text(`${r.days}`, margin + boxW * 0.89, tableY);
-                doc.text(`${r.qty}`, margin + boxW * 0.95, tableY);
-                tableY += Math.max(rowH, (medLines.length - 1) * 6 + rowH);
-            });
-            y = tableY + 6;
-        }
-
-        // Instructions card (bulleted look)
-        if ((prescriptionData.instructions || '').trim()) {
-            ensureY(36);
-            const txt = (prescriptionData.instructions || '').trim();
-            const bulletLines = doc.splitTextToSize(txt, boxW - 20);
-            const h = 16 + bulletLines.length * 6 + 6;
-            doc.setFillColor(239, 246, 255);
-            doc.roundedRect(margin, y, boxW, h, 4, 4, 'F');
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(11);
-            doc.setTextColor(gray600.r, gray600.g, gray600.b);
-            doc.text('Instructions :', margin + 8, y + 9);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(gray800.r, gray800.g, gray800.b);
-            // render with simple bullets
-            let by = y + 16;
-            bulletLines.forEach((ln) => {
-                doc.circle(margin + 10, by - 2.5, 0.7, 'F');
-                doc.text(ln, margin + 14, by);
-                by += 6;
-            });
-            y += h + 6;
-        }
-
-        // Watermark
-        doc.setTextColor(225, 231, 239);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(34);
-        doc.text('HEALTH EASY EMI', margin, pageHeight - 22);
-
-        // Signature area
-        doc.setDrawColor(border.r, border.g, border.b);
-        doc.line(pageWidth - margin - 70, pageHeight - 30, pageWidth - margin, pageHeight - 30);
-        doc.setTextColor(gray800.r, gray800.g, gray800.b);
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(10);
-        doc.text('Signature', pageWidth - margin - 70, pageHeight - 26);
-        doc.setFont('helvetica', 'bold');
-        doc.text(doctorName, pageWidth - margin - 35, pageHeight - 18, { align: 'center' });
-
+    const generatePrescriptionPDF = () => {
+        const node = printRef.current;
         const fileName = `prescription_${currentAppointment?.patientname?.replace(/\s+/g, '_') || 'patient'}_${Date.now()}.pdf`;
-        const pdfBlob = doc.output('blob');
-        return { pdfBlob, fileName };
+        return html2canvas(node, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'pt', 'a4');
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            const imgWidth = pageWidth;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let position = 0;
+
+            if (imgHeight <= pageHeight) {
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+            } else {
+                let remaining = imgHeight;
+                let y = 0;
+                while (remaining > 0) {
+                    pdf.addImage(imgData, 'PNG', 0, y, imgWidth, imgHeight);
+                    remaining -= pageHeight;
+                    if (remaining > 0) {
+                        pdf.addPage();
+                        y -= pageHeight;
+                    }
+                }
+            }
+
+            const pdfBlob = pdf.output('blob');
+            return { pdfBlob, fileName };
+        });
     };
 
     // Reschedule helpers (restored)
@@ -1450,8 +1294,101 @@ const D_Appointment = () => {
                     </Modal.Footer>
                 </Modal>
             </Container >
-            {loading ? <Loader /> : ''
-            }
+            <div
+                ref={printRef}
+                style={{ position: 'absolute', left: -9999, top: -9999, width: 794, background: '#ffffff', color: '#111827', fontFamily: 'Inter, Arial, Helvetica, sans-serif', lineHeight: 1.2, letterSpacing: 0 }}
+            >
+                <div style={{ background: '#16A498', color: '#fff', padding: '20px 20px' }}>
+                    <div style={{ fontSize: 36, fontWeight: 800 , textAlign: 'center'}}>Dr. {doctor?.name || '-'}</div>
+                    {/* <div style={{ fontSize: 14, marginTop: 4 }}>({doctor?.degree || '-'}) - {doctor?.speciality || 'Doctor'}</div> */}
+                    <div style={{ display: 'flex', gap: 16, fontSize: 12, marginTop: 8, justifyContent: 'center' }}>
+                        {doctor?.email && <div>{doctor.email}</div>}
+                        {doctor?.mobile && <div>{doctor.mobile}</div>}
+                    </div>
+                </div>
+                <div style={{ padding: 24, lineHeight: 1.25 }}>
+                    <div style={{ background: '#132031', color: '#fff', borderRadius: 10, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ fontWeight: 700, fontSize: 14 }}>
+                            Patient Name : <span style={{ fontWeight: 600 }}>{currentAppointment?.patientname || '-'}</span>
+                        </div>
+                        <div style={{ fontWeight: 700, fontSize: 14 }}>
+                            Date : <span style={{ fontWeight: 400 }}>{currentAppointment ? `${currentAppointment.date}${currentAppointment.time ? `, ${currentAppointment.time}` : ''}` : '-'}</span>
+                        </div>
+                    </div>
+                    {prescriptionData?.complain ? (
+                        <div style={{ background: '#F2F6FF', borderRadius: 8, padding: '10px 14px', marginTop: 12, lineHeight: 1.25 }}>
+                            <div style={{ color: '#6B7280', fontWeight: 700, fontSize: 13, lineHeight: '18px' }}>Complains :</div>
+                            <div style={{ marginTop: 4, fontSize: 14, lineHeight: '20px' }}>{prescriptionData.complain}</div>
+                        </div>
+                    ) : null}
+                    {prescriptionData?.pasHistory ? (
+                        <div style={{ background: '#F2F6FF', borderRadius: 8, padding: '10px 14px', marginTop: 10, lineHeight: 1.25 }}>
+                            <div style={{ color: '#6B7280', fontWeight: 700, fontSize: 13, lineHeight: '18px' }}>Past History :</div>
+                            <div style={{ marginTop: 4, fontSize: 14, lineHeight: '20px' }}>{prescriptionData.pasHistory}</div>
+                        </div>
+                    ) : null}
+                    {prescriptionData?.diagnosis ? (
+                        <div style={{ background: '#F2F6FF', borderRadius: 8, padding: '10px 14px', marginTop: 10, lineHeight: 1.25 }}>
+                            <div style={{ color: '#6B7280', fontWeight: 700, fontSize: 13, lineHeight: '18px' }}>Dignosis :</div>
+                            <div style={{ marginTop: 4, fontSize: 14, lineHeight: '20px' }}>{prescriptionData.diagnosis}</div>
+                        </div>
+                    ) : null}
+                    {prescriptionData?.prescriptionItems?.length ? (
+                        <div style={{ marginTop: 14, border: '1px solid #E5E7EB', borderRadius: 8, overflow: 'hidden' }}>
+                            <div style={{ background: '#132031', color: '#fff', padding: '8px 12px', fontWeight: 700, fontSize: 13, lineHeight: '18px', display: 'grid', gridTemplateColumns: '40px 80px 1fr 160px 150px 60px 60px', gap: 8 }}>
+                                <div>No.</div>
+                                <div>Type</div>
+                                <div>Medicine</div>
+                                <div>Schedule</div>
+                                <div>Instruction</div>
+                                <div>Days</div>
+                                <div>Qty</div>
+                            </div>
+                            <div style={{ lineHeight: '18px' }}>
+                                {prescriptionData.prescriptionItems.map((item, idx) => {
+                                    const times = [];
+                                    if (item.mo) times.push(`MO(${item.moDose})`);
+                                    if (item.an) times.push(`AN(${item.anDose})`);
+                                    if (item.ev) times.push(`EV(${item.evDose})`);
+                                    if (item.nt) times.push(`NT(${item.ntDose})`);
+                                    const instr = item.instruction && item.instruction !== '-SELECT-' ? item.instruction : '-';
+                                    return (
+                                        <div key={idx} style={{ padding: '8px 12px', fontSize: 13, display: 'grid', gridTemplateColumns: '40px 80px 1fr 160px 150px 60px 60px', gap: 8, background: idx % 2 === 0 ? '#FCFDFF' : '#FFFFFF', borderTop: '1px solid #F3F4F6', lineHeight: '18px' }}>
+                                            <div>{idx + 1}</div>
+                                            <div>{item.type}</div>
+                                            <div>{item.medicine}</div>
+                                            <div>{times.join(', ') || '-'}</div>
+                                            <div>{instr}</div>
+                                            <div>{item.days}</div>
+                                            <div>{item.quantity}</div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ) : null}
+                    {prescriptionData?.instructions ? (
+                        <div style={{ background: '#EFF6FF', borderRadius: 8, padding: '10px 14px', marginTop: 12 }}>
+                            <div style={{ color: '#6B7280', fontWeight: 700, fontSize: 13, lineHeight: '18px' }}>Instructions :</div>
+                            <div style={{ marginTop: 4, fontSize: 14 }}>
+                                {prescriptionData.instructions.split('\n').map((ln, i) => (
+                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: i ? 6 : 0, lineHeight: '20px' }}>
+                                        <div style={{ width: 6, height: 6, borderRadius: 3, background: '#6B7280' }} />
+                                        <div>{ln}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : null}
+                    <div style={{ position: 'relative', height: 80, marginTop: 32 }}>
+                        <div style={{ position: 'absolute', bottom: 40, right: 24, width: 200, borderTop: '1px solid #E5E7EB' }} />
+                        <div style={{ position: 'absolute', bottom: 18, right: 24, fontSize: 12, color: '#374151' }}>Signature</div>
+                        <div style={{ position: 'absolute', bottom: 0, right: 24, fontWeight: 700 }}>Dr. {doctor?.name || '-'}</div>
+                    </div>
+                    <div style={{ opacity: 0.08, fontWeight: 800, fontSize: 48, marginTop: 12 }}>HEALTH EASY EMI</div>
+                </div>
+            </div>
+            {loading ? <Loader /> : ''}
         </>
     )
 }
