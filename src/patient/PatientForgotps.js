@@ -130,10 +130,10 @@ const PatientForgotps = () => {
     return (
         <>
             <NavBar />
-            <div className='spacer-y d-flex align-items-center panel'>
+            <div className='py-5 d-flex align-items-center panel'>
                 <Container className='py-3'>
                     <Row className='justify-content-center'>
-                        <Col xs={5}>
+                        <Col xs={12} md={8} lg={5}>
                             {
                                 patient_email === true ?
                                     <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
@@ -172,7 +172,7 @@ const PatientForgotps = () => {
                                                     <Form.Label className="d-block text-center mb-3 fw-bold">
                                                         Enter 6-Digit OTP
                                                     </Form.Label>
-                                                    <div className="d-flex justify-content-center gap-2">
+                                                    <div className="d-flex justify-content-center gap-3 otp-inputs">
                                                         {otpDigits.map((digit, index) => (
                                                             <Form.Control
                                                                 key={index}
@@ -183,13 +183,9 @@ const PatientForgotps = () => {
                                                                     handleOtpChange(index, e.target.value)
                                                                 }
                                                                 onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                                                                className="text-center fw-bold border-2"
-                                                                style={{
-                                                                    width: "50px",
-                                                                    height: "50px",
-                                                                    fontSize: "20px",
-                                                                    borderRadius: "8px",
-                                                                }}
+                                                                className="otp-box text-center fw-bold"
+                                                                inputMode="numeric"
+                                                                pattern="[0-9]*"
                                                                 maxLength="1"
                                                             />
                                                         ))}

@@ -156,7 +156,7 @@ const PatientProfile = () => {
             <Container fluid className='p-0 panel'>
                 <Row className='g-0'>
                     <P_Sidebar />
-                    <Col xs={12} sm={9} lg={10} className='p-3'>
+                    <Col xs={12} md={10} className='p-3'>
                         {/* <P_nav patientname={patient && patient.name} /> */}
                         <div className='bg-white rounded p-3'>
                             <h4>Patient Profile</h4>
@@ -164,28 +164,28 @@ const PatientProfile = () => {
                             {
                                 profile !== null ? <div className='p-3 shadow'>
                                     <Form className='register_doctor row g-4'>
-                                        <Form.Group as={Col} controlId="name" className='col-6 col-md-4 col-lg-3'>
+                                        <Form.Group as={Col} controlId="name" className='col-12 col-sm-6 col-md-4 col-lg-3'>
                                             <div className='position-relative'>
                                                 <Form.Label>Name</Form.Label>
                                                 <Form.Control type="text" placeholder="Full Name" className='frm_input' name="name" value={profile && profile.name} disabled={IsDisable} onChange={profiledata} />
                                             </div>
                                         </Form.Group>
 
-                                        <Form.Group as={Col} controlId="email" className='col-6 col-md-4 col-lg-3'>
+                                        <Form.Group as={Col} controlId="email" className='col-12 col-sm-6 col-md-4 col-lg-3'>
                                             <div className="position-relative">
                                                 <Form.Label>Email</Form.Label>
                                                 <Form.Control type="email" placeholder="Email" className='frm_input' name="email" value={profile && profile.email} disabled={IsDisable} onChange={profiledata} />
                                             </div>
                                         </Form.Group>
 
-                                        <Form.Group controlId="mobile" className='col-6 col-md-4 col-lg-3'>
+                                        <Form.Group controlId="mobile" className='col-12 col-sm-6 col-md-4 col-lg-3'>
                                             <div className="position-relative">
                                                 <Form.Label>Mobile No.</Form.Label>
                                                 <Form.Control placeholder="Mobile No." className='frm_input' name='mobile' value={profile && profile.mobile} disabled={IsDisable} onChange={profiledata} />
                                             </div>
                                         </Form.Group>
 
-                                        <Form.Group controlId="gender" className='col-6 col-md-4 col-lg-3'>
+                                        <Form.Group controlId="gender" className='col-12 col-sm-6 col-md-4 col-lg-3'>
                                             <Form.Label>Gender </Form.Label>
                                             <div className='d-flex gap-3'>
                                                 <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' checked={profile && profile.gender === "Male" ? true : false} onChange={profiledata} disabled={IsDisable} /> Male</label>

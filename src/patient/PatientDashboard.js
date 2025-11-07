@@ -37,7 +37,7 @@ const PatientDashboard = () => {
       <Container fluid className='p-0 panel spacer-y'>
         <Row className='g-0'>
           <P_Sidebar />
-          <Col xs={12} sm={9} lg={10} className='p-3'>
+          <Col xs={12} md={10} className='p-3'>
             {/* <P_nav patientname={patient && patient.name} /> */}
             <div className='bg-white rounded p-2'>
               {

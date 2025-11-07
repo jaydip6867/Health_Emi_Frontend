@@ -704,7 +704,7 @@ const DoctorProfile = () => {
                   {/* Personal Information Section */}
                   <Card className="mb-4 border-0 shadow-sm">
                     <Card.Header className="bg-light border-bottom">
-                      <div className="d-flex justify-content-between align-items-center">
+                      <div className="d-flex flex-column flex-wrap flex-md-row gap-3 justify-content-between align-items-center">
                         <h5 className="mb-0 text-primary">
                           Personal Information
                         </h5>
@@ -717,16 +717,16 @@ const DoctorProfile = () => {
                             Edit Profile
                           </Button>
                         ) : (
-                          <div className="d-flex">
+                          <div className="d-flex flex-wrap justify-content-center gap-2">
                             <Button
                               variant="success"
-                              className="px-5 me-3"
+                              className="px-5 me-md-3"
                               onClick={() => updateprofiledata(profile._id)}
                             >
                               Update Profile
                             </Button>
                             <Button
-                              variant="secondary"
+                              variant="danger"
                               className="px-4"
                               onClick={() => {
                                 setdisabled(true);

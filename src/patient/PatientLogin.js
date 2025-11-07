@@ -60,7 +60,7 @@ const PatientLogin = () => {
     return (
         <>
             <NavBar />
-            <div className='spacer-y d-flex align-items-center panel'>
+            <div className='py-5 d-flex align-items-center panel'>
                 <Container>
                     <Row className='justify-content-center align-items-center'>
                         <DoctorTestimonial />

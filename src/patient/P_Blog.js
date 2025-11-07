@@ -55,7 +55,7 @@ const P_Blog = () => {
                 Authorization: token
             }
         }).then((res) => {
-            console.log('blogs = ', res.data.Data);
+            // console.log('blogs = ', res.data.Data);
             setbloglist(res.data.Data)
         }).catch(function (error) {
             console.log(error);
@@ -183,7 +183,7 @@ const P_Blog = () => {
             <Container fluid className='p-0 panel'>
                 <Row className='g-0'>
                     <P_Sidebar />
-                    <Col xs={12} sm={9} lg={10} className='p-3'>
+                    <Col xs={12} md={10} className='p-3'>
                         {/* <P_nav patientname={patient && patient.name} /> */}
                         <div className='bg-white rounded p-3 mb-3'>
                             <h5 className='mb-3'>All Blogs</h5>

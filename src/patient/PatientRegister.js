@@ -112,24 +112,24 @@ const PatientRegister = () => {
   return (
     <>
       <NavBar />
-      <Modal 
-        show={showTcModal} 
-        onHide={() => setShowTcModal(false)} 
+      <Modal
+        show={showTcModal}
+        onHide={() => setShowTcModal(false)}
         size="lg"
         centered
       >
         <Modal.Header closeButton>
           <Modal.Title>Terms and Conditions</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ 
-          maxHeight: '60vh', 
+        <Modal.Body style={{
+          maxHeight: '60vh',
           overflowY: 'auto',
           overflowX: 'hidden',
           wordWrap: 'break-word',
           whiteSpace: 'pre-line',
           padding: '1rem'
         }}>
-          <div style={{ 
+          <div style={{
             maxWidth: '100%',
             overflowWrap: 'break-word',
             wordWrap: 'break-word',
@@ -151,11 +151,11 @@ const PatientRegister = () => {
         </Modal.Footer>
       </Modal>
 
-      <div className='spacer-y d-flex align-items-center panel'>
+      <div className='py-5 d-flex align-items-center panel'>
         <Container className='py-3'>
           <Row className='justify-content-center'>
             {
-              pat_reg === true ? <Col xs={5}>
+              pat_reg === true ? <Col xs={12} md={8} lg={5} >
                 <div className='register_doctor bg-white p-3 py-3 px-4 rounded-4 shadow'>
                   <div className='text-center'>
                     <h3>Patient - Sign Up</h3>
@@ -208,16 +208,16 @@ const PatientRegister = () => {
                     </Form.Group>
 
                     <div className="my-3 form-check ps-0">
-                      <Form.Check 
-                        type="checkbox" 
+                      <Form.Check
+                        type="checkbox"
                         id="termsCheckbox"
                         checked={termsAccepted}
                         onChange={(e) => setTermsAccepted(e.target.checked)}
                         label={
                           <span>
-                            I agree to the 
-                            <a 
-                              href="#" 
+                            I agree to the
+                            <a
+                              href="#"
                               className="text-primary ms-1"
                               onClick={(e) => {
                                 e.preventDefault();
@@ -236,9 +236,9 @@ const PatientRegister = () => {
                       )} */}
                     </div>
 
-                    <Button 
-                      variant="primary" 
-                      className='w-100 py-2 mt-3' 
+                    <Button
+                      variant="primary"
+                      className='w-100 py-2 mt-3'
                       onClick={patientsignup}
                       disabled={loading}
                     >
@@ -252,7 +252,7 @@ const PatientRegister = () => {
               </Col> : ''
             }
             {
-              pat_otp === true ? <Col md={5}>
+              pat_otp === true ? <Col xs={12} md={8} lg={5}>
                 <div className='register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100'>
                   <div className='text-center'>
                     <h3>OTP Verification</h3>

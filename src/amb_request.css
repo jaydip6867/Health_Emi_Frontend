@@ -37,7 +37,7 @@
     font-size: 38px !important;
   }
   /* Responsive adjustments */
-  @media (max-width: 768px) {
+  /* @media (max-width: 768px) {
     .table-responsive {
       border: 0;
     }
@@ -75,5 +75,5 @@
       background-color: #f8f9fa;
       font-weight: 600;
     }
-  }
+  } */
 

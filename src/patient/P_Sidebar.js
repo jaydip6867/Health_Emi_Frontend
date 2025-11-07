@@ -8,16 +8,16 @@ import { BiSolidCommentAdd } from 'react-icons/bi';
 
 const P_Sidebar = () => {
     return (
-        <Col xs={12} sm={3} lg={2} className='position-sticky top-0 pe-0'>
-            <div className='bg-white min-vh-100 rounded shadow'>
+        <Col xs={12} md={2} className='patient_sticky top-0 pe-0'>
+            <div className='bg-white patient_side_height rounded shadow m-3 m-md-0'>
                 {/* <div className='px-3'><h4 className='p-3 m-0 border-bottom text-center'>Health Patient</h4></div> */}
                 <div className='sidebar_nav mt-3 ps-3 py-3'>
                     {/* <NavLink to={'/patient/patientdahsboard'} className={({ isActive }) => (isActive ? 'active' : '')}><MdSpaceDashboard />Dashboard</NavLink> */}
-                    <NavLink to={'/patient/patientprofile'} className={({ isActive }) => (isActive ? 'active' : '')}><FaUserGear />Profile</NavLink>
+                    <NavLink to={'/patient/patientprofile'} className={({ isActive }) => (isActive ? 'active' : '')}><FaUserGear /><span>Profile</span></NavLink>
                     {/* <NavLink to={'/patient/patientdoctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}><MdDifference />Add Appointment</NavLink> */}
-                    <NavLink to={'/patient/appointment'} className={({ isActive }) => (isActive ? 'active' : '')} ><RiCalendarScheduleFill />Consultation Appointment</NavLink>
-                    <NavLink to={'/patient/surgeries'} className={({ isActive }) => (isActive ? 'active' : '')} ><AiFillSchedule />Surgeries Appointment</NavLink>
-                    <NavLink to={'/patient/blog'} className={({ isActive }) => (isActive ? 'active' : '')}><BiSolidCommentAdd />Blog</NavLink>
+                    <NavLink to={'/patient/appointment'} className={({ isActive }) => (isActive ? 'active' : '')} ><RiCalendarScheduleFill /><span>Consultation Appointment</span></NavLink>
+                    <NavLink to={'/patient/surgeries'} className={({ isActive }) => (isActive ? 'active' : '')} ><AiFillSchedule /><span>Surgeries Appointment</span></NavLink>
+                    <NavLink to={'/patient/blog'} className={({ isActive }) => (isActive ? 'active' : '')}><BiSolidCommentAdd /><span>Blog</span></NavLink>
                 </div>
             </div>
         </Col>
