@@ -90,6 +90,7 @@ const CompareDoctor = () => {
 
     const [secondDocQuery, setSecondDocQuery] = useState('')
     const [secondDocOpen, setSecondDocOpen] = useState(false)
+    const [expandedSurgeries, setExpandedSurgeries] = useState({})
 
     const secondDoctorMatches = React.useMemo(() => {
         if (selectedDoctors.length !== 1) return []
@@ -173,164 +174,186 @@ const CompareDoctor = () => {
                             <div className='text-muted'>Select doctors to compare.</div>
                         ) : (
                             <Card className='p-3 shadow-sm rounded-4'>
-                                <Row className='g-4'>
-                                    {/* Labels Column */}
-                                    <Col xs={12} md={3}>
-                                        <div className='text-muted small'>Criteria</div>
-                                        <ul className='list-unstyled mt-3 mb-0'>
-                                            <li className='pb-2 border-bottom'>Profile</li>
-                                            <li className='py-2 border-bottom'>Experience</li>
-                                            <li className='py-2 border-bottom'>Consultation Fee</li>
-                                            <li className='py-2 border-bottom'>Surgeries</li>
-                                            {selectedDoctors.length === 1 && (
-                                                <li className='py-2 border-bottom text-muted'>Select second doctor</li>
-                                            )}
-                                            <li className='py-2 border-bottom'>hospitals</li>
-                                            <li className='py-2 border-bottom'>Qualification</li>
-                                            <li className='py-2 border-bottom'>Approval Status</li>
-                                            <li className='py-2 border-bottom'>Sub Specialty</li>
-                                        </ul>
-                                    </Col>
-                                    {/* Doctor A */}
-                                    <Col xs={12} md={4}>
-                                        {(() => { const d = selectedDoctors[0]; return (
-                                            <div className='position-relative'>
-                                                <Button
-                                                    variant='link'
-                                                    className='position-absolute top-0 end-0 text-danger p-1'
-                                                    style={{ zIndex: 10 }}
-                                                    onClick={() => setSelectedDoctors(prev => prev.filter(x => x._id !== d._id))}
-                                                    title='Remove doctor'
-                                                >
-                                                    <MdClear size={20} />
-                                                </Button>
-                                                <div className='d-flex gap-3 align-items-center py-2 border-bottom'>
-                                                    <img src={d?.profile_pic} alt={`Dr. ${d?.name}`} className='rounded-3' style={{ width: 56, height: 56, objectFit: 'cover' }} />
-                                                    <div>
-                                                        <div className='fw-bold'>Dr. {d?.name}</div>
-                                                        <div className='small text-muted d-flex align-items-center gap-1'><MdVerified className='text-primary' /> {d?.specialty || '—'}</div>
-                                                    </div>
-                                                </div>
-                                                <div className='py-2 border-bottom'>{d?.experience ? `${d.experience} yrs` : '—'}</div>
-                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'>
-                                                    <MdCurrencyRupee />
-                                                    {(() => {
-                                                        const cd = d?.consultationsDetails;
-                                                        if (!cd) return '—';
-                                                        const parts = [
-                                                            cd?.clinic_visit_price ? `Clinic ₹${cd.clinic_visit_price}` : null,
-                                                            cd?.home_visit_price ? `Home ₹${cd.home_visit_price}` : null,
-                                                            cd?.eopd_price ? `EOPD ₹${cd.eopd_price}` : null,
-                                                        ].filter(Boolean);
-                                                        return parts.length ? parts.join(' | ') : '—';
-                                                    })()}
-                                                </div>
-                                                <div className='py-2 border-bottom'>
-                                                    {Array.isArray(d?.surgeriesDetails) && d.surgeriesDetails.length > 0
-                                                        ? d.surgeriesDetails.map(s => s?.name || s).join(', ')
-                                                        : '—'}
-                                                </div>
-                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdLocalHospital className='text-danger' />{Array.isArray(d?.hospitals) && d.hospitals.length > 0 ? d.hospitals.map(h => h?.name || h).join(', ') : (d?.hospitalname || '—')}</div>
-                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdSchool className='text-warning' />{Array.isArray(d?.qualifications) && d.qualifications.length > 0 ? d.qualifications.join(', ') : (d?.qualification || '—')}</div>
-                                                <div className='py-2 border-bottom'>{d?.approval_status}</div>
-                                                <div className='py-2 border-bottom'>{typeof d?.sub_specialty !== 'undefined' ? String(d.sub_specialty) : '—'}</div>
-                                                <div className='py-2 border-bottom'><Link to={`/doctorprofile/${encodeURIComponent(btoa(d._id))}`} className='text-primary'>View Profile</Link></div>
+                                {(() => {
+                                  const d1 = selectedDoctors[0];
+                                  const d2 = selectedDoctors[1];
+                                  const feeText = (d) => {
+                                    const cd = d?.consultationsDetails;
+                                    if (!cd) return '—';
+                                    const parts = [
+                                      cd?.clinic_visit_price ? `Clinic ₹${cd.clinic_visit_price}` : null,
+                                      cd?.home_visit_price ? `Home ₹${cd.home_visit_price}` : null,
+                                      cd?.eopd_price ? `EOPD ₹${cd.eopd_price}` : null,
+                                    ].filter(Boolean);
+                                    return parts.length ? parts.join(' | ') : '—';
+                                  };
+                                  const surgeriesPieces = (d) => {
+                                    if (!Array.isArray(d?.surgeriesDetails) || d.surgeriesDetails.length === 0) return [];
+                                    return d.surgeriesDetails.map(s => s?.name || s).filter(Boolean);
+                                  };
+                                  const hospitalsText = (d) => {
+                                    return Array.isArray(d?.hospitals) && d.hospitals.length > 0
+                                      ? d.hospitals.map(h => h?.name || h).join(', ')
+                                      : (d?.hospitalname || '—');
+                                  };
+                                  const qualificationText = (d) => {
+                                    return Array.isArray(d?.qualifications) && d.qualifications.length > 0
+                                      ? d.qualifications.join(', ')
+                                      : (d?.qualification || '—');
+                                  };
+                                  const approvalText = (d) => {
+                                    if (typeof d?.approval_status !== 'undefined') return String(d.approval_status);
+                                    if (typeof d?.isApproved !== 'undefined') return d.isApproved ? 'Approved' : 'Pending';
+                                    return '—';
+                                  };
+                                  const subSpecialtyText = (d) => {
+                                    return typeof d?.sub_specialty !== 'undefined' ? String(d.sub_specialty) : '—';
+                                  };
+                                  return (
+                                    <div>
+                                      <Row className='fw-semibold text-muted small border-bottom pb-2 d-none d-md-flex'>
+                                        <Col md={3}>Criteria</Col>
+                                        <Col md={4}>Doctor A</Col>
+                                        <Col md={5}>Doctor B</Col>
+                                      </Row>
+
+                                      <Row className='align-items-stretch py-3 border-bottom'>
+                                        <Col xs={12} md={3} className='mb-2 mb-md-0 fw-semibold'>Profile</Col>
+                                        <Col xs={12} md={4} className='position-relative'>
+                                          <Button variant='link' className='position-absolute top-0 end-0 text-danger p-1' style={{ zIndex: 10 }} onClick={() => setSelectedDoctors(prev => prev.filter(x => x._id !== d1._id))} title='Remove doctor'>
+                                            <MdClear size={20} />
+                                          </Button>
+                                          <div className='d-flex gap-3 align-items-center'>
+                                            <img src={d1?.profile_pic} alt={`Dr. ${d1?.name}`} className='rounded-3' style={{ width: 56, height: 56, objectFit: 'cover' }} />
+                                            <div>
+                                              <div className='fw-bold'>Dr. {d1?.name}</div>
+                                              <div className='small text-muted d-flex align-items-center gap-1'><MdVerified className='text-primary' /> {d1?.specialty || '—'}</div>
                                             </div>
-                                        )})()}
-                                    </Col>
-                                    <Col xs={12} md={5}>
-                                        {(() => { const d = selectedDoctors[1]; if (!d) return (
-                                            <div className='border rounded-3 p-3 h-100'>
-                                                <div className='text-muted small mb-3 text-center'>
-                                                    Select another doctor to compare
+                                          </div>
+                                        </Col>
+                                        <Col xs={12} md={5} className='position-relative'>
+                                          {d2 ? (
+                                            <>
+                                              <Button variant='link' className='position-absolute top-0 end-0 text-danger p-1' style={{ zIndex: 10 }} onClick={() => setSelectedDoctors(prev => prev.filter(x => x._id !== d2._id))} title='Remove doctor'>
+                                                <MdClear size={20} />
+                                              </Button>
+                                              <div className='d-flex gap-3 align-items-center'>
+                                                <img src={d2?.profile_pic} alt={`Dr. ${d2?.name}`} className='rounded-3' style={{ width: 56, height: 56, objectFit: 'cover' }} />
+                                                <div>
+                                                  <div className='fw-bold'>Dr. {d2?.name}</div>
+                                                  <div className='small text-muted d-flex align-items-center gap-1'><MdVerified className='text-primary' /> {d2?.specialty || '—'}</div>
                                                 </div>
-                                                <Form.Control
-                                                    type='text'
-                                                    placeholder='Search doctor by name...'
-                                                    value={secondDocQuery}
-                                                    onChange={(e) => setSecondDocQuery(e.target.value)}
-                                                    onFocus={() => setSecondDocOpen(true)}
-                                                    onClick={() => setSecondDocOpen(true)}
-                                                    onBlur={() => setTimeout(() => setSecondDocOpen(false), 120)}
-                                                    className='rounded-pill mb-2'
-                                                />
-                                                {secondDocOpen && secondDoctorMatches.length > 0 && (
-                                                    <div className='border rounded-3 mt-2' style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                                                        {secondDoctorMatches.map((doc) => (
-                                                            <div
-                                                                key={doc._id}
-                                                                className='p-2 border-bottom cursor-pointer hover-bg-light d-flex gap-2 align-items-center'
-                                                                style={{ cursor: 'pointer' }}
-                                                                onClick={() => {
-                                                                    handleSelectDoctor(doc)
-                                                                    setSecondDocQuery('')
-                                                                    setSecondDocOpen(false)
-                                                                }}
-                                                            >
-                                                                <img
-                                                                    src={doc?.profile_pic}
-                                                                    alt={`Dr. ${doc?.name}`}
-                                                                    className='rounded-circle border'
-                                                                    style={{ width: 40, height: 40, objectFit: 'cover' }}
-                                                                />
-                                                                <div className='flex-grow-1'>
-                                                                    <div className='fw-semibold small'>Dr. {doc?.name}</div>
-                                                                    <div className='text-muted' style={{ fontSize: '0.75rem' }}>{doc?.specialty || '—'}</div>
-                                                                </div>
-                                                            </div>
-                                                        ))}
+                                              </div>
+                                            </>
+                                          ) : (
+                                            <div className='border rounded-3 p-3'>
+                                              <div className='text-muted small mb-3 text-center'>Select another doctor to compare</div>
+                                              <Form.Control type='text' placeholder='Search doctor by name...' value={secondDocQuery} onChange={(e) => setSecondDocQuery(e.target.value)} onFocus={() => setSecondDocOpen(true)} onClick={() => setSecondDocOpen(true)} onBlur={() => setTimeout(() => setSecondDocOpen(false), 120)} className='rounded-pill mb-2' />
+                                              {secondDocOpen && secondDoctorMatches.length > 0 && (
+                                                <div className='border rounded-3 mt-2' style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                                                  {secondDoctorMatches.map((doc) => (
+                                                    <div key={doc._id} className='p-2 border-bottom cursor-pointer hover-bg-light d-flex gap-2 align-items-center' style={{ cursor: 'pointer' }} onClick={() => { handleSelectDoctor(doc); setSecondDocQuery(''); setSecondDocOpen(false); }}>
+                                                      <img src={doc?.profile_pic} alt={`Dr. ${doc?.name}`} className='rounded-circle border' style={{ width: 40, height: 40, objectFit: 'cover' }} />
+                                                      <div className='flex-grow-1'>
+                                                        <div className='fw-semibold small'>Dr. {doc?.name}</div>
+                                                        <div className='text-muted' style={{ fontSize: '0.75rem' }}>{doc?.specialty || '—'}</div>
+                                                      </div>
                                                     </div>
+                                                  ))}
+                                                </div>
+                                              )}
+                                              {secondDocOpen && secondDocQuery.trim() && secondDoctorMatches.length === 0 && (
+                                                <div className='text-muted small text-center mt-2'>No doctors found</div>
+                                              )}
+                                            </div>
+                                          )}
+                                        </Col>
+                                      </Row>
+
+                                      <Row className='align-items-center py-3 border-bottom'>
+                                        <Col xs={12} md={3} className='mb-2 mb-md-0 fw-semibold'>Experience</Col>
+                                        <Col xs={12} md={4}>{d1?.experience ? `${d1.experience} yrs` : '—'}</Col>
+                                        <Col xs={12} md={5}>{d2?.experience ? `${d2.experience} yrs` : (d2 ? '—' : '')}</Col>
+                                      </Row>
+
+                                      <Row className='align-items-center py-3 border-bottom'>
+                                        <Col xs={12} md={3} className='mb-2 mb-md-0 fw-semibold'>Consultation Fee</Col>
+                                        <Col xs={12} md={4} className='d-flex align-items-center gap-1'><MdCurrencyRupee /> {feeText(d1)}</Col>
+                                        <Col xs={12} md={5} className='d-flex align-items-center gap-1'><MdCurrencyRupee /> {d2 ? feeText(d2) : ''}</Col>
+                                      </Row>
+
+                                      <Row className='align-items-center py-3 border-bottom'>
+                                        <Col xs={12} md={3} className='mb-2 mb-md-0 fw-semibold'>Surgeries</Col>
+                                        <Col xs={12} md={4}>
+                                          {(() => {
+                                            const pieces = surgeriesPieces(d1);
+                                            if (pieces.length === 0) return '—';
+                                            const expanded = !!expandedSurgeries[d1?._id];
+                                            const shown = expanded ? pieces : pieces.slice(0, 3);
+                                            return (
+                                              <>
+                                                <span>{shown.join(', ')}</span>
+                                                {pieces.length > 3 && (
+                                                  <Button variant='link' size='sm' className='p-0 ms-2' onClick={() => setExpandedSurgeries(prev => ({ ...prev, [d1._id]: !expanded }))}>
+                                                    {expanded ? 'Read less' : 'Read more'}
+                                                  </Button>
                                                 )}
-                                                {secondDocOpen && secondDocQuery.trim() && secondDoctorMatches.length === 0 && (
-                                                    <div className='text-muted small text-center mt-2'>No doctors found</div>
+                                              </>
+                                            );
+                                          })()}
+                                        </Col>
+                                        <Col xs={12} md={5}>
+                                          {d2 ? (() => {
+                                            const pieces = surgeriesPieces(d2);
+                                            if (pieces.length === 0) return '—';
+                                            const expanded = !!expandedSurgeries[d2?._id];
+                                            const shown = expanded ? pieces : pieces.slice(0, 3);
+                                            return (
+                                              <>
+                                                <span>{shown.join(', ')}</span>
+                                                {pieces.length > 3 && (
+                                                  <Button variant='link' size='sm' className='p-0 ms-2' onClick={() => setExpandedSurgeries(prev => ({ ...prev, [d2._id]: !expanded }))}>
+                                                    {expanded ? 'Read less' : 'Read more'}
+                                                  </Button>
                                                 )}
-                                            </div>
-                                        ); return (
-                                            <div className='position-relative'>
-                                                <Button
-                                                    variant='link'
-                                                    className='position-absolute top-0 end-0 text-danger p-1'
-                                                    style={{ zIndex: 10 }}
-                                                    onClick={() => setSelectedDoctors(prev => prev.filter(x => x._id !== d._id))}
-                                                    title='Remove doctor'
-                                                >
-                                                    <MdClear size={20} />
-                                                </Button>
-                                                <div className='d-flex gap-3 align-items-center py-2 border-bottom'>
-                                                    <img src={d?.profile_pic} alt={`Dr. ${d?.name}`} className='rounded-3' style={{ width: 56, height: 56, objectFit: 'cover' }} />
-                                                    <div>
-                                                        <div className='fw-bold'>Dr. {d?.name}</div>
-                                                        <div className='small text-muted d-flex align-items-center gap-1'><MdVerified className='text-primary' /> {d?.specialty || '—'}</div>
-                                                    </div>
-                                                </div>
-                                                <div className='py-2 border-bottom'>{d?.experience ? `${d.experience} yrs` : '—'}</div>
-                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'>
-                                                    <MdCurrencyRupee />
-                                                    {(() => {
-                                                        const cd = d?.consultationsDetails;
-                                                        if (!cd) return '—';
-                                                        const parts = [
-                                                            cd?.clinic_visit_price ? `Clinic ₹${cd.clinic_visit_price}` : null,
-                                                            cd?.home_visit_price ? `Home ₹${cd.home_visit_price}` : null,
-                                                            cd?.eopd_price ? `EOPD ₹${cd.eopd_price}` : null,
-                                                        ].filter(Boolean);
-                                                        return parts.length ? parts.join(' | ') : '—';
-                                                    })()}
-                                                </div>
-                                                <div className='py-2 border-bottom'>
-                                                    {Array.isArray(d?.surgeriesDetails) && d.surgeriesDetails.length > 0
-                                                        ? d.surgeriesDetails.map(s => s?.name || s).join(', ')
-                                                        : '—'}
-                                                </div>
-                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdLocalHospital className='text-danger' />{Array.isArray(d?.hospitals) && d.hospitals.length > 0 ? d.hospitals.map(h => h?.name || h).join(', ') : (d?.hospitalname || '—')}</div>
-                                                <div className='py-2 border-bottom d-flex align-items-center gap-1'><MdSchool className='text-warning' />{Array.isArray(d?.qualifications) && d.qualifications.length > 0 ? d.qualifications.join(', ') : (d?.qualification || '—')}</div>
-                                                <div className='py-2 border-bottom'>{typeof d?.approval_status !== 'undefined' ? String(d.approval_status) : (typeof d?.isApproved !== 'undefined' ? (d.isApproved ? 'Approved' : 'Pending') : '—')}</div>
-                                                <div className='py-2 border-bottom'>{typeof d?.sub_specialty !== 'undefined' ? String(d.sub_specialty) : '—'}</div>
-                                                <div className='py-2 border-bottom'><Link to={`/doctorprofile/${encodeURIComponent(btoa(d._id))}`} className='text-primary'>View Profile</Link></div>
-                                            </div>
-                                        )})()}
-                                    </Col>
-                                </Row>
+                                              </>
+                                            );
+                                          })() : ''}
+                                        </Col>
+                                      </Row>
+
+                                      <Row className='align-items-center py-3 border-bottom'>
+                                        <Col xs={12} md={3} className='mb-2 mb-md-0 fw-semibold'>Hospitals</Col>
+                                        <Col xs={12} md={4} className='d-flex align-items-center gap-1'><MdLocalHospital className='text-danger' /> {hospitalsText(d1)}</Col>
+                                        <Col xs={12} md={5} className='d-flex align-items-center gap-1'><MdLocalHospital className='text-danger' /> {d2 ? hospitalsText(d2) : ''}</Col>
+                                      </Row>
+
+                                      <Row className='align-items-center py-3 border-bottom'>
+                                        <Col xs={12} md={3} className='mb-2 mb-md-0 fw-semibold'>Qualification</Col>
+                                        <Col xs={12} md={4} className='d-flex align-items-center gap-1'><MdSchool className='text-warning' /> {qualificationText(d1)}</Col>
+                                        <Col xs={12} md={5} className='d-flex align-items-center gap-1'><MdSchool className='text-warning' /> {d2 ? qualificationText(d2) : ''}</Col>
+                                      </Row>
+
+                                      <Row className='align-items-center py-3 border-bottom'>
+                                        <Col xs={12} md={3} className='mb-2 mb-md-0 fw-semibold'>Approval Status</Col>
+                                        <Col xs={12} md={4}>{approvalText(d1)}</Col>
+                                        <Col xs={12} md={5}>{d2 ? approvalText(d2) : ''}</Col>
+                                      </Row>
+
+                                      <Row className='align-items-center py-3 border-bottom'>
+                                        <Col xs={12} md={3} className='mb-2 mb-md-0 fw-semibold'>Sub Specialty</Col>
+                                        <Col xs={12} md={4}>{subSpecialtyText(d1)}</Col>
+                                        <Col xs={12} md={5}>{d2 ? subSpecialtyText(d2) : ''}</Col>
+                                      </Row>
+
+                                      <Row className='align-items-center pt-3'>
+                                        <Col xs={12} md={3} className='mb-2 mb-md-0 fw-semibold'>Profile</Col>
+                                        <Col xs={12} md={4}><Link to={`/doctorprofile/${encodeURIComponent(btoa(d1._id))}`} className='text-primary'>View Profile</Link></Col>
+                                        <Col xs={12} md={5}>{d2 && <Link to={`/doctorprofile/${encodeURIComponent(btoa(d2._id))}`} className='text-primary'>View Profile</Link>}</Col>
+                                      </Row>
+                                    </div>
+                                  );
+                                })()}
                             </Card>
                         )}
                     </section>
