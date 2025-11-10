@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import NavBar from './Component/NavBar'
-import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap'
+import { Button, Col, Container, Row } from 'react-bootstrap'
 import Loader from '../Loader'
 import FooterBar from './Component/FooterBar'
 import axios from 'axios'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom';
 import SearchBox from './Component/SearchBox'
@@ -292,12 +292,24 @@ const Surgerydoctorlist = () => {
     return (
         <>
             <NavBar logindata={patient} />
+            {/* header bg */}
+            <section className='spacer-y bg_sec_search'>
+                <Container>
+                    <Row>
+                        <Col xs={12}>
+                            <h2 className='head_sec text-center'>Find Perfect Doctor</h2>
+                        </Col>
+                    </Row>
+                </Container>
+            </section>
             {/* search box */}
-            <SearchBox />
+            <div style={{marginTop: '-22px'}}>
+                <SearchBox />
+            </div>
 
             {/* filter by below list */}
             <Container>
-                <Row className='justify-content-center align-items-center g-2'>
+                <Row className='justify-content-center align-items-center g-2 mt-3'>
                     <Col xs='auto'>
                         <Button variant='secondary' className='rounded-pill'><MdFilterListAlt className='fs-5' /> Filter</Button>
                     </Col>

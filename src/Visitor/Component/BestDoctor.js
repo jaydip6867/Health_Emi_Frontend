@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
 import Loader from '../../Loader'
 import DoctorListComponents from './DoctorListComponent'
+import HeadTitle from './HeadTitle'
 
 const BestDoctor = () => {
     const [doclist, setdoclist] = useState([])
@@ -45,7 +46,7 @@ const BestDoctor = () => {
                 <Container>
                     <Row>
                         <Col xs={12} className='text-center'>
-                            <h2 className='head_sec'><span>Best</span> Doctors</h2>
+                            <h2 className='head_sec'><HeadTitle title="Best Doctors" /></h2>
                         </Col>
                     </Row>
                     <Row>

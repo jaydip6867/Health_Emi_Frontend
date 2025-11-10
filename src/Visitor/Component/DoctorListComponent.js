@@ -26,11 +26,10 @@ const DoctorListComponents = ({ details }) => {
 
                 <Card.Body className="pt-3 pb-4 px-0">
                     <div className="d-flex align-items-center justify-content-between mb-2 pe-2">
-                        <div className="spec-chip d-inline-flex align-items-center w-75">
-                            <small className="fw-semibold">{details?.specialty || 'Specialist'}</small>
+                        <div className="spec-chip d-inline-flex align-items-center" style={{width: '60%'}}>
+                            <small className="fw-semibold text-truncate">{details?.specialty || 'Specialist'}</small>
                         </div>
                         <div className="chip chip-available">
-                            {/* <BsDot className="fs-3" /> */}
                             <small className="fw-semibold fs-7 px-2 py-1 rounded-3" style={{backgroundColor: '#EDF9F0', color: '#04BD6C'}}>Available</small>
                         </div>
                     </div>
@@ -41,8 +40,6 @@ const DoctorListComponents = ({ details }) => {
                             <CiLocationOn className="me-1 pt-1 fs-6" />
                             <small>
                                 {details?.city}{details?.city ? ', ' : ''}{details?.state}
-                                {details?.country ? `, ${details.country}` : ''}
-                                {details?.pincode ? `, ${details.pincode}` : ''}
                             </small>
                         </div>
 
@@ -51,11 +48,11 @@ const DoctorListComponents = ({ details }) => {
                         <Row className="align-items-center g-2 consultation_fees justify-content-between">
                             <Col xs="auto">
                                 <small className="small">Consultation Fees</small>
-                                <div className="fees-amount">₹ {details?.consultation_fee || details?.fees || 650}</div>
+                                <div className="fees-amount">₹ {details?.consultationsDetails?.clinic_visit_price || 0}</div>
                             </Col>
                             <Col xs="auto" className="text-end">
-                                <button onClick={() => navigate(`/doctorprofile/${encodeURIComponent(btoa(details._id))}`)} className="btn-book px-3 py-2 d-flex align-items-center gap-2 ">
-                                    <MdCalendarMonth  />
+                                <button onClick={() => navigate(`/doctorprofile/${encodeURIComponent(btoa(details._id))}`)} className="btn-book px-4 py-2 d-flex align-items-center gap-2 ">
+                                    <MdCalendarMonth size={16} />
                                     <span className="d-block text-nowrap">Book Now</span>
                                 </button>
                             </Col>

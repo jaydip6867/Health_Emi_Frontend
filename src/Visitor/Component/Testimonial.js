@@ -2,6 +2,7 @@ import React from 'react'
 import { Button, Col, Container, Image, Row } from 'react-bootstrap';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import Slider from 'react-slick';
+import HeadTitle from './HeadTitle';
 
 const testimonials = [
     {
@@ -89,7 +90,7 @@ const Testimonial = () => {
                 <Row className="testimonial-bg py-5 radius-20 g-4 align-items-center">
 
                     {/* Testimonials Slider */}
-                    <Col md={8} className=''>
+                    <Col md={8} xs={12} className=''>
                         <Slider {...settings}>
                             {testimonials.map(({ id, name, title, image, quote }) => (
                                 <div key={id}>
@@ -123,29 +124,12 @@ const Testimonial = () => {
                     </Col>
 
                     {/* Title and Controls */}
-                    <Col md={4} className="mb-4 mb-md-0 pe-md-5 order-first order-md-last">
-                        <div className='sec_head'>
-                            <span className='fs-6'>Testimonial</span>
-                            <p className='h2'>Client’s Success <br />Stories</p>
+                    <Col md={4} xs={12} className="mb-4 mb-md-0 pe-md-5 order-first order-md-last">
+                        <div className='head_sec'>
+                            <div className='d-flex'><HeadTitle title="Our Success Stories" /></div>
                         </div>
                     </Col>
                 </Row>
-
-                {/* Optional subtle background shapes for styling */}
-                <div
-                    style={{
-                        position: 'absolute',
-                        left: '-100px',
-                        bottom: '-100px',
-                        width: '300px',
-                        height: '300px',
-                        borderRadius: '50%',
-                        backgroundColor: '#cce5ff',
-                        opacity: 0.3,
-                        zIndex: 0,
-                    }}
-                    aria-hidden="true"
-                ></div>
             </Container>
         </>
     )
