@@ -13,6 +13,7 @@ import SearchBox from './Component/SearchBox'
 import Speciality from './Component/Speciality'
 import HomeSlider from './Component/HomeSlider'
 import FunctionalitySec from './Component/FunctionalitySec'
+import BestDoctor from './Component/BestDoctor'
 
 const Home = () => {
 
@@ -66,18 +67,24 @@ const Home = () => {
         </Container>
       </section> */}
       <section className='position-relative'>
-        <HomeSlider />
-        <SearchBox />
+        {/* <HomeSlider /> */}
+        <img src={require('./assets/main_banner.png')} alt='banner image of health easy emi' />
+        <section style={{marginTop: '-22px'}}>
+          <SearchBox />
+        </section>
       </section>
       <section className='spacer-y'>
         <FunctionalitySec />
       </section>
+      {/* speciality section */}
+      <Speciality />
+      {/* Best Doctor */}
+      <BestDoctor />
       {/* testimonial section */}
       <section className='spacer-t position-relative'>
         <Testimonial />
       </section>
-      {/* speciality section */}
-      <Speciality />
+      
       {/* App Download Section  */}
       <AppDownload />
       {/* Popular Search Section */}

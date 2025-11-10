@@ -344,9 +344,13 @@ const Surgerydoctorlist = () => {
             <section className='py-5'>
                 <Container>
                     <h2 className='mb-5'>{doctor_list && doctor_list[0]?.surgerytypeid?.surgerytypename} Doctors List</h2>
-                    {filteredDoctors.length <= 0 ? <Col>No Doctor Found...</Col> : filteredDoctors.map((doc, i) => (
-                        <DoctorListComponents details={doc} key={i} />
-                    ))}
+                    <Row>
+                        {filteredDoctors.length <= 0 ? <Col>No Doctor Found...</Col> : filteredDoctors.map((doc, i) => (
+                            <Col xs={12} md={6} lg={4} xl={3} key={i}>
+                                <DoctorListComponents details={doc} />
+                            </Col>
+                        ))}
+                    </Row>
                 </Container>
             </section>
             <FooterBar />

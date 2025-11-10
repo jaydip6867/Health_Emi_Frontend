@@ -216,6 +216,7 @@
     --dark-text: #333333;
     --section-spacer: 96px;
     --spacing-top: 80px;
+    --primary-gradient: linear-gradient(0deg, var(--secondary-color-600) 0%, var(--primary-color-600) 100%);
 }
 
 /* ---------------------- DEFAULT CSS ------------------------ */
@@ -280,7 +281,16 @@ h6 {
 .spacer-t {
     padding-top: var(--spacing-top);
 }
-
+.btn_gradient{
+    background-image: var(--primary-gradient);
+    color: var(--white);
+    border-radius: 40px;
+    padding: 6px 20px;
+    font-size: 14px;
+}
+.btn_gradient:hover{
+    color: var(--white);
+}
 /* ----------------------------------------------------------------- */
 /* ----------------------- Header CSS -------------------------- */
 .header_bg {
@@ -389,6 +399,10 @@ h6 {
 .banner_sec {
     background-color: var(--primary-color-50);
     padding: 40px;
+}
+
+.head_sec{
+    color: var(--primary-color-950);
 }
 
 .head_sec h1 span,
@@ -827,10 +841,37 @@ h6 {
 .doctor_card {
     transition: .3s ease-in-out;
 }
-
-.doctor_card:hover {
-    background-color: var(--grayscale-color-50);
+.doctor_card .doctor_name{
+    color: var(--grayscale-color-800);
 }
+.doctor_card .location{
+ color: var(--grayscale-color-600);   
+}
+.dotted-divider{
+    border-bottom: 1px dotted var(--grayscale-color-200);
+}
+.doctor_card .consultation_fees{
+    color: var(--grayscale-color-600);
+    font-size: 12px;
+}
+.doctor_card .consultation_fees .fees-amount{
+    font-weight: 600;
+    color: #E04F16;
+    font-size: 18px;
+}
+.doctor_card .btn-book{
+    background-color: var(--grayscale-color-800);
+    border: 0;
+    font-size: 12px;
+    border-radius: 24px;
+    outline: 0;
+    color: var(--white);
+    cursor: pointer;
+}
+
+/* .doctor_card:hover {
+    background-color: var(--grayscale-color-50);
+} */
 
 .doctor_card:hover .btn {
     background-color: var(--white);
@@ -850,6 +891,43 @@ h6 {
     max-height: 200px;
     object-fit: cover;
     margin: auto;
+}
+
+/* Overrides for the new card variant to ensure full-bleed top image */
+.doctor-card-v2 img.doctor-card-img,
+.doctor-card-v2 .doctor-card-img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 200px !important;
+    max-height: 200px !important;
+    display: block;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.rating-badge-orange{
+    background-color: #E04F16;
+}
+.spec-chip{
+    padding-left: 1rem;
+    position: relative;
+}
+.spec-chip::before{
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    border-radius: 5px;
+    display: block;
+    background-color: var(--grayscale-color-200);
+}
+
+@media (max-width: 576px) {
+    .doctor-card-v2 .doctor-card-img {
+      height: 200px;
+    }
 }
 
 /*Doctor list responsive tweaks */
@@ -1620,4 +1698,32 @@ h6 {
 }
 .matter_bg span{
     color: var(--primary-color-800)
+}
+
+/* speciality home page section */
+.speciality_box_item{
+    border: 1px solid var(--grayscale-color-200);
+    cursor: pointer;
+}
+.speciality_box_item .speciality_img{
+    width: 80px;
+    height: 80px;
+    border: 2px solid var(--primary-color-600);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    padding: 20px;
+}
+.speciality_box_item .speciality_img img{
+    width: 60px;
+    height: auto !important;
+    object-fit: cover;
+}
+.speciality_box_item:hover .speciality_img{
+    background-color: var(--primary-color-600);
+}
+.speciality_box_item:hover img{
+    filter: brightness(0) invert(1);
 }

@@ -1,56 +1,69 @@
 import { Button, Card, Col, Row } from "react-bootstrap"
-import { MdArrowOutward, MdLocationOn } from "react-icons/md"
-import { PiStethoscopeBold } from "react-icons/pi"
-import { Link } from "react-router-dom"
+import { MdCalendarMonth } from "react-icons/md"
+import { FaStar } from "react-icons/fa6"
+import { CiLocationOn } from "react-icons/ci";
 import defaultDoctorImg from "../../assets/image/doctor_img.jpg"
+import { useNavigate } from "react-router-dom"
 
 const DoctorListComponents = ({ details }) => {
+    const navigate = useNavigate();
     // console.log(details)
     return (
         <>
-            <Card
-                text="secondary"
-                className="p-4 my-3 rounded-4 doctor_card"
-            >
-                <Row className="g-3">
-                    <Col xs={12} md={2}>
-                        <div className="doctor_img d-flex justify-content-center">
-                            <img
-                                src={details?.profile_pic || defaultDoctorImg}
-                                alt={`Dr. ${details?.name || 'Doctor'}`}
-                                className="rounded-3 img-fluid"
-                                style={{ maxWidth: "100%", maxHeight: "auto" }}
-                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultDoctorImg; }}
-                            />
+            <Card text="secondary" className="my-3 rounded-4 doctor_card doctor-card-v2 overflow-hidden">
+                <div className="position-relative">
+                    <img
+                        src={details?.profile_pic || defaultDoctorImg}
+                        alt={`Dr. ${details?.name || 'Doctor'}`}
+                        className="w-100 doctor-card-img"
+                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultDoctorImg; }}
+                    />
+                    <div className="rating-badge-orange d-inline-flex align-items-center gap-2 position-absolute top-0 start-0 m-3 px-2 py-1 rounded-3">
+                        <FaStar size={14} className="text-white" />
+                        <small className="fw-bold text-white fs-7">{details?.averageRating === 0 ? '0' : details?.averageRating + '.0'}</small>
+                    </div>
+                </div>
+
+                <Card.Body className="pt-3 pb-4 px-0">
+                    <div className="d-flex align-items-center justify-content-between mb-2 pe-2">
+                        <div className="spec-chip d-inline-flex align-items-center w-75">
+                            <small className="fw-semibold">{details?.specialty || 'Specialist'}</small>
                         </div>
-                    </Col>
-                    <Col xs={12} md={7}>
-                        <Card.Body className="p-0">
-                            <Card.Title>
-                                <h4 className="mb-1 text-dark">Dr. {details?.name}</h4>
-                            </Card.Title>
-                            <hr/>
-                            <Card.Text className="mb-1 fs-6">
-                                <PiStethoscopeBold className="text-dark me-2" />
-                                {details?.specialty}
-                            </Card.Text>
-                            <Card.Text className="fs-7" style={{lineHeight: 1.2}}>
-                                <MdLocationOn className="text-dark me-2" />
-                                {details?.city}, {details?.state}, {details?.country}, {details?.pincode}
-                            </Card.Text>
-                        </Card.Body>
-                    </Col>
-                    <Col xs={12} md={'auto'} className=" d-flex align-items-center ms-auto">
-                        <Button
-                            variant="light"
-                            className="doctor-btn d-flex align-items-center gap-3 text-nowrap"
-                            style={{ borderRadius: "20px" }}
-                        >
-                            See More <span style={{ width: 30, height: 30 }} className="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white"><MdArrowOutward size={20} /></span>
-                        </Button>
-                    </Col>
-                    <Link to={`/doctorprofile/${encodeURIComponent(btoa(details._id))}`} className="m-0 stretched-link"></Link>
-                </Row>
+                        <div className="chip chip-available">
+                            {/* <BsDot className="fs-3" /> */}
+                            <small className="fw-semibold fs-7 px-2 py-1 rounded-3" style={{backgroundColor: '#EDF9F0', color: '#04BD6C'}}>Available</small>
+                        </div>
+                    </div>
+
+                    <div className="px-3">
+                        <h5 className="mb-2 doctor_name">Dr. {details?.name}</h5>
+                        <div className="d-flex align-items-start mb-3 location">
+                            <CiLocationOn className="me-1 pt-1 fs-6" />
+                            <small>
+                                {details?.city}{details?.city ? ', ' : ''}{details?.state}
+                                {details?.country ? `, ${details.country}` : ''}
+                                {details?.pincode ? `, ${details.pincode}` : ''}
+                            </small>
+                        </div>
+
+                        <div className="dotted-divider my-3"></div>
+
+                        <Row className="align-items-center g-2 consultation_fees justify-content-between">
+                            <Col xs="auto">
+                                <small className="small">Consultation Fees</small>
+                                <div className="fees-amount">₹ {details?.consultation_fee || details?.fees || 650}</div>
+                            </Col>
+                            <Col xs="auto" className="text-end">
+                                <button onClick={() => navigate(`/doctorprofile/${encodeURIComponent(btoa(details._id))}`)} className="btn-book px-3 py-2 d-flex align-items-center gap-2 ">
+                                    <MdCalendarMonth  />
+                                    <span className="d-block text-nowrap">Book Now</span>
+                                </button>
+                            </Col>
+                        </Row>
+                    </div>
+
+                    {/* <Link to={`/doctorprofile/${encodeURIComponent(btoa(details._id))}`} className="m-0 stretched-link"></Link> */}
+                </Card.Body>
             </Card>
         </>
     )
