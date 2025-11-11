@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import Loader from '../Loader'
-import { Col, Container, Modal, Row, Button, Form, Tooltip, OverlayTrigger, Card } from 'react-bootstrap'
+import { Col, Container, Modal, Row, Button, Tooltip, OverlayTrigger, Card } from 'react-bootstrap'
 import P_Sidebar from './P_Sidebar'
-import P_nav from './P_nav'
 import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import SmartDataTable from '../components/SmartDataTable'
-import { MdCurrencyRupee, MdOutlineRemoveRedEye } from 'react-icons/md'
+import { MdOutlineRemoveRedEye } from 'react-icons/md'
 
 const P_Surgeries = () => {
     const SECRET_KEY = "health-emi";

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Col, Dropdown, NavLink, Row } from 'react-bootstrap';
+import { Button, Col, Dropdown, Row } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 
 const P_nav = (name) => {

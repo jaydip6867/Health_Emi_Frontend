@@ -5,8 +5,6 @@ import "slick-carousel/slick/slick-theme.css";
 import { Col, Container, Row, Button, Form } from 'react-bootstrap';
 import './css/doctor.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { CiLock } from 'react-icons/ci';
-import { FaRegEnvelope } from 'react-icons/fa';
 import DoctorTestimonial from './DoctorTestimonial';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';

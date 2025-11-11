@@ -203,9 +203,9 @@ const D_Consultation = () => {
                       <Form.Control
                         type="button"
                         value={
-                          consult?.home_visit_price == "" &&
-                          consult?.clinic_visit_price == "" &&
-                          consult?.eopd_price == ""
+                          consult?.home_visit_price === "" &&
+                          consult?.clinic_visit_price === "" &&
+                          consult?.eopd_price === ""
                             ? "Add Consultation"
                             : "Edit Consultation"
                         }

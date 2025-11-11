@@ -31,19 +31,19 @@ const FooterBar = () => {
                 presence.
               </p>
               <div className="social-links">
-                <a href="#" className="social-icon">
+                <a className="social-icon">
                   <FaFacebookF />
                 </a>
-                <a href="#" className="social-icon">
+                <a className="social-icon">
                   <FaTwitter />
                 </a>
-                <a href="#" className="social-icon">
+                <a className="social-icon">
                   <FaInstagram />
                 </a>
-                <a href="#" className="social-icon">
+                <a className="social-icon">
                   <FaLinkedinIn />
                 </a>
-                <a href="#" className="social-icon">
+                <a className="social-icon">
                   <FaYoutube />
                 </a>
               </div>

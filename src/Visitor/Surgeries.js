@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import FooterBar from './Component/FooterBar'
 import NavBar from './Component/NavBar'
-import { Card, Container, Image } from 'react-bootstrap'
+import { Container } from 'react-bootstrap'
 import Loader from '../Loader'
 import axios from 'axios'
 import CryptoJS from "crypto-js";
 import { Link, useNavigate } from 'react-router-dom';
-import Speciality from './Component/Speciality'
 import defaultSurgeryIcon from '../assets/image/consultant.png'
 
 const Surgeries = () => {

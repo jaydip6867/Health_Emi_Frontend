@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Card, Col, Container, Row } from 'react-bootstrap'
+import { Col, Container, Row } from 'react-bootstrap'
 import NavBar from './Component/NavBar'
 import FooterBar from './Component/FooterBar'
 import AppDownload from './Component/AppDownload'
 import Loader from '../Loader'
-import { FiArrowUpRight } from 'react-icons/fi'
 import Testimonial from './Component/Testimonial'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom';
 import SearchBox from './Component/SearchBox'
 import Speciality from './Component/Speciality'
-import HomeSlider from './Component/HomeSlider'
 import FunctionalitySec from './Component/FunctionalitySec'
 import BestDoctor from './Component/BestDoctor'
 import HeadTitle from './Component/HeadTitle'

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import { Badge, Button, Card, Col, Container, Dropdown, Form, ListGroup, ListGroupItem, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
+import { Badge, Button, Card, Col, Container, Form, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
 import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'
@@ -9,7 +9,7 @@ import Loader from '../Loader'
 import CryptoJS from "crypto-js";
 import Swal from 'sweetalert2'
 import SmartDataTable from '../components/SmartDataTable'
-import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye, MdEdit, MdDelete, MdMoreVert } from 'react-icons/md'
+import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye} from 'react-icons/md'
 import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
 import jsPDF from 'jspdf'
@@ -288,8 +288,6 @@ const D_Appointment = () => {
                 return `${item.medicine} (${item.type}) - ${times.join(', ')} - ${item.days} days - Qty: ${item.quantity}${instr}`;
             }).join('\n');
 
-            const medicationsText = itemsText;
-
             // Generate PDF from hidden template and return blob for upload
             const { pdfBlob, fileName } = await generatePrescriptionPDF();
 
@@ -357,7 +355,6 @@ const D_Appointment = () => {
 
             const imgWidth = pageWidth;
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let position = 0;
 
             if (imgHeight <= pageHeight) {
                 pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
@@ -618,7 +615,6 @@ const D_Appointment = () => {
         width: '80px'
     }, {
         name: 'Action',
-        center: true,
         cell: row => (
             <div className="d-flex align-items-center gap-1">
                 {row.status === "Pending" && (

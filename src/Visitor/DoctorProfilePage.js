@@ -8,12 +8,11 @@ import axios from 'axios'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom';
 import './css/visitor.css'
-import { FaEnvelope, FaPhone, FaRegDotCircle } from 'react-icons/fa'
+import { FaEnvelope } from 'react-icons/fa'
 import { BsStarFill, BsGeoAlt } from 'react-icons/bs'
 import { format } from 'date-fns';
 import Swal from 'sweetalert2'
 import DatePicker from 'react-datepicker'
-import { addDays } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css'
 import { FaLocationDot } from 'react-icons/fa6'
 

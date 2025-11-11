@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Col, Container, Dropdown, Modal, Row, Table, Card, Badge } from 'react-bootstrap'
+import { Col, Container, Modal, Row, Card, Badge } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
 import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'

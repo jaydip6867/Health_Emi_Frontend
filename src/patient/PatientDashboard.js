@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import P_Sidebar from './P_Sidebar';
-import P_nav from './P_nav';
 import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
 import { Col, Container, Row } from 'react-bootstrap';

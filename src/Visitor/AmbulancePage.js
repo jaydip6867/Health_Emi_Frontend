@@ -6,7 +6,6 @@ import FooterBar from './Component/FooterBar';
 import Loader from '../Loader';
 import FunctionalitySec from './Component/FunctionalitySec';
 import { Container, Row, Col, Card } from "react-bootstrap";
-import { FaAmbulance, FaMapMarkerAlt, FaEye, FaHeadset, FaExchangeAlt } from "react-icons/fa";
 
 const AmbulancePage = () => {
     const SECRET_KEY = "health-emi";

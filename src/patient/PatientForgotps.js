@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 import { Button, Col, Container, Form, Row, ToastContainer } from 'react-bootstrap'
-import { CiLock } from 'react-icons/ci';
-import { FaRegEnvelope } from 'react-icons/fa';
 import Loader from '../Loader'
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';

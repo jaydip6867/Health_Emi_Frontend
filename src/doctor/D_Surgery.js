@@ -27,7 +27,6 @@ import {
 import CryptoJS from "crypto-js";
 import SmartDataTable from '../components/SmartDataTable';
 import { FiChevronsRight, FiPlus, FiX } from "react-icons/fi";
-import { FaCheck } from "react-icons/fa";
 
 const D_Surgery = () => {
   const SECRET_KEY = "health-emi";

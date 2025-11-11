@@ -2,14 +2,10 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import P_nav from './P_nav';
 import P_Sidebar from './P_Sidebar';
 import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
 import Swal from 'sweetalert2';
-import { AiOutlinePhone, AiOutlineUser } from 'react-icons/ai';
-import { FaRegEnvelope } from 'react-icons/fa';
-import { CiLocationOn } from 'react-icons/ci';
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
 import CryptoJS from "crypto-js";

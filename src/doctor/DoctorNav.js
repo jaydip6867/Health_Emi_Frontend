@@ -1,6 +1,6 @@
 import React from 'react'
-import { Button, Col, Container, Dropdown, Row } from 'react-bootstrap'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Button, Col, Dropdown, Row } from 'react-bootstrap'
+import { NavLink, useNavigate } from 'react-router-dom'
 
 const DoctorNav = (name) => {
     var navigate = useNavigate();

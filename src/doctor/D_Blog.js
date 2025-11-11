@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import DoctorNav from './DoctorNav';
-import { Button, Col, Container, Form, Modal, OverlayTrigger, Row, Table, ToastContainer, Tooltip } from 'react-bootstrap';
+import { Button, Col, Container, Form, Modal, OverlayTrigger, Row, ToastContainer, Tooltip } from 'react-bootstrap';
 import DoctorSidebar from './DoctorSidebar';
 import CryptoJS from "crypto-js";
 import DatePicker from 'react-datepicker';
@@ -10,7 +10,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
-import { MdDelete, MdDeleteOutline, MdEditDocument, MdOutlineEditCalendar, MdOutlineRemoveRedEye } from 'react-icons/md';
+import { MdDeleteOutline, MdOutlineEditCalendar, MdOutlineRemoveRedEye } from 'react-icons/md';
 import SmartDataTable from '../components/SmartDataTable';
 
 const D_Blog = () => {

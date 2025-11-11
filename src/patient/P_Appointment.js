@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Loader from '../Loader'
-import { Badge, Button, Card, Col, Container, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
+import { Button, Card, Col, Container, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 import P_Sidebar from './P_Sidebar'
-import P_nav from './P_nav'
 import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
 import CryptoJS from "crypto-js";

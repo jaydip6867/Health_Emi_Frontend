@@ -15,7 +15,6 @@ import {
   Row,
 } from "react-bootstrap";
 import P_Sidebar from "./P_Sidebar";
-import P_nav from "./P_nav";
 import NavBar from "../Visitor/Component/NavBar";
 import FooterBar from "../Visitor/Component/FooterBar";
 import {

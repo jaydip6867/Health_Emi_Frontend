@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Card, Col, Container, Form, Image, Row, Badge, InputGroup, Dropdown } from 'react-bootstrap';
+import { Button, Card, Col, Container, Image, Row, Badge } from 'react-bootstrap';
 import P_Sidebar from './P_Sidebar';
-import P_nav from './P_nav';
 import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
 import Loader from '../Loader';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { BsGeoAltFill, BsHeart, BsStarFill, BsSearch, BsFilter, BsGrid3X3Gap } from 'react-icons/bs';
-import { MdVerified, MdAccessTime } from 'react-icons/md';
+import { BsGeoAltFill, BsSearch, BsFilter } from 'react-icons/bs';
+import { MdAccessTime } from 'react-icons/md';
 import CryptoJS from "crypto-js";
 import '../doctor/css/doctor.css';
 
@@ -102,7 +101,7 @@ const P_DoctorAppointment = () => {
         setTimeout(() => {
             if (s !== 'All') {
                 var filter_data = doctorlist.filter((v)=>{
-                    return v?.specialty == s
+                    return v?.specialty === s
                 })
                 setdispdoctorlist(filter_data)
             }

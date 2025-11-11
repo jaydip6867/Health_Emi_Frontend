@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import NavBar from './Component/NavBar'
 import FooterBar from './Component/FooterBar'
-import { Badge, Button, Card, Col, Container, Form, Row } from 'react-bootstrap'
+import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap'
 import { MdCompare, MdClear, MdLocalHospital, MdSchool, MdVerified, MdLocationOn, MdCurrencyRupee } from 'react-icons/md'
 import axios from 'axios'
 import Loader from '../Loader'
