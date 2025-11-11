@@ -56,7 +56,7 @@ const NavBar = ({ logindata }) => {
           </Navbar.Toggle>
 
           <Navbar.Collapse className="menubar" id="basic-navbar-nav">
-            <Nav className="ms-auto">
+            <Nav className="mx-auto">
               <Link
                 to="/"
                 className={`nav-link ${isActive('/')}`}
@@ -64,14 +64,14 @@ const NavBar = ({ logindata }) => {
               >
                 Home
               </Link>
-              <Link
+              {/* <Link
                 to="/ambulancepage"
                 className={`nav-link ${isActive('/ambulancepage')}`}
                 onClick={closeNav}
               >
                 Ambulance
-              </Link>
-              {/* <Link
+              </Link> */}
+              <Link
                 to="/about"
                 className={`nav-link ${isActive('/about')}`}
                 onClick={closeNav}
@@ -91,7 +91,7 @@ const NavBar = ({ logindata }) => {
                 onClick={closeNav}
               >
                 Contact
-              </Link> */}
+              </Link>
             </Nav>
 
             <NavDropdown

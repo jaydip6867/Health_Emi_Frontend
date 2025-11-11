@@ -298,8 +298,8 @@ h6 {
 /* ----------------------------------------------------------------- */
 /* ----------------------- Header CSS -------------------------- */
 .header_bg {
-    background-color: #F5FDFF;
-    border-bottom: 1px solid #F0F0F5;
+    background-color: var(--grayscale-color-50);
+    border-bottom: 1px solid var(--grayscale-color-100);
 }
 
 .menubar a.nav-link {
@@ -315,17 +315,14 @@ h6 {
 
 .menubar a.nav-link:hover,
 .menubar a.nav-link:focus {
-    color: var(--primary-color-700) !important;
-    /* #006CBE */
+    color: var(--primary-color-600) !important;
 }
 
 .menubar a.nav-link.active {
-    color: var(--primary-color-800) !important;
-    /* #005493 */
-    font-weight: 800;
+    color: var(--primary-color-600) !important;
 }
 
-.menubar a.nav-link.active::after {
+/* .menubar a.nav-link.active::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -335,7 +332,7 @@ h6 {
     height: 2px;
     background-color: var(--primary-color-800);
     border-radius: 2px;
-}
+} */
 
 /* Responsive styles */
 @media (max-width: 991.98px) {
@@ -612,20 +609,22 @@ h6 {
 
 /* Footer Styles */
 .footer {
-    background-color: #00233D;
-    color: #fff;
+    background-color: var(--grayscale-color-100);
+    color: var(--grayscale-color-900);
     font-family: 'Roboto', sans-serif;
     position: relative;
     overflow: hidden;
+    padding: 70px 0 30px;
 }
 
 .footer-top {
-    padding: 70px 0 40px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid #f6f6f6;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
 }
 
 .footer h4 {
-    color: #fff;
+    color: var(--grayscale-color-900);
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 20px;
@@ -637,21 +636,20 @@ h6 {
     content: '';
     position: absolute;
     left: 0;
-    bottom: 0;
-    width: 40px;
-    height: 2px;
-    background: #0084E9;
+    bottom: 6px;
+    width: 20px;
+    height: 1px;
+    background: var(--grayscale-color-900);
 }
 
 .footer-about .footer-logo {
     margin-bottom: 20px;
-    max-width: 180px;
 }
 
 .footer-about .footer-text {
-    color: rgba(255, 255, 255, 0.7);
     line-height: 1.7;
     margin-bottom: 25px;
+    font-size: 15px;
 }
 
 /* Social Icons */
@@ -664,18 +662,18 @@ h6 {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: var(--primary-color-900);
+    color: var(--grayscale-color-100);
     font-size: 16px;
     transition: all 0.3s ease;
     text-decoration: none;
 }
 
 .social-icon:hover {
-    background: #0084E9;
+    background: var(--primary-color-500);
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 132, 233, 0.3);
 }
@@ -692,7 +690,7 @@ h6 {
 }
 
 .footer-links a {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--grayscale-color-600);
     text-decoration: none;
     transition: all 0.3s ease;
     display: inline-block;
@@ -700,28 +698,14 @@ h6 {
     padding-left: 0;
 }
 
-.footer-links a::before {
-    content: '→';
-    position: absolute;
-    left: -20px;
-    opacity: 0;
-    transition: all 0.3s ease;
-    color: #0084E9;
-}
 
 .footer-links a:hover {
-    color: #fff;
-    padding-left: 20px;
-}
-
-.footer-links a:hover::before {
-    opacity: 1;
-    left: 0;
+    color: var(--primary-color-500);
 }
 
 /* Contact Info */
 .contact-info p {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--grayscale-color-900);
     margin-bottom: 15px;
     display: flex;
     align-items: flex-start;
@@ -729,7 +713,7 @@ h6 {
 }
 
 .contact-info svg {
-    color: #0084E9;
+    color: var(--primary-color-900);
     margin-right: 10px;
     margin-top: 4px;
     flex-shrink: 0;
@@ -737,20 +721,11 @@ h6 {
 
 /* Footer Bottom */
 .footer-bottom {
-    padding: 20px 0;
-    background: rgba(0, 0, 0, 0.1);
+    color: var(--primary-color-900)
 }
 
-.footer-bottom .container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.copyright {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 14px;
+.copyright span{
+    color: var(--primary-color-500);
 }
 
 .footer-legal {
@@ -776,6 +751,9 @@ h6 {
 
 .text-sky-500 {
     color: var(--primary-color-500);
+}
+.footer-contact h4{
+    color: var(--primary-color-900);
 }
 
 /* Responsive Styles */
