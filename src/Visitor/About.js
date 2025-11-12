@@ -85,7 +85,7 @@ const About = () => {
                             </div>
                         </Col>
                         <Col xs={12} md={4} className='mx-auto'>
-                            <img src={require('../assets/image/health-habit.png')} className='img-fluid shadow-img'/>
+                            <img src={require('../assets/image/health-habit.png')} className='img-fluid shadow-img' alt='health habit image'/>
                         </Col>
                     </Row>
                 </Container>
