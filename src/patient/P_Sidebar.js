@@ -17,7 +17,7 @@ const P_Sidebar = () => {
                     {/* <NavLink to={'/patient/patientdoctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}><MdDifference />Add Appointment</NavLink> */}
                     <NavLink to={'/patient/appointment'} className={({ isActive }) => (isActive ? 'active' : '')} ><RiCalendarScheduleFill /><span>Consultation Appointment</span></NavLink>
                     <NavLink to={'/patient/surgeries'} className={({ isActive }) => (isActive ? 'active' : '')} ><AiFillSchedule /><span>Surgeries Appointment</span></NavLink>
-                    <NavLink to={'/patient/blog'} className={({ isActive }) => (isActive ? 'active' : '')}><BiSolidCommentAdd /><span>Blog</span></NavLink>
+                    {/* <NavLink to={'/patient/blog'} className={({ isActive }) => (isActive ? 'active' : '')}><BiSolidCommentAdd /><span>Blog</span></NavLink> */}
                 </div>
             </div>
         </Col>

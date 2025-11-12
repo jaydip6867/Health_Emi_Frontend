@@ -9,26 +9,28 @@ import Loader from '../../Loader';
 
 const SearchBox = () => {
     const [loading, setloading] = useState(false)
+    const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
+    const [selectedState, setSelectedState] = useState('');
+    const [selectedCity, setSelectedCity] = useState('');
+    const selectedStateName = states.find(st => st.isoCode === selectedState)?.name || '';
     useEffect(() => {
         document.title = "Health Easy EMI - Keep Life Healthy"
-        getcitiesname();
+        // load states of India initially
+        const india = Country.getCountryByCode("IN");
+        const s = State.getStatesOfCountry(india.isoCode);
+        setStates(s);
         setloading(true)
         getsuggestion();
     }, []);
 
-    // find location 
-
-    function getcitiesname() {
+    // when state changes, load its cities
+    const loadCitiesForState = (stateIso) => {
         const india = Country.getCountryByCode("IN");
-        const states = State.getStatesOfCountry(india.isoCode);
-        const allCities = states.flatMap((state) =>
-            City.getCitiesOfState(india.isoCode, state.isoCode)
-        );
-        setCities(allCities);
+        const c = City.getCitiesOfState(india.isoCode, stateIso) || [];
+        setCities(c);
     }
 
-    const [searchinputcity, setsearchinputcity] = useState('')
     const [recordlist, setreclist] = useState([])
     const [inputValue, setInputValue] = useState('');
     const [showList, setShowList] = useState(false);
@@ -39,7 +41,8 @@ const SearchBox = () => {
             url: 'https://healtheasy-o25g.onrender.com/user/suggestions',
             data: {
                 "search": n,
-                "city": searchinputcity
+                "state": selectedStateName,
+                "city": selectedCity
             }
         }).then((res) => {
             // console.log('suggestions = ',res.data.Data)
@@ -64,38 +67,64 @@ const SearchBox = () => {
     return (
         <>
             <Container>
-                <Row className='justify-content-center searchbox'>
+                <Row className='justify-content-center'>
                     <Col xs={12} md={10} lg={8}>
-                        <div className='rounded-4'>
-                            <div className='d-flex align-items-stretch'>
-                                <div className='position-relative d-flex align-items-center' style={{ maxWidth: 180 }}>
-                                    <FiMapPin className='position-absolute' style={{ left: 12, color: '#6b7280' }} />
+                        <div className='px-2 py-1'>
+                            <div className='d-flex searchbox rounded-pill align-items-center position-relative'>
+                                <div className='d-flex align-items-center position-relative' style={{ minWidth: 180 }}>
+                                    <FiMapPin className='position-absolute' style={{ left: 12}} />
                                     <Form.Select
-                                        className='rounded-pill ps-5 pe-4 py-2 border-0'
-                                        value={searchinputcity}
+                                        className='ps-5 pe-4 py-2 bg-transparent border-0'
+                                        value={selectedState}
                                         onChange={(e) => {
-                                            const v = e.target.value;
-                                            setsearchinputcity(v);
-                                            // Refresh suggestions for current input, but do not open list here
+                                            const iso = e.target.value;
+                                            setSelectedState(iso);
+                                            setSelectedCity('');
+                                            loadCitiesForState(iso);
                                             if (inputValue && inputValue.trim().length > 0) {
                                                 getsuggestion(inputValue);
                                             }
                                         }}
                                         onFocus={() => setShowList(false)}
-                                        name='city'
-                                        style={{ background: '#f3f4f6' }}
+                                        name='state'
+                                        style={{ background: 'transparent', maxWidth: '180px' }}
                                     >
-                                        <option>Location</option>
-                                        {
-                                            cities && cities.map((city, vi) => (
-                                                <option key={vi} value={city.name}>{city.name}</option>
-                                            ))
-                                        }
+                                        <option value=''>State</option>
+                                        {states && states.map((st) => (
+                                            <option key={st.isoCode} value={st.isoCode}>{st.name}</option>
+                                        ))}
                                     </Form.Select>
                                 </div>
-
-                                <div className='flex-grow-1 position-relative mx-2'>
-                                    <FiSearch className='position-absolute' style={{ left: 12, top: 14, color: '#6b7280' }} />
+                                <div className='d-flex align-items-center'>
+                                    <div className='mx-2 line_search_bar'></div>
+                                    <div className='d-flex align-items-center position-relative' style={{ minWidth: 180 }}>
+                                        <FiMapPin className='position-absolute' style={{ left: 12}} />
+                                        <Form.Select
+                                            className='ps-5 pe-4 py-2 bg-transparent border-0'
+                                            value={selectedCity}
+                                            onChange={(e) => {
+                                                const v = e.target.value;
+                                                setSelectedCity(v);
+                                                if (inputValue && inputValue.trim().length > 0) {
+                                                    getsuggestion(inputValue);
+                                                }
+                                            }}
+                                            onFocus={() => setShowList(false)}
+                                            name='city'
+                                            disabled={!selectedState}
+                                            style={{ background: 'transparent', maxWidth: '150px' }}
+                                        >
+                                            <option value=''>City</option>
+                                            {cities && cities.map((city) => (
+                                                <option key={city.name} value={city.name}>{city.name}</option>
+                                            ))}
+                                        </Form.Select>
+                                    </div>
+                                    <div className='mx-2 line_search_bar'></div>
+                                </div>
+                                <div className='flex-grow-1'>
+                                    <div className='position-relative'>
+                                        <FiSearch className='position-absolute' style={{ left: 12, top: 12}} />
                                     <Form.Control
                                         placeholder='Search doctor & Surgery here'
                                         autoComplete="off"
@@ -104,13 +133,15 @@ const SearchBox = () => {
                                         onFocus={() => setShowList(true)}
                                         onBlur={() => setTimeout(() => setShowList(false), 50)}
                                         name='name'
-                                        className='rounded-pill ps-5 py-2'
-                                        style={{ background: '#ffffff', border: '1px solid #e5e7eb' }}
+                                        className='bg-transparent ps-5 py-2 border-0'
+                                        style={{ outline: 'none' }}
                                     />
+                                    </div>
                                     {showList && (
                                         <ul style={{
                                             position: 'absolute',
                                             top: '42px',
+                                            left: 0,
                                             width: '100%',
                                             border: '1px solid #e5e7eb',
                                             backgroundColor: 'white',

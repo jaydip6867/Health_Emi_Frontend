@@ -72,62 +72,68 @@ const PatientProfile = () => {
         // console.log(profile)
     }
 
-    function deletepatient() {
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You Want Delete Your Account.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axios({
-                    method: 'get',
-                    url: 'https://healtheasy-o25g.onrender.com/user/profile/remove',
-                    headers: {
-                        Authorization: token
-                    }
-                }).then((res) => {
-                    // toast('Doctor Account Delete successfully...', { className: 'custom-toast-success' })
-                    // console.log(res)
-                    localStorage.removeItem('PatientLogin')
-                }).catch(function (error) {
-                    // console.log(error);
-                    toast(error.response.data.Message, { className: 'custom-toast-error' })
-                }).finally(() => {
-                    // setloading(false)
-                    Swal.fire({
-                        title: "Deleted!",
-                        text: "Your Account has been deleted.",
-                        icon: "success"
-                    });
-                    navigate('/')
-                });
+    // function deletepatient() {
+    //     Swal.fire({
+    //         title: "Are you sure?",
+    //         text: "You Want Delete Your Account.",
+    //         icon: "warning",
+    //         showCancelButton: true,
+    //         confirmButtonColor: "#3085d6",
+    //         cancelButtonColor: "#d33",
+    //         confirmButtonText: "Yes, delete it!"
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             axios({
+    //                 method: 'get',
+    //                 url: 'https://healtheasy-o25g.onrender.com/user/profile/remove',
+    //                 headers: {
+    //                     Authorization: token
+    //                 }
+    //             }).then((res) => {
+    //                 // toast('Doctor Account Delete successfully...', { className: 'custom-toast-success' })
+    //                 // console.log(res)
+    //                 localStorage.removeItem('PatientLogin')
+    //             }).catch(function (error) {
+    //                 // console.log(error);
+    //                 toast(error.response.data.Message, { className: 'custom-toast-error' })
+    //             }).finally(() => {
+    //                 // setloading(false)
+    //                 Swal.fire({
+    //                     title: "Deleted!",
+    //                     text: "Your Account has been deleted.",
+    //                     icon: "success"
+    //                 });
+    //                 navigate('/')
+    //             });
 
-            }
-        });
-    }
+    //         }
+    //     });
+    // }
 
     function updateprofiledata(id) {
 
         console.log('update profile data = ', id, profile)
         // setloading(true)
+        const payload = {
+            "name": profile.name,
+            "email": profile.email,
+            "gender": profile.gender,
+            "mobile": profile.mobile,
+            "pincode": profile.pincode,
+            "blood_group": profile.blood_group,
+            "password": profile?.password || ''
+        };
+        if (!payload.password) {
+            delete payload.password;
+        }
+
         axios({
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/user/profile/edit',
             headers: {
                 Authorization: token
             },
-            data: {
-                "name": profile.name,
-                "email": profile.email,
-                "gender": profile.gender,
-                "mobile": profile.mobile,
-                "pincode": profile.pincode,
-                "blood_group": profile.blood_group
-            }
+            data: payload
         }).then((res) => {
             getprofiledata()
             setdisabled(true)
@@ -209,16 +215,24 @@ const PatientProfile = () => {
                                             </div>
                                         </Form.Group>
 
+                                        <Form.Group controlId="password" className='col-12 col-sm-6 col-md-4 col-lg-3'>
+                                            <div className="position-relative">
+                                                <Form.Label>Password</Form.Label>
+                                                <Form.Control type="password" placeholder="Enter new password" className='frm_input' name='password' value={profile?.password || ''} disabled={IsDisable} onChange={profiledata} />
+                                            </div>
+                                        </Form.Group>
+
                                         <div className='text-center border-top'>
+
                                             {IsDisable ? <Button type="button" className='theme_btn col-3 mt-3' onClick={() => setdisabled(false)}>
                                                 Edit Profile
                                             </Button> : <><Button type="button" className='theme_btn col-3 mt-3' onClick={() => updateprofiledata(profile._id)}>
-                                                Update </Button> <Button className='theme_btn bg-danger border-danger col-3 mt-3 ms-2' onClick={()=>setdisabled(true)}>Cancel</Button> </>}
+                                                Update </Button> <Button className='theme_btn bg-danger border-danger col-3 mt-3 ms-2' onClick={() => setdisabled(true)}>Cancel</Button> </>}
                                         </div>
                                     </Form>
                                 </div> : ''
                             }
-                            <Button variant='danger' className='mt-4' onClick={deletepatient}>Delete Patient</Button>
+                            {/* <Button variant='danger' className='mt-4' onClick={deletepatient}>Delete Patient</Button> */}
                         </div>
                     </Col>
                 </Row>

@@ -526,11 +526,11 @@ const D_Appointment = () => {
         // sortable: true,
     },
     {
-        name: 'Diseases',
-        selector: row => row.surgerydetails?.name,
+        name: 'reason',
+        selector: row => row.appointment_reason,
         cell: row => (
             <span style={{ color: '#6B7280', fontSize: '14px' }}>
-                {row.surgerydetails?.name || 'General Consultation OR Not Specified'}
+                {row.appointment_reason || 'General Consultation OR Not Specified'}
             </span>
         ),
         // sortable: true,
@@ -541,6 +541,26 @@ const D_Appointment = () => {
         cell: row => (
             <span style={{ color: '#6B7280', fontSize: '14px' }}>
                 {row.date} , {row.time}
+            </span>
+        ),
+        // sortable: true,
+    },
+    {
+        name: 'Type',
+        selector: row => row.visit_types,
+        cell: row => (
+            <span style={{ color: '#6B7280', fontSize: '14px' }}>
+                {row.visit_types || 'not specified'}
+            </span>
+        ),
+        // sortable: true,
+    },
+    {
+        name: 'Amount',
+        selector: row => row.visit_types,
+        cell: row => (
+            <span style={{ color: '#6B7280', fontSize: '14px' }}>
+                {row.visit_types || 'not specified'}
             </span>
         ),
         // sortable: true,

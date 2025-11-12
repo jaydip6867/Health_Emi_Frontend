@@ -24,6 +24,9 @@ const DoctorProfilePage = () => {
   const [endDate, setEndDate] = useState(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [selectedConsultationType, setSelectedConsultationType] = useState('');
+  const [selectedHospital, setSelectedHospital] = useState('');
+  const [consultError, setConsultError] = useState(false);
+  const [hospitalError, setHospitalError] = useState(false);
 
   // Available time slots
   const timeSlots = [
@@ -118,14 +121,13 @@ const DoctorProfilePage = () => {
       navigate('/patient')
     }
     else {
-      // Validate consultation type and date/time selection
       if (!selectedConsultationType) {
-        Swal.fire({
-          title: "Please Select Consultation Type",
-          text: "You must select a consultation type before booking.",
-          icon: "warning",
-          confirmButtonText: 'Ok'
-        });
+        setConsultError(true);
+      }
+      if (!selectedHospital) {
+        setHospitalError(true);
+      }
+      if (!selectedConsultationType || !selectedHospital) {
         return;
       }
 
@@ -219,7 +221,8 @@ const DoctorProfilePage = () => {
             appointment_reason: apt_data.appointment_reason,
             ...(reportUrls.length > 0 && { report: reportUrls }), // Only add report if array is not empty
             doctorid: id,
-            visit_types: selectedConsultationType
+            visit_types: selectedConsultationType,
+            hospital_name: selectedHospital || ''
           }
         });
 
@@ -475,12 +478,13 @@ const DoctorProfilePage = () => {
                           <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
                             <div>
                               <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#d5E1EA', fontSize: '14px' }} >
-                                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M12.1817 3.27246C8.84714 3.27246 6.13623 5.98337 6.13623 9.31792C6.13623 12.5888 8.69441 15.2361 12.029 15.3506C12.1308 15.3379 12.2326 15.3379 12.309 15.3506C12.3344 15.3506 12.3471 15.3506 12.3726 15.3506C12.3853 15.3506 12.3853 15.3506 12.398 15.3506C15.6562 15.2361 18.2144 12.5888 18.2271 9.31792C18.2271 5.98337 15.5162 3.27246 12.1817 3.27246Z" fill="#1C2A3A" />
-                                  <path d="M18.6471 18.7364C15.0962 16.3691 9.30532 16.3691 5.72895 18.7364C4.11259 19.8182 3.22168 21.2818 3.22168 22.8473C3.22168 24.4128 4.11259 25.8637 5.71623 26.9328C7.49804 28.1291 9.83986 28.7273 12.1817 28.7273C14.5235 28.7273 16.8653 28.1291 18.6471 26.9328C20.2508 25.8509 21.1417 24.4 21.1417 22.8218C21.129 21.2564 20.2508 19.8055 18.6471 18.7364Z" fill="#1C2A3A" />
-                                  <path d="M26.1687 10.0686C26.3723 12.5377 24.616 14.7013 22.1851 14.9941C22.1723 14.9941 22.1723 14.9941 22.1596 14.9941H22.1214C22.0451 14.9941 21.9687 14.9941 21.9051 15.0195C20.6705 15.0831 19.5378 14.6886 18.6851 13.9631C19.996 12.7922 20.7469 11.0359 20.5941 9.12678C20.5051 8.09587 20.1487 7.15405 19.6142 6.35223C20.0978 6.11041 20.6578 5.95769 21.2305 5.90678C23.7251 5.69041 25.9523 7.5486 26.1687 10.0686Z" fill="#1C2A3A" />
-                                  <path d="M28.7145 21.8417C28.6127 23.0762 27.8236 24.1453 26.5 24.8708C25.2273 25.5708 23.6236 25.9017 22.0327 25.8635C22.9491 25.0362 23.4836 24.0053 23.5854 22.9108C23.7127 21.3326 22.9618 19.8181 21.46 18.609C20.6073 17.9344 19.6145 17.3999 18.5327 17.0053C21.3454 16.1908 24.8836 16.7381 27.06 18.4944C28.2309 19.4362 28.8291 20.6199 28.7145 21.8417Z" fill="#1C2A3A" />
+                                <svg width="21" height="21" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M8.96001 0C5.62546 0 2.91455 2.71091 2.91455 6.04545C2.91455 9.31636 5.47273 11.9636 8.80728 12.0782C8.9091 12.0655 9.01091 12.0655 9.08728 12.0782C9.11273 12.0782 9.12546 12.0782 9.15091 12.0782C9.16364 12.0782 9.16364 12.0782 9.17637 12.0782C12.4346 11.9636 14.9927 9.31636 15.0055 6.04545C15.0055 2.71091 12.2946 0 8.96001 0Z" fill="#1C2A3A" />
+                                  <path d="M15.4255 15.4639C11.8745 13.0967 6.08364 13.0967 2.50727 15.4639C0.890909 16.5457 0 18.0094 0 19.5748C0 21.1403 0.890909 22.5912 2.49455 23.6603C4.27636 24.8567 6.61818 25.4548 8.96 25.4548C11.3018 25.4548 13.6436 24.8567 15.4255 23.6603C17.0291 22.5785 17.92 21.1276 17.92 19.5494C17.9073 17.9839 17.0291 16.533 15.4255 15.4639Z" fill="#1C2A3A" />
+                                  <path d="M22.947 6.79614C23.1507 9.26523 21.3943 11.4289 18.9634 11.7216C18.9507 11.7216 18.9507 11.7216 18.9379 11.7216H18.8997C18.8234 11.7216 18.747 11.7216 18.6834 11.747C17.4488 11.8107 16.3161 11.4161 15.4634 10.6907C16.7743 9.51977 17.5252 7.76341 17.3725 5.85432C17.2834 4.82341 16.927 3.88159 16.3925 3.07977C16.8761 2.83795 17.4361 2.68523 18.0088 2.63432C20.5034 2.41795 22.7307 4.27614 22.947 6.79614Z" fill="#1C2A3A" />
+                                  <path d="M25.4929 18.5692C25.391 19.8038 24.6019 20.8729 23.2783 21.5983C22.0056 22.2983 20.4019 22.6292 18.811 22.5911C19.7274 21.7638 20.2619 20.7329 20.3638 19.6383C20.491 18.0602 19.7401 16.5456 18.2383 15.3365C17.3856 14.662 16.3929 14.1274 15.311 13.7329C18.1238 12.9183 21.6619 13.4656 23.8383 15.222C25.0092 16.1638 25.6074 17.3474 25.4929 18.5692Z" fill="#1C2A3A" />
                                 </svg>
+
 
                               </div>
                               <div className="d-flex flex-column mt-1">
@@ -495,10 +499,11 @@ const DoctorProfilePage = () => {
                           <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
                             <div>
                               <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#E2E7F2', fontSize: '14px' }} >
-                                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M17.5143 8.36426H9.36882C9.03792 8.36426 8.71973 8.37699 8.41428 8.41517C4.99064 8.70789 3.27246 10.7315 3.27246 14.4606V19.5515C3.27246 24.6424 5.30882 25.6479 9.36882 25.6479H9.87792C10.1579 25.6479 10.527 25.8388 10.6925 26.0552L12.2197 28.0915C12.8943 28.9952 13.9888 28.9952 14.6634 28.0915L16.1906 26.0552C16.3816 25.8006 16.687 25.6479 17.0052 25.6479H17.5143C21.2434 25.6479 23.267 23.9424 23.5597 20.5061C23.5979 20.2006 23.6106 19.8824 23.6106 19.5515V14.4606C23.6106 10.4006 21.5743 8.36426 17.5143 8.36426ZM8.99973 18.5461C8.28701 18.5461 7.72701 17.9733 7.72701 17.2733C7.72701 16.5733 8.29973 16.0006 8.99973 16.0006C9.69973 16.0006 10.2725 16.5733 10.2725 17.2733C10.2725 17.9733 9.69973 18.5461 8.99973 18.5461ZM13.4416 18.5461C12.7288 18.5461 12.1688 17.9733 12.1688 17.2733C12.1688 16.5733 12.7416 16.0006 13.4416 16.0006C14.1416 16.0006 14.7143 16.5733 14.7143 17.2733C14.7143 17.9733 14.1543 18.5461 13.4416 18.5461ZM17.8961 18.5461C17.1834 18.5461 16.6234 17.9733 16.6234 17.2733C16.6234 16.5733 17.1961 16.0006 17.8961 16.0006C18.5961 16.0006 19.1688 16.5733 19.1688 17.2733C19.1688 17.9733 18.5961 18.5461 17.8961 18.5461Z" fill="#3F5FAB" />
-                                  <path d="M28.7016 9.3698V14.4607C28.7016 17.0062 27.9126 18.7371 26.3344 19.6916C25.9526 19.9207 25.5071 19.6153 25.5071 19.1698L25.5198 14.4607C25.5198 9.3698 22.6053 6.45526 17.5144 6.45526L9.76346 6.46798C9.31801 6.46798 9.01255 6.02253 9.24164 5.64071C10.1962 4.06253 11.9271 3.27344 14.4598 3.27344H22.6053C26.6653 3.27344 28.7016 5.3098 28.7016 9.3698Z" fill="#3F5FAB" />
+                                <svg width="21" height="21" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M14.2418 5.09082H6.09636C5.76545 5.09082 5.44727 5.10355 5.14182 5.14173C1.71818 5.43446 0 7.45809 0 11.1872V16.2781C0 21.369 2.03636 22.3745 6.09636 22.3745H6.60545C6.88545 22.3745 7.25455 22.5654 7.42 22.7817L8.94727 24.8181C9.62182 25.7217 10.7164 25.7217 11.3909 24.8181L12.9182 22.7817C13.1091 22.5272 13.4145 22.3745 13.7327 22.3745H14.2418C17.9709 22.3745 19.9945 20.669 20.2873 17.2326C20.3255 16.9272 20.3382 16.609 20.3382 16.2781V11.1872C20.3382 7.12718 18.3018 5.09082 14.2418 5.09082ZM5.72727 15.2726C5.01455 15.2726 4.45455 14.6999 4.45455 13.9999C4.45455 13.2999 5.02727 12.7272 5.72727 12.7272C6.42727 12.7272 7 13.2999 7 13.9999C7 14.6999 6.42727 15.2726 5.72727 15.2726ZM10.1691 15.2726C9.45636 15.2726 8.89636 14.6999 8.89636 13.9999C8.89636 13.2999 9.46909 12.7272 10.1691 12.7272C10.8691 12.7272 11.4418 13.2999 11.4418 13.9999C11.4418 14.6999 10.8818 15.2726 10.1691 15.2726ZM14.6236 15.2726C13.9109 15.2726 13.3509 14.6999 13.3509 13.9999C13.3509 13.2999 13.9236 12.7272 14.6236 12.7272C15.3236 12.7272 15.8964 13.2999 15.8964 13.9999C15.8964 14.6999 15.3236 15.2726 14.6236 15.2726Z" fill="#3F5FAB" />
+                                  <path d="M25.4292 6.09636V11.1873C25.4292 13.7327 24.6401 15.4636 23.0619 16.4182C22.6801 16.6473 22.2346 16.3418 22.2346 15.8964L22.2474 11.1873C22.2474 6.09636 19.3328 3.18182 14.2419 3.18182L6.491 3.19455C6.04555 3.19455 5.74009 2.74909 5.96918 2.36727C6.92373 0.789091 8.65464 0 11.1874 0H19.3328C23.3928 0 25.4292 2.03636 25.4292 6.09636Z" fill="#3F5FAB" />
                                 </svg>
+
 
                               </div>
                               <div className="d-flex flex-column mt-1">
@@ -512,10 +517,11 @@ const DoctorProfilePage = () => {
                           <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
                             <div>
                               <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#D8F3F1', fontSize: '14px' }} >
-                                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M15.9996 19.8189C20.7442 19.8189 24.5905 16.1151 24.5905 11.5462C24.5905 6.97726 20.7442 3.27344 15.9996 3.27344C11.255 3.27344 7.40869 6.97726 7.40869 11.5462C7.40869 16.1151 11.255 19.8189 15.9996 19.8189Z" fill="#12A79D" />
-                                  <path d="M20.8234 20.5946C21.2434 20.3783 21.727 20.6965 21.727 21.1674V27.3401C21.727 28.4855 20.9252 29.0455 19.9325 28.5746L16.5216 26.9583C16.2288 26.831 15.7706 26.831 15.4779 26.9583L12.067 28.5746C11.0743 29.0328 10.2725 28.4728 10.2725 27.3274L10.2979 21.1674C10.2979 20.6965 10.7943 20.391 11.2016 20.5946C12.6397 21.3201 14.2688 21.7274 15.9997 21.7274C17.7306 21.7274 19.3725 21.3201 20.8234 20.5946Z" fill="#12A79D" />
+                                <svg width="24" height="24" viewBox="0 0 18 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M8.59091 16.5455C13.3355 16.5455 17.1818 12.8416 17.1818 8.27273C17.1818 3.70383 13.3355 0 8.59091 0C3.84628 0 0 3.70383 0 8.27273C0 12.8416 3.84628 16.5455 8.59091 16.5455Z" fill="#12A79D" />
+                                  <path d="M13.4147 17.3212C13.8347 17.1048 14.3183 17.423 14.3183 17.8939V24.0667C14.3183 25.2121 13.5165 25.7721 12.5238 25.3012L9.11286 23.6848C8.82013 23.5576 8.36195 23.5576 8.06922 23.6848L4.65831 25.3012C3.66559 25.7594 2.86377 25.1994 2.86377 24.0539L2.88922 17.8939C2.88922 17.423 3.38559 17.1176 3.79286 17.3212C5.23104 18.0467 6.86013 18.4539 8.59104 18.4539C10.322 18.4539 11.9638 18.0467 13.4147 17.3212Z" fill="#12A79D" />
                                 </svg>
+
 
                               </div>
                               <div className="d-flex flex-column mt-1">
@@ -529,10 +535,13 @@ const DoctorProfilePage = () => {
                           <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
                             <div>
                               <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#F8EFE1', fontSize: '14px' }} >
-                                <svg width="20" height="20" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10.9326 18.4492C10.5956 18.4604 10.2642 18.5418 10.0117 18.6943L6.98242 20.4941C4.81503 21.7743 3.49702 20.8241 4.06738 18.3652L4.79004 15.2471C4.904 14.6388 4.66325 13.8147 4.24512 13.3965L1.72266 10.874C0.23975 9.39108 0.721132 7.89591 2.78711 7.54102L6.01953 7.00879C6.56431 6.91993 7.21024 6.43839 7.45117 5.94434L9.23828 2.36914C9.70894 1.44019 10.3185 0.960228 10.9326 0.928711V18.4492Z" fill="#FEB052" />
-                                  <path d="M10.9326 0.930664C11.5918 0.896922 12.2565 1.38003 12.7617 2.38379L14.5488 5.95801C14.7896 6.45233 15.4364 6.92106 15.9814 7.02246L19.2139 7.55566C21.2794 7.89803 21.761 9.39322 20.2783 10.8887L17.7559 13.4111C17.3376 13.8294 17.0969 14.6533 17.2363 15.249L17.959 18.3672C18.5291 20.8258 17.2103 21.7889 15.043 20.4961L12.0137 18.6963C11.7212 18.5196 11.3231 18.4382 10.9326 18.4512V0.930664Z" fill="#FEB052" />
+                                <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10.0713 17.5215C9.73425 17.5327 9.40283 17.614 9.15039 17.7666L6.12109 19.5664C3.9537 20.8466 2.63569 19.8964 3.20605 17.4375L3.92871 14.3193C4.04268 13.711 3.80193 12.887 3.38379 12.4688L0.861328 9.94629C-0.621578 8.46335 -0.140196 6.96817 1.92578 6.61328L5.1582 6.08105C5.70299 5.9922 6.34891 5.51066 6.58984 5.0166L8.37695 1.44141C8.84761 0.512455 9.4572 0.0324938 10.0713 0.000976562V17.5215Z" fill="#FEB052" />
+                                  <path d="M10.0713 0.00195312C10.7305 -0.0317732 11.3952 0.452158 11.9004 1.45605L13.6875 5.03027C13.9283 5.52459 14.5751 5.99333 15.1201 6.09473L18.3525 6.62695C20.4182 6.9693 20.8998 8.46541 19.417 9.96094L16.8945 12.4834C16.4764 12.9017 16.2356 13.7257 16.375 14.3213L17.0977 17.4385C17.668 19.8974 16.349 20.8612 14.1816 19.5684L11.1523 17.7686C10.8599 17.5918 10.4618 17.5105 10.0713 17.5234V0.00195312Z" fill="#FEB052" />
                                 </svg>
+
+
+
 
                               </div>
                               <div className="d-flex flex-column mt-1">
@@ -644,7 +653,7 @@ const DoctorProfilePage = () => {
                               />
                               <div className="flex-grow-1">
                                 <div className="d-flex align-items-center mt-1">
-                                <h6 className="fw-bold mb-1">{v?.appointmentid?.patientname}</h6>
+                                  <h6 className="fw-bold mb-1">{v?.appointmentid?.patientname}</h6>
                                   <div className='ms-auto'>
                                     {[...Array(5)].map((_, idx) => {
                                       const num = Number(v?.rating);
@@ -716,17 +725,18 @@ const DoctorProfilePage = () => {
                 <Card className="mb-4 border-0 p-4 shadow-sm" style={{ borderRadius: '15px', backgroundColor: 'transparent' }}>
                   <Card.Body className="p-0">
                     <h5 className="fw-bold mb-4 text-center">Select Consultation Type</h5>
-                    <Row className="g-3">
+                    <Row className={`g-3`}>
                       <Col xs={4}>
                         <input
                           type="radio"
                           name="consultationType"
                           value="clinic_visit"
                           checked={selectedConsultationType === 'clinic_visit'}
-                          onChange={(e) => { setSelectedConsultationType(e.target.value); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
+                          onChange={(e) => { setSelectedConsultationType(e.target.value); setConsultError(false); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
                           className="d-none"
                           id="clinic_visit"
                         />
+
                         <label
                           htmlFor="clinic_visit"
                           className={`text-center check_room_type p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'clinic_visit' ? 'active' : ''
@@ -735,9 +745,10 @@ const DoctorProfilePage = () => {
                         >
                           <div>
                             <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#F8EFE1', fontSize: '14px' }} >
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5.25 3.57812H14.25C14.4945 3.57812 14.7295 3.67477 14.9023 3.84766C15.0752 4.02054 15.1719 4.2555 15.1719 4.5V11.0781H21C21.2445 11.0781 21.4795 11.1748 21.6523 11.3477C21.8252 11.5205 21.9219 11.7555 21.9219 12V20.0781H23.25C23.2956 20.0781 23.3389 20.0967 23.3711 20.1289C23.4033 20.1611 23.4219 20.2044 23.4219 20.25C23.4219 20.2956 23.4033 20.3389 23.3711 20.3711C23.3389 20.4033 23.2956 20.4219 23.25 20.4219H3C2.95442 20.4219 2.91114 20.4033 2.87891 20.3711C2.84667 20.3389 2.82812 20.2956 2.82812 20.25C2.82812 20.2044 2.84667 20.1611 2.87891 20.1289C2.91114 20.0967 2.95442 20.0781 3 20.0781H4.32812V4.5C4.32812 4.2555 4.42477 4.02054 4.59766 3.84766C4.77054 3.67477 5.0055 3.57812 5.25 3.57812ZM5.25 3.92188C5.09667 3.92188 4.94924 3.9824 4.84082 4.09082C4.7324 4.19924 4.67188 4.34667 4.67188 4.5V20.0781H7.32812V15C7.32812 14.9544 7.34667 14.9111 7.37891 14.8789C7.41114 14.8467 7.45442 14.8281 7.5 14.8281H12C12.0456 14.8281 12.0889 14.8467 12.1211 14.8789C12.1533 14.9111 12.1719 14.9544 12.1719 15V20.0781H14.8281V4.5C14.8281 4.38521 14.7941 4.27386 14.7314 4.17969L14.6592 4.09082L14.5703 4.01855C14.4761 3.9559 14.3648 3.92188 14.25 3.92188H5.25ZM7.67188 20.0781H11.8281V15.1719H7.67188V20.0781ZM15.1719 20.0781H21.5781V12C21.5781 11.8852 21.5441 11.7739 21.4814 11.6797L21.4092 11.5908L21.3203 11.5186C21.2261 11.4559 21.1148 11.4219 21 11.4219H15.1719V20.0781ZM9.75 6.57812C9.79558 6.57812 9.83886 6.59667 9.87109 6.62891C9.90333 6.66114 9.92188 6.70442 9.92188 6.75V8.82812H12C12.0456 8.82812 12.0889 8.84667 12.1211 8.87891C12.1533 8.91114 12.1719 8.95442 12.1719 9C12.1719 9.04558 12.1533 9.08886 12.1211 9.12109C12.0889 9.15333 12.0456 9.17188 12 9.17188H9.92188V11.25C9.92188 11.2956 9.90333 11.3389 9.87109 11.3711C9.83886 11.4033 9.79558 11.4219 9.75 11.4219C9.70442 11.4219 9.66114 11.4033 9.62891 11.3711C9.59667 11.3389 9.57812 11.2956 9.57812 11.25V9.17188H7.5C7.45442 9.17188 7.41114 9.15333 7.37891 9.12109C7.34667 9.08886 7.32812 9.04558 7.32812 9C7.32812 8.95442 7.34667 8.91114 7.37891 8.87891C7.41114 8.84667 7.45442 8.82812 7.5 8.82812H9.57812V6.75C9.57812 6.70442 9.59667 6.66114 9.62891 6.62891C9.66114 6.59667 9.70442 6.57812 9.75 6.57812Z" fill="black" stroke="#FBB03F" strokeWidth="0.78125" />
+                              <svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.8125 0.390625H11.8125C12.057 0.390625 12.292 0.487271 12.4648 0.660156C12.6377 0.833042 12.7344 1.068 12.7344 1.3125V7.89062H18.5625C18.807 7.89062 19.042 7.98727 19.2148 8.16016C19.3877 8.33304 19.4844 8.568 19.4844 8.8125V16.8906H20.8125C20.8581 16.8906 20.9014 16.9092 20.9336 16.9414C20.9658 16.9736 20.9844 17.0169 20.9844 17.0625C20.9844 17.1081 20.9658 17.1514 20.9336 17.1836C20.9014 17.2158 20.8581 17.2344 20.8125 17.2344H0.5625C0.516915 17.2344 0.473638 17.2158 0.441406 17.1836C0.409174 17.1514 0.390625 17.1081 0.390625 17.0625C0.390625 17.0169 0.409174 16.9736 0.441406 16.9414C0.473638 16.9092 0.516915 16.8906 0.5625 16.8906H1.89062V1.3125C1.89063 1.068 1.98727 0.833041 2.16016 0.660156C2.33304 0.487271 2.568 0.390625 2.8125 0.390625ZM2.8125 0.734375C2.65917 0.734375 2.51174 0.7949 2.40332 0.90332C2.2949 1.01174 2.23438 1.15917 2.23438 1.3125V16.8906H4.89062V11.8125C4.89062 11.7669 4.90917 11.7236 4.94141 11.6914C4.97364 11.6592 5.01692 11.6406 5.0625 11.6406H9.5625C9.60809 11.6406 9.65136 11.6592 9.68359 11.6914C9.71583 11.7236 9.73438 11.7669 9.73438 11.8125V16.8906H12.3906V1.3125C12.3906 1.19771 12.3566 1.08636 12.2939 0.992188L12.2217 0.90332L12.1328 0.831055C12.0386 0.768399 11.9273 0.734375 11.8125 0.734375H2.8125ZM5.23438 16.8906H9.39062V11.9844H5.23438V16.8906ZM12.7344 16.8906H19.1406V8.8125C19.1406 8.69771 19.1066 8.58636 19.0439 8.49219L18.9717 8.40332L18.8828 8.33105C18.7886 8.2684 18.6773 8.23438 18.5625 8.23438H12.7344V16.8906ZM7.3125 3.39062C7.35808 3.39062 7.40136 3.40917 7.43359 3.44141C7.46583 3.47364 7.48438 3.51692 7.48438 3.5625V5.64062H9.5625C9.60808 5.64062 9.65136 5.65917 9.68359 5.69141C9.71583 5.72364 9.73438 5.76692 9.73438 5.8125C9.73438 5.85808 9.71583 5.90136 9.68359 5.93359C9.65136 5.96583 9.60808 5.98438 9.5625 5.98438H7.48438V8.0625C7.48438 8.10808 7.46583 8.15136 7.43359 8.18359C7.40136 8.21583 7.35808 8.23438 7.3125 8.23438C7.26692 8.23438 7.22364 8.21583 7.19141 8.18359C7.15917 8.15136 7.14062 8.10808 7.14062 8.0625V5.98438H5.0625C5.01692 5.98438 4.97364 5.96583 4.94141 5.93359C4.90917 5.90136 4.89062 5.85808 4.89062 5.8125C4.89062 5.76692 4.90917 5.72364 4.94141 5.69141C4.97364 5.65917 5.01692 5.64062 5.0625 5.64062H7.14062V3.5625C7.14062 3.51692 7.15917 3.47364 7.19141 3.44141C7.22364 3.40917 7.26692 3.39062 7.3125 3.39062Z" fill="black" stroke="#FBB03F" stroke-width="0.78125" />
                               </svg>
+
                             </div>
                             <div className="d-flex flex-column mt-1">
                               <span className="fw-bold">Clinic Visit</span>
@@ -752,10 +763,11 @@ const DoctorProfilePage = () => {
                           name="consultationType"
                           value="home_visit"
                           checked={selectedConsultationType === 'home_visit'}
-                          onChange={(e) => { setSelectedConsultationType(e.target.value); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
+                          onChange={(e) => { setSelectedConsultationType(e.target.value); setConsultError(false); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
                           className="d-none"
                           id="home_visit"
                         />
+
                         <label
                           htmlFor="home_visit"
                           className={`text-center p-3 bg-white check_room_type rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'home_visit' ? 'active' : ''
@@ -764,9 +776,10 @@ const DoctorProfilePage = () => {
                         >
                           <div>
                             <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#D8F3F1', fontSize: '14px' }} >
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9 20.9998H7C5.93913 20.9998 4.92172 20.5784 4.17157 19.8282C3.42143 19.0781 3 18.0607 3 16.9998V10.7078C2.99999 10.02 3.17732 9.34386 3.51487 8.74461C3.85242 8.14535 4.33879 7.64326 4.927 7.28682L9.927 4.25682C10.5521 3.87801 11.2691 3.67773 12 3.67773C12.7309 3.67773 13.4479 3.87801 14.073 4.25682L19.073 7.28682C19.6611 7.64317 20.1473 8.14511 20.4849 8.74417C20.8224 9.34324 20.9998 10.0192 21 10.7068V16.9998C21 18.0607 20.5786 19.0781 19.8284 19.8282C19.0783 20.5784 18.0609 20.9998 17 20.9998H15M9 20.9998V16.9998C9 16.2042 9.31607 15.4411 9.87868 14.8785C10.4413 14.3159 11.2044 13.9998 12 13.9998C12.7956 13.9998 13.5587 14.3159 14.1213 14.8785C14.6839 15.4411 15 16.2042 15 16.9998V20.9998M9 20.9998H15" stroke="#12A79D" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
+                              <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.5498 17.8719H4.5498C3.48894 17.8719 2.47152 17.4505 1.72138 16.7003C0.971232 15.9502 0.549805 14.9328 0.549805 13.8719V7.57989C0.54979 6.8921 0.727121 6.21593 1.06467 5.61668C1.40222 5.01742 1.88859 4.51533 2.4768 4.15889L7.4768 1.12889C8.10192 0.750083 8.81887 0.549805 9.5498 0.549805C10.2807 0.549805 10.9977 0.750083 11.6228 1.12889L16.6228 4.15889C17.2109 4.51524 17.6971 5.01718 18.0347 5.61624C18.3722 6.21531 18.5496 6.89127 18.5498 7.57889V13.8719C18.5498 14.9328 18.1284 15.9502 17.3782 16.7003C16.6281 17.4505 15.6107 17.8719 14.5498 17.8719H12.5498M6.5498 17.8719V13.8719C6.5498 13.0762 6.86587 12.3132 7.42848 11.7506C7.99109 11.188 8.75416 10.8719 9.5498 10.8719C10.3455 10.8719 11.1085 11.188 11.6711 11.7506C12.2337 12.3132 12.5498 13.0762 12.5498 13.8719V17.8719M6.5498 17.8719H12.5498" stroke="#12A79D" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" />
                               </svg>
+
                             </div>
                             <div className="d-flex flex-column mt-1">
                               <span className="fw-bold">Home Visit</span>
@@ -781,10 +794,11 @@ const DoctorProfilePage = () => {
                           name="consultationType"
                           value="eopd"
                           checked={selectedConsultationType === 'eopd'}
-                          onChange={(e) => { setSelectedConsultationType(e.target.value); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
+                          onChange={(e) => { setSelectedConsultationType(e.target.value); setConsultError(false); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
                           className="d-none"
                           id="eopd"
                         />
+
                         <label
                           htmlFor="eopd"
                           className={`text-center p-3 bg-white check_room_type rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'eopd' ? 'active' : ''
@@ -793,10 +807,11 @@ const DoctorProfilePage = () => {
                         >
                           <div>
                             <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#E2E7F2', fontSize: '14px' }} >
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12.75 6H6.25C4.317 6 2.75 7.567 2.75 9.5V14.5C2.75 16.433 4.317 18 6.25 18H12.75C14.683 18 16.25 16.433 16.25 14.5V9.5C16.25 7.567 14.683 6 12.75 6Z" stroke="#3F5FAB" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M16.25 9.7402L19.804 7.9702C19.9565 7.89423 20.1258 7.85846 20.296 7.86629C20.4661 7.87412 20.6315 7.92528 20.7763 8.01493C20.9211 8.10458 21.0407 8.22974 21.1236 8.37854C21.2065 8.52735 21.25 8.69486 21.25 8.8652V15.1332C21.2501 15.3037 21.2066 15.4713 21.1236 15.6203C21.0407 15.7692 20.921 15.8945 20.776 15.9841C20.631 16.0738 20.4655 16.1249 20.2952 16.1326C20.1249 16.1404 19.9555 16.1044 19.803 16.0282L16.25 14.2552V9.7402Z" stroke="#3F5FAB" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
+                              <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10.5498 0.549805H4.0498C2.11681 0.549805 0.549805 2.11681 0.549805 4.0498V9.0498C0.549805 10.9828 2.11681 12.5498 4.0498 12.5498H10.5498C12.4828 12.5498 14.0498 10.9828 14.0498 9.0498V4.0498C14.0498 2.11681 12.4828 0.549805 10.5498 0.549805Z" stroke="#3F5FAB" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M14.0498 4.29001L17.6038 2.52001C17.7563 2.44404 17.9256 2.40827 18.0958 2.4161C18.2659 2.42392 18.4313 2.47509 18.5761 2.56474C18.7209 2.65439 18.8405 2.77955 18.9234 2.92835C19.0063 3.07715 19.0498 3.24467 19.0498 3.41501V9.68301C19.0499 9.85348 19.0064 10.0211 18.9234 10.1701C18.8405 10.319 18.7208 10.4443 18.5758 10.5339C18.4309 10.6236 18.2654 10.6747 18.095 10.6825C17.9247 10.6902 17.7553 10.6542 17.6028 10.578L14.0498 8.80501V4.29001Z" stroke="#3F5FAB" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" />
                               </svg>
+
                             </div>
                             <div className="d-flex flex-column mt-1">
                               <span className="fw-bold">EOPD</span>
@@ -805,6 +820,49 @@ const DoctorProfilePage = () => {
                           </div>
                         </label>
                       </Col>
+                    </Row>
+                    {consultError && <div className="text-danger small text-center mb-2">Please select consultation type</div>}
+                  </Card.Body>
+                </Card>
+
+                {/* Select Hospital */}
+                <Card className={`border-0 shadow-sm ${hospitalError ? 'error-outline' : ''}`} style={{ borderRadius: '15px' }}>
+                  <Card.Body className="p-4">
+                    <h5 className="fw-bold mb-4 text-center">Select Hospital</h5>
+                    {hospitalError && <div className="text-danger small text-center mb-2">Please select hospital</div>}
+                    <Row className="g-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                      {doctor_profile?.hospitals?.map((hospital, index) => (
+                        <Col xs={12} key={index}>
+                          <label
+                            htmlFor={`hospital_${index}`}
+                            className={`hospital-option w-100 ${selectedHospital === hospital.name ? 'selected' : ''}`}
+                          >
+                            <input
+                              type="radio"
+                              id={`hospital_${index}`}
+                              name="hospital"
+                              value={hospital.name}
+                              checked={selectedHospital === hospital.name}
+                              onChange={(e) => { setSelectedHospital(e.target.value); setHospitalError(false); }}
+                              className="visually-hidden"
+                            />
+
+                            <div className="d-flex align-items-start p-3">
+                              <div className="flex-grow-1">
+                                <div className="d-flex align-items-center mb-1">
+                                  <div className="hospital-dot me-2"></div>
+                                  <h6 className="mb-0">{hospital.name}</h6>
+                                </div>
+                              </div>
+                              <div className="ms-2 align-self-start">
+                                <span className={`badge ${selectedHospital === hospital.name ? 'bg-primary' : 'bg-light text-dark border'}`}>
+                                  {selectedHospital === hospital.name ? 'Selected' : 'Choose'}
+                                </span>
+                              </div>
+                            </div>
+                          </label>
+                        </Col>
+                      ))}
                     </Row>
                   </Card.Body>
                 </Card>
@@ -937,7 +995,7 @@ const DoctorProfilePage = () => {
                         placeholder="Alt. Phone Number"
                       ></Form.Control>
                     </Col>
-                    <Col xs={4}>
+                    {/* <Col xs={4}>
                       <Form.Label>Surgery</Form.Label>
                       <Form.Select name="surgeryid" onChange={appchangedata}>
                         <option value="">Select Surgery</option>
@@ -949,7 +1007,7 @@ const DoctorProfilePage = () => {
                           );
                         })}
                       </Form.Select>
-                    </Col>
+                    </Col> */}
                     <Col xs={4}>
                       <Form.Label>Reason</Form.Label>
                       <Form.Control

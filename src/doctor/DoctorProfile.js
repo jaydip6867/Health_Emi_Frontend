@@ -461,7 +461,7 @@ const DoctorProfile = () => {
           ...res.data.Data,
           oldProfilePic: res.data.Data.profile_pic,
         });
-
+        console.log(res.data.Data)
       })
       .catch(function (error) {
         // console.log(error);
@@ -472,51 +472,51 @@ const DoctorProfile = () => {
   }
   // console.log("profile", profile);
   // console.log(token)
-  function deletdoctor() {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You Want Delete Your Account.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios({
-          method: "get",
-          url: "https://healtheasy-o25g.onrender.com/doctor/profile/remove",
-          headers: {
-            Authorization: token,
-          },
-          // data: profile
-        })
-          .then((res) => {
-            // toast('Doctor Account Delete successfully...', { className: 'custom-toast-success' })
-            // console.log(res)
-            localStorage.removeItem("healthdoctor");
-          })
-          .catch(function (error) {
-            // console.log(error);
-            toast(error.response.data.Message, {
-              className: "custom-toast-error",
-            });
-          })
-          .finally(() => {
-            // setloading(false)
-            navigate("/");
-          });
-        Swal.fire({
-          title: "Deleted!",
-          text: "Your Account has been deleted.",
-          icon: "success",
-        });
-      }
-    });
-  }
+  // function deletdoctor() {
+  //   Swal.fire({
+  //     title: "Are you sure?",
+  //     text: "You Want Delete Your Account.",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, delete it!",
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       axios({
+  //         method: "get",
+  //         url: "https://healtheasy-o25g.onrender.com/doctor/profile/remove",
+  //         headers: {
+  //           Authorization: token,
+  //         },
+  //         // data: profile
+  //       })
+  //         .then((res) => {
+  //           // toast('Doctor Account Delete successfully...', { className: 'custom-toast-success' })
+  //           // console.log(res)
+  //           localStorage.removeItem("healthdoctor");
+  //         })
+  //         .catch(function (error) {
+  //           // console.log(error);
+  //           toast(error.response.data.Message, {
+  //             className: "custom-toast-error",
+  //           });
+  //         })
+  //         .finally(() => {
+  //           // setloading(false)
+  //           navigate("/");
+  //         });
+  //       Swal.fire({
+  //         title: "Deleted!",
+  //         text: "Your Account has been deleted.",
+  //         icon: "success",
+  //       });
+  //     }
+  //   });
+  // }
 
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
+    const { name, value, type, files, checked } = e.target;
 
     if (type === "file") {
       if (name === "profile_pic") {
@@ -540,6 +540,11 @@ const DoctorProfile = () => {
           }
         }
       }
+    } else if (type === "checkbox") {
+      setprofile((profile) => ({
+        ...profile,
+        [name]: checked,
+      }));
     } else {
       // Handle regular form inputs
       setprofile((profile) => ({
@@ -634,15 +639,43 @@ const DoctorProfile = () => {
         updatedProfile.identityproof = uploadResponse.data.Data.url;
       }
 
+      // Prepare payload; do not send empty password and map availability
+      const dataToSend = {
+        ...updatedProfile,
+        identityproof: updatedProfile.identityproof || profile?.identityproof,
+      };
+      if (!dataToSend.password) {
+        delete dataToSend.password;
+      }
+      // Normalize availability to boolean (true if checked, else false)
+      if (typeof dataToSend.is_available !== 'undefined') {
+        const v = dataToSend.is_available;
+        if (typeof v === 'boolean') {
+          dataToSend.is_available = v;
+        } else if (typeof v === 'string') {
+          const s = v.toLowerCase();
+          if (s === 'available' || s === 'true' || s === '1' || s === 'yes') {
+            dataToSend.is_available = true;
+          } else if (s === 'unavailable' || s === 'false' || s === '0' || s === 'no') {
+            dataToSend.is_available = false;
+          } else {
+            dataToSend.is_available = Boolean(v);
+          }
+        } else if (typeof v === 'number') {
+          dataToSend.is_available = v === 1;
+        } else {
+          dataToSend.is_available = Boolean(v);
+        }
+      }
+      // Remove any stray 'available' prop if present
+      if ('available' in dataToSend) delete dataToSend.available;
+
       // Now update the profile with all data including image URL
       const profileResponse = await axios({
         method: "post",
         url: "https://healtheasy-o25g.onrender.com/doctor/profile/edit",
         headers: { Authorization: token },
-        data: {
-          ...updatedProfile,
-          identityproof: updatedProfile.identityproof || profile?.identityproof,
-        },
+        data: dataToSend,
       });
 
       // console.log('Profile update response:', profileResponse.data);
@@ -843,6 +876,35 @@ const DoctorProfile = () => {
                               className="form-control"
                             />
                           </Form.Group>
+                        </Col>
+                        <Col md={6} lg={4}>
+                          <Form.Label className="fw-semibold">
+                            Available
+                          </Form.Label>
+                          <Form.Check
+                            type="switch"
+                            id="is_available"
+                            name="is_available"
+                            checked={profile?.is_available === 'available' || profile?.is_available === true}
+                            disabled={IsDisable}
+                            onChange={handleChange}
+                            size="lg"
+                            label={profile?.is_available === 'available' || profile?.is_available === true ? 'Yes' : 'No'}
+                          />
+                        </Col>
+                        <Col xs={12}>
+                          <Form.Label className="fw-semibold">
+                            About me
+                          </Form.Label>
+                          <Form.Control
+                            as="textarea"
+                            placeholder="Enter about"
+                            name="aboutme"
+                            value={profile?.aboutme || ""}
+                            disabled={IsDisable}
+                            onChange={handleChange}
+                            className="form-control"
+                          />
                         </Col>
                       </Row>
                     </Card.Body>
@@ -1359,6 +1421,34 @@ const DoctorProfile = () => {
                       </Row>
                     </Card.Body>
                   </Card>
+                  {/* Location Information Section */}
+                  <Card className="mb-4 border-0 shadow-sm">
+                    <Card.Header className="bg-light border-bottom">
+                      <h5 className="mb-0 text-primary">
+                        Change Password
+                      </h5>
+                    </Card.Header>
+                    <Card.Body className="p-4">
+                      <Row className="g-3">
+                        <Col md={4}>
+                          <Form.Group>
+                            <Form.Label className="fw-semibold">
+                              Password
+                            </Form.Label>
+                            <Form.Control
+                              type="password"
+                              placeholder="***"
+                              name="password"
+                              value={profile?.password || ""}
+                              disabled={IsDisable}
+                              onChange={handleChange}
+                              className="form-control"
+                            />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
 
                   {/* Action Buttons */}
                   <Card className="border-0 shadow-sm">
@@ -1408,7 +1498,7 @@ const DoctorProfile = () => {
               )}
 
               {/* Delete Account Section */}
-              <Card className="mt-4 border-danger">
+              {/* <Card className="mt-4 border-danger">
                 <Card.Header className="text-bg-danger">
                   <h6 className="mb-0 text-white">Delete Doctor</h6>
                 </Card.Header>
@@ -1421,7 +1511,7 @@ const DoctorProfile = () => {
                     Delete Doctor Account
                   </Button>
                 </Card.Body>
-              </Card>
+              </Card> */}
             </div>
           </Col>
         </Row>
