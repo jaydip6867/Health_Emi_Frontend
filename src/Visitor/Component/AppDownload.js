@@ -25,7 +25,7 @@ const AppDownload = () => {
                             </Col>
                             <Col xs={12} lg={5} className='position-relative'>
                                 <div className='app-download-img-div'>
-                                    <img src={require('../assets/App-download-screenshot.png')} className="w-100" alt='App-download-screenshot' />
+                                    <img src={require('../assets/App-download-screenshot.png')} className="w-75 mx-auto w-lg-100" alt='App-download-screenshot' />
                                 </div>
                             </Col>
                         </Row>

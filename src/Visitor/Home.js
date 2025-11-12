@@ -87,10 +87,10 @@ const Home = () => {
       <section className='how_it_work_sec my-5'>
         <Container>
           <Row>
-            <Col xs={12} md={5} className='align-self-end order-last order-md-first'>
-              <img src={require('./assets/step_doctor.png')} alt='how it work image of health easy emi' />
+            <Col xs={12} lg={5} className='align-self-end order-last order-lg-first'>
+              <img src={require('./assets/step_doctor.png')} className='mx-auto w-sm-50' alt='how it work image of health easy emi' />
             </Col>
-            <Col xs={12} md={7}>
+            <Col xs={12} lg={7}>
               <div className='spacer-y'>
                 <div className='head_sec mb-4'>
                   <span className='head_sec_subtitle fw-medium'>how it works</span>
