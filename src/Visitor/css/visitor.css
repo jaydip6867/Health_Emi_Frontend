@@ -376,6 +376,7 @@ h6 {
 }
 
 .searchbox {
+    border-radius: 50rem;
     color: var(--grayscale-color-800);
     background-color: var(--primary-color-50);
     border: 1px solid var(--primary-color-600);
@@ -385,10 +386,10 @@ h6 {
     box-shadow: none !important;
 }
 
-.searchbox .line_search_bar {
-    width: 1px;
-    height: 28px;
-    background-color: var(--primary-color-600);
+
+.searchbox .selectsize {
+    min-width: 100px;
+    width: 100%;
 }
 
 .searchbox input {
@@ -414,6 +415,18 @@ h6 {
 
 .searchbox .svg {
     color: var(--grayscale-color-800);
+}
+
+@media screen and (min-width: 768px) {
+    .searchbox .line_search_bar {
+        width: 1px;
+        height: 28px;
+        background-color: var(--primary-color-600);
+    }
+
+    .searchbox .selectsize {
+        max-width: 150px;
+    }
 }
 
 /* --------------------------- banner section css ------------------------- */
@@ -794,6 +807,10 @@ h6 {
         flex-direction: column;
         text-align: center;
         gap: 10px;
+    }
+
+    .searchbox {
+        border-radius: 4px;
     }
 
     .footer-legal {

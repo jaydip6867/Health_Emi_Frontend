@@ -149,10 +149,10 @@ const Home = () => {
               <div>
                 <Row className='article_box rounded g-0 p-3'>
                   <Col xs={12} md={4}>
-                    <img src={require('./assets/article1.png')} alt='article image of health easy emi' className='rounded' />
+                    <img src={require('./assets/article1.png')} alt='article image of health easy emi' className='rounded h-100 w-100 object-fit-cover' />
                   </Col>
                   <Col xs={12} md={8}>
-                    <div className='ps-3'>
+                    <div className='ps-md-3 pt-2 pt-md-0'>
                       <p>John Doe <span>13 Aug, 2023</span></p>
                       <h5>Navigating Telehealth: A Guide to Virtual Healthcare Visits</h5>
                       <p>Explore the benefits & challenges of virtual healthcare appointments, along with tips for making good health.</p>
@@ -166,10 +166,10 @@ const Home = () => {
               <div>
                 <Row className='article_box rounded g-0 p-3'>
                   <Col xs={12} md={4}>
-                    <img src={require('./assets/article2.png')} alt='article image of health easy emi' className='rounded' />
+                    <img src={require('./assets/article2.png')} alt='article image of health easy emi' className='rounded h-100 w-100 object-fit-cover' />
                   </Col>
                   <Col xs={12} md={8}>
-                    <div className='ps-3'>
+                    <div className='ps-md-3 pt-2 pt-md-0'>
                       <p>John Doe <span>13 Aug, 2023</span></p>
                       <h5>Navigating Telehealth: A Guide to Virtual Healthcare Visits</h5>
                       <p>Explore the benefits & challenges of virtual healthcare appointments, along with tips for making good health.</p>
@@ -183,10 +183,10 @@ const Home = () => {
               <div>
                 <Row className='article_box rounded g-0 p-3'>
                   <Col xs={12} md={4}>
-                    <img src={require('./assets/article3.png')} alt='article image of health easy emi' className='rounded' />
+                    <img src={require('./assets/article3.png')} alt='article image of health easy emi' className='rounded h-100 w-100 object-fit-cover' />
                   </Col>
                   <Col xs={12} md={8}>
-                    <div className='ps-3'>
+                    <div className='ps-md-3 pt-2 pt-md-0'>
                       <p>John Doe <span>13 Aug, 2023</span></p>
                       <h5>Navigating Telehealth: A Guide to Virtual Healthcare Visits</h5>
                       <p>Explore the benefits & challenges of virtual healthcare appointments, along with tips for making good health.</p>
@@ -200,10 +200,10 @@ const Home = () => {
               <div>
                 <Row className='article_box rounded g-0 p-3'>
                   <Col xs={12} md={4}>
-                    <img src={require('./assets/article4.png')} alt='article image of health easy emi' className='rounded' />
+                    <img src={require('./assets/article4.png')} alt='article image of health easy emi' className='rounded h-100 w-100 object-fit-cover' />
                   </Col>
                   <Col xs={12} md={8}>
-                    <div className='ps-3'>
+                    <div className='ps-md-3 pt-2 pt-md-0'>
                       <p>John Doe <span>13 Aug, 2023</span></p>
                       <h5>Navigating Telehealth: A Guide to Virtual Healthcare Visits</h5>
                       <p>Explore the benefits & challenges of virtual healthcare appointments, along with tips for making good health.</p>
@@ -219,17 +219,7 @@ const Home = () => {
 
       {/* App Download Section  */}
       <AppDownload />
-      {/* Popular Search Section */}
-      <section className='spacer-y'>
-        <Container>
-          <h2 className='text-center'>Popular Search in <span className='text-sky-500'>India</span></h2>
-          <div className='d-flex justify-content-center mt-4 flex-wrap'>
-            {['Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels', 'Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels', 'Electrician Charleroi', 'Handyman Bussels', 'Painter Liege', 'Moving to Brussels', 'Plumber Namur', 'Message Cork', 'Plumber Liege', 'Carpenter Brussels'].map((v, i) => (
-              <a href="" className='px-3 py-2' key={i}>{v}</a>
-            ))}
-          </div>
-        </Container>
-      </section>
+      
       <FooterBar />
       {loading ? <Loader /> : ''}
     </>

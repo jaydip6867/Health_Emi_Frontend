@@ -17,19 +17,19 @@ const FooterBar = () => {
     <footer className="footer">
       <Container>
         <Row className="footer-top g-4">
-          <Col lg={3} md={6} className="footer-about">
+          <Col lg={3} md={12} className="footer-about">
             <div className="footer-logo mb-3">
               <img
                 src={require("../assets/health-easy-emi-logo-white.png")}
                 alt="Health Easy EMI"
-                className="w-100"
+                className="img-fluid mx-auto"
               />
             </div>
             <p className="footer-text text-center">
               Discover stylish, tech-savvy wearables at Kalindi — where innovation meets elegance in every product.
             </p>
           </Col>
-          <Col sm={3} xs={6} md={3} lg={2} className="footer-links">
+          <Col sm={3} xs={12} md={4} lg={2} className="footer-links">
             <h4>Pages</h4>
             <ul>
               <li>
@@ -46,7 +46,7 @@ const FooterBar = () => {
               </li>
             </ul>
           </Col>
-          <Col sm={3} xs={6} md={3} lg={2} className="footer-links">
+          <Col sm={3} xs={12} md={4} lg={2} className="footer-links">
             <h4>For Patients</h4>
             <ul>
               <li>
@@ -63,7 +63,7 @@ const FooterBar = () => {
               </li>
             </ul>
           </Col>
-          <Col sm={5} xs={6} md={3} lg={2} className="footer-links">
+          <Col sm={5} xs={12} md={3} lg={2} className="footer-links">
             <h4>More Pages</h4>
             <ul>
               <li>
@@ -79,7 +79,7 @@ const FooterBar = () => {
 
             </ul>
           </Col>
-          <Col lg={3} xs={6} className="footer-contact">
+          <Col lg={3} xs={12} className="footer-contact">
             <h4>Contact Us</h4>
             <div className="contact-info">
               <p>

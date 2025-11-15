@@ -124,10 +124,13 @@ const DoctorProfilePage = () => {
       if (!selectedConsultationType) {
         setConsultError(true);
       }
-      if (!selectedHospital) {
+      if (selectedConsultationType === 'clinic_visit' && !selectedHospital) {
         setHospitalError(true);
       }
-      if (!selectedConsultationType || !selectedHospital) {
+      if (!selectedConsultationType) {
+        return;
+      }
+      if (selectedConsultationType === 'clinic_visit' && !selectedHospital) {
         return;
       }
 
@@ -562,13 +565,7 @@ const DoctorProfilePage = () => {
                 <Card.Body className="p-4">
                   <h5 className="fw-bold mb-3">About me</h5>
                   <p className="text-muted mb-0">
-                    Dr. {doctor_profile.name}, a dedicated {doctor_profile.specialty}, brings a wealth of experience to Golden Gate {doctor_profile.specialty} Center in
-                    Golden Gate, CA Dr. {doctor_profile.name}, a dedicated cardiologist, brings a wealth of experience to Golden Gate
-                    {doctor_profile.specialty} Center in Golden Gate, CA Dr. {doctor_profile.name}, a dedicated cardiologist, brings a wealth of experience
-                    to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. {doctor_profile.name}, a dedicated cardiologist, brings a
-                    wealth of experience to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. {doctor_profile.name}, a dedicated
-                    {doctor_profile.specialty}, brings a wealth of experience to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. {doctor_profile.name}, a dedicated
-                    {/* {doctor_profile.specialty}, brings a wealth of experience to Golden Gate {doctor_profile.specialty} Center in Golden Gate, CA Dr. <span className="text-primary fw-bold" style={{ cursor: 'pointer' }}>read more</span> */}
+                    {doctor_profile?.aboutme}
                   </p>
                 </Card.Body>
               </Card>
@@ -763,7 +760,7 @@ const DoctorProfilePage = () => {
                           name="consultationType"
                           value="home_visit"
                           checked={selectedConsultationType === 'home_visit'}
-                          onChange={(e) => { setSelectedConsultationType(e.target.value); setConsultError(false); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
+                          onChange={(e) => { setSelectedConsultationType(e.target.value); setConsultError(false); setSelectedHospital(''); setHospitalError(false); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
                           className="d-none"
                           id="home_visit"
                         />
@@ -794,7 +791,7 @@ const DoctorProfilePage = () => {
                           name="consultationType"
                           value="eopd"
                           checked={selectedConsultationType === 'eopd'}
-                          onChange={(e) => { setSelectedConsultationType(e.target.value); setConsultError(false); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
+                          onChange={(e) => { setSelectedConsultationType(e.target.value); setConsultError(false); setSelectedHospital(''); setHospitalError(false); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
                           className="d-none"
                           id="eopd"
                         />
@@ -825,47 +822,49 @@ const DoctorProfilePage = () => {
                   </Card.Body>
                 </Card>
 
-                {/* Select Hospital */}
-                <Card className={`border-0 shadow-sm ${hospitalError ? 'error-outline' : ''}`} style={{ borderRadius: '15px' }}>
-                  <Card.Body className="p-4">
-                    <h5 className="fw-bold mb-4 text-center">Select Hospital</h5>
-                    {hospitalError && <div className="text-danger small text-center mb-2">Please select hospital</div>}
-                    <Row className="g-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                      {doctor_profile?.hospitals?.map((hospital, index) => (
-                        <Col xs={12} key={index}>
-                          <label
-                            htmlFor={`hospital_${index}`}
-                            className={`hospital-option w-100 ${selectedHospital === hospital.name ? 'selected' : ''}`}
-                          >
-                            <input
-                              type="radio"
-                              id={`hospital_${index}`}
-                              name="hospital"
-                              value={hospital.name}
-                              checked={selectedHospital === hospital.name}
-                              onChange={(e) => { setSelectedHospital(e.target.value); setHospitalError(false); }}
-                              className="visually-hidden"
-                            />
+                {/* Select Hospital - only for Clinic Visit */}
+                {selectedConsultationType === 'clinic_visit' && (
+                  <Card className={`border-0 shadow-sm ${hospitalError ? 'error-outline' : ''}`} style={{ borderRadius: '15px' }}>
+                    <Card.Body className="p-4">
+                      <h5 className="fw-bold mb-4 text-center">Select Hospital</h5>
+                      {hospitalError && <div className="text-danger small text-center mb-2">Please select hospital</div>}
+                      <Row className="g-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                        {doctor_profile?.hospitals?.map((hospital, index) => (
+                          <Col xs={12} key={index}>
+                            <label
+                              htmlFor={`hospital_${index}`}
+                              className={`hospital-option w-100 ${selectedHospital === hospital.name ? 'selected' : ''}`}
+                            >
+                              <input
+                                type="radio"
+                                id={`hospital_${index}`}
+                                name="hospital"
+                                value={hospital.name}
+                                checked={selectedHospital === hospital.name}
+                                onChange={(e) => { setSelectedHospital(e.target.value); setHospitalError(false); }}
+                                className="visually-hidden"
+                              />
 
-                            <div className="d-flex align-items-start p-3">
-                              <div className="flex-grow-1">
-                                <div className="d-flex align-items-center mb-1">
-                                  <div className="hospital-dot me-2"></div>
-                                  <h6 className="mb-0">{hospital.name}</h6>
+                              <div className="d-flex align-items-start p-3">
+                                <div className="flex-grow-1">
+                                  <div className="d-flex align-items-center mb-1">
+                                    <div className="hospital-dot me-2"></div>
+                                    <h6 className="mb-0">{hospital.name}</h6>
+                                  </div>
+                                </div>
+                                <div className="ms-2 align-self-start">
+                                  <span className={`badge ${selectedHospital === hospital.name ? 'bg-primary' : 'bg-light text-dark border'}`}>
+                                    {selectedHospital === hospital.name ? 'Selected' : 'Choose'}
+                                  </span>
                                 </div>
                               </div>
-                              <div className="ms-2 align-self-start">
-                                <span className={`badge ${selectedHospital === hospital.name ? 'bg-primary' : 'bg-light text-dark border'}`}>
-                                  {selectedHospital === hospital.name ? 'Selected' : 'Choose'}
-                                </span>
-                              </div>
-                            </div>
-                          </label>
-                        </Col>
-                      ))}
-                    </Row>
-                  </Card.Body>
-                </Card>
+                            </label>
+                          </Col>
+                        ))}
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                )}
 
                 {/* Book Consultation Card */}
                 <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>

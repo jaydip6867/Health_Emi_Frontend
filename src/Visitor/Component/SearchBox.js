@@ -70,8 +70,8 @@ const SearchBox = () => {
                 <Row className='justify-content-center'>
                     <Col xs={12} md={10} lg={8}>
                         <div className='px-2 py-1'>
-                            <div className='d-flex searchbox rounded-pill align-items-center position-relative'>
-                                <div className='d-flex align-items-center position-relative' style={{ minWidth: 180 }}>
+                            <div className='d-md-flex searchbox align-items-center position-relative'>
+                                <div className='d-flex align-items-center position-relative selectsize'>
                                     <FiMapPin className='position-absolute' style={{ left: 12}} />
                                     <Form.Select
                                         className='ps-5 pe-4 py-2 bg-transparent border-0'
@@ -87,7 +87,7 @@ const SearchBox = () => {
                                         }}
                                         onFocus={() => setShowList(false)}
                                         name='state'
-                                        style={{ background: 'transparent', maxWidth: '180px' }}
+                                        style={{ background: 'transparent'}}
                                     >
                                         <option value=''>State</option>
                                         {states && states.map((st) => (
@@ -95,9 +95,9 @@ const SearchBox = () => {
                                         ))}
                                     </Form.Select>
                                 </div>
-                                <div className='d-flex align-items-center'>
-                                    <div className='mx-2 line_search_bar'></div>
-                                    <div className='d-flex align-items-center position-relative' style={{ minWidth: 180 }}>
+                                <div className='d-flex g-0 align-items-center'>
+                                    <div className='mx-md-2 line_search_bar'></div>
+                                    <div className='d-flex align-items-center w-100 position-relative selectsize'>
                                         <FiMapPin className='position-absolute' style={{ left: 12}} />
                                         <Form.Select
                                             className='ps-5 pe-4 py-2 bg-transparent border-0'
@@ -112,7 +112,7 @@ const SearchBox = () => {
                                             onFocus={() => setShowList(false)}
                                             name='city'
                                             disabled={!selectedState}
-                                            style={{ background: 'transparent', maxWidth: '150px' }}
+                                            style={{ background: 'transparent'}}
                                         >
                                             <option value=''>City</option>
                                             {cities && cities.map((city) => (
@@ -120,7 +120,7 @@ const SearchBox = () => {
                                             ))}
                                         </Form.Select>
                                     </div>
-                                    <div className='mx-2 line_search_bar'></div>
+                                    <div className='mx-md-2 line_search_bar'></div>
                                 </div>
                                 <div className='flex-grow-1'>
                                     <div className='position-relative'>
