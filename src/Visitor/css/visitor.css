@@ -835,6 +835,16 @@ h6 {
     animation: bounce 0.6s ease;
 }
 
+.breadcrumb_Sec{
+    background: url("../assets/search_bg_doctor.png");
+    background-size: cover;
+    background-position: center;
+    padding: 50px 0;
+}
+.breadcrumb_Sec span{
+    color: var(--primary-color-500);
+}
+
 /* Custom Scrollbar for Webkit Browsers */
 ::-webkit-scrollbar {
     width: 8px;
@@ -1852,4 +1862,103 @@ h6 {
 
 .hospital-option.selected .hospital-dot {
     background: var(--primary-color-600);
+}
+
+/* ======================== FAQ Tabs & Accordion ======================== */
+.faq-tabs .nav-link {
+    border-radius: 999px !important;
+    border: 1px solid var(--grayscale-color-200) !important;
+    color: var(--grayscale-color-800) !important;
+    background: transparent !important;
+    padding: 8px 16px !important;
+    font-weight: 600;
+}
+
+.faq-tabs .nav-link.active,
+.faq-tabs .nav-link:focus,
+.faq-tabs .nav-link:hover {
+    color: var(--white) !important;
+    background: var(--primary-gradient) !important;
+    border-color: transparent !important;
+}
+
+.faq-accordion .accordion-item {
+    background: transparent;
+    border: 1px solid var(--grayscale-color-200);
+    border-radius: 14px !important;
+    overflow: hidden;
+    margin-bottom: 14px;
+    box-shadow: inset 0 0 0 1px rgba(0,132,233,0.25);
+}
+
+.faq-accordion .accordion-header .accordion-button {
+    color: var(--grayscale-color-800);
+    font-weight: 700;
+    border: 0;
+}
+
+.faq-accordion .accordion-button:not(.collapsed) {
+    color: #e8f6ff;
+    background: #061624;
+    box-shadow: none;
+}
+
+.faq-accordion .accordion-button:focus {
+    border: none;
+    box-shadow: 0 0 0 3px rgba(0,132,233,0.15);
+}
+
+.faq-accordion .accordion-body {
+    background: #03101c;
+    color: #b9d7ea;
+}
+
+@media (prefers-color-scheme: light) {
+    .faq-accordion .accordion-item {
+        background: #fff;
+        border-color: rgba(0,132,233,0.2);
+        box-shadow: none;
+    }
+
+    .faq-accordion .accordion-header .accordion-button,
+    .faq-accordion .accordion-button:not(.collapsed) {
+        background: #ffffff;
+        color: var(--grayscale-color-900);
+    }
+
+    .faq-accordion .accordion-body {
+        background: #ffffff;
+        color: var(--grayscale-color-600);
+    }
+}
+
+.blog .blog_box{
+    color: var(--grayscale-color-700);
+    font-size: 12px;
+}
+.blog .blog_box img{
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+.blog .card-title{
+    font-size: 18px;
+    margin: 8px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: var(--grayscale-color-800);
+}
+.blog .card-text{
+    font-size: 14px;
+    color: var(--grayscale-color-600);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.blog .card-img-top{
+    height: 150px;
+    object-fit: cover;
 }

@@ -43,6 +43,8 @@ import 'leaflet/dist/leaflet.css';
 import Amb_Ridedetails from './Ambulance/Amb_Ridedetails';
 import D_StatusAmbulance from './doctor/D_StatusAmbulance';
 import AmbulancePage from './Visitor/AmbulancePage';
+import Faq from './Visitor/Faq';
+import Blog from './Visitor/Blog';
 function App() {
   return (
     <div className="App">
@@ -57,6 +59,8 @@ function App() {
         <Route path='/surgery/:id' element={<Surgerydoctorlist />}></Route>
         <Route path='/compare-doctor' element={<CompareDoctor />}></Route>
         <Route path='/ambulancepage' element={<AmbulancePage />}></Route>
+        <Route path='/faq' element={<Faq />}></Route>
+        <Route path='/blog' element={<Blog />}></Route>
         <Route path='/doctor'>
           <Route path='' index element={<DoctorLogin />}></Route>
           <Route path='doctorregister' element={<DoctorRegister />}></Route>
