@@ -30,7 +30,7 @@ const DoctorListComponents = ({ details }) => {
                             <small className="fw-semibold text-truncate">{details?.specialty || 'Specialist'}</small>
                         </div>
                         <div className="chip chip-available">
-                            <small className="fw-semibold fs-7 px-2 py-1 rounded-3" style={{backgroundColor: '#EDF9F0', color: '#04BD6C'}}>Available</small>
+                            {details?.is_available === true ? <small className="fw-semibold fs-7 px-2 py-1 rounded-3" style={{backgroundColor: '#EDF9F0', color: '#04BD6C'}}>Available</small> : <small className="fw-semibold fs-7 px-2 py-1 rounded-3" style={{backgroundColor: '#ebebebff', color: '#797979ff'}}>Unavailable</small>}
                         </div>
                     </div>
 

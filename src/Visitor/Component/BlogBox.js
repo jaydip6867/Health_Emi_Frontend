@@ -16,7 +16,7 @@ const BlogBox = ({ item, index }) => {
     return (
         <>
             <Col key={index} xl={3} lg={4} sm={6} xs={12}>
-                <Card className='rounded-4 overflow-hidden blog'>
+                <Card className='rounded-4 overflow-hidden blog h-100'>
                     <Card.Img variant="top" src={item.image} />
                     <Card.Body>
                         <div className='d-flex justify-content-between blog_box'>
@@ -29,7 +29,8 @@ const BlogBox = ({ item, index }) => {
                                 <FormattedDate isoString={item.createdAt} />
                             </div>
                         </div>
-                        <Card.Title><Link to={`/blog/${item._id}`}>{item.title}</Link></Card.Title>
+                        <Link to={`/blog/${item._id}`} className='stretched-link'></Link>
+                        <Card.Title>{item.title}</Card.Title>
                         <Card.Text>{item.description}</Card.Text>
                     </Card.Body>
                 </Card>

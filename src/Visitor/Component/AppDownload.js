@@ -4,7 +4,7 @@ import { Col, Container, Row } from 'react-bootstrap'
 const AppDownload = () => {
     return (
         <>
-            <section className='spacer-t'>
+            <section className='py-5'>
                 <Container>
                     <div className='app-sec-bg radius-20 p-0 pe-lg-5'>
                         <Row className='align-items-end g-4'>

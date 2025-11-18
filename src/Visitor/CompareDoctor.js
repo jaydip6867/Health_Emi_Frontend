@@ -129,7 +129,7 @@ const CompareDoctor = () => {
                                     setSelectedSurgery(e.target.value)
                                     setSelectedDoctors([]) // reset selection on surgery change
                                     setSecondDocQuery('')  // clear search query
-                                    console.log(e.target.value)
+                                    // console.log(e.target.value)
                                   }}
                             >
                                 <option value=''>Select surgery...</option>
