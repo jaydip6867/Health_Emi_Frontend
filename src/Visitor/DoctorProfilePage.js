@@ -15,9 +15,9 @@ import Swal from 'sweetalert2'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { FaLocationDot } from 'react-icons/fa6'
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 
 const DoctorProfilePage = () => {
-  const SECRET_KEY = "health-emi";
   var navigate = useNavigate();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -69,7 +69,7 @@ const DoctorProfilePage = () => {
   const [token, settoken] = useState(null)
 
   useEffect(() => {
-    var getlocaldata = localStorage.getItem('PatientLogin');
+    var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
     if (getlocaldata != null) {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -97,7 +97,7 @@ const DoctorProfilePage = () => {
   const getdoctordata = async (d) => {
     await axios({
       method: 'post',
-      url: 'https://healtheasy-o25g.onrender.com/user/doctors/getone',
+      url: `${API_BASE_URL}/user/doctors/getone`,
       data: {
         "doctorid": d
       }
@@ -188,7 +188,7 @@ const DoctorProfilePage = () => {
           }
 
           const uploadResponse = await axios.post(
-            'https://healtheasy-o25g.onrender.com/user/upload/multiple',
+            `${API_BASE_URL}/user/upload/multiple`,
             formData,
             {
               headers: {
@@ -210,7 +210,7 @@ const DoctorProfilePage = () => {
         // Now save appointment with uploaded report URLs
         const response = await axios({
           method: 'post',
-          url: 'https://healtheasy-o25g.onrender.com/user/appointments/save',
+          url: `${API_BASE_URL}/user/appointments/save`,
           headers: {
             Authorization: token
           },
@@ -334,7 +334,7 @@ const DoctorProfilePage = () => {
       });
 
       const response = await axios.post(
-        'https://healtheasy-o25g.onrender.com/user/upload/multiple',
+        `${API_BASE_URL}/user/upload/multiple`,
         formData,
         {
           headers: {
@@ -391,7 +391,7 @@ const DoctorProfilePage = () => {
 
         const response = await axios({
           method: 'post',
-          url: 'https://healtheasy-o25g.onrender.com/user/surgeryappointments/save',
+          url: `${API_BASE_URL}/user/surgeryappointments/save`,
           headers: {
             Authorization: token
           },

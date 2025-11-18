@@ -141,13 +141,13 @@ select.frm_input {
     color: #223f99;
     border-radius: 4px;
 }
-/* .desc_3line {
+.truncaate_description {
     display: -webkit-box;
-    max-width: 600px;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-} */
+    color: #757575;
+}
  .icon_doctor{
     font-size: 50px;
  }

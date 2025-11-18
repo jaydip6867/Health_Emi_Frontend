@@ -9,10 +9,9 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import SmartDataTable from '../components/SmartDataTable'
 import { MdOutlineRemoveRedEye } from 'react-icons/md'
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 
 const P_Blog = () => {
-    const SECRET_KEY = "health-emi";
-
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
 
@@ -20,7 +19,7 @@ const P_Blog = () => {
     const [token, settoken] = useState(null)
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('PatientLogin');
+        var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
         if (getlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -49,7 +48,7 @@ const P_Blog = () => {
     function getblogs() {
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/blogs/list',
+            url: `${API_BASE_URL}/user/blogs/list`,
             headers: {
                 Authorization: token
             }

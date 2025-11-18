@@ -11,8 +11,8 @@ import SmartDataTable from '../components/SmartDataTable'
 import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye } from 'react-icons/md'
 import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 const D_SurgeryAppointment = () => {
-    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
 
@@ -21,12 +21,13 @@ const D_SurgeryAppointment = () => {
 
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('healthdoctor');
+        var getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
         if (getlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
             var data = JSON.parse(decrypted);
         }
+
         if (!data) {
             navigate('/doctor')
         }
@@ -49,7 +50,7 @@ const D_SurgeryAppointment = () => {
         // setloading(true)
         await axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/surgeryappointments/list',
+            url: `${API_BASE_URL}/doctor/surgeryappointments/list`,
             headers: {
                 Authorization: token
             }
@@ -68,7 +69,7 @@ const D_SurgeryAppointment = () => {
         setloading(true)
         await axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/surgeryappointments/changestatus',
+            url: `${API_BASE_URL}/doctor/surgeryappointments/changestatus`,
             headers: {
                 Authorization: token
             },
@@ -137,7 +138,7 @@ const D_SurgeryAppointment = () => {
 
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/surgeryappointments/reschedule',
+            url: `${API_BASE_URL}/doctor/surgeryappointments/reschedule`,
             headers: {
                 Authorization: token
             },

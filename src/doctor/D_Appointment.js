@@ -14,9 +14,9 @@ import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 
 const D_Appointment = () => {
-    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
 
@@ -24,7 +24,7 @@ const D_Appointment = () => {
     const [token, settoken] = useState(null)
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('healthdoctor');
+        var getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
         if (getlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -52,7 +52,7 @@ const D_Appointment = () => {
         // setloading(true)
         await axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/list',
+            url: `${API_BASE_URL}/doctor/appointments/list`,
             headers: {
                 Authorization: token
             }
@@ -71,7 +71,7 @@ const D_Appointment = () => {
         setloading(true)
         await axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/changestatus',
+            url: `${API_BASE_URL}/doctor/appointments/changestatus`,
             headers: {
                 Authorization: token
             },
@@ -304,7 +304,7 @@ const D_Appointment = () => {
             // Upload PDF to API
             const uploadResponse = await axios({
                 method: 'post',
-                url: 'https://healtheasy-o25g.onrender.com/user/upload/multiple',
+                url: `${API_BASE_URL}/user/upload/multiple`,
                 headers: { 'Content-Type': 'multipart/form-data' },
                 data: formData,
             });
@@ -318,7 +318,7 @@ const D_Appointment = () => {
             // Mark appointment complete with prescription URL
             await axios({
                 method: 'post',
-                url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/complete',
+                url: `${API_BASE_URL}/doctor/appointments/complete`,
                 headers: { Authorization: token },
                 data: {
                     appointmentid: currentAppointment?._id,
@@ -388,7 +388,7 @@ const D_Appointment = () => {
         setloading(true);
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/reschedule',
+            url: `${API_BASE_URL}/doctor/appointments/reschedule`,
             headers: {
                 Authorization: token
             },

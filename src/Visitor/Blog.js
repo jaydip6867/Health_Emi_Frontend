@@ -4,14 +4,14 @@ import CryptoJS from "crypto-js";
 import NavBar from './Component/NavBar';
 import FooterBar from './Component/FooterBar';
 import Loader from '../Loader';
-import { Card, Col, Container, Row } from 'react-bootstrap';
+import { Card, Col, Container, Row, Pagination } from 'react-bootstrap';
 import axios from 'axios';
 import { IoCalendarOutline } from "react-icons/io5";
 import BlogBox from './Component/BlogBox';
 import { FiSearch } from 'react-icons/fi';
+import { API_BASE_URL, SECRET_KEY, DEFAULT_PAGE_LIMIT, STORAGE_KEYS } from '../config';
 
 const Blog = () => {
-    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
 
     const [loading, setloading] = useState(false)
@@ -19,7 +19,7 @@ const Blog = () => {
     const [token, settoken] = useState(null)
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('PatientLogin');
+        var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
         if (getlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -32,21 +32,38 @@ const Blog = () => {
         getblog()
     }, [navigate])
 
-    const [bloglist, setbloglist] = useState(null)
-    function getblog() {
+    const [bloglist, setbloglist] = useState([])
+    const [page, setPage] = useState(1)
+    const [limit] = useState(DEFAULT_PAGE_LIMIT)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [totalPages, setTotalPages] = useState(1)
+    function getblog(pageArg = page, searchArg = searchQuery) {
         setloading(true)
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/blogs/list',
+            url: `${API_BASE_URL}/user/blogs`,
             headers: {
                 Authorization: token,
             },
             data: {
-                "search": "",
+                "page": pageArg,
+                "limit": limit,
+                "search": searchArg,
             }
         }).then((res) => {
-            console.log(res.data.Data)
-            setbloglist(res.data.Data)
+            const data = res?.data?.Data;
+            if (data?.docs) {
+                setbloglist(data.docs)
+                if (data?.totalPages) setTotalPages(data.totalPages)
+                if (data?.page) setPage(data.page)
+            } else if (Array.isArray(data)) {
+                setbloglist(data)
+                setTotalPages(1)
+                setPage(1)
+            } else {
+                setbloglist([])
+                setTotalPages(1)
+            }
         }).catch(function (error) {
             console.log(error);
         }).finally(() => {
@@ -55,7 +72,24 @@ const Blog = () => {
     }
 
     function searchblog(e){
-        
+        const val = e.target.value;
+        setSearchQuery(val)
+        setPage(1)
+        getblog(1, val)
+    }
+
+    const getPageNumbers = () => {
+        const pages = [];
+        const start = Math.max(1, page - 2);
+        const end = Math.min(totalPages, page + 2);
+        for (let i = start; i <= end; i++) pages.push(i);
+        return pages;
+    }
+
+    const changePage = (p) => {
+        if (p < 1 || (totalPages && p > totalPages) || p === page) return;
+        setPage(p)
+        getblog(p, searchQuery)
     }
     
     return (
@@ -84,11 +118,30 @@ const Blog = () => {
             {/* blog lists */}
             <section className='py-5'>
                 <Container>
-                    <Row>
+                    <Row className='g-4'>
                         {bloglist && bloglist?.map((item, index) => (
                             <BlogBox key={index} item={item} />
                         ))}
                     </Row>
+                </Container>
+            </section>
+            <section className='pb-5'>
+                <Container>
+                    {totalPages > 1 && (
+                        <div className='d-flex justify-content-center'>
+                            <Pagination className='blog_pagination gap-2'>
+                                {/* <Pagination.First onClick={() => changePage(1)} disabled={page === 1} /> */}
+                                <Pagination.Prev onClick={() => changePage(page - 1)} disabled={page === 1} >Prev </Pagination.Prev>
+                                {getPageNumbers().map((num) => (
+                                    <Pagination.Item key={num} active={num === page} onClick={() => changePage(num)}>
+                                        {num}
+                                    </Pagination.Item>
+                                ))}
+                                <Pagination.Next onClick={() => changePage(page + 1)} disabled={page === totalPages} >Next</Pagination.Next>
+                                {/* <Pagination.Last onClick={() => changePage(totalPages)} disabled={page === totalPages} /> */}
+                            </Pagination>
+                        </div>
+                    )}
                 </Container>
             </section>
             {loading && <Loader />}

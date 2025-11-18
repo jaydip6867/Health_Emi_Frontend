@@ -12,9 +12,9 @@ import { toast } from 'react-toastify';
 import Loader from '../Loader';
 import { MdDeleteOutline, MdOutlineEditCalendar, MdOutlineRemoveRedEye } from 'react-icons/md';
 import SmartDataTable from '../components/SmartDataTable';
+import { API_BASE_URL, SECRET_KEY } from '../config';
 
 const D_Blog = () => {
-    const SECRET_KEY = "health-emi";
 
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
@@ -52,7 +52,7 @@ const D_Blog = () => {
         setloading(true)
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/blogs/list',
+            url: `${API_BASE_URL}/doctor/blogs/list`,
             headers: {
                 Authorization: token,
             },
@@ -88,7 +88,7 @@ const D_Blog = () => {
         try {
             const response = await axios({
                 method: 'post',
-                url: 'https://healtheasy-o25g.onrender.com/user/upload',
+                url: `${API_BASE_URL}/user/upload`,
                 data: formData,
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -131,7 +131,7 @@ const D_Blog = () => {
 
             const response = await axios({
                 method: 'post',
-                url: 'https://healtheasy-o25g.onrender.com/doctor/blogs/save',
+                url: `${API_BASE_URL}/doctor/blogs/save`,
                 headers: {
                     Authorization: token,
                 },
@@ -170,7 +170,7 @@ const D_Blog = () => {
             if (result.isConfirmed) {
                 axios({
                     method: 'post',
-                    url: 'https://healtheasy-o25g.onrender.com/doctor/blogs/remove',
+                    url: `${API_BASE_URL}/doctor/blogs/remove`,
                     headers: {
                         Authorization: token
                     },
@@ -261,7 +261,7 @@ const D_Blog = () => {
                     try {
                         await axios({
                             method: "post",
-                            url: "https://healtheasy-o25g.onrender.com/user/upload/removeimage",
+                            url: `${API_BASE_URL}/user/upload/removeimage`,
                             headers: {
                                 Authorization: token,
                                 "Content-Type": "application/json"
@@ -288,7 +288,7 @@ const D_Blog = () => {
 
             const response = await axios({
                 method: 'post',
-                url: 'https://healtheasy-o25g.onrender.com/doctor/blogs/save',
+                url: `${API_BASE_URL}/doctor/blogs/save`,
                 headers: {
                     Authorization: token,
                 },
@@ -392,12 +392,12 @@ const D_Blog = () => {
     }, {
         name: 'Title',
         selector: (row) => row.title || '',
-        cell: row => <span className="fw-medium">{row.title}</span>,
+        cell: row => <span className="fw-medium truncaate_description">{row.title}</span>,
     },
     {
         name: 'Description',
         selector: (row) => row.description || '',
-        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.description}</span>,
+        cell: row => <span className="truncaate_description">{row.description}</span>,
     },
     {
         name: 'Expiry Date',

@@ -15,6 +15,7 @@ const Surgerydoctorlist = () => {
     const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
 
+
     const [patient, setpatient] = useState(null)
     const [token, settoken] = useState(null)
 
@@ -156,7 +157,7 @@ const Surgerydoctorlist = () => {
             method: 'post',
             url: 'https://healtheasy-o25g.onrender.com/user/doctors/list',
             data: {
-                surgerytypeid: d
+                surgeryname: d
             }
         }).then((res) => {
             setdoclist(res.data.Data)

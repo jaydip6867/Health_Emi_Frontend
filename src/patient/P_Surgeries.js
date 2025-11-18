@@ -9,10 +9,10 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import SmartDataTable from '../components/SmartDataTable'
 import { MdOutlineRemoveRedEye } from 'react-icons/md'
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 
 const P_Surgeries = () => {
-    const SECRET_KEY = "health-emi";
-
+    
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
 
@@ -20,7 +20,7 @@ const P_Surgeries = () => {
     const [token, settoken] = useState(null)
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('PatientLogin');
+        var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
         if (getlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -49,7 +49,7 @@ const P_Surgeries = () => {
     function getappointments(d) {
         axios({
             method: 'get',
-            url: 'https://healtheasy-o25g.onrender.com/user/surgeryappointments',
+            url: `${API_BASE_URL}/user/surgeryappointments`,
             headers: {
                 Authorization: token
             }

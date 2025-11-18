@@ -7,6 +7,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import CryptoJS from "crypto-js";
 import Loader from "../Loader";
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 import {
   FaAmbulance,
   FaLocationArrow,
@@ -42,7 +43,6 @@ const dropIcon = L.icon({
 });
 
 const D_AmbulanceRequest = () => {
-  const SECRET_KEY = "health-emi";
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
@@ -51,7 +51,7 @@ const D_AmbulanceRequest = () => {
 
   useEffect(() => {
     let data;
-    const getlocaldata = localStorage.getItem("healthdoctor");
+    const getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
     if (getlocaldata != null) {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -576,7 +576,7 @@ const D_AmbulanceRequest = () => {
     try {
       const res = await axios({
         method: "post",
-        url: "https://healtheasy-o25g.onrender.com/doctor/ambulancerequests/getprice",
+        url: `${API_BASE_URL}/doctor/ambulancerequests/getprice`,
         headers: { Authorization: token },
         data: { distance: distanceKm },
       });
@@ -609,7 +609,7 @@ const D_AmbulanceRequest = () => {
     try {
       const res = await axios({
         method: "post",
-        url: "https://healtheasy-o25g.onrender.com/doctor/ambulancerequests/getprice",
+        url: `${API_BASE_URL}/doctor/ambulancerequests/getprice`,
         headers: { Authorization: token },
         data: { distance: Math.round(distanceKm) },
       });
@@ -649,7 +649,7 @@ const D_AmbulanceRequest = () => {
     setLoading(true);
     await axios({
       method: "post",
-      url: "https://healtheasy-o25g.onrender.com/doctor/ambulancerequests/save",
+      url: `${API_BASE_URL}/doctor/ambulancerequests/save`,
       headers: {
         Authorization: token,
       },

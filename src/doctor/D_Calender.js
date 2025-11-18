@@ -12,11 +12,11 @@ import interactionPlugin from '@fullcalendar/interaction';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import CryptoJS from "crypto-js";
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 dayjs.extend(utc);
 
 const D_Calender = () => {
-    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
 
@@ -26,12 +26,13 @@ const D_Calender = () => {
     const [appointment, setappointment] = useState(null)
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('healthdoctor');
+        var getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
         if (getlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
             var data = JSON.parse(decrypted);
         }
+
         if (!data) {
             navigate('/doctor')
         }
@@ -55,11 +56,12 @@ const D_Calender = () => {
         // setloading(true)
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/appointments/list',
+            url: `${API_BASE_URL}/doctor/appointments/list`,
             headers: {
                 Authorization: token
             }
         }).then((res) => {
+
             // console.log(res.data.Data)
             const formattedAppointments = res.data.Data.map((item) => {
                 const [day, month, year] = item.date.split("-");

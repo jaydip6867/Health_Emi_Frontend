@@ -11,9 +11,9 @@ import Slider from 'react-slick'
 import AppDownload from './Component/AppDownload'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL, SECRET_KEY } from '../config';
 
 const VideoConsult = () => {
-    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
 
     const [patient, setpatient] = useState(null)
@@ -68,7 +68,7 @@ const VideoConsult = () => {
     const getdoctordata = async () => {
         await axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/doctors',
+            url: `${API_BASE_URL}/user/doctors`,
             data: {
                 "page": 1,
                 "limit": 10,

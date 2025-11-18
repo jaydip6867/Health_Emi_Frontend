@@ -9,12 +9,12 @@ import { Container, Row, Col, Card } from "react-bootstrap";
 import { IoCalendarOutline } from "react-icons/io5";
 import { BsClock } from "react-icons/bs";
 import BlogBox from "./Component/BlogBox";
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const BlogDetail = () => {
-    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
     const { id } = useParams();
-    console.log(id)
+    // console.log(id)
 
     const [loading, setloading] = useState(false)
     const [patient, setpatient] = useState(null)
@@ -23,7 +23,7 @@ const BlogDetail = () => {
     const [bloglist, setbloglist] = useState(null)
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('PatientLogin');
+        var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
         if (getlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -41,7 +41,7 @@ const BlogDetail = () => {
         setloading(true)
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/blogs/getone',
+            url: `${API_BASE_URL}/user/blogs/getone`,
             headers: {
                 Authorization: token,
             },
@@ -49,7 +49,6 @@ const BlogDetail = () => {
                 "blogid": id,
             }
         }).then((res) => {
-            // console.log(res.data.Data)
             setblog(res.data.Data)
         }).catch(function (error) {
             console.log(error);
@@ -72,7 +71,7 @@ const BlogDetail = () => {
         setloading(true)
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/blogs',
+            url: `${API_BASE_URL}/user/blogs`,
             headers: {
                 Authorization: token,
             },
@@ -82,7 +81,6 @@ const BlogDetail = () => {
                 "search": "",
             }
         }).then((res) => {
-            // console.log(res.data.Data.docs)
             setbloglist(res.data.Data.docs)
         }).catch(function (error) {
             console.log(error);
@@ -111,10 +109,8 @@ const BlogDetail = () => {
                             <h2>{blog?.title}</h2>
                             <div className='d-flex justify-content-between blog_box mb-2'>
                                 <div className='d-flex align-items-center gap-1'>
-                                    {/* <img src={blog?.createdBy?.profile_pic}></img> */}
-                                    <img src={require('./assets/step_doctor.png')}></img>
-                                    {/* <span>{blog?.createdBy?.name}</span> */}
-                                    <span>John Doe</span>
+                                    <img src={blog?.createdBy?.profile_pic}></img>
+                                    <span>{blog?.createdBy?.name}</span>
                                 </div>
                                 <div className='d-flex align-items-center gap-1'>
                                     <IoCalendarOutline />
@@ -136,7 +132,7 @@ const BlogDetail = () => {
                 <Container>
                     <Row>
                         {bloglist?.map((item, index) => (
-                            <BlogBox item={item} index={index} />
+                            <BlogBox item={item} index={index} key={index}/>
                         ))}
                     </Row>
                 </Container>

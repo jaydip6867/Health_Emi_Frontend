@@ -3,6 +3,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import axios from 'axios';
+import { API_BASE_URL } from '../../config';
 
 const HomeSlider = () => {
     var settings = {
@@ -15,7 +16,7 @@ const HomeSlider = () => {
       };
       const [banner, setBanner] = useState([]);
       useEffect(() => {
-        axios.get("https://healtheasy-o25g.onrender.com/user/banner")
+        axios.get(`${API_BASE_URL}/user/banner`)
         .then((res) => {
             // console.log(res.data.Data.banners);
             setBanner(res.data.Data.banners);

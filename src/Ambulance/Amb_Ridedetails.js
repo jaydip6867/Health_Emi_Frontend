@@ -21,6 +21,7 @@ import {
 } from "react-icons/fa";
 import axios from "axios";
 import CryptoJS from "crypto-js";
+import { API_BASE_URL, SOCKET_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 import Amb_Nav from "./Amb_Nav";
 import Amb_Sidebar from "./Amb_Sidebar";
 import "../../src/amb_request.css";
@@ -101,7 +102,7 @@ const Amb_Ridedetails = () => {
   const routeCoordsRef = useRef([]); // [[lat, lng], ...] for heading calculation
   const [liveSpeed, setLiveSpeed] = useState(0);
 
-  const SECRET_KEY = "health-emi";
+  
 
   // Persist current navigation leg across refresh
   const STORAGE_KEY = 'amb_route_state';
@@ -389,7 +390,7 @@ const Amb_Ridedetails = () => {
 
   const fetchRideDetails = async () => {
     try {
-      const getlocaldata = localStorage.getItem("healthambulance");
+      const getlocaldata = localStorage.getItem(STORAGE_KEYS.AMBULANCE);
       if (!getlocaldata) {
         navigate("/ambulance");
         return;
@@ -400,7 +401,7 @@ const Amb_Ridedetails = () => {
       setAmbulance(data.ambulanceData);
 
       const response = await axios.post(
-        "https://healtheasy-o25g.onrender.com/ambulance/ambulancerequest/getone",
+        `${API_BASE_URL}/ambulance/ambulancerequest/getone`,
         { ambulancerequestid: id },
         {
           headers: {
@@ -480,12 +481,12 @@ const Amb_Ridedetails = () => {
   const handleAcceptRide = async () => {
     try {
       setIsAccepting(true);
-      const getlocaldata = localStorage.getItem("healthambulance");
+      const getlocaldata = localStorage.getItem(STORAGE_KEYS.AMBULANCE);
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
       const response = await axios.post(
-        "https://healtheasy-o25g.onrender.com/ambulance/ambulancerequest/accept",
+        `${API_BASE_URL}/ambulance/ambulancerequest/accept`,
         { ambulancerequestid: id },
         {
           headers: {
@@ -508,7 +509,7 @@ const Amb_Ridedetails = () => {
         fetchRideDetails();
 
         //soket
-        const socket = io("https://healtheasy-o25g.onrender.com");
+        const socket = io(SOCKET_URL);
 
         const storedData = localStorage.getItem("ambulance_socket");
 
@@ -635,12 +636,12 @@ const Amb_Ridedetails = () => {
   const handleCompleteRide = async () => {
     try {
       setIsCompleting(true);
-      const getlocaldata = localStorage.getItem("healthambulance");
+      const getlocaldata = localStorage.getItem(STORAGE_KEYS.AMBULANCE);
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
       const response = await axios.post(
-        "https://healtheasy-o25g.onrender.com/ambulance/ambulancerequest/complete",
+        `${API_BASE_URL}/ambulance/ambulancerequest/complete`,
         { ambulancerequestid: id },
         {
           headers: {

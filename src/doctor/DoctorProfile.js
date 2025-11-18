@@ -10,9 +10,10 @@ import Swal from "sweetalert2";
 import { Country, State, City } from "country-state-city";
 import CryptoJS from "crypto-js";
 import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
+import { API_BASE_URL, SECRET_KEY } from '../config';
 
 const DoctorProfile = () => {
-  const SECRET_KEY = "health-emi";
+  
   var navigate = useNavigate();
   const [loading, setloading] = useState(false);
   const [IsDisable, setdisabled] = useState(true);
@@ -451,7 +452,7 @@ const DoctorProfile = () => {
   function getprofiledata() {
     axios({
       method: "get",
-      url: "https://healtheasy-o25g.onrender.com/doctor/profile",
+      url: `${API_BASE_URL}/doctor/profile`,
       headers: {
         Authorization: token,
       },
@@ -485,7 +486,7 @@ const DoctorProfile = () => {
   //     if (result.isConfirmed) {
   //       axios({
   //         method: "get",
-  //         url: "https://healtheasy-o25g.onrender.com/doctor/profile/remove",
+  //         url: `${API_BASE_URL}/doctor/profile/remove`,
   //         headers: {
   //           Authorization: token,
   //         },
@@ -587,7 +588,7 @@ const DoctorProfile = () => {
           try {
             await axios({
               method: "post",
-              url: "https://healtheasy-o25g.onrender.com/user/upload/removeimage",
+              url: `${API_BASE_URL}/user/upload/removeimage`,
               headers: {
                 Authorization: token,
                 "Content-Type": "application/json"
@@ -607,7 +608,7 @@ const DoctorProfile = () => {
 
         const uploadResponse = await axios({
           method: "post",
-          url: "https://healtheasy-o25g.onrender.com/user/upload",
+          url: `${API_BASE_URL}/user/upload`,
           headers: {
             Authorization: token,
             "Content-Type": "multipart/form-data",
@@ -673,7 +674,7 @@ const DoctorProfile = () => {
       // Now update the profile with all data including image URL
       const profileResponse = await axios({
         method: "post",
-        url: "https://healtheasy-o25g.onrender.com/doctor/profile/edit",
+        url: `${API_BASE_URL}/doctor/profile/edit`,
         headers: { Authorization: token },
         data: dataToSend,
       });

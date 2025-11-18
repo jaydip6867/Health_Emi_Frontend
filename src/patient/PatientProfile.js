@@ -9,10 +9,10 @@ import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
 import CryptoJS from "crypto-js";
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const PatientProfile = () => {
-    const SECRET_KEY = "health-emi";
-
+    
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
     const [IsDisable, setdisabled] = useState(true)
@@ -24,7 +24,7 @@ const PatientProfile = () => {
     const [token, settoken] = useState(null)
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('PatientLogin');
+        var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
         const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
         const decrypted = bytes.toString(CryptoJS.enc.Utf8);
         var data = JSON.parse(decrypted);
@@ -49,13 +49,12 @@ const PatientProfile = () => {
     function getprofiledata() {
         axios({
             method: 'get',
-            url: 'https://healtheasy-o25g.onrender.com/user/profile',
+            url: `${API_BASE_URL}/user/profile`,
             headers: {
                 Authorization: token
             }
         }).then((res) => {
             setprofile(res.data.Data)
-            // console.log('profile', res)
         }).catch(function (error) {
             console.log(error);
         }).finally(() => {
@@ -69,51 +68,11 @@ const PatientProfile = () => {
             ...profile,
             [name]: value
         }))
-        // console.log(profile)
     }
-
-    // function deletepatient() {
-    //     Swal.fire({
-    //         title: "Are you sure?",
-    //         text: "You Want Delete Your Account.",
-    //         icon: "warning",
-    //         showCancelButton: true,
-    //         confirmButtonColor: "#3085d6",
-    //         cancelButtonColor: "#d33",
-    //         confirmButtonText: "Yes, delete it!"
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             axios({
-    //                 method: 'get',
-    //                 url: 'https://healtheasy-o25g.onrender.com/user/profile/remove',
-    //                 headers: {
-    //                     Authorization: token
-    //                 }
-    //             }).then((res) => {
-    //                 // toast('Doctor Account Delete successfully...', { className: 'custom-toast-success' })
-    //                 // console.log(res)
-    //                 localStorage.removeItem('PatientLogin')
-    //             }).catch(function (error) {
-    //                 // console.log(error);
-    //                 toast(error.response.data.Message, { className: 'custom-toast-error' })
-    //             }).finally(() => {
-    //                 // setloading(false)
-    //                 Swal.fire({
-    //                     title: "Deleted!",
-    //                     text: "Your Account has been deleted.",
-    //                     icon: "success"
-    //                 });
-    //                 navigate('/')
-    //             });
-
-    //         }
-    //     });
-    // }
 
     function updateprofiledata(id) {
 
         console.log('update profile data = ', id, profile)
-        // setloading(true)
         const payload = {
             "name": profile.name,
             "email": profile.email,
@@ -129,7 +88,7 @@ const PatientProfile = () => {
 
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/profile/edit',
+            url: `${API_BASE_URL}/user/profile/edit`,
             headers: {
                 Authorization: token
             },

@@ -12,6 +12,7 @@ import Loader from '../Loader';
 import Swal from 'sweetalert2';
 import NavBar from '../Visitor/Component/NavBar';
 import FooterBar from '../Visitor/Component/FooterBar';
+import { API_BASE_URL } from '../config';
 
 const DoctorForgot = () => {
 
@@ -30,7 +31,7 @@ const DoctorForgot = () => {
         setloading(true)
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/forgetpassword',
+            url: `${API_BASE_URL}/doctor/forgetpassword`,
             data: {
                 "email": email,
             }
@@ -51,7 +52,7 @@ const DoctorForgot = () => {
     function otpverifydone() {
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/forgetpassword/verifyotp',
+            url: `${API_BASE_URL}/doctor/forgetpassword/verifyotp`,
             data: {
                 "email": email,
                 "otp": otp
@@ -71,7 +72,7 @@ const DoctorForgot = () => {
         // setloading(true)
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/forgetpassword/setpassword',
+            url: `${API_BASE_URL}/doctor/forgetpassword/setpassword`,
             data: {
                 "email": email,
                 "password": newps

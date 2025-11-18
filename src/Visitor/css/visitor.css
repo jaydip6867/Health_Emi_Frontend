@@ -2006,3 +2006,25 @@ body::-webkit-scrollbar-thumb:hover {
 .blog_search_bar input:focus{
     outline: none;
 }
+
+.blog_pagination .page-item .page-link{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: 1px solid var(--grayscale-color-200);
+    color: var(--grayscale-color-800);
+}
+.blog_pagination .page-item:first-child .page-link , .blog_pagination .page-item:last-child .page-link{
+    border-radius: 40px;
+    padding: 6px 16px;
+}
+.blog_pagination .page-item:not(:first-child):not(:last-child) .page-link{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.blog_pagination .page-item.active .page-link{
+    background: var(--primary-gradient) !important;
+    color: var(--white) !important;
+}

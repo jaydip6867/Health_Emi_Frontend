@@ -5,17 +5,17 @@ import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
 import { Col, Container, Row } from 'react-bootstrap';
 import CryptoJS from "crypto-js";
+import { SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const PatientDashboard = () => {
 
-  const SECRET_KEY = "health-emi";
   var navigate = useNavigate();
 
   const [patient, setpatient] = useState(null)
   const [token, settoken] = useState(null)
 
   useEffect(() => {
-    var getlocaldata = localStorage.getItem('PatientLogin');
+    var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
     if (getlocaldata != null) {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);

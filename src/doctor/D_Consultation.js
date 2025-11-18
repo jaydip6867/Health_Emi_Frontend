@@ -8,9 +8,9 @@ import Loader from "../Loader";
 import { toast, ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const D_Consultation = () => {
-  const SECRET_KEY = "health-emi";
 
   var navigate = useNavigate();
   const [loading, setloading] = useState(false);
@@ -19,7 +19,7 @@ const D_Consultation = () => {
   const [token, settoken] = useState(null);
 
   useEffect(() => {
-    var getlocaldata = localStorage.getItem("healthdoctor");
+    var getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
     if (getlocaldata != null) {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -45,7 +45,7 @@ const D_Consultation = () => {
     setloading(true);
     axios({
       method: "post",
-      url: "https://healtheasy-o25g.onrender.com/user/doctors/getone",
+      url: `${API_BASE_URL}/user/doctors/getone`,
       data: {
         doctorid: doctor._id,
       },
@@ -94,7 +94,7 @@ const D_Consultation = () => {
     setloading(true);
     axios({
       method: "post",
-      url: "https://healtheasy-o25g.onrender.com/doctor/consultations/save",
+      url: `${API_BASE_URL}/doctor/consultations/save`,
       headers: {
         Authorization: token,
       },

@@ -8,9 +8,10 @@ import { toast, ToastContainer } from 'react-toastify'
 import axios from 'axios'
 import CryptoJS from "crypto-js";
 import { io } from "socket.io-client";
+import { API_BASE_URL, SOCKET_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const Amb_login = () => {
-  const SECRET_KEY = "health-emi";
+  
 
   var navigate = useNavigate();
   const [loading, setloading] = useState(false);
@@ -19,7 +20,7 @@ const Amb_login = () => {
   const [password, setps] = useState("");
 
   useEffect(() => {
-    var getlocaldata = localStorage.getItem("Ambulance");
+    var getlocaldata = localStorage.getItem(STORAGE_KEYS.AMBULANCE);
     if (getlocaldata != null) {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -36,7 +37,7 @@ const Amb_login = () => {
     setloading(true);
     axios({
       method: "post",
-      url: "https://healtheasy-o25g.onrender.com/ambulance/login",
+      url: `${API_BASE_URL}/ambulance/login`,
       data: { email: email, password: password },
     })
       .then((res) => {
@@ -44,11 +45,11 @@ const Amb_login = () => {
           JSON.stringify(res.data.Data),
           SECRET_KEY
         ).toString();
-        localStorage.setItem("healthambulance", encrypted);
+        localStorage.setItem(STORAGE_KEYS.AMBULANCE, encrypted);
 
         // console.log(encrypted)
         // toast(res.data.Message, { className: 'custom-toast-success' });
-        const socket = io("https://healtheasy-o25g.onrender.com");
+        const socket = io(SOCKET_URL);
         const ambulance_channelid = res.data.Data.ambulanceData.channelid;
         const ambulanceId = res.data.Data.ambulanceData._id;
 

@@ -20,6 +20,7 @@ import {
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import Swal from "sweetalert2";
+import { API_BASE_URL, SECRET_KEY } from '../config';
 
 const D_StatusAmbulance = () => {
   const { id } = useParams();
@@ -27,7 +28,7 @@ const D_StatusAmbulance = () => {
   const [loading, setLoading] = useState(true);
   const [request, setRequest] = useState(null);
   const [error, setError] = useState(null);
-  const SECRET_KEY = "health-emi";
+  
 
   const fetchRequestDetails = async () => {
     try {
@@ -42,7 +43,7 @@ const D_StatusAmbulance = () => {
       const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
       const response = await axios.post(
-        "https://healtheasy-o25g.onrender.com/doctor/ambulancerequests/getone",
+        `${API_BASE_URL}/doctor/ambulancerequests/getone`,
         { ambulancerequestid: id },
         {
           headers: {
@@ -85,7 +86,7 @@ const D_StatusAmbulance = () => {
         const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
         await axios.post(
-          "https://healtheasy-o25g.onrender.com/doctor/ambulancerequests/cancel",
+          `${API_BASE_URL}/doctor/ambulancerequests/cancel`,
           { ambulancerequestid: id },
           {
             headers: {

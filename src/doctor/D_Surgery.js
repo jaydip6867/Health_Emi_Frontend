@@ -27,9 +27,9 @@ import {
 import CryptoJS from "crypto-js";
 import SmartDataTable from '../components/SmartDataTable';
 import { FiChevronsRight, FiPlus, FiX } from "react-icons/fi";
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const D_Surgery = () => {
-  const SECRET_KEY = "health-emi";
   var navigate = useNavigate();
   const [loading, setloading] = useState(false);
 
@@ -134,7 +134,7 @@ const D_Surgery = () => {
   };
 
   useEffect(() => {
-    var getlocaldata = localStorage.getItem("healthdoctor");
+    var getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
     if (getlocaldata != null) {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -160,7 +160,7 @@ const D_Surgery = () => {
     setloading(true);
     axios({
       method: "post",
-      url: "https://healtheasy-o25g.onrender.com/doctor/surgeries/list",
+      url: `${API_BASE_URL}/doctor/surgeries/list`,
       headers: {
         Authorization: token,
       },
@@ -212,7 +212,7 @@ const D_Surgery = () => {
 
     try {
       const response = await axios.post(
-        "https://healtheasy-o25g.onrender.com/user/upload",
+        `${API_BASE_URL}/user/upload`,
         formData,
         {
           headers: {
@@ -247,7 +247,7 @@ const D_Surgery = () => {
 
       const response = await axios({
         method: "post",
-        url: "https://healtheasy-o25g.onrender.com/doctor/surgeries/save",
+        url: `${API_BASE_URL}/doctor/surgeries/save`,
         headers: {
           Authorization: token,
         },
@@ -285,7 +285,7 @@ const D_Surgery = () => {
       if (result.isConfirmed) {
         axios({
           method: "post",
-          url: "https://healtheasy-o25g.onrender.com/doctor/surgeries/remove",
+          url: `${API_BASE_URL}/doctor/surgeries/remove`,
           headers: {
             Authorization: token,
           },
@@ -403,7 +403,7 @@ const D_Surgery = () => {
         formData.append("file", selectedFile);
 
         const uploadResponse = await axios.post(
-          "https://healtheasy-o25g.onrender.com/user/upload",
+          `${API_BASE_URL}/user/upload`,
           formData,
           {
             headers: {
@@ -429,7 +429,7 @@ const D_Surgery = () => {
 
       const response = await axios({
         method: "post",
-        url: "https://healtheasy-o25g.onrender.com/doctor/surgeries/save",
+        url: `${API_BASE_URL}/doctor/surgeries/save`,
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
@@ -473,7 +473,7 @@ const D_Surgery = () => {
     setloading(true);
     axios({
       method: "post",
-      url: "https://healtheasy-o25g.onrender.com/doctor/surgerytypes/list",
+      url: `${API_BASE_URL}/doctor/surgerytypes/list`,
       data: {
         search: "",
       },

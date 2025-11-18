@@ -12,6 +12,7 @@ import Loader from "../Loader";
 import { Country, State, City } from "country-state-city";
 import NavBar from "../Visitor/Component/NavBar";
 import FooterBar from "../Visitor/Component/FooterBar";
+import { API_BASE_URL } from '../config';
 
 const DoctorRegister = () => {
   var navigate = useNavigate();
@@ -363,7 +364,7 @@ const DoctorRegister = () => {
     formData.append("file", file);
 
     const response = await axios.post(
-      "https://healtheasy-o25g.onrender.com/user/upload",
+      `${API_BASE_URL}/user/upload`,
       formData,
       {
         headers: {
@@ -386,7 +387,7 @@ const DoctorRegister = () => {
     });
 
     const response = await axios.post(
-      "https://healtheasy-o25g.onrender.com/user/upload/multiple",
+      `${API_BASE_URL}/user/upload/multiple`,
       formData,
       {
         headers: {
@@ -469,7 +470,7 @@ const DoctorRegister = () => {
       const token = doctordata?.data?.Data?.accessToken;
 
       const response = await axios.post(
-        "https://healtheasy-o25g.onrender.com/doctor/profile/savebasicdetails",
+        `${API_BASE_URL}/doctor/profile/savebasicdetails`,
         data,
         {
           headers: {
@@ -543,7 +544,7 @@ const DoctorRegister = () => {
     setloading(true);
     axios({
       method: "post",
-      url: "https://healtheasy-o25g.onrender.com/doctor/signup",
+      url: `${API_BASE_URL}/doctor/signup`,
       data: frmdoctor,
     })
       .then((res) => {
@@ -607,7 +608,7 @@ const DoctorRegister = () => {
     setloading(true);
     axios({
       method: "post",
-      url: "https://healtheasy-o25g.onrender.com/doctor/signup/otpverification",
+      url: `${API_BASE_URL}/doctor/signup/otpverification`,
       data: {
         email: frmdoctor.email,
         otp: otp,
@@ -647,7 +648,7 @@ const DoctorRegister = () => {
     setloading(true);
     axios({
       method: "post",
-      url: "https://healtheasy-o25g.onrender.com/doctor/surgerytypes/list",
+      url: `${API_BASE_URL}/doctor/surgerytypes/list`,
       data: {
         search: "",
       },
@@ -671,7 +672,7 @@ const DoctorRegister = () => {
     setloading(true);
     axios({
       method: "post",
-      url: "https://healtheasy-o25g.onrender.com/doctor/doctorcategories/list",
+      url: `${API_BASE_URL}/doctor/doctorcategories/list`,
       data: {
         search: "",
       },
@@ -848,7 +849,7 @@ const DoctorRegister = () => {
   const fetchTermsAndConditions = async () => {
     try {
       const response = await axios.get(
-        "https://healtheasy-o25g.onrender.com/doctor/gettc"
+        `${API_BASE_URL}/doctor/gettc`
       );
       const fullText =
         response.data.Data.doctor_tc || "No terms and conditions available.";

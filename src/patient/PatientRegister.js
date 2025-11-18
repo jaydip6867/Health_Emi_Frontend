@@ -7,6 +7,7 @@ import { toast, ToastContainer } from 'react-toastify'
 import Loader from '../Loader'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { API_BASE_URL, STORAGE_KEYS } from '../config'
 
 const PatientRegister = () => {
 
@@ -35,7 +36,7 @@ const PatientRegister = () => {
 
   const fetchTermsAndConditions = async () => {
     try {
-      const response = await axios.get('https://healtheasy-o25g.onrender.com/user/gettc');
+      const response = await axios.get(`${API_BASE_URL}/user/gettc`);
       const fullText = response.data.Data.patient_tc || 'No terms and conditions available.';
       setTermsContent(fullText);
       // Get first 150 characters for preview
@@ -49,7 +50,7 @@ const PatientRegister = () => {
 
   useEffect(() => {
     fetchTermsAndConditions();
-    var getlocaldata = localStorage.getItem('PatientLogin');
+    var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
     if (getlocaldata) {
       navigate('/patient')
     }
@@ -64,7 +65,7 @@ const PatientRegister = () => {
     setloading(true)
     axios({
       method: 'post',
-      url: 'https://healtheasy-o25g.onrender.com/user/signup',
+      url: `${API_BASE_URL}/user/signup`,
       data: patient
     }).then((res) => {
       toast(res.data.Message, { className: 'custom-toast-success' });
@@ -82,7 +83,7 @@ const PatientRegister = () => {
     setloading(true)
     axios({
       method: 'post',
-      url: 'https://healtheasy-o25g.onrender.com/user/signup/otpverification',
+      url: `${API_BASE_URL}/user/signup/otpverification`,
       data: {
         "email": patient.email,
         "otp": otp

@@ -172,14 +172,14 @@ const SearchBox = () => {
                                                         onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                                                     >
                                                         {item.type === 'surgery' ? (
-                                                            <Link to={`/surgery/${encodeURIComponent(btoa(item.id))}`} className='text-decoration-none d-flex justify-content-between px-2'>
-                                                                <span>{item.name}</span>
-                                                                <span className='text-muted small'>{item.type}</span>
+                                                            <Link to={`/surgery/${encodeURIComponent(btoa(item?.name))}`} className='text-decoration-none d-flex justify-content-between px-2'>
+                                                                <span>{item?.name}</span>
+                                                                <span className='text-muted small'>{item?.type}</span>
                                                             </Link>
                                                         ) : (
-                                                            <Link to={`/doctorprofile/${encodeURIComponent(btoa(item.id))}`} className='text-decoration-none d-flex justify-content-between px-2'>
-                                                                <span>{item.name}</span>
-                                                                <span className='text-muted small'>{item.type}</span>
+                                                            <Link to={`/doctorprofile/${encodeURIComponent(btoa(item?.id))}`} className='text-decoration-none d-flex justify-content-between px-2'>
+                                                                <span>{item?.name}</span>
+                                                                <span className='text-muted small'>{item?.type}</span>
                                                             </Link>
                                                         )}
                                                     </li>

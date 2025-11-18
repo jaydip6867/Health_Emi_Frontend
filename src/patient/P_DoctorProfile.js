@@ -32,9 +32,9 @@ import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 import Swal from "sweetalert2";
 import { TbArrowBadgeRight } from "react-icons/tb";
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const P_DoctorProfile = () => {
-  const SECRET_KEY = "health-emi";
   const [selectedDate, setSelectedDate] = useState(null);
   // const [time, settime] = useState(['9:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM', '5:00 PM', '5:30 PM'])
   // const [chtime, setchtime] = useState('');
@@ -49,7 +49,7 @@ const P_DoctorProfile = () => {
   const [token, settoken] = useState(null);
 
   useEffect(() => {
-    var getlocaldata = localStorage.getItem("PatientLogin");
+    var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
     if (getlocaldata != null) {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -77,7 +77,7 @@ const P_DoctorProfile = () => {
   function getdoctordata() {
     axios({
       method: "post",
-      url: "https://healtheasy-o25g.onrender.com/user/doctors/getone",
+      url: `${API_BASE_URL}/user/doctors/getone`,
       // headers: {
       //     Authorization: token
       // },
@@ -136,7 +136,7 @@ const P_DoctorProfile = () => {
     setloading(true);
     axios({
       method: "post",
-      url: "https://healtheasy-o25g.onrender.com/user/appointments/save",
+      url: `${API_BASE_URL}/user/appointments/save`,
       headers: {
         Authorization: token,
       },

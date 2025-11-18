@@ -7,6 +7,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import NavBar from '../Visitor/Component/NavBar';
 import FooterBar from '../Visitor/Component/FooterBar';
+import { API_BASE_URL } from '../config';
 
 const PatientForgotps = () => {
     var navigate = useNavigate();
@@ -24,11 +25,12 @@ const PatientForgotps = () => {
         setloading(true)
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/forgetpassword',
+            url: `${API_BASE_URL}/user/forgetpassword`,
             data: {
                 "email": email,
             }
         }).then((res) => {
+
             toast('OTP sent To your email...', { className: 'custom-toast-success' })
             // console.log(res)
             setpatient_email(false);
@@ -45,12 +47,13 @@ const PatientForgotps = () => {
     function otpverifydone() {
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/forgetpassword/verifyotp',
+            url: `${API_BASE_URL}/user/forgetpassword/verifyotp`,
             data: {
                 "email": email,
                 "otp": otp
             }
         }).then((res) => {
+
             toast('OTP Verify Successfully...', { className: 'custom-toast-success' })
             console.log(res)
             setpatient_forgt_otp(false);
@@ -64,12 +67,13 @@ const PatientForgotps = () => {
     function resetps() {
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/forgetpassword/setpassword',
+            url: `${API_BASE_URL}/user/forgetpassword/setpassword`,
             data: {
                 "email": email,
                 "password": newps
             }
         }).then((res) => {
+
             Swal.fire({
                 title: 'Password Reset successfully.',
                 icon: 'success',

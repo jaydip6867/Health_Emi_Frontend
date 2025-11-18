@@ -4,9 +4,9 @@ import DoctorNav from './DoctorNav';
 import { Col, Container, Row } from 'react-bootstrap';
 import DoctorSidebar from './DoctorSidebar';
 import CryptoJS from "crypto-js";
+import { SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const DoctorDashboard = () => {
-  const SECRET_KEY = "health-emi";
 
   var navigate = useNavigate();
 
@@ -14,7 +14,7 @@ const DoctorDashboard = () => {
   const [token, settoken] = useState(null)
 
   useEffect(() => {
-    var getlocaldata = localStorage.getItem('healthdoctor');
+    var getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
     if (getlocaldata != null) {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);

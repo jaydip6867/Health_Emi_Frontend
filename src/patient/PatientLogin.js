@@ -9,10 +9,9 @@ import { toast, ToastContainer } from 'react-toastify'
 import axios from 'axios'
 import CryptoJS from "crypto-js";
 import DoctorTestimonial from '../doctor/DoctorTestimonial'
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 
 const PatientLogin = () => {
-
-    const SECRET_KEY = "health-emi";
 
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
@@ -21,12 +20,13 @@ const PatientLogin = () => {
     const [password, setps] = useState('')
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('PatientLogin');
+        var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
         if (getlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
             var data = JSON.parse(decrypted);
         }
+
         if (!data) {
             navigate('/patient')
         }
@@ -40,17 +40,18 @@ const PatientLogin = () => {
         setloading(true)
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/login',
+            url: `${API_BASE_URL}/user/login`,
             data: { "email": email, "password": password }
         }).then((res) => {
             // console.log(res)
             const encrypted = CryptoJS.AES.encrypt(JSON.stringify(res.data.Data), SECRET_KEY).toString();
-            localStorage.setItem('PatientLogin', encrypted)
+            localStorage.setItem(STORAGE_KEYS.PATIENT, encrypted)
             // console.log(encrypted)
             // toast(res.data.Message, { className: 'custom-toast-success' });
             navigate('/')
         }).catch(function (error) {
             console.log(error);
+
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         }).finally(() => {
             setloading(false)

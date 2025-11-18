@@ -11,10 +11,9 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import Loader from '../Loader';
 import CryptoJS from "crypto-js";
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const DoctorLogin = () => {
-
-    const SECRET_KEY = "health-emi";
 
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
@@ -22,7 +21,7 @@ const DoctorLogin = () => {
     // var logindata;
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('healthdoctor');
+        var getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
         if (getlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -55,13 +54,13 @@ const DoctorLogin = () => {
         setloading(true)
         await axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/doctor/login',
+            url: `${API_BASE_URL}/doctor/login`,
             data: frmdoctor
         }).then((res) => {
             const encrypted = CryptoJS.AES.encrypt(JSON.stringify(res.data.Data), SECRET_KEY).toString();
           
             localStorage.setItem('doctor_chanelid', res.data.Data.doctorData.channelid)
-            localStorage.setItem('healthdoctor', encrypted)
+            localStorage.setItem(STORAGE_KEYS.DOCTOR, encrypted)
             // toast('Doctor Login successfully...', { className: 'custom-toast-success' })
             // console.log(res)
             // localStorage.setItem('doctordata', JSON.stringify(res))
