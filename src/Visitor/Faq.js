@@ -4,6 +4,8 @@ import CryptoJS from "crypto-js";
 import NavBar from './Component/NavBar'
 import FooterBar from './Component/FooterBar'
 import { Container, Row, Col, Nav, Accordion } from 'react-bootstrap'
+import { BsEnvelope, BsGlobe } from "react-icons/bs";
+import { MdCall } from 'react-icons/md';
 
 const Faq = () => {
     const SECRET_KEY = "health-emi";
@@ -44,7 +46,7 @@ const Faq = () => {
                 <Container>
                     <Row className='justify-content-center'>
                         <Col lg={12}>
-                            <Nav variant="pills" className="faq-tabs gap-2 mb-4 overflow-auto" activeKey={activeTab} onSelect={(k) => setActiveTab(k)}>
+                            <Nav variant="pills" className="faq-tabs flex-nowrap gap-2 mb-4 overflow-auto" activeKey={activeTab} onSelect={(k) => setActiveTab(k)}>
                                 <Nav.Item>
                                     <Nav.Link className='d-block text-nowrap' eventKey="General Information">General Information</Nav.Link>
                                 </Nav.Item>
@@ -135,7 +137,7 @@ const Faq = () => {
                                 </Accordion>
                             )}
                             {activeTab === 'Healthcare Financing & EMI' && (
-                                <Accordion defaultActiveKey="0"  className='faq-accordion'>
+                                <Accordion defaultActiveKey="0" className='faq-accordion'>
                                     <Accordion.Item eventKey="0">
                                         <Accordion.Header>How does the EMI option work?</Accordion.Header>
                                         <Accordion.Body>
@@ -191,7 +193,7 @@ const Faq = () => {
                                     <Accordion.Item eventKey="1">
                                         <Accordion.Header>What ambulance types are available?</Accordion.Header>
                                         <Accordion.Body>
-                                            <ul className='ps-4' style={{listStyleType: "disc"}}>
+                                            <ul className='ps-4' style={{ listStyleType: "disc" }}>
                                                 <li>BLS (Basic Life Support)</li>
                                                 <li>ALS (Advanced Life Support)</li>
                                                 <li>ICU on Wheels</li>
@@ -223,15 +225,39 @@ const Faq = () => {
                             {activeTab === 'For Hospitals, Clinics & Partners' && (
                                 <Accordion defaultActiveKey="0" className='faq-accordion'>
                                     <Accordion.Item eventKey="0">
-                                        <Accordion.Header>How to partner with Health Easy EMI?</Accordion.Header>
+                                        <Accordion.Header>Can hospitals partner with Health Easy EMI?</Accordion.Header>
                                         <Accordion.Body>
-                                            Share your details via the partner form; our team will reach out for onboarding and integrations.
+                                            Yes. Hospitals can subscribe or list with us to receive patient leads, promote packages, and offer EMI-enabled services.
                                         </Accordion.Body>
                                     </Accordion.Item>
                                     <Accordion.Item eventKey="1">
-                                        <Accordion.Header>Settlement timelines</Accordion.Header>
+                                        <Accordion.Header>What are the benefits of partnering with Health Easy EMI?</Accordion.Header>
                                         <Accordion.Body>
-                                            Standard settlement cycles apply based on service category and commercial terms.
+                                            <ul className='ps-4' style={{listStyleType: 'disc'}}>
+                                                <li>Increased patient inflow</li>
+                                                <li>Faster payment via EMI financing</li>
+                                                <li>Brand visibility across digital platforms</li>
+                                                <li>24 X 7 Ambulance integration</li>
+                                                <li>Data analytics & Marketing Supports </li>
+                                            </ul>
+                                        </Accordion.Body>
+                                    </Accordion.Item>
+                                    <Accordion.Item eventKey="2">
+                                        <Accordion.Header>Do you work with insurance companies?</Accordion.Header>
+                                        <Accordion.Body>
+                                            Yes, we collaborate with insurance providers for policy-linked treatments and cashless claim facilitation.
+                                        </Accordion.Body>
+                                    </Accordion.Item>
+                                    <Accordion.Item eventKey="3">
+                                        <Accordion.Header>How can corporate companies use your services?</Accordion.Header>
+                                        <Accordion.Body>
+                                            We offer employee healthcare tie-ups, on-site ambulance standby, and EMI-based treatment plans for workforce wellness.
+                                        </Accordion.Body>
+                                    </Accordion.Item>
+                                    <Accordion.Item eventKey="4">
+                                        <Accordion.Header>How can diagnostic labs or pharmacies collaborate?</Accordion.Header>
+                                        <Accordion.Body>
+                                            We partner with diagnostic centers, labs, and pharmacies for bulk pricing, referrals, and commission-based collaborations.
                                         </Accordion.Body>
                                     </Accordion.Item>
                                 </Accordion>
@@ -239,15 +265,25 @@ const Faq = () => {
                             {activeTab === 'Data Security & Support' && (
                                 <Accordion defaultActiveKey="0" className='faq-accordion'>
                                     <Accordion.Item eventKey="0">
-                                        <Accordion.Header>Do you provide APIs?</Accordion.Header>
+                                        <Accordion.Header>Is my personal and medical data safe?</Accordion.Header>
                                         <Accordion.Body>
-                                            Sandbox access is available for appointment, financing eligibility, and status webhooks.
+                                            Yes. We follow strict data privacy protocols, encrypted cloud storage, and comply with Indian data protection guidelines.
                                         </Accordion.Body>
                                     </Accordion.Item>
                                     <Accordion.Item eventKey="1">
-                                        <Accordion.Header>How to get credentials?</Accordion.Header>
+                                        <Accordion.Header>What if I face an issue with my booking or payment?</Accordion.Header>
                                         <Accordion.Body>
-                                            Contact our partnerships team to request sandbox keys and documentation.
+                                            You can contact our support team 24×7 through chat, call, or email for instant resolution.
+                                        </Accordion.Body>
+                                    </Accordion.Item>
+                                    <Accordion.Item eventKey="2">
+                                        <Accordion.Header>How can I reach Health Easy EMI for support or partnership?</Accordion.Header>
+                                        <Accordion.Body>
+                                            <ul>
+                                                <li><div className='d-flex align-items-center'><BsEnvelope /><span> Email: dramarskokane@gmail.com </span></div></li>
+                                                <li><div className='d-flex align-items-center'><MdCall /><span> Phone: +91 80871 61522 </span></div></li>
+                                                <li><div className='d-flex align-items-center'><BsGlobe /><span> Website: www.healtheasyemi.com </span></div></li>
+                                            </ul>
                                         </Accordion.Body>
                                     </Accordion.Item>
                                 </Accordion>

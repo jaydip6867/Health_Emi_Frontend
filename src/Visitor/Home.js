@@ -13,6 +13,7 @@ import Speciality from './Component/Speciality'
 import FunctionalitySec from './Component/FunctionalitySec'
 import BestDoctor from './Component/BestDoctor'
 import HeadTitle from './Component/HeadTitle'
+import HomeSlider from './Component/HomeSlider'
 
 const Home = () => {
 
@@ -42,32 +43,8 @@ const Home = () => {
     <>
       <NavBar logindata={patient} />
       {/* search by city and doctor name or surgery */}
-
-      {/* <section>
-        <Container>
-          <div className='banner_sec radius-20'>
-            <Row className='align-items-center'>
-              <Col xs={12} md={6}>
-                <div className='pe-5 head_sec'>
-                  <h1><span>Book an Appointment</span> <br /> for a consultation</h1>
-                  <p>Choose the best deal among 50,000 people and pros by requesting a service!</p>
-                  <Button className="banner_btn my-2">Book Appointment</Button>
-                  <div className='d-flex gap-5 mt-3 text-dark'>
-                    <div><h6>1,00,000+</h6>Doctors</div>
-                    <div><h6>20,000+</h6>Surgeries</div>
-                  </div>
-                </div>
-              </Col>
-              <Col xs={12} md={6}>
-                <img src={require('./assets/banner-img.png')} alt='banner image of health easy emi' />
-              </Col>
-            </Row>
-          </div>
-        </Container>
-      </section> */}
       <section className='position-relative'>
-        {/* <HomeSlider /> */}
-        <img src={require('./assets/main_banner.png')} alt='banner image of health easy emi' />
+        <HomeSlider />
         <section style={{ marginTop: '-22px' }}>
           <SearchBox />
         </section>
@@ -219,7 +196,7 @@ const Home = () => {
 
       {/* App Download Section  */}
       <AppDownload />
-      
+
       <FooterBar />
       {loading ? <Loader /> : ''}
     </>

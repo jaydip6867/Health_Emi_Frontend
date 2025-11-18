@@ -39,7 +39,7 @@ const FooterBar = () => {
                 <Link to="/blog">Blog</Link>
               </li>
               <li>
-                <Link to="/careers">Careers</Link>
+                <Link to="/faq">FAQ</Link>
               </li>
               <li>
                 <Link to="/contact">Contact Us</Link>
@@ -50,16 +50,13 @@ const FooterBar = () => {
             <h4>For Patients</h4>
             <ul>
               <li>
-                <Link to="#">Surgeries</Link>
+                <Link to="/surgery">Surgeries</Link>
               </li>
               <li>
-                <Link to="#">Ambulance</Link>
+                <Link to="/ambulancepage">Ambulance</Link>
               </li>
               <li>
-                <Link to="#">Video Consultant</Link>
-              </li>
-              <li>
-                <Link to="#">Doctor Profile</Link>
+                <Link to="/consult">Video Consultant</Link>
               </li>
             </ul>
           </Col>
@@ -72,11 +69,6 @@ const FooterBar = () => {
               <li>
                 <Link to="#">Terms & Conditions</Link>
               </li>
-              <li>
-                <Link to="#">Return Policy</Link>
-              </li>
-
-
             </ul>
           </Col>
           <Col lg={3} xs={12} className="footer-contact">

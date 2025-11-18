@@ -64,33 +64,12 @@ const NavBar = ({ logindata }) => {
               >
                 Home
               </Link>
-              {/* <Link
-                to="/ambulancepage"
-                className={`nav-link ${isActive('/ambulancepage')}`}
-                onClick={closeNav}
-              >
-                Ambulance
-              </Link> */}
               <Link
                 to="/about"
                 className={`nav-link ${isActive('/about')}`}
                 onClick={closeNav}
               >
                 About Us
-              </Link>
-              <Link
-                to="/services"
-                className={`nav-link ${isActive('/services')}`}
-                onClick={closeNav}
-              >
-                Services
-              </Link>
-              <Link
-                to="/faq"
-                className={`nav-link ${isActive('/faq')}`}
-                onClick={closeNav}
-              >
-                FAQ
               </Link>
               <Link
                 to="/blog"

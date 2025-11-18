@@ -226,55 +226,65 @@ const D_Blog = () => {
         } else {
             setEditImagePreview(null);
         }
+        // Parse existing expiry date (expected dd-mm-yyyy) and set date picker
+        if (datasingle[0]?.expirydate) {
+            try {
+                const parts = String(datasingle[0].expirydate).split('-');
+                if (parts.length === 3) {
+                    const d = parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10) - 1;
+                    const y = parseInt(parts[2], 10);
+                    const parsed = new Date(y, m, d);
+                    if (!isNaN(parsed)) setStartDate(parsed);
+                }
+            } catch (e) {
+                setStartDate(null);
+            }
+        } else {
+            setStartDate(null);
+        }
         setEditSelectedImage(null);
         edithandleShow()
         // console.log(datasingle[0])
     }
-    const [startDate, setStartDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(null);
 
     async function editblog() {
         setloading(true)
-        // console.log(edit_record)
+        console.log(edit_record)
         try {
-            // Upload new image if selected
-            let imageUrl = edit_record?.image || '';
+            // Decide image URL: keep existing unless a new file is selected
+            let imageUrl = edit_record?.oldImage || edit_record?.image || '';
             if (editSelectedImage) {
-                if (
-                    edit_record.oldImage !== ''
-                ) {
-                    if (edit_record.image) {
-                        try {
-                            await axios({
-                                method: "post",
-                                url: "https://healtheasy-o25g.onrender.com/user/upload/removeimage",
-                                headers: {
-                                    Authorization: token,
-                                    "Content-Type": "application/json"
-                                },
-                                data: { path: edit_record.oldImage }
-                            });
-                        } catch (error) {
-                        }
-                    }
+                // Remove old image if exists (best-effort)
+                if (edit_record.oldImage) {
+                    try {
+                        await axios({
+                            method: "post",
+                            url: "https://healtheasy-o25g.onrender.com/user/upload/removeimage",
+                            headers: {
+                                Authorization: token,
+                                "Content-Type": "application/json"
+                            },
+                            data: { path: edit_record.oldImage }
+                        });
+                    } catch (error) { }
                 }
-
-
+                const uploadedUrl = await uploadImage(editSelectedImage);
+                if (!uploadedUrl) {
+                    setloading(false)
+                    return; // Stop if image upload failed
+                }
+                imageUrl = uploadedUrl;
             }
-            const uploadedUrl = await uploadImage(editSelectedImage);
-            if (!uploadedUrl) {
-                setloading(false)
-                return; // Stop if image upload failed
+
+            // Expiry date handling
+            let expiryOut = edit_record?.expirydate || '';
+            if (startDate) {
+                const date = new Date(startDate);
+                const formattedDate = date.toLocaleDateString("en-GB").replace(/\//g, "-");
+                expiryOut = (formattedDate === '01-01-1970') ? '' : formattedDate;
             }
-            imageUrl = uploadedUrl;
-
-
-            const data = { ...edit_record, expirydate: startDate, image: imageUrl }
-            const date = new Date(data?.expirydate);
-            const formattedDate = date?.toLocaleDateString("en-GB"); // Gives dd/mm/yyyy
-            // Replace slashes with dashes
-            data.expirydate = formattedDate.replace(/\//g, "-");
-
-            // console.log(data)
 
             const response = await axios({
                 method: 'post',
@@ -283,12 +293,12 @@ const D_Blog = () => {
                     Authorization: token,
                 },
                 data: {
-                    blogid: data?._id,
-                    title: data?.title,
-                    description: data?.description,
-                    showto_doctor: data?.showto_doctor,
-                    showto_patient: data?.showto_patient,
-                    expirydate: data?.expirydate,
+                    blogid: edit_record?._id,
+                    title: edit_record?.title,
+                    description: edit_record?.description,
+                    showto_doctor: edit_record?.showto_doctor,
+                    showto_patient: edit_record?.showto_patient,
+                    expirydate: expiryOut,
                     image: imageUrl
                 }
             });
@@ -304,7 +314,6 @@ const D_Blog = () => {
             edithandleClose()
 
         } catch (error) {
-            // console.log(error);
             toast(error.response?.data?.Message || error.message, { className: 'custom-toast-error' })
         } finally {
             setloading(false)
@@ -617,13 +626,13 @@ const D_Blog = () => {
                                     <Form.Group controlId="title" className='mb-3'>
                                         <div>
                                             <Form.Label>Title</Form.Label>
-                                            <Form.Control placeholder="Ex:- What is Tomato Flu: Symptoms, Causes, Treatment & Preventive Tips" name="title" value={edit_record.title} onChange={(e) => setblog({ ...edit_record, title: e.target.value })} />
+                                            <Form.Control placeholder="Ex:- What is Tomato Flu: Symptoms, Causes, Treatment & Preventive Tips" name="title" value={edit_record.title} onChange={(e) => seteditrecord({ ...edit_record, title: e.target.value })} />
                                         </div>
                                     </Form.Group>
                                     <Form.Group controlId="description" className='mb-3'>
                                         <div>
                                             <Form.Label>Description</Form.Label>
-                                            <Form.Control as="textarea" placeholder="The ‘new’ virus, tomato flu, is a variant of already existing hand, " name="description" value={edit_record.description} onChange={(e) => setblog({ ...edit_record, description: e.target.value })} />
+                                            <Form.Control as="textarea" placeholder="The ‘new’ virus, tomato flu, is a variant of already existing hand, " name="description" value={edit_record.description} onChange={(e) => seteditrecord({ ...edit_record, description: e.target.value })} />
                                         </div>
                                     </Form.Group>
                                     <Form.Group controlId="expirydate" className='mb-3'>
@@ -650,7 +659,6 @@ const D_Blog = () => {
                                                 const file = e.target.files[0];
                                                 if (file) {
                                                     setEditSelectedImage(file);
-                                                    seteditrecord({ ...edit_record, image: file });
                                                     const reader = new FileReader();
                                                     reader.onload = (e) => {
                                                         setEditImagePreview(e.target.result);

@@ -36,7 +36,7 @@ const FunctionalitySec = () => {
                         <Card className='functionality_box'>
                             <Card.Img src={require('../assets/book-ambulance-image.png')} alt='video consultant' />
                             <Card.Body>
-                                <Card.Title>Book Ambulance <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Card.Title>
+                                <Card.Title><Link to='/ambulancepage' className='d-flex align-items-center w-100 justify-content-between'>Book Ambulance <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
                             </Card.Body>
                         </Card>
                     </Col>

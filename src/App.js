@@ -45,6 +45,7 @@ import D_StatusAmbulance from './doctor/D_StatusAmbulance';
 import AmbulancePage from './Visitor/AmbulancePage';
 import Faq from './Visitor/Faq';
 import Blog from './Visitor/Blog';
+import BlogDetail from './Visitor/BlogDetail';
 function App() {
   return (
     <div className="App">
@@ -61,6 +62,7 @@ function App() {
         <Route path='/ambulancepage' element={<AmbulancePage />}></Route>
         <Route path='/faq' element={<Faq />}></Route>
         <Route path='/blog' element={<Blog />}></Route>
+        <Route path='/blog/:id' element={<BlogDetail />}></Route>
         <Route path='/doctor'>
           <Route path='' index element={<DoctorLogin />}></Route>
           <Route path='doctorregister' element={<DoctorRegister />}></Route>

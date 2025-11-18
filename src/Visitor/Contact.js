@@ -34,9 +34,8 @@ const Contact = () => {
             <NavBar logindata={patient} />
             {/* breadcrumb section */}
             <section className='breadcrumb_Sec'>
-                <Container>
-                    <h2>Contact us</h2>
-                    <h4>Have questions about our products, support services, or anything else? Let us know and we’ll get back to you.</h4>
+                <Container className='text-center '>
+                    <h2>Contact Us</h2>
                 </Container>
             </section>
             {/* contact form */}

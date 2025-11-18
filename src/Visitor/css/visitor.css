@@ -846,20 +846,20 @@ h6 {
 }
 
 /* Custom Scrollbar for Webkit Browsers */
-::-webkit-scrollbar {
+body::-webkit-scrollbar {
     width: 8px;
 }
 
-::-webkit-scrollbar-track {
+body::-webkit-scrollbar-track {
     background: #f1f1f1;
 }
 
-::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb {
     background: #0084E9;
     border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+body::-webkit-scrollbar-thumb:hover {
     background: #006cbe;
 }
 
@@ -1865,6 +1865,25 @@ h6 {
 }
 
 /* ======================== FAQ Tabs & Accordion ======================== */
+.faq-tabs::-webkit-scrollbar {
+    height: 4px;
+}
+
+.faq-tabs::-webkit-scrollbar-track {
+    background: var(--grayscale-color-100);
+}
+
+.faq-tabs::-webkit-scrollbar-thumb {
+    background: var(--primary-color-400);
+    border-radius: 4px;
+}
+
+.faq-tabs::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color-500);
+}
+.faq-tabs{
+    padding-bottom: 12px;
+}
 .faq-tabs .nav-link {
     border-radius: 999px !important;
     border: 1px solid var(--grayscale-color-200) !important;
@@ -1940,6 +1959,18 @@ h6 {
     width: 24px;
     height: 24px;
     border-radius: 50%;
+    object-fit: cover;
+}
+.blog_expired{
+    padding: 8px 16px;
+    background-color: var(--primary-color-50);
+    border-radius: 8px;
+    display: inline-block;
+    color: var(--grayscale-color-900);
+}
+.blog_expired span{
+    color: var(--grayscale-color-800);
+    font-size: 12px;
 }
 .blog .card-title{
     font-size: 18px;
@@ -1961,4 +1992,17 @@ h6 {
 .blog .card-img-top{
     height: 150px;
     object-fit: cover;
+}
+
+.blog_search_bar input{
+    width: 100%;
+    border-radius: 5rem;
+    border: 1px solid var(--primary-color-500);
+    color: var(--grayscale-color-800);
+    background-color: var(--primary-color-50);
+    padding: 8px 24px;
+    padding-left: 40px;
+}
+.blog_search_bar input:focus{
+    outline: none;
 }
