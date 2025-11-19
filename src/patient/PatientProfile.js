@@ -114,12 +114,12 @@ const PatientProfile = () => {
     return (
         <>
         <NavBar logindata={patient} />
-            <Container fluid className='p-0 panel'>
-                <Row className='g-0'>
+            <Container>
+                <Row>
                     <P_Sidebar />
-                    <Col xs={12} md={10} className='p-3'>
+                    <Col xs={12} md={9} className='p-3'>
                         {/* <P_nav patientname={patient && patient.name} /> */}
-                        <div className='bg-white rounded p-3'>
+                        <div className='bg-white rounded p-3 pt-4'>
                             <h4>Patient Profile</h4>
 
                             {

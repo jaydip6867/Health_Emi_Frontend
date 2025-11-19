@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Col, Dropdown, Row } from 'react-bootstrap';
+import { Col, Dropdown, Row } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 
 const P_nav = (name) => {
@@ -19,8 +19,6 @@ const P_nav = (name) => {
 
                                 <Dropdown.Menu>
                                     <Link to={'/patient/patientprofile'} className='text-decoration-none d-block text-center p-2 profile_nav'>Profile</Link>
-                                    <Button className='btn-navbar' onClick={() => (localStorage.removeItem('PatientLogin'), navigate('/patient'))}>Logout</Button>
-
                                 </Dropdown.Menu>
                             </Dropdown>
                         </Col>

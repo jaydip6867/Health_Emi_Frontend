@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Loader from '../Loader'
 import { Button, Card, Col, Container, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 import P_Sidebar from './P_Sidebar'
@@ -8,7 +8,10 @@ import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import SmartDataTable from '../components/SmartDataTable'
-import { MdOutlineRemoveRedEye, MdDownload, MdVisibility } from 'react-icons/md'
+import { BsCameraVideo, BsClipboard } from 'react-icons/bs'
+import { PiHospital } from "react-icons/pi";
+import { HiOutlineHome } from "react-icons/hi";
+import { MdOutlineRemoveRedEye, MdDownload, MdVisibility, MdOutlineAccessTime, MdVerified } from 'react-icons/md'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 
 const P_Appointment = () => {
@@ -45,6 +48,7 @@ const P_Appointment = () => {
     }, [patient])
 
     const [appoint_data, setappoint] = useState(null)
+    const [activeTab, setActiveTab] = useState('Pending')
 
     function getappointments(d) {
         axios({
@@ -54,7 +58,7 @@ const P_Appointment = () => {
                 Authorization: token
             }
         }).then((res) => {
-            // console.log('appointment = ', res.data.Data.docs);
+            console.log('appointment = ', res.data.Data.docs);
             setappoint(res.data.Data.docs)
         }).catch(function (error) {
             console.log(error);
@@ -97,73 +101,28 @@ const P_Appointment = () => {
         return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     };
 
-    // Get status badge styling
+    // Get status badge styling (using CSS variables)
     const getStatusBadge = (status) => {
         const statusConfig = {
-            'Accept': { bg: '#10B981', text: 'Accepted', dot: '#10B981' },
-            'Pending': { bg: '#F59E0B', text: 'Pending', dot: '#F59E0B' },
-            'Cancel': { bg: '#EF4444', text: 'Cancelled', dot: '#EF4444' },
-            'Discharged': { bg: '#10B981', text: 'Discharged', dot: '#10B981' },
-            'Ext. hospitalization': { bg: '#F97316', text: 'Ext. hospitalization', dot: '#F97316' },
-            'Unavailable': { bg: '#6B7280', text: 'Unavailable', dot: '#6B7280' },
-            'Surgical intervention': { bg: '#8B5CF6', text: 'Surgical intervention', dot: '#8B5CF6' },
-            'In surgery': { bg: '#EAB308', text: 'In surgery', dot: '#EAB308' },
-            'Expected hospital stay': { bg: '#8B5CF6', text: 'Expected hospital stay', dot: '#8B5CF6' }
+            'Accept': { bg: 'var(--primary-color-600)', text: 'Accepted', dot: 'var(--primary-color-600)' },
+            'Pending': { bg: 'var(--secondary-color-600)', text: 'Pending', dot: 'var(--secondary-color-600)' },
+            'Cancel': { bg: 'var(--grayscale-color-700)', text: 'Cancelled', dot: 'var(--grayscale-color-700)' },
+            'Completed': { bg: 'var(--tertary-color-600)', text: 'Completed', dot: 'var(--tertary-color-600)' },
         };
-        return statusConfig[status] || { bg: '#6B7280', text: status, dot: '#6B7280' };
+        return statusConfig[status] || { bg: 'var(--grayscale-color-500)', text: status, dot: 'var(--grayscale-color-500)' };
     };
 
-    // Custom table styles
+    // Appointment type pill
+    const getTypePill = (type) => {
+        const t = (type || '').toLowerCase()
+        if (t.includes('clinic')) return { label: 'Clinic Visit', cls: 'badge-type badge-type--clinic', icon: <PiHospital size={16} /> }
+        if (t.includes('home')) return { label: 'Home Visit', cls: 'badge-type badge-type--home', icon: <HiOutlineHome size={16} /> }
+        return { label: type || 'EOPD', cls: 'badge-type badge-type--eopd', icon: <BsCameraVideo size={16} /> }
+    }
+
+    // Minimal table inline styles; visuals handled in CSS
     const customTableStyles = {
-        table: {
-            style: {
-                backgroundColor: '#ffffff',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
-            },
-        },
-        headCells: {
-            style: {
-                fontSize: '14px',
-                fontWeight: '600',
-                backgroundColor: '#F9FAFB',
-                color: '#374151',
-                borderBottom: '1px solid #E5E7EB',
-                paddingTop: '16px',
-                paddingBottom: '16px',
-                paddingLeft: '16px',
-                paddingRight: '16px',
-            },
-        },
-        rows: {
-            style: {
-                borderBottom: '1px solid #F3F4F6',
-                '&:hover': {
-                    backgroundColor: '#F9FAFB',
-                    cursor: 'pointer'
-                },
-                '&:last-child': {
-                    borderBottom: 'none'
-                }
-            },
-        },
-        cells: {
-            style: {
-                paddingTop: '16px',
-                paddingBottom: '16px',
-                paddingLeft: '16px',
-                paddingRight: '16px',
-                fontSize: '14px',
-                color: '#374151'
-            },
-        },
-        pagination: {
-            style: {
-                borderTop: '1px solid #E5E7EB',
-                backgroundColor: '#F9FAFB'
-            }
-        }
+        table: { backgroundColor: 'transparent', borderRadius: 0, boxShadow: 'none' }
     };
 
     const renderTooltip = (label) => (props) => (
@@ -176,105 +135,63 @@ const P_Appointment = () => {
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
-        maxWidth: '80px',
-        minWidth: '80px',
-        width: '80px',
+        cell: (row, index) => (<span className="appt-index">{index + 1}</span>),
+        maxWidth: '40px',
+        minWidth: '40px',
+        width: '40px',
+        center: true,
     }, {
         name: 'Doctor Name',
         selector: row => row.doctorid?.name || '',
         cell: row => (
             <div className="d-flex align-items-center text-truncate gap-3">
-                <div
-                    className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-                    style={{
-                        width: '40px',
-                        height: '40px',
-                        minWidth: '40px',
-                        backgroundColor: '#6366F1',
-                        fontSize: '14px'
-                    }}
-                >
-                    {getInitials(row.doctorid?.name)}
-                </div>
-                <span className="fw-medium" style={{ color: '#111827' }}>{row.doctorid?.name}</span>
+                <img
+                    src={row.doctorid?.profile_pic}
+                    className="rounded-circle appt-avatar"
+                />
+                <span className="fw-semibold appt-doctor-name">{row.doctorid?.name} <span className="verified"><MdVerified size={16} /></span></span>
             </div>
         ),
     },
     {
         name: 'Reason',
         selector: row => row.appointment_reason || '',
-        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.appointment_reason}</span>,
+        cell: row => (
+            <div className="d-flex align-items-center gap-2 text-muted small">
+                <BsClipboard size={16} className="text-muted" />
+                <span className="text-truncate" style={{ maxWidth: 280 }}>{row.appointment_reason}</span>
+            </div>
+        ),
     },
     {
         name: 'Date & Time',
         selector: row => `${row.date || ''} ${row.time || ''}`,
-        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{`${row.date} , ${row.time}`}</span>,
-    },
-    {
-        name: 'Status',
-        selector: row => row.status || '',
-        cell: row => {
-            const statusInfo = getStatusBadge(row.status);
-            return (
-                <div className="d-flex align-items-center gap-2">
-                    <div
-                        className="rounded-circle"
-                        style={{
-                            width: '8px',
-                            height: '8px',
-                            backgroundColor: statusInfo.dot
-                        }}
-                    ></div>
-                    <span style={{ color: '#6B7280', fontSize: '14px' }}>
-                        {statusInfo.text}
-                    </span>
-                </div>
-            );
-        },
-        width: '120px',
+        cell: row => (
+            <div className="d-flex align-items-center gap-2 text-muted small">
+                <MdOutlineAccessTime size={16} className="text-muted" />
+                <span>{`${row.date} , ${row.time}`}</span>
+            </div>
+        ),
     },
     {
         name: 'Type',
         selector: row => row.visit_types || '',
-        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.visit_types}</span>,
+        cell: row => {
+            const t = getTypePill(row.visit_types)
+            return (
+                <span className={t.cls}>
+                    {t.icon}
+                    {t.label}
+                </span>
+            )
+        },
     },
-    // {
-    //     name: 'Payment Status',
-    //     selector: row => row.payment_status || '',
-    //     cell: row => {
-    //         const statusInfo = getStatusBadge(row.payment_status);
-    //         return (
-    //             <div className="d-flex align-items-center gap-2">
-    //                 <div
-    //                     className="rounded-circle"
-    //                     style={{
-    //                         width: '8px',
-    //                         height: '8px',
-    //                         backgroundColor: statusInfo.dot
-    //                     }}
-    //                 ></div>
-    //                 <span style={{ color: '#6B7280', fontSize: '14px' }}>
-    //                     {statusInfo.text}
-    //                 </span>
-    //             </div>
-    //         );
-    //     },
-    //     width: '150px',
-    // },
     {
         name: 'View',
         cell: row => (
             <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
                 <button
-                    className="btn btn-sm p-1"
-                    style={{
-                        border: 'none',
-                        backgroundColor: 'transparent',
-                        color: '#6366F1',
-                        borderRadius: '6px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#F3F4F6'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                    className="btn btn-sm p-1 appt-view-btn"
                     onClick={() => btnview(row._id)}
                 >
                     <MdOutlineRemoveRedEye size={18} />
@@ -284,17 +201,49 @@ const P_Appointment = () => {
         width: '80px',
         center: true
     }]
+
+    // Filter by status based on active tab
+    const filteredData = useMemo(() => {
+        if (!appoint_data) return []
+        const map = {
+            'Pending': ['Pending'],
+            'Accepted': ['Accept'],
+            'Completed': ['Completed'],
+            'Cancelled': ['Cancel']
+        }
+        const allowed = map[activeTab] || []
+        return appoint_data.filter(r => allowed.includes(r.status))
+    }, [appoint_data, activeTab])
+
+    const counts = useMemo(() => {
+        const c = { Pending: 0, Accepted: 0, Completed: 0, Cancelled: 0 }
+        ;(appoint_data || []).forEach(r => {
+            if (r.status === 'Pending') c.Pending++
+            else if (r.status === 'Accept') c.Accepted++
+            else if (r.status === 'Completed') c.Completed++
+            else if (r.status === 'Cancel') c.Cancelled++
+        })
+        return c
+    }, [appoint_data])
     return (
         <>
             <NavBar logindata={patient} />
-            <Container fluid className='p-0 panel'>
-                <Row className='g-0'>
+            <Container>
+                <Row>
                     <P_Sidebar />
-                    <Col xs={12} md={10} className='p-3'>
+                    <Col xs={12} md={9} className='p-3'>
                         {/* <P_nav patientname={patient && patient.name} /> */}
-                        <div className='bg-white rounded p-3 mb-3'>
-                            <h5 className='mb-3'>All Appointments</h5>
-                            <SmartDataTable columns={columns} data={appoint_data ? appoint_data : []} pagination customStyles={customTableStyles} />
+                        <div className='appointments-card p-3 mb-3'>
+                            <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3'>
+                                <h4 className='mb-0'>Consultation Appointments</h4>
+                            </div>
+                            <div className='appt-tabs d-flex gap-2 mb-3 flex-wrap'>
+                                <button type='button' className={`appt-tab ${activeTab === 'Pending' ? 'active' : ''}`} onClick={() => setActiveTab('Pending')}>Pending <span className='count'>{counts.Pending}</span></button>
+                                <button type='button' className={`appt-tab ${activeTab === 'Accepted' ? 'active' : ''}`} onClick={() => setActiveTab('Accepted')}>Accepted <span className='count'>{counts.Accepted}</span></button>
+                                <button type='button' className={`appt-tab ${activeTab === 'Completed' ? 'active' : ''}`} onClick={() => setActiveTab('Completed')}>Completed <span className='count'>{counts.Completed}</span></button>
+                                <button type='button' className={`appt-tab ${activeTab === 'Cancelled' ? 'active' : ''}`} onClick={() => setActiveTab('Cancelled')}>Cancelled <span className='count'>{counts.Cancelled}</span></button>
+                            </div>
+                            <SmartDataTable className="appointments-table" columns={columns} data={filteredData} pagination customStyles={customTableStyles} />
                         </div>
                     </Col>
                 </Row>

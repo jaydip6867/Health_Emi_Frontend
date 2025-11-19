@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react'
+import { CiSearch } from "react-icons/ci";
 
 const pageSizes = [5, 10, 20, 50]
 
-const SmartDataTable = ({ columns = [], data = [], pagination = true, customStyles = {} }) => {
+const SmartDataTable = ({ columns = [], data = [], pagination = true, customStyles = {}, className = '' }) => {
   const [filterText, setFilterText] = useState('')
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
   const [page, setPage] = useState(1)
@@ -103,20 +104,23 @@ const SmartDataTable = ({ columns = [], data = [], pagination = true, customStyl
   }
 
   return (
-    <div style={styles.table} className="w-100">
-      <div className="d-flex justify-content-between align-items-center px-3 py-2" style={{ borderBottom: '1px solid #E5E7EB' }}>
+    <div style={styles.table} className={`w-100 ${className}`}>
+      <div className="d-flex justify-content-between align-items-center px-3 py-2 sdt-toolbar" style={{ borderBottom: '1px solid #E5E7EB' }}>
         <div className="small text-muted">Showing {pagination ? `${start + 1}-${Math.min(end, total)} of ${total}` : total}</div>
-        <input
+        <div className='position-relative'>
+          <input
           type="text"
-          className="form-control"
+          className="form-control search_input"
           placeholder="Search..."
           value={filterText}
           onChange={(e) => { setFilterText(e.target.value); setPage(1) }}
           style={{ maxWidth: 240 }}
         />
+        <CiSearch className="position-absolute top-50 translate-middle-y" style={{left: 8}} size={20}/>
+        </div>
       </div>
       <div className="table-responsive">
-        <table className="table mb-0" style={{ tableLayout: 'auto' }}>
+        <table className="table mb-0 sdt-table" style={{ tableLayout: 'auto' }}>
           <thead style={styles.head}>
             <tr>
               {normalizedColumns.map((col, i) => (
@@ -156,7 +160,7 @@ const SmartDataTable = ({ columns = [], data = [], pagination = true, customStyl
         </table>
       </div>
       {pagination && (
-        <div className="d-flex justify-content-between align-items-center px-3 py-2" style={{ borderTop: '1px solid #E5E7EB', backgroundColor: '#F9FAFB' }}>
+        <div className="d-flex justify-content-between align-items-center px-3 py-2 sdt-pagination" style={{ borderTop: '1px solid #E5E7EB', backgroundColor: '#F9FAFB' }}>
           <div className="d-flex align-items-center gap-2">
             <span className="small text-muted">Rows per page</span>
             <select className="form-select form-select-sm" style={{ width: 80 }} value={pageSize} onChange={(e) => { setPageSize(parseInt(e.target.value)); setPage(1) }}>

@@ -2028,3 +2028,197 @@ body::-webkit-scrollbar-thumb:hover {
     background: var(--primary-gradient) !important;
     color: var(--white) !important;
 }
+
+/* patient sidebar css */
+.patient_side_height{
+    height: 100%;
+    border: 1px solid var(--grayscale-color-200);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.logout-btn{
+    background-color: transparent;
+    border: 0;
+    color: var(--primary-color-950);
+    font-weight: 700;
+    padding: 10px;
+    text-align: left;
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid var(--grayscale-color-50);
+    border-radius: 0;
+}
+.logout-btn:hover{
+    color: var(--primary-color-700);
+    background-color: transparent;
+    color: var(--primary-color-950);
+    box-shadow: none;
+    border-color: var(--grayscale-color-50);
+}
+
+/* ======================== PATIENT APPOINTMENTS (P_Appointment) ======================== */
+.appointments-card {
+    /* background: var(--white); */
+}
+
+/* Tabs (Pending | Accepted | Completed | Cancelled) */
+.appt-tabs { gap: 8px; }
+.appt-tab {
+    appearance: none;
+    border: 1px solid var(--grayscale-color-200);
+    background: var(--white);
+    color: var(--grayscale-color-800);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1;
+}
+.appt-tab .count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    padding: 2px 8px;
+    min-width: 24px;
+    height: 22px;
+    border-radius: 999px;
+    background: var(--grayscale-color-50);
+    border: 1px solid var(--grayscale-color-100);
+    color: var(--grayscale-color-700);
+    font-weight: 800;
+    font-size: 12px;
+}
+.appt-tab.active {
+    background: var(--primary-gradient);
+    border-color: var(--primary-color-200);
+    color: var(--white);
+}
+.appt-tab.active .count {
+    background: var(--white);
+    border-color: var(--primary-color-200);
+    color: var(--primary-color-700);
+}
+
+/* SmartDataTable skin for appointments */
+.appointments-table .sdt-toolbar {
+    background: transparent;
+}
+.appointments-table .sdt-toolbar .form-control {
+    background: var(--white);
+    border: 1px solid var(--grayscale-color-200);
+    border-radius: 999px;
+    padding-left: 14px;
+}
+
+.appointments-table .sdt-table {
+    border-collapse: separate !important;
+    border-spacing: 0 12px !important; /* row gaps */
+}
+.appointments-table .sdt-table thead th {
+    background: #f3f6fa !important;
+    color: var(--grayscale-color-800) !important;
+    border-bottom: 1px solid var(--grayscale-color-100) !important;
+}
+
+/* Rounded, elevated rows */
+.appointments-table .sdt-table tbody tr td {
+    background: var(--white);
+    border-top: 1px solid var(--grayscale-color-100);
+    border-bottom: 1px solid var(--grayscale-color-100);
+}
+.appointments-table .sdt-table tbody tr td:first-child {
+    border-left: 1px solid var(--grayscale-color-100);
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+.appointments-table .sdt-table tbody tr td:last-child {
+    border-right: 1px solid var(--grayscale-color-100);
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+/* Hover state for rows */
+.appointments-table .sdt-table tbody tr:hover td {
+    background: var(--primary-color-50);
+}
+
+/* Index chip */
+.appt-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--grayscale-color-800);
+    font-weight: 700;
+}
+
+/* Avatar + Name */
+.appt-avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    object-fit: cover;
+}
+.appt-doctor-name {
+    color: var(--grayscale-color-900);
+}
+.appt-doctor-name .verified {
+    color: var(--secondary-color-700);
+}
+
+/* Appointment Type Pills */
+.badge-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 12px;
+    border: 1px solid transparent;
+}
+.badge-type svg { opacity: .9; }
+.badge-type--eopd {
+    color: #0f766e;
+    background: var(--tertary-color-50);
+    border-color: var(--tertary-color-200);
+}
+.badge-type--clinic {
+    color: var(--grayscale-color-800);
+    background: var(--grayscale-color-50);
+    border-color: var(--grayscale-color-100);
+}
+.badge-type--home {
+    color: #b91c1c;
+    background: #fdecec;
+    border-color: #facdcd;
+}
+
+/* View icon button */
+.appt-view-btn {
+    border: 1px solid var(--grayscale-color-200);
+    background: var(--white);
+    color: var(--grayscale-color-800);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.appt-view-btn:hover { background: var(--primary-color-50); border-color: var(--primary-color-200); color: var(--primary-color-700); }
+
+/* Pagination strip */
+.appointments-table .sdt-pagination {
+    background: #f3f6fa !important;
+}
+.search_input{
+    background: var(--primary-color-50)!important;
+    border: 1px solid var(--primary-color-600)!important;
+    color: var(--grayscale-color-800)!important;
+    padding-left: 30px !important;
+}
