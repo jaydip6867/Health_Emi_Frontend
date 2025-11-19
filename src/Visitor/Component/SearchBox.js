@@ -6,6 +6,7 @@ import { Col, Container, Form, Row } from 'react-bootstrap';
 import { FiMapPin, FiSearch } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import Loader from '../../Loader';
+import { API_BASE_URL } from '../../config';
 
 const SearchBox = () => {
     const [loading, setloading] = useState(false)
@@ -38,7 +39,7 @@ const SearchBox = () => {
 
         await axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/suggestions',
+            url: `${API_BASE_URL}/user/suggestions`,
             data: {
                 "search": n,
                 "state": selectedStateName,

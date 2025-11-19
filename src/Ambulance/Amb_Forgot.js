@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import Loader from '../Loader';
+import { API_BASE_URL } from '../config';
 
 const Amb_Forgot = () => {
 
@@ -26,7 +27,7 @@ const Amb_Forgot = () => {
         setloading(true)
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/ambulance/forgetpassword',
+            url: `${API_BASE_URL}/ambulance/forgetpassword`,
             data: {
                 "email": email,
             }
@@ -47,7 +48,7 @@ const Amb_Forgot = () => {
     function otpverifydone() {
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/ambulance/forgetpassword/verifyotp',
+            url: `${API_BASE_URL}/ambulance/forgetpassword/verifyotp`,
             data: {
                 "email": email,
                 "otp": otp
@@ -66,7 +67,7 @@ const Amb_Forgot = () => {
     function resetps() {
         axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/ambulance/forgetpassword/setpassword',
+            url: `${API_BASE_URL}/ambulance/forgetpassword/setpassword`,
             data: {
                 "email": email,
                 "password": newps

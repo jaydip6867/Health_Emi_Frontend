@@ -14,9 +14,9 @@ import {
 import Amb_Sidebar from "./Amb_Sidebar";
 import Amb_Nav from "./Amb_Nav";
 import axios from "axios";
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from "../config";
 
 const Amb_Profile = () => {
-  const SECRET_KEY = "health-emi";
   const navigate = useNavigate();
   const [ambulance, setAmbulance] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ const Amb_Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const getlocaldata = localStorage.getItem("healthambulance");
+        const getlocaldata = localStorage.getItem(STORAGE_KEYS.AMBULANCE);
         if (!getlocaldata) {
           navigate("/ambulance");
           return;
@@ -40,14 +40,11 @@ const Amb_Profile = () => {
           return;
         }
 
-        const response = await axios.get(
-          "https://healtheasy-o25g.onrender.com/ambulance/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${data.accessToken}`,
-            },
-          }
-        );
+        const response = await axios.get(`${API_BASE_URL}/ambulance/profile`, {
+          headers: {
+            Authorization: `Bearer ${data.accessToken}`,
+          },
+        });
 
         setAmbulance(response.data.Data);
         setLoading(false);

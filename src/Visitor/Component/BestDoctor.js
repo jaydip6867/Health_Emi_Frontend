@@ -4,6 +4,7 @@ import axios from 'axios'
 import Loader from '../../Loader'
 import DoctorListComponents from './DoctorListComponent'
 import HeadTitle from './HeadTitle'
+import { API_BASE_URL } from '../../config'
 
 const BestDoctor = () => {
     const [doclist, setdoclist] = useState([])
@@ -12,7 +13,7 @@ const BestDoctor = () => {
         setloading(true)
         await axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/doctors/list',
+            url: `${API_BASE_URL}/user/doctors/list`,
             data: {
                 surgerytypeid: d
             }

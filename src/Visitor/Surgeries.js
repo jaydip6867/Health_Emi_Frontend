@@ -7,16 +7,16 @@ import axios from 'axios'
 import CryptoJS from "crypto-js";
 import { Link, useNavigate } from 'react-router-dom';
 import defaultSurgeryIcon from '../assets/image/consultant.png'
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const Surgeries = () => {
-    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
 
     const [patient, setpatient] = useState(null)
     const [token, settoken] = useState(null)
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('PatientLogin');
+        var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
         let data = null;
         if (getlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
@@ -56,7 +56,7 @@ const Surgeries = () => {
     const getsurgerydata = async (q = '') => {
         await axios({
             method: 'post',
-            url: 'https://healtheasy-o25g.onrender.com/user/surgeries/list',
+            url: `${API_BASE_URL}/user/surgeries/list`,
             data: {
                 "search": q
             }

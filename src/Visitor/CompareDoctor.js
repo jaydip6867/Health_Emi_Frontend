@@ -7,9 +7,9 @@ import axios from 'axios'
 import Loader from '../Loader'
 import CryptoJS from "crypto-js";
 import { Link, useNavigate } from 'react-router-dom';
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const CompareDoctor = () => {
-    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
 
     const [patient, setpatient] = useState(null)
@@ -21,7 +21,7 @@ const CompareDoctor = () => {
     const [selectedDoctors, setSelectedDoctors] = useState([]) // store selected doctor objects (max 2)
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('PatientLogin');
+        var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
         if (getlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -40,7 +40,7 @@ const CompareDoctor = () => {
             try {
                 const res = await axios({
                     method: 'post',
-                    url: 'https://healtheasy-o25g.onrender.com/doctor/surgerytypes/list',
+                    url: `${API_BASE_URL}/doctor/surgerytypes/list`,
                 })
                 // Be resilient to both shapes: { Data: [...] } or { Data: { docs: [...] } }
                 const list = res.data.Data
@@ -63,7 +63,7 @@ const CompareDoctor = () => {
             try {
                 const res = await axios({
                     method: 'post',
-                    url: 'https://healtheasy-o25g.onrender.com/user/doctors/list',
+                    url: `${API_BASE_URL}/user/doctors/list`,
                     data: { surgerytypeid: selectedSurgery }
                 })
                 setDoctors(res?.data?.Data || [])

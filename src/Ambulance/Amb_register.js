@@ -8,6 +8,7 @@ import "../Visitor/css/visitor.css";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 
 const Amb_register = () => {
   const navigate = useNavigate();
@@ -121,7 +122,7 @@ const Amb_register = () => {
 
   const fetchTermsAndConditions = async () => {
     try {
-      const response = await axios.get('https://healtheasy-o25g.onrender.com/ambulance/gettc');
+      const response = await axios.get(`${API_BASE_URL}/ambulance/gettc`);
       const fullText = response.data.Data.ambulance_tc || 'No terms and conditions available.';
       setTermsContent(fullText);
       // Get first 150 characters for preview
@@ -230,7 +231,7 @@ const Amb_register = () => {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('https://healtheasy-o25g.onrender.com/user/upload', formData, {
+      const response = await axios.post(`${API_BASE_URL}/user/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -280,7 +281,7 @@ const Amb_register = () => {
   // Registration API call
   const registerAmbulance = async (registrationData) => {
     try {
-      const response = await axios.post('https://healtheasy-o25g.onrender.com/ambulance/signup', registrationData, {
+      const response = await axios.post(`${API_BASE_URL}/ambulance/signup`, registrationData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -483,7 +484,7 @@ const Amb_register = () => {
       // Simulate OTP verification API call
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      await axios.post(`https://healtheasy-o25g.onrender.com/ambulance/signup/otpverification`, {
+      await axios.post(`${API_BASE_URL}/ambulance/signup/otpverification`, {
         email: formData.email,
         otp: otpString
       }).then(response => {

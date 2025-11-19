@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 import { Country, State, City } from "country-state-city";
 import CryptoJS from "crypto-js";
 import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
-import { API_BASE_URL, SECRET_KEY } from '../config';
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const DoctorProfile = () => {
   
@@ -426,7 +426,7 @@ const DoctorProfile = () => {
   const [token, settoken] = useState(null);
 
   useEffect(() => {
-    var getlocaldata = localStorage.getItem("healthdoctor");
+    var getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
     if (getlocaldata != null) {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
@@ -629,7 +629,7 @@ const DoctorProfile = () => {
 
         const uploadResponse = await axios({
           method: "post",
-          url: "https://healtheasy-o25g.onrender.com/user/upload",
+          url: `${API_BASE_URL}/user/upload`,
           headers: {
             Authorization: token,
             "Content-Type": "multipart/form-data",

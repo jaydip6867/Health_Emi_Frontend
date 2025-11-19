@@ -16,6 +16,7 @@ import moment from 'moment';
 import Amb_Nav from './Amb_Nav';
 import Amb_Sidebar from './Amb_Sidebar';
 import '../../src/amb_request.css';
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 
 const Amb_Request = () => {
@@ -24,7 +25,6 @@ const Amb_Request = () => {
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
-  const SECRET_KEY = "health-emi";
 
   // Table columns definition
   const columns = useMemo(
@@ -154,7 +154,7 @@ const Amb_Request = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const getlocaldata = localStorage.getItem("healthambulance");
+        const getlocaldata = localStorage.getItem(STORAGE_KEYS.AMBULANCE);
         if (!getlocaldata) {
           navigate("/ambulance");
           return;
@@ -165,7 +165,7 @@ const Amb_Request = () => {
         const data = JSON.parse(decrypted);
         setambulance(data.ambulanceData);
         const response = await axios.post(
-          'https://healtheasy-o25g.onrender.com/ambulance/ambulancerequest/list',
+          `${API_BASE_URL}/ambulance/ambulancerequest/list`,
           {},
           {
             headers: {
