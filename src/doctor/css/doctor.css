@@ -19,11 +19,18 @@
 }
 
 .theme_btn {
-    background-color: #223F99;
+    background-color: var(--primary-color-600);
     color: white;
     font-size: 14px;
+    border: 0;
+}
+.theme_btn:hover{
+    background-color: var(--primary-color-900);
 }
 
+.register_doctor .form-label{
+    color: var(--grayscale-color-600);
+}
 .register_doctor .form-label,
 .frm-select {
     font-size: 14px;
@@ -37,13 +44,19 @@ select.frm_input {
 .register_doctor .frm_input,
 .register_doctor input::placeholder {
     font-size: 14px;
-    color: #757575;
+    color: var(--grayscale-color-800);
+    border-color: var(--grayscale-color-300);
 }
 
 .register_doctor input::placeholder,
 .register_doctor textarea::placeholder {
     color: #bfbfbf;
     padding-left: 10px;
+}
+
+.register_doctor .form-control:focus{
+    box-shadow: none;
+    border-color: var(--grayscale-color-700);
 }
 
 .register_doctor input.upload_file_doc {
@@ -111,6 +124,13 @@ select.frm_input {
     font-size: 30px;
 }
 
+.register_doctor .eye_btn{
+    background-color: transparent;
+    border: none;
+}
+.register_doctor .eye_btn:focus{
+    background-color: transparent;
+}
 /* styles.css or in your component's CSS module */
 .sticky-md-up {
   position: sticky;

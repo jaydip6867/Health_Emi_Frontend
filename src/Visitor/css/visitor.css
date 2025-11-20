@@ -2287,3 +2287,20 @@ body::-webkit-scrollbar-thumb:hover {
     color: var(--grayscale-color-800)!important;
     padding-left: 30px !important;
 }
+
+/* setting page tab design */
+.setting_tab .nav-link{
+    color: var(--grayscale-color-800);
+    border-radius: 8px;
+    border-width: 1px;
+    border-style: solid;
+    font-weight: 700;
+    border-color: var(--grayscale-color-200) !important;
+    padding: 6px 24px;
+}
+.setting_tab .nav-link.active{
+    background: var(--primary-gradient) !important;
+    color: var(--white) !important;
+    font-weight: 500;
+    border-color: transparent !important;
+}

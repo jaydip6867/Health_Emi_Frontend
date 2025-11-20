@@ -112,7 +112,7 @@ const P_Surgeries = () => {
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
-        width: '60px',
+        width: '40px',
     }, {
         name: 'Doctor Name',
         selector: row => row.doctorid?.name || '',
