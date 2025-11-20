@@ -11,8 +11,9 @@ import SmartDataTable from '../components/SmartDataTable'
 import { BsCameraVideo, BsClipboard } from 'react-icons/bs'
 import { PiHospital } from "react-icons/pi";
 import { HiOutlineHome } from "react-icons/hi";
-import { MdOutlineRemoveRedEye, MdDownload, MdVisibility, MdOutlineAccessTime, MdVerified } from 'react-icons/md'
+import { MdOutlineRemoveRedEye, MdDownload, MdVisibility, MdVerified } from 'react-icons/md'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
+import { FiClock } from "react-icons/fi";
 
 const P_Appointment = () => {
     
@@ -94,13 +95,6 @@ const P_Appointment = () => {
         document.body.removeChild(link);
     };
 
-
-    // Generate initials for profile picture fallback
-    const getInitials = (name) => {
-        if (!name) return 'N/A';
-        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    };
-
     // Get status badge styling (using CSS variables)
     const getStatusBadge = (status) => {
         const statusConfig = {
@@ -135,11 +129,7 @@ const P_Appointment = () => {
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
-        cell: (row, index) => (<span className="appt-index">{index + 1}</span>),
-        maxWidth: '40px',
-        minWidth: '40px',
-        width: '40px',
-        center: true,
+        width: '60px',
     }, {
         name: 'Doctor Name',
         selector: row => row.doctorid?.name || '',
@@ -168,7 +158,7 @@ const P_Appointment = () => {
         selector: row => `${row.date || ''} ${row.time || ''}`,
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
-                <MdOutlineAccessTime size={16} className="text-muted" />
+                <FiClock size={16} className="text-muted" />
                 <span>{`${row.date} , ${row.time}`}</span>
             </div>
         ),
@@ -229,7 +219,7 @@ const P_Appointment = () => {
         <>
             <NavBar logindata={patient} />
             <Container>
-                <Row>
+                <Row className='align-items-start'>
                     <P_Sidebar />
                     <Col xs={12} md={9} className='p-3'>
                         {/* <P_nav patientname={patient && patient.name} /> */}

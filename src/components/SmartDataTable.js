@@ -96,9 +96,9 @@ const SmartDataTable = ({ columns = [], data = [], pagination = true, customStyl
 
   const styles = {
     table: { backgroundColor: '#ffffff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)' },
-    head: { backgroundColor: '#F9FAFB', color: '#374151', borderBottom: '1px solid #E5E7EB' },
+    head: { backgroundColor: '#F9FAFB', color: '#374151' },
     th: { fontSize: 14, fontWeight: 600, padding: '12px 16px', whiteSpace: 'nowrap' },
-    td: { fontSize: 14, color: '#374151', padding: '12px 16px', borderBottom: '1px solid #F3F4F6', verticalAlign: 'middle' },
+    td: { fontSize: 14, color: '#374151', padding: '12px 16px', verticalAlign: 'middle' },
     actions: { padding: 12 },
     ...customStyles
   }
