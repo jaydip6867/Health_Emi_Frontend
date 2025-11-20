@@ -516,3 +516,54 @@ select.frm_input {
     font-size: 12px;
     font-weight: 400;
 }
+
+.apt_status_btn{
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    color: var(--white);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.apt_status_btn.success , .apt_status_btn:active.success{
+    background: #04BD6C;
+}
+.apt_status_btn.danger , .apt_status_btn:active.danger{
+    background: #ff0000;
+}
+.apt_status_btn.dark , .apt_status_btn:active.dark{
+    background: var(--grayscale-color-900);
+}
+.apt_status_btn:focus , .apt_status_btn:active{
+    color: var(--white) !important;
+    outline: none;
+}
+.apt_accept_btn{
+    background: var(--primary-gradient);
+    color: var(--white);
+    white-space: nowrap;
+    padding: 6px 20px;
+    border-radius: 5rem;
+    border: none;
+}
+.apt_accept_btn:hover{
+    color: var(--white);
+}
+.apt_complete_btn{
+    white-space: nowrap;
+    padding: 6px 20px;
+    color: #04BD6C;
+    background-color: #EDF9F0;
+    border-radius: 5rem;
+    font-weight: 500;
+}
+.apt_cancel_btn{
+    white-space: nowrap;
+    padding: 6px 20px;
+    color: #ff0000;
+    background-color: #F9EDED;
+    border-radius: 5rem;
+    font-weight: 500;
+}

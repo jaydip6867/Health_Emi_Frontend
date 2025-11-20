@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Loader from "../Loader";
 import DoctorSidebar from "./DoctorSidebar";
 import DoctorNav from "./DoctorNav";
@@ -26,7 +26,7 @@ import {
 } from "react-icons/md";
 import CryptoJS from "crypto-js";
 import SmartDataTable from '../components/SmartDataTable';
-import { FiChevronsRight, FiPlus, FiX } from "react-icons/fi";
+import { FiAward, FiChevronsRight, FiClipboard, FiClock, FiPlus, FiX } from "react-icons/fi";
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const D_Surgery = () => {
@@ -518,64 +518,16 @@ const D_Surgery = () => {
     </Tooltip>
   );
 
-  // Custom table styles
+  // Minimal table inline styles; visuals handled in CSS
   const customTableStyles = {
-    table: {
-      style: {
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        overflow: 'hidden',
-        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
-      },
-    },
-    headCells: {
-      style: {
-        fontSize: '14px',
-        fontWeight: '600',
-        backgroundColor: '#F9FAFB',
-        color: '#374151',
-        borderBottom: '1px solid #E5E7EB',
-        paddingTop: '16px',
-        paddingBottom: '16px',
-        paddingLeft: '16px',
-        paddingRight: '16px',
-      },
-    },
-    rows: {
-      style: {
-        borderBottom: '1px solid #F3F4F6',
-        '&:hover': {
-          backgroundColor: '#F9FAFB',
-          cursor: 'pointer'
-        },
-        '&:last-child': {
-          borderBottom: 'none'
-        }
-      },
-    },
-    cells: {
-      style: {
-        paddingTop: '16px',
-        paddingBottom: '16px',
-        paddingLeft: '16px',
-        paddingRight: '16px',
-        fontSize: '14px',
-        color: '#374151'
-      },
-    },
-    pagination: {
-      style: {
-        borderTop: '1px solid #E5E7EB',
-        backgroundColor: '#F9FAFB'
-      }
-    }
+    table: { backgroundColor: 'transparent', borderRadius: 0, boxShadow: 'none' }
   };
   // table data
   const columns = [
     {
       name: "No",
       selector: (row, index) => index + 1,
-      width: "80px",
+      width: "50px",
     },
     {
       name: "Surgery Name",
@@ -600,32 +552,39 @@ const D_Surgery = () => {
     {
       name: "Surgery Type",
       selector: (row) => row?.surgerytypeid?.surgerytypename || '',
-      cell: (row) => row?.surgerytypeid?.surgerytypename,
+      cell: (row) => (
+        <div className="d-flex align-items-center gap-2 text-muted small">
+          <FiClipboard size={16} />
+          <span style={{ color: '#6B7280', fontSize: '14px' }}>{row?.surgerytypeid?.surgerytypename}</span>
+        </div>
+      ),
     },
     {
-      name: "Days Of Surgery",
+      name: "Stays Days",
       selector: (row) => `${row?.days || ''}`,
-      cell: (row) => row?.days + ' Days',
+      cell: (row) => (
+        <div className="d-flex align-items-center gap-2 text-muted small">
+          <FiClock size={16} className="text-muted" />
+          <span>{row?.days + ' Days'}</span>
+        </div>
+      ),
     },
     {
-      name: "Experiance",
+      name: "Experience",
       selector: (row) => `${row?.yearsof_experience || ''}`,
-      cell: (row) => row?.yearsof_experience + ' Years',
+      cell: (row) => (
+        <div className="d-flex align-items-center gap-2 text-muted small">
+          <FiAward size={16} className="text-muted" />
+          <span>{row?.yearsof_experience + ' Years'}</span>
+        </div>
+      ),
     }, {
       name: 'Action',
       cell: row => (
         <div className="d-flex align-items-center gap-1">
           <OverlayTrigger placement="top" overlay={renderTooltip('Edit')}>
             <button
-              className="btn btn-sm p-1"
-              style={{
-                border: 'none',
-                backgroundColor: 'transparent',
-                color: '#10B981',
-                borderRadius: '6px'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#F0FDF4'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+              className="btn btn-sm p-1 apt_status_btn success"
               onClick={() => btnedit(row._id)}
             >
               <MdOutlineEditCalendar size={18} />
@@ -634,15 +593,7 @@ const D_Surgery = () => {
 
           <OverlayTrigger placement="top" overlay={renderTooltip('Delete')}>
             <button
-              className="btn btn-sm p-1"
-              style={{
-                border: 'none',
-                backgroundColor: 'transparent',
-                color: '#EF4444',
-                borderRadius: '6px'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#FEF2F2'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+              className="btn btn-sm p-1 apt_status_btn danger"
               onClick={() => deletesurgery(row._id)}
             >
               <MdDeleteOutline size={18} />
@@ -651,15 +602,7 @@ const D_Surgery = () => {
 
           <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
             <button
-              className="btn btn-sm p-1"
-              style={{
-                border: 'none',
-                backgroundColor: 'transparent',
-                color: '#6366F1',
-                borderRadius: '6px'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#F3F4F6'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+              className="btn btn-sm p-1 apt_status_btn dark"
               onClick={() => btnview(row._id)}
             >
               <MdOutlineRemoveRedEye size={18} />
@@ -672,29 +615,23 @@ const D_Surgery = () => {
     }
   ];
 
+
   return (
     <>
-      <Container fluid className="p-0 panel">
+      <Container fluid className="p-0">
         <Row className="g-0">
           <DoctorSidebar />
           <Col xs={12} md={9} lg={10} className="p-3">
             <DoctorNav doctorname={doctor && doctor.name} />
 
-            <div className="bg-white rounded p-3 shadow ">
-              <Row className="mt-2 mb-3 justify-content-between">
-                <Col xs={"auto"}>
-                  <h4>My Surgeries</h4>
-                </Col>
-                <Col xs={"auto"}>
-                  <Button variant="primary" onClick={handlesurShow}>
-                    Add Surgery
-                  </Button>
-                </Col>
-              </Row>
-              <SmartDataTable
-                columns={columns}
-                data={surgerylist ? surgerylist : ""}
-                pagination customStyles={customTableStyles}
+            <div className='appointments-card p-3 mb-3'>
+              <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3'>
+                <h4 className='mb-0'>Consultation Appointments</h4>
+                <Button variant="primary" onClick={handlesurShow} className="apt_accept_btn">
+                  Add Surgery
+                </Button>
+              </div>
+              <SmartDataTable className="appointments-table" columns={columns} data={surgerylist ? surgerylist : ""} pagination customStyles={customTableStyles}
               />
             </div>
           </Col>

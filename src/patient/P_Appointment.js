@@ -129,7 +129,7 @@ const P_Appointment = () => {
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
-        width: '60px',
+        width: '50px',
     }, {
         name: 'Doctor Name',
         selector: row => row.doctorid?.name || '',
@@ -289,37 +289,37 @@ const P_Appointment = () => {
 
                             {/* Summary row */}
                             <div className='border rounded p-3 mt-3'>
-                              <Row className='gy-3'>
-                                <Col md={3} xs={12}>
+                              <Row className='g-3'>
+                                <Col md={6} xs={12}>
                                   <div className='text-muted small mb-1'>Appointment Date & Time</div>
                                   <div className='d-flex align-items-center gap-2'>
                                     <FiClock />
                                     <span>{v?.date}, {v?.time}</span>
                                   </div>
                                 </Col>
-                                <Col md={3} xs={12}>
+                                <Col md={6} xs={12}>
                                   <div className='text-muted small mb-1'>Clinic Name</div>
                                   <div className='d-flex align-items-center gap-2'>
                                     <PiHospital size={18} />
                                     <span>{clinicName}</span>
                                   </div>
                                 </Col>
-                                <Col md={3} xs={12}>
+                                <Col md={6} xs={12}>
                                   <div className='text-muted small mb-1'>Clinic Location</div>
                                   <div className='d-flex align-items-center gap-2'>
                                     <FiMapPin />
                                     <span className='text-truncate'>{clinicLocation || '-'}</span>
                                   </div>
                                 </Col>
-                                <Col md={3} xs={12}>
+                                <Col md={6} xs={12}>
                                   <div className='text-muted small mb-1'>Consultation Reason</div>
                                   <div className='text-truncate'>{v?.appointment_reason || '-'}</div>
                                 </Col>
                               </Row>
                             </div>
-
+                            <hr/>
                             {/* Reports */}
-                            <div className='border rounded p-3 mt-3'>
+                            <div className='mt-3'>
                               <div className='fw-semibold mb-3'>Reports</div>
                               <Row className='g-3'>
                                 {(v?.report || []).length > 0 ? (
@@ -344,10 +344,10 @@ const P_Appointment = () => {
                                 )}
                               </Row>
                             </div>
-
+                                <hr/>
                             {/* Prescription */}
-                            <div className='border rounded p-3 mt-3'>
                               <div className='fw-semibold mb-3'>Prescription</div>
+                            <div className='border rounded p-3 mt-3 col-lg-5 col-md-9 col-12'>
                               {v?.doctor_remark ? (
                                 <>
                                   {/* <div className='d-flex gap-2 mb-2'>
@@ -361,7 +361,7 @@ const P_Appointment = () => {
                                   <div className='border rounded' style={{ backgroundColor: '#f8f9fa' }}>
                                     <iframe
                                       src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`}
-                                      style={{ width: '100%', height: '400px', border: 'none', borderRadius: '4px' }}
+                                      style={{ width: '100%', height: '200px', border: 'none', borderRadius: '4px' }}
                                       title='Prescription PDF'
                                     />
                                   </div>
