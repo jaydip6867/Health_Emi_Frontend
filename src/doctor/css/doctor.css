@@ -503,3 +503,16 @@ select.frm_input {
     color: #6B7280;
     border-radius: 8px;
 }
+
+/* appointment model design */
+.appointment_model{
+    font-weight: 400;
+}
+.appointment_model p{
+    font-size: 14px;
+    color: var(--grayscale-color-400);
+}
+.appointment_model span{
+    font-size: 12px;
+    font-weight: 400;
+}

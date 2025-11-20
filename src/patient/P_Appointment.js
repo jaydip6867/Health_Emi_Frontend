@@ -13,7 +13,7 @@ import { PiHospital } from "react-icons/pi";
 import { HiOutlineHome } from "react-icons/hi";
 import { MdOutlineRemoveRedEye, MdDownload, MdVisibility, MdVerified } from 'react-icons/md'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
-import { FiClock } from "react-icons/fi";
+import { FiClock, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 
 const P_Appointment = () => {
     
@@ -59,7 +59,7 @@ const P_Appointment = () => {
                 Authorization: token
             }
         }).then((res) => {
-            console.log('appointment = ', res.data.Data.docs);
+            // console.log('appointment = ', res.data.Data.docs);
             setappoint(res.data.Data.docs)
         }).catch(function (error) {
             console.log(error);
@@ -237,120 +237,151 @@ const P_Appointment = () => {
                         </div>
                     </Col>
                 </Row>
-                {/* view single surgery */}
+                {/* Appointment detail modal */}
                 {
-                    single_view && single_view.map((v, i) => {
-                        return (
-                            <Modal show={show} onHide={handleClose} centered size="lg" key={i}>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>Appointment Detail</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <Row>
-                                        <Col xs={12} md={6}>
-                                            <Card className="mb-4 border-light">
-                                                <Card.Body>
-                                                    <Card.Title className="label_head">Doctor Information</Card.Title>
-                                                    <Row>
-                                                        <Col xs={12}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Doctor Name:</span>
-                                                                <p>{v?.doctorid?.name}</p>
-                                                            </div>
-                                                        </Col>
-                                                        <Col xs={12}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Doctor Specialty:</span>
-                                                                <p>{v?.doctorid?.specialty}</p>
-                                                            </div>
-                                                        </Col>
-                                                    </Row>
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                        <Col xs={12} md={6}>
-                                            <Card className="mb-4 border-light">
-                                                <Card.Body>
-                                                    <Card.Title className="label_head">Consultation Information</Card.Title>
-                                                    <Row>
-                                                        <Col xs={12}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Consultation Name:</span>
-                                                                <p>{v?.surgerydetails?.name}</p>
-                                                            </div>
-                                                        </Col>
-                                                        <Col xs={12}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Date & Time:</span>
-                                                                <p>{v?.date} , {v?.time}</p>
-                                                            </div>
-                                                        </Col>
-                                                        <Col xs={12}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Reason:</span>
-                                                                <p>{v?.appointment_reason}</p>
-                                                            </div>
-                                                        </Col>
-                                                    </Row>
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                        
-                                        {/* Prescription Section */}
-                                        {v?.doctor_remark && (
-                                            <Col xs={12}>
-                                                <Card className="mb-4 border-light">
-                                                    <Card.Body>
-                                                        <div className="d-flex justify-content-between align-items-center mb-3">
-                                                            <Card.Title className="label_head mb-0">Prescription</Card.Title>
-                                                            <div className="d-flex gap-2">
-                                                                <Button
-                                                                    variant="outline-primary"
-                                                                    size="sm"
-                                                                    onClick={() => window.open(v.doctor_remark, '_blank')}
-                                                                    className="d-flex align-items-center gap-2"
-                                                                >
-                                                                    <MdVisibility size={18} />
-                                                                    View PDF
-                                                                </Button>
-                                                                <Button
-                                                                    variant="primary"
-                                                                    size="sm"
-                                                                    onClick={() => handleDownloadPDF(v.doctor_remark, patient?.name)}
-                                                                    className="d-flex align-items-center gap-2"
-                                                                >
-                                                                    <MdDownload size={18} />
-                                                                    Download
-                                                                </Button>
-                                                            </div>
-                                                        </div>
-                                                        <div className="border rounded p-2" style={{ backgroundColor: '#f8f9fa' }}>
-                                                            <iframe
-                                                                src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`}
-                                                                style={{
-                                                                    width: '100%',
-                                                                    height: '400px',
-                                                                    border: 'none',
-                                                                    borderRadius: '4px'
-                                                                }}
-                                                                title="Prescription PDF"
-                                                            />
-                                                        </div>
-                                                    </Card.Body>
-                                                </Card>
-                                            </Col>
-                                        )}
-                                    </Row>
-                                </Modal.Body>
-                            </Modal>
-                        )
-                    })
+                  single_view && single_view.map((v, i) => {
+                    const typePill = getTypePill(v?.visit_types);
+                    const status = getStatusBadge(v?.status);
+                    const hospital = (v?.doctorid?.hospitals && v?.doctorid?.hospitals[0]) || {};
+                    const clinicName = hospital?.name || v?.surgerydetails?.surgerytype || '-';
+                    const clinicLocation = [hospital?.address, hospital?.city, hospital?.state].filter(Boolean).join(', ');
+                    const fee = Number(v?.totalamount || 0);
+                    return (
+                      <Modal show={show} onHide={handleClose} centered size="lg" key={i}>
+                        <Modal.Header closeButton>
+                          <Modal.Title>Appointment Details</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                          <div className='p-2 rounded-3' style={{ background: 'var(--white)' }}>
+                            {/* Header: Doctor block and badges */}
+                            <div className='d-flex flex-wrap align-items-center justify-content-between gap-3 border rounded p-3'>
+                              <div className='d-flex align-items-center gap-3'>
+                                <img src={v?.doctorid?.profile_pic} className='rounded-3' style={{ width: 72, height: 72, objectFit: 'cover' }} />
+                                <div>
+                                  <div className='d-flex align-items-center gap-2 flex-wrap'>
+                                    <h5 className='mb-0'>{v?.doctorid?.name}</h5>
+                                    <span className='text-primary d-inline-flex align-items-center' title='Verified'>
+                                      <MdVerified size={18} fill='#0697B8'/>
+                                    </span>
+                                  </div>
+                                  <div className='text-muted small'><FiMail className='me-1' /> {v?.doctorid?.email}</div>
+                                  <div className='text-muted small'><FiPhone className='me-1' /> +91 {v?.doctorid?.mobile}</div>
+                                </div>
+                              </div>
+                              <div className='d-flex align-items-center gap-3 flex-wrap appointment_model'>
+                                <div>
+                                    <p className='mb-0 small'>Visit Type</p>
+                                    <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{typePill.icon}{typePill.label}</span>
+                                </div>
+                                <div>
+                                    <p className='mb-0 small'>Consultation Status</p>
+                                    <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#E8F7EE', color: '#1F9254' }}>
+                                      <span className='rounded-circle' style={{ width: 8, height: 8, background: status.dot }} />
+                                      {status.text}
+                                    </span>
+                                </div>
+                                <div>
+                                    <p className='mb-0 small'>Consultation Fee</p>
+                                    <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {fee}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Summary row */}
+                            <div className='border rounded p-3 mt-3'>
+                              <Row className='gy-3'>
+                                <Col md={3} xs={12}>
+                                  <div className='text-muted small mb-1'>Appointment Date & Time</div>
+                                  <div className='d-flex align-items-center gap-2'>
+                                    <FiClock />
+                                    <span>{v?.date}, {v?.time}</span>
+                                  </div>
+                                </Col>
+                                <Col md={3} xs={12}>
+                                  <div className='text-muted small mb-1'>Clinic Name</div>
+                                  <div className='d-flex align-items-center gap-2'>
+                                    <PiHospital size={18} />
+                                    <span>{clinicName}</span>
+                                  </div>
+                                </Col>
+                                <Col md={3} xs={12}>
+                                  <div className='text-muted small mb-1'>Clinic Location</div>
+                                  <div className='d-flex align-items-center gap-2'>
+                                    <FiMapPin />
+                                    <span className='text-truncate'>{clinicLocation || '-'}</span>
+                                  </div>
+                                </Col>
+                                <Col md={3} xs={12}>
+                                  <div className='text-muted small mb-1'>Consultation Reason</div>
+                                  <div className='text-truncate'>{v?.appointment_reason || '-'}</div>
+                                </Col>
+                              </Row>
+                            </div>
+
+                            {/* Reports */}
+                            <div className='border rounded p-3 mt-3'>
+                              <div className='fw-semibold mb-3'>Reports</div>
+                              <Row className='g-3'>
+                                {(v?.report || []).length > 0 ? (
+                                  v.report.map((url, idx) => (
+                                    <Col md={4} sm={6} xs={12} key={idx}>
+                                      <Card className='h-100'>
+                                        <div className='ratio ratio-16x9 bg-light'>
+                                          {/* Fallback thumbnail - attempting to render image/embed */}
+                                          <iframe src={url} title={`report_${idx}`} className='w-100 h-100 border-0'></iframe>
+                                        </div>
+                                        <Card.Body className='d-flex justify-content-between align-items-center'>
+                                          <div className='small text-muted'>Report {idx + 1}</div>
+                                          <Button size='sm' variant='outline-primary' onClick={() => window.open(url, '_blank')}>View</Button>
+                                        </Card.Body>
+                                      </Card>
+                                    </Col>
+                                  ))
+                                ) : (
+                                  <Col xs={12}>
+                                    <div className='text-muted small'>No reports uploaded.</div>
+                                  </Col>
+                                )}
+                              </Row>
+                            </div>
+
+                            {/* Prescription */}
+                            <div className='border rounded p-3 mt-3'>
+                              <div className='fw-semibold mb-3'>Prescription</div>
+                              {v?.doctor_remark ? (
+                                <>
+                                  {/* <div className='d-flex gap-2 mb-2'>
+                                    <Button variant='outline-primary' size='sm' onClick={() => window.open(v.doctor_remark, '_blank')} className='d-flex align-items-center gap-2'>
+                                      <MdVisibility size={18} /> View
+                                    </Button>
+                                    <Button variant='primary' size='sm' onClick={() => handleDownloadPDF(v.doctor_remark, patient?.name)} className='d-flex align-items-center gap-2'>
+                                      <MdDownload size={18} /> Download
+                                    </Button>
+                                  </div> */}
+                                  <div className='border rounded' style={{ backgroundColor: '#f8f9fa' }}>
+                                    <iframe
+                                      src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`}
+                                      style={{ width: '100%', height: '400px', border: 'none', borderRadius: '4px' }}
+                                      title='Prescription PDF'
+                                    />
+                                  </div>
+                                </>
+                              ) : (
+                                <div className='text-muted small'>No prescription uploaded.</div>
+                              )}
+                            </div>
+                          </div>
+                        </Modal.Body>
+                      </Modal>
+                    )
+                  })
                 }
+
             </Container>
             {loading ? <Loader /> : ''}
             <FooterBar />
         </>
     )
-}
 
+}
 export default P_Appointment
