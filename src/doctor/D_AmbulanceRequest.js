@@ -7,7 +7,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import CryptoJS from "crypto-js";
 import Loader from "../Loader";
-import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS, GOOGLE_MAPS_API_KEY } from '../config';
 import {
   FaAmbulance,
   FaLocationArrow,
@@ -17,30 +17,31 @@ import {
   FaCar,
 } from "react-icons/fa";
 
-// Leaflet (no react-leaflet) imports
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import "leaflet-control-geocoder/dist/Control.Geocoder.css";
-import "leaflet-control-geocoder";
-// Fix default marker icons for production builds
-import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
-import iconUrl from "leaflet/dist/images/marker-icon.png";
-import shadowUrl from "leaflet/dist/images/marker-shadow.png";
-L.Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl });
+let gmapsPromise = null;
+const loadGoogleMaps = () => {
+  if (window.google && window.google.maps) return Promise.resolve(window.google);
+  if (gmapsPromise) return gmapsPromise;
+  gmapsPromise = new Promise((resolve, reject) => {
+    const id = 'gmaps-loader';
+    const existing = document.getElementById(id);
+    if (existing) {
+      existing.addEventListener('load', () => resolve(window.google));
+      existing.addEventListener('error', reject);
+      return;
+    }
+    const s = document.createElement('script');
+    s.id = id;
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_MAPS_API_KEY)}&libraries=places,marker`;
+    s.async = true;
+    s.defer = true;
+    s.onload = () => resolve(window.google);
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+  return gmapsPromise;
+};
 
-// Custom red icon for drop marker
-const dropIcon = L.icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-  iconRetinaUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-  shadowUrl,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  tooltipAnchor: [16, -28],
-  shadowSize: [41, 41],
-});
+const DROP_ICON_URL = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
 
 const D_AmbulanceRequest = () => {
   const navigate = useNavigate();
@@ -170,71 +171,33 @@ const D_AmbulanceRequest = () => {
     activeTypeRef.current = activeType;
   }, [activeType]);
 
-  const ensureMap = () => {
+  const ensureMap = async () => {
     if (mapRef.current) return mapRef.current;
-    // initialize map
-    const map = L.map("ambulanceMap", {
-      center: defaultCenter,
+    const google = await loadGoogleMaps();
+    const map = new google.maps.Map(document.getElementById('ambulanceMap'), {
+      center: { lat: defaultCenter[0], lng: defaultCenter[1] },
       zoom: 12,
-      zoomControl: false,
+      disableDefaultUI: false,
+      zoomControl: true,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
     });
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: "&copy; OpenStreetMap contributors",
-    }).addTo(map);
-    L.control.zoom({ position: "topleft" }).addTo(map);
 
-    // Geocoder control
-    if (L.Control && L.Control.Geocoder) {
-      const geocoder = L.Control.geocoder({ defaultMarkGeocode: false })
-        .on("markgeocode", async (e) => {
-          const center = e.geocode.center; // {lat, lng}
-          map.setView(center, 14);
-          const name =
-            e.geocode?.name || (await reverseGeocode(center.lng, center.lat));
-          const fix = (n) => Number(n.toFixed(6));
-          if (activeTypeRef.current === "pickup") {
-            if (pickupMarkerRef.current)
-              pickupMarkerRef.current.setLatLng(center);
-            else
-              pickupMarkerRef.current = L.marker(center, {
-                icon: new L.Icon.Default(),
-              }).addTo(map);
-            setForm((prev) => ({
-              ...prev,
-              pickup_latitude: fix(center.lat),
-              pickup_longitude: fix(center.lng),
-              pickupaddress: name || prev.pickupaddress,
-            }));
-          } else {
-            if (dropMarkerRef.current) dropMarkerRef.current.setLatLng(center);
-            else
-              dropMarkerRef.current = L.marker(center, {
-                icon: dropIcon,
-              }).addTo(map);
-            setForm((prev) => ({
-              ...prev,
-              drop_latitude: fix(center.lat),
-              drop_longitude: fix(center.lng),
-              dropaddress: name || prev.dropaddress,
-            }));
-          }
-        })
-        .addTo(map);
-    }
-
-    // Click handler
-    map.on("click", async (evt) => {
-      const { lat, lng } = evt.latlng;
+    map.addListener('click', async (evt) => {
+      const lat = evt.latLng.lat();
+      const lng = evt.latLng.lng();
       const address = await reverseGeocode(lng, lat);
       const fix = (n) => Number(n.toFixed(6));
-      if (activeTypeRef.current === "pickup") {
-        const pos = [lat, lng];
-        if (pickupMarkerRef.current) pickupMarkerRef.current.setLatLng(pos);
-        else
-          pickupMarkerRef.current = L.marker(pos, {
-            icon: new L.Icon.Default(),
-          }).addTo(map);
+      if (activeTypeRef.current === 'pickup') {
+        if (pickupMarkerRef.current) {
+          pickupMarkerRef.current.setPosition({ lat, lng });
+        } else {
+          pickupMarkerRef.current = new google.maps.Marker({
+            position: { lat, lng },
+            map,
+          });
+        }
         setForm((prev) => ({
           ...prev,
           pickup_latitude: fix(lat),
@@ -242,9 +205,15 @@ const D_AmbulanceRequest = () => {
           pickupaddress: address || prev.pickupaddress,
         }));
       } else {
-        const pos = [lat, lng];
-        if (dropMarkerRef.current) dropMarkerRef.current.setLatLng(pos);
-        else dropMarkerRef.current = L.marker(pos, { icon: dropIcon }).addTo(map);
+        if (dropMarkerRef.current) {
+          dropMarkerRef.current.setPosition({ lat, lng });
+        } else {
+          dropMarkerRef.current = new google.maps.Marker({
+            position: { lat, lng },
+            map,
+            icon: DROP_ICON_URL,
+          });
+        }
         setForm((prev) => ({
           ...prev,
           drop_latitude: fix(lat),
@@ -259,66 +228,62 @@ const D_AmbulanceRequest = () => {
   };
 
   useEffect(() => {
-    // initialize map once when component mounts
-    ensureMap();
-    // Try to auto-center to current location (silent)
-    const autoCenterOnCurrentLocation = () => {
-      if (autoLocatedRef.current) return;
-      if (!navigator.geolocation) return;
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const { latitude, longitude } = pos.coords;
-          const map = ensureMap();
-          map.setView([latitude, longitude], 14);
-          // Fill pickup fields only if empty to avoid overriding user input
-          const fix = (n) => Number(n.toFixed(6));
-          let address = "";
-          const meta = await reverseGeocodeMeta(longitude, latitude);
-          address = meta.display_name;
-          // Set detected country code and city for filtering/sorting
-          if (meta.address?.country_code)
-            setCountryCode((meta.address.country_code || "").toLowerCase());
-          const cityCandidate =
-            meta.address?.city ||
-            meta.address?.town ||
-            meta.address?.village ||
-            meta.address?.state_district ||
-            meta.address?.state ||
-            "";
-          if (cityCandidate) setCurrentCity(cityCandidate);
-          if (
-            !form.pickup_latitude ||
-            !form.pickup_longitude ||
-            !form.pickupaddress
-          ) {
-            const posArr = [latitude, longitude];
-            if (pickupMarkerRef.current)
-              pickupMarkerRef.current.setLatLng(posArr);
-            else
-              pickupMarkerRef.current = L.marker(posArr, {
-                icon: new L.Icon.Default(),
-              }).addTo(map);
-            setForm((prev) => ({
-              ...prev,
-              pickup_latitude: prev.pickup_latitude || fix(latitude),
-              pickup_longitude: prev.pickup_longitude || fix(longitude),
-              pickupaddress: prev.pickupaddress || address,
-            }));
-          }
-          autoLocatedRef.current = true;
-        },
-        () => {
-          /* ignore errors silently */
-        },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
-      );
-    };
-    autoCenterOnCurrentLocation();
+    (async () => {
+      await ensureMap();
+      const autoCenterOnCurrentLocation = () => {
+        if (autoLocatedRef.current) return;
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            const { latitude, longitude } = pos.coords;
+            const map = await ensureMap();
+            map.setCenter({ lat: latitude, lng: longitude });
+            map.setZoom(14);
+            const fix = (n) => Number(n.toFixed(6));
+            let address = "";
+            const meta = await reverseGeocodeMeta(longitude, latitude);
+            address = meta.display_name;
+            if (meta.address?.country_code)
+              setCountryCode((meta.address.country_code || "").toLowerCase());
+            const cityCandidate =
+              meta.address?.city ||
+              meta.address?.town ||
+              meta.address?.village ||
+              meta.address?.state_district ||
+              meta.address?.state ||
+              "";
+            if (cityCandidate) setCurrentCity(cityCandidate);
+            if (
+              !form.pickup_latitude ||
+              !form.pickup_longitude ||
+              !form.pickupaddress
+            ) {
+              if (pickupMarkerRef.current) {
+                pickupMarkerRef.current.setPosition({ lat: latitude, lng: longitude });
+              } else {
+                const google = window.google;
+                pickupMarkerRef.current = new google.maps.Marker({
+                  position: { lat: latitude, lng: longitude },
+                  map,
+                });
+              }
+              setForm((prev) => ({
+                ...prev,
+                pickup_latitude: prev.pickup_latitude || fix(latitude),
+                pickup_longitude: prev.pickup_longitude || fix(longitude),
+                pickupaddress: prev.pickupaddress || address,
+              }));
+            }
+            autoLocatedRef.current = true;
+          },
+          () => {},
+          { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+        );
+      };
+      autoCenterOnCurrentLocation();
+    })();
     return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
+      mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -335,7 +300,7 @@ const D_AmbulanceRequest = () => {
       return;
     }
     try {
-      const map = ensureMap();
+      const map = await ensureMap();
       const b = map.getBounds();
       const viewbox = `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`;
       const headers = { headers: { Accept: "application/json" } };
@@ -400,19 +365,20 @@ const D_AmbulanceRequest = () => {
     }
   };
 
-  const selectSuggestion = (type, sug) => {
+  const selectSuggestion = async (type, sug) => {
     const lat = Number(Number(sug.lat).toFixed(6));
     const lon = Number(Number(sug.lon).toFixed(6));
     const display = sug.display_name || "";
-    const map = ensureMap();
-    map.setView([lat, lon], 14);
-    const pos = [lat, lon];
+    const map = await ensureMap();
+    map.setCenter({ lat, lng: lon });
+    map.setZoom(14);
     if (type === "pickup") {
-      if (pickupMarkerRef.current) pickupMarkerRef.current.setLatLng(pos);
-      else
-        pickupMarkerRef.current = L.marker(pos, {
-          icon: new L.Icon.Default(),
-        }).addTo(map);
+      if (pickupMarkerRef.current) {
+        pickupMarkerRef.current.setPosition({ lat, lng: lon });
+      } else {
+        const google = window.google;
+        pickupMarkerRef.current = new google.maps.Marker({ position: { lat, lng: lon }, map });
+      }
       setForm((prev) => ({
         ...prev,
         pickup_latitude: lat,
@@ -422,8 +388,12 @@ const D_AmbulanceRequest = () => {
       setPickupSuggestions([]);
       setShowPickupSuggestions(false);
     } else {
-      if (dropMarkerRef.current) dropMarkerRef.current.setLatLng(pos);
-      else dropMarkerRef.current = L.marker(pos, { icon: dropIcon }).addTo(map);
+      if (dropMarkerRef.current) {
+        dropMarkerRef.current.setPosition({ lat, lng: lon });
+      } else {
+        const google = window.google;
+        dropMarkerRef.current = new google.maps.Marker({ position: { lat, lng: lon }, map, icon: DROP_ICON_URL });
+      }
       setForm((prev) => ({
         ...prev,
         drop_latitude: lat,
@@ -457,52 +427,46 @@ const D_AmbulanceRequest = () => {
           "";
         if (cityCandidate) setCurrentCity(cityCandidate);
         const fix = (n) => Number(n.toFixed(6));
-        const map = ensureMap();
-        map.setView([latitude, longitude], 14);
-        if (type === "pickup") {
-          const posArr = [latitude, longitude];
-          if (pickupMarkerRef.current)
-            pickupMarkerRef.current.setLatLng(posArr);
-          else
-            pickupMarkerRef.current = L.marker(posArr, {
-              icon: new L.Icon.Default(),
-            }).addTo(map);
-          setForm((prev) => ({
-            ...prev,
-            pickup_latitude: fix(latitude),
-            pickup_longitude: fix(longitude),
-            pickupaddress: address || prev.pickupaddress,
-          }));
-        } else {
-          const posArr = [latitude, longitude];
-          if (dropMarkerRef.current) dropMarkerRef.current.setLatLng(posArr);
-          else
-            dropMarkerRef.current = L.marker(posArr, { icon: dropIcon }).addTo(
-              map
-            );
-          setForm((prev) => ({
-            ...prev,
-            drop_latitude: fix(latitude),
-            drop_longitude: fix(longitude),
-            dropaddress: address || prev.dropaddress,
-          }));
-        }
+        const update = async () => {
+          const map = await ensureMap();
+          map.setCenter({ lat: latitude, lng: longitude });
+          map.setZoom(14);
+          if (type === 'pickup') {
+            if (pickupMarkerRef.current) {
+              pickupMarkerRef.current.setPosition({ lat: latitude, lng: longitude });
+            } else {
+              const google = window.google;
+              pickupMarkerRef.current = new google.maps.Marker({ position: { lat: latitude, lng: longitude }, map });
+            }
+            setForm((prev) => ({
+              ...prev,
+              pickup_latitude: fix(latitude),
+              pickup_longitude: fix(longitude),
+              pickupaddress: address || prev.pickupaddress,
+            }));
+          } else {
+            if (dropMarkerRef.current) {
+              dropMarkerRef.current.setPosition({ lat: latitude, lng: longitude });
+            } else {
+              const google = window.google;
+              dropMarkerRef.current = new google.maps.Marker({ position: { lat: latitude, lng: longitude }, map, icon: DROP_ICON_URL });
+            }
+            setForm((prev) => ({
+              ...prev,
+              drop_latitude: fix(latitude),
+              drop_longitude: fix(longitude),
+              dropaddress: address || prev.dropaddress,
+            }));
+          }
+        };
+        await update();
         setLoading(false);
-        Swal.fire({
-          title: "Location captured",
-          icon: "success",
-          timer: 1200,
-          showConfirmButton: false,
-        });
+        Swal.fire({ title: "Location captured", icon: "success", timer: 1200, showConfirmButton: false });
       },
       (err) => {
         console.error(err);
         setLoading(false);
-        Swal.fire({
-          title: "Failed to get location",
-          text: err.message,
-          icon: "error",
-        });
+        Swal.fire({ title: "Failed to get location", text: err.message, icon: "error" });
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
@@ -683,15 +647,13 @@ const D_AmbulanceRequest = () => {
             })
           );
         }
-        if (mapRef.current) {
-          if (pickupMarkerRef.current) {
-            mapRef.current.removeLayer(pickupMarkerRef.current);
-            pickupMarkerRef.current = null;
-          }
-          if (dropMarkerRef.current) {
-            mapRef.current.removeLayer(dropMarkerRef.current);
-            dropMarkerRef.current = null;
-          }
+        if (pickupMarkerRef.current && typeof pickupMarkerRef.current.setMap === 'function') {
+          pickupMarkerRef.current.setMap(null);
+          pickupMarkerRef.current = null;
+        }
+        if (dropMarkerRef.current && typeof dropMarkerRef.current.setMap === 'function') {
+          dropMarkerRef.current.setMap(null);
+          dropMarkerRef.current = null;
         }
         setForm({
           pickupaddress: "",
