@@ -10,4 +10,4 @@ export const STORAGE_KEYS = {
 };
 
 // Google Maps API key (set REACT_APP_GOOGLE_MAPS_API_KEY in .env)
-export const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'AIzaSyB20ZRfbULmKKvUy7AQ7SMm0MKw3yHPDGs';
+export const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'AIzaSyBoGhF4LGSyzplqWd4qJXmELcDrbZIIQDA';

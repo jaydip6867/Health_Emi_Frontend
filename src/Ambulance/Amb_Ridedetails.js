@@ -21,7 +21,7 @@ import {
 } from "react-icons/fa";
 import axios from "axios";
 import CryptoJS from "crypto-js";
-import { API_BASE_URL, SOCKET_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
+import { API_BASE_URL, SOCKET_URL, SECRET_KEY, STORAGE_KEYS, GOOGLE_MAPS_API_KEY } from '../config';
 import Amb_Nav from "./Amb_Nav";
 import Amb_Sidebar from "./Amb_Sidebar";
 import "../../src/amb_request.css";
@@ -29,48 +29,39 @@ import "../../src/amb_request.css";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
-// Leaflet + Routing imports
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-routing-machine';
-import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
+// Google Maps loader (replaces Leaflet)
+let gmapsPromise = null;
+const loadGoogleMaps = () => {
+  if (window.google && window.google.maps) return Promise.resolve(window.google);
+  if (gmapsPromise) return gmapsPromise;
+  gmapsPromise = new Promise((resolve, reject) => {
+    const id = 'gmaps-loader';
+    const existing = document.getElementById(id);
+    if (existing) {
+      existing.addEventListener('load', () => resolve(window.google));
+      existing.addEventListener('error', reject);
+      return;
+    }
+    const s = document.createElement('script');
+    s.id = id;
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_MAPS_API_KEY)}&libraries=places,marker`;
+    s.async = true;
+    s.defer = true;
+    s.onload = () => resolve(window.google);
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+  return gmapsPromise;
+};
+
+// Icon URLs
+const AMBULANCE_ICON = 'https://cdn-icons-png.flaticon.com/512/12349/12349613.png';
+const PICKUP_ICON = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+const DROP_ICON = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
 
 const MySwal = withReactContent(Swal);
 
-// Fix default marker icons (for bundlers)
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-});
-
-// Custom ambulance icon
-const ambulanceIcon = new L.Icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/12349/12349613.png',
-  iconSize: [40, 40],
-  iconAnchor: [20, 20],
-  className: 'ambulance-icon',
-});
-
-// Pickup (red) and Drop (green) icons
-const pickupIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-
-const dropIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+// Google Maps marker icon sizes will be set per-marker via icon options
 
 const Amb_Ridedetails = () => {
   const { id } = useParams();
@@ -88,21 +79,15 @@ const Amb_Ridedetails = () => {
     error: null,
   });
   let startRide;
-  const mapContainer = useRef(null);
-  const map = useRef(null); // L.Map instance
-  const markers = useRef({
-    pickup: null,
-    drop: null,
-    ambulance: null,
-    currentCircle: null,
-  });
-  const routeControlRef = useRef(null);
+  const mapRef = useRef(null); // google.maps.Map
+  const directionsServiceRef = useRef(null); // google.maps.DirectionsService
+  const directionsRendererRef = useRef(null); // google.maps.DirectionsRenderer
+  const markersRef = useRef({ pickup: null, drop: null, ambulance: null });
   const watchIdRef = useRef(null);
   const lastTargetRef = useRef(null);
-  const routeCoordsRef = useRef([]); // [[lat, lng], ...] for heading calculation
+  const routeCoordsRef = useRef([]);
   const [liveSpeed, setLiveSpeed] = useState(0);
-
-  
+  const [mapError, setMapError] = useState(null);
 
   // Persist current navigation leg across refresh
   const STORAGE_KEY = 'amb_route_state';
@@ -116,132 +101,115 @@ const Amb_Ridedetails = () => {
     try { localStorage.removeItem(STORAGE_KEY); } catch {}
   };
 
-  // Initialize Leaflet map when ride is loaded
+  // Initialize Google Map when ride is loaded
   useEffect(() => {
     if (!ride) return;
     const container = document.getElementById('rideMap');
     if (!container) return;
 
-    if (!map.current) {
-      map.current = L.map('rideMap');
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors',
-      }).addTo(map.current);
-    }
-
-    // Add pickup & drop markers
-    if (ride?.pickuplocation?.coordinates) {
-      const [plng, plat] = ride.pickuplocation.coordinates;
-      const platlng = L.latLng(plat, plng);
-      if (!markers.current.pickup) {
-        markers.current.pickup = L.marker(platlng, { icon: pickupIcon }).addTo(map.current).bindPopup('Pickup');
-      } else {
-        markers.current.pickup.setLatLng(platlng);
-      }
-      map.current.setView(platlng, 14);
-    }
-    if (ride?.droplocation?.coordinates) {
-      const [dlng, dlat] = ride.droplocation.coordinates;
-      const dlatlng = L.latLng(dlat, dlng);
-      if (!markers.current.drop) {
-        markers.current.drop = L.marker(dlatlng, { icon: dropIcon }).addTo(map.current).bindPopup('Drop');
-      } else {
-        markers.current.drop.setLatLng(dlatlng);
-      }
-    }
-
-    // Try to show current location once
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          setCurrentLocation({ lat: latitude, lng: longitude, loading: false, error: null });
-          const cur = L.latLng(latitude, longitude);
-          if (!markers.current.ambulance) {
-            markers.current.ambulance = L.marker(cur, { icon: ambulanceIcon }).addTo(map.current).bindPopup('You');
-          } else {
-            markers.current.ambulance.setLatLng(cur);
-          }
-          if (!markers.current.currentCircle) {
-            markers.current.currentCircle = L.circle(cur, { radius: 80, color: '#1E88E5', fillOpacity: 0.25 }).addTo(map.current);
-          } else {
-            markers.current.currentCircle.setLatLng(cur);
-          }
-        },
-        (err) => {
-          setCurrentLocation((p) => ({ ...p, loading: false, error: err?.message || 'Location error' }));
-        },
-        { enableHighAccuracy: true, timeout: 8000 }
-      );
-    }
-
-    // Resume unfinished leg after refresh
-    const saved = getRouteState();
-    if (saved && saved.rideId === ride?._id && saved.target?.lat && saved.target?.lng) {
+    const init = async () => {
       try {
-        const resumeLL = L.latLng(saved.target.lat, saved.target.lng);
-        startWatchToTarget(resumeLL, () => {});
-      } catch {}
-    }
+        await loadGoogleMaps();
+        if (!mapRef.current) {
+          mapRef.current = new window.google.maps.Map(container, {
+            zoom: 12,
+            center: { lat: 20.5937, lng: 78.9629 },
+            mapTypeId: 'roadmap',
+            streetViewControl: false,
+          });
+          directionsServiceRef.current = new window.google.maps.DirectionsService();
+          directionsRendererRef.current = new window.google.maps.DirectionsRenderer({
+            map: mapRef.current,
+            suppressMarkers: true,
+            preserveViewport: true,
+          });
+        }
+
+        // Add pickup & drop markers
+        if (ride?.pickuplocation?.coordinates) {
+          const [plng, plat] = ride.pickuplocation.coordinates;
+          const ppos = { lat: plat, lng: plng };
+          if (markersRef.current.pickup) markersRef.current.pickup.setMap(null);
+          markersRef.current.pickup = new window.google.maps.Marker({
+            position: ppos, map: mapRef.current, icon: PICKUP_ICON, title: 'Pickup'
+          });
+          mapRef.current.setCenter(ppos);
+        }
+        if (ride?.droplocation?.coordinates) {
+          const [dlng, dlat] = ride.droplocation.coordinates;
+          const dpos = { lat: dlat, lng: dlng };
+          if (markersRef.current.drop) markersRef.current.drop.setMap(null);
+          markersRef.current.drop = new window.google.maps.Marker({
+            position: dpos, map: mapRef.current, icon: DROP_ICON, title: 'Drop'
+          });
+        }
+
+        // Fit to bounds
+        const bounds = new window.google.maps.LatLngBounds();
+        ['pickup','drop','ambulance'].forEach(k => {
+          const m = markersRef.current[k];
+          if (m) bounds.extend(m.getPosition());
+        });
+        if (!bounds.isEmpty()) mapRef.current.fitBounds(bounds);
+
+        // Show current location once
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const { latitude, longitude } = pos.coords;
+              setCurrentLocation({ lat: latitude, lng: longitude, loading: false, error: null });
+              const cur = { lat: latitude, lng: longitude };
+              if (markersRef.current.ambulance) markersRef.current.ambulance.setMap(null);
+              markersRef.current.ambulance = new window.google.maps.Marker({
+                position: cur, map: mapRef.current,
+                icon: { url: AMBULANCE_ICON, scaledSize: new window.google.maps.Size(40, 40), anchor: new window.google.maps.Point(20, 20) },
+                title: 'You'
+              });
+            },
+            (err) => setCurrentLocation((p) => ({ ...p, loading: false, error: err?.message || 'Location error' })),
+            { enableHighAccuracy: true, timeout: 8000 }
+          );
+        }
+
+        // Resume unfinished leg after refresh
+        const saved = getRouteState();
+        if (saved && saved.rideId === ride?._id && saved.target?.lat && saved.target?.lng) {
+          startWatchToTarget(new window.google.maps.LatLng(saved.target.lat, saved.target.lng), () => {});
+        }
+      } catch (e) {
+        setMapError('Failed to load Google Maps');
+      }
+    };
+
+    init();
 
     return () => {
-      // do not destroy map to preserve across rerenders
+      // keep map instance
     };
   }, [ride]);
 
-  // Draw or update route with multiple waypoints (current -> pickup -> drop)
-  const drawRoute = async (fromLatLng, toLatLng, viaPoint = null) => {
-    if (!map.current) return;
+  // Draw or update route using Google Directions
+  const drawRoute = (fromLatLng, toLatLng, viaPoint = null) => {
+    if (!mapRef.current || !directionsServiceRef.current || !directionsRendererRef.current) return;
 
-    // Clean up existing route if any
-    if (routeControlRef.current) {
-      try { map.current.removeLayer(routeControlRef.current); } catch {}
-      routeControlRef.current = null;
-    }
+    const request = {
+      origin: fromLatLng,
+      destination: toLatLng,
+      travelMode: window.google.maps.TravelMode.DRIVING,
+      optimizeWaypoints: true,
+    };
+    if (viaPoint) request.waypoints = [{ location: viaPoint }];
 
-    try {
-      // Format coordinates for OSRM API
-      let coords = `${fromLatLng.lng},${fromLatLng.lat}`;
-      
-      // Add via point if provided (pickup location)
-      if (viaPoint) {
-        coords += `;${viaPoint.lng},${viaPoint.lat}`;
+    directionsServiceRef.current.route(request, (result, status) => {
+      if (status === window.google.maps.DirectionsStatus.OK) {
+        directionsRendererRef.current.setDirections(result);
+        // Flatten overview path for heading calc
+        const overview = result.routes?.[0]?.overview_path || [];
+        routeCoordsRef.current = overview.map(ll => [ll.lat(), ll.lng()]);
+      } else {
+        setTimeout(() => drawRoute(fromLatLng, toLatLng, viaPoint), 2000);
       }
-      
-      // Add final destination (drop location)
-      coords += `;${toLatLng.lng},${toLatLng.lat}`;
-      
-      const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
-      
-      const response = await fetch(url);
-      const data = await response.json();
-      
-      if (data.routes && data.routes.length > 0) {
-        const route = data.routes[0];
-        const routeCoordinates = route.geometry.coordinates.map(coord => [coord[1], coord[0]]);
-        routeCoordsRef.current = routeCoordinates;
-        
-        // Draw the route on the map
-        const routeLayer = L.geoJSON({
-          type: 'Feature',
-          properties: {},
-          geometry: route.geometry
-        }, {
-          style: {
-            color: '#0d6efd',
-            weight: 6,
-            opacity: 0.9
-          }
-        }).addTo(map.current);
-        
-        routeControlRef.current = routeLayer;
-      }
-    } catch (error) {
-      console.error('Error drawing route:', error);
-      // Retry after a delay
-      setTimeout(() => drawRoute(fromLatLng, toLatLng, viaPoint), 2000);
-    }
+    });
   };
 
   // Helpers: heading based on nearest route coordinate
@@ -268,37 +236,32 @@ const Amb_Ridedetails = () => {
     if (!navigator.geolocation) return;
     if (watchIdRef.current) navigator.geolocation.clearWatch(watchIdRef.current);
 
-    lastTargetRef.current = targetLatLng;
-    saveRouteState({ rideId: ride?._id, target: { lat: targetLatLng.lat, lng: targetLatLng.lng } });
+    const tgt = targetLatLng instanceof window.google.maps.LatLng ? targetLatLng : new window.google.maps.LatLng(targetLatLng.lat, targetLatLng.lng);
+    lastTargetRef.current = tgt;
+    saveRouteState({ rideId: ride?._id, target: { lat: tgt.lat(), lng: tgt.lng() } });
 
-    // Get pickup and drop locations from ride data
-    let pickupLatLng = null;
-    let dropLatLng = null;
-    
+    // pickup and drop
+    let pickupLL = null;
+    let dropLL = null;
     if (ride?.pickuplocation?.coordinates) {
       const [plng, plat] = ride.pickuplocation.coordinates;
-      pickupLatLng = L.latLng(plat, plng);
+      pickupLL = new window.google.maps.LatLng(plat, plng);
     }
-    
     if (ride?.droplocation?.coordinates) {
       const [dlng, dlat] = ride.droplocation.coordinates;
-      dropLatLng = L.latLng(dlat, dlng);
+      dropLL = new window.google.maps.LatLng(dlat, dlng);
     }
 
-    // Determine if we're going to pickup or drop location
-    const isGoingToPickup = targetLatLng === pickupLatLng;
-    
-    // initial route from current to target, including via points if needed
-    const cur = L.latLng(currentLocation.lat || 0, currentLocation.lng || 0);
-    
-    // If going to pickup and we have a drop location, include it in the route
-    const viaPoint = isGoingToPickup && dropLatLng ? pickupLatLng : null;
-    const finalTarget = isGoingToPickup && dropLatLng ? dropLatLng : targetLatLng;
-    
+    const isGoingToPickup = pickupLL && tgt.equals(pickupLL);
+
+    const cur = new window.google.maps.LatLng(currentLocation.lat || 0, currentLocation.lng || 0);
+    const viaPoint = isGoingToPickup && dropLL ? pickupLL : null;
+    const finalTarget = isGoingToPickup && dropLL ? dropLL : tgt;
+
     drawRoute(cur, finalTarget, viaPoint);
-    
+
     let lastRouteUpdate = Date.now();
-    const ROUTE_UPDATE_INTERVAL = 5000; // Update route every 5 seconds
+    const ROUTE_UPDATE_INTERVAL = 5000;
 
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
@@ -306,67 +269,36 @@ const Amb_Ridedetails = () => {
         const now = Date.now();
         setCurrentLocation({ lat: latitude, lng: longitude, loading: false, error: null });
         setLiveSpeed(speed ? speed * 3.6 : 0);
-        const here = L.latLng(latitude, longitude);
+        const here = new window.google.maps.LatLng(latitude, longitude);
 
-        // Update ambulance position and map view
-        if (markers.current.ambulance) {
-          markers.current.ambulance.setLatLng(here);
-        } else if (map.current) {
-          markers.current.ambulance = L.marker(here, { icon: ambulanceIcon }).addTo(map.current);
+        // Update ambulance marker
+        if (markersRef.current.ambulance) {
+          markersRef.current.ambulance.setPosition(here);
+        } else if (mapRef.current) {
+          markersRef.current.ambulance = new window.google.maps.Marker({
+            position: here, map: mapRef.current,
+            icon: { url: AMBULANCE_ICON, scaledSize: new window.google.maps.Size(40, 40), anchor: new window.google.maps.Point(20, 20) },
+            title: 'You'
+          });
         }
-        if (markers.current.currentCircle) {
-          markers.current.currentCircle.setLatLng(here);
-        } else if (map.current) {
-          markers.current.currentCircle = L.circle(here, { radius: 80, color: '#1E88E5', fillOpacity: 0.25 }).addTo(map.current);
-        }
-        map.current?.panTo(here, { animate: true });
+        mapRef.current?.panTo(here);
 
-        // Update route periodically to show remaining path
         if (now - lastRouteUpdate > ROUTE_UPDATE_INTERVAL) {
           lastRouteUpdate = now;
-          // Redraw route from current position to target
-          if (routeControlRef.current) {
-            try {
-              routeControlRef.current.setWaypoints([here, targetLatLng]);
-            } catch (e) {
-              console.error('Error updating route:', e);
-              // If update fails, redraw the entire route
-              drawRoute(here, targetLatLng);
-            }
-          } else {
-            drawRoute(here, targetLatLng);
-          }
+          drawRoute(here, finalTarget, viaPoint);
         }
 
-        // Rotate ambulance marker toward next route point
-        try {
-          const el = markers.current.ambulance?.getElement?.();
-          if (el && routeCoordsRef.current?.length) {
-            const [angle] = computeHeading(latitude, longitude, routeCoordsRef.current);
-            el.style.transformOrigin = 'center';
-            el.style.transform = `rotate(${angle}deg)`;
-          }
-        } catch {}
-
-        // arrival check (within 50m)
-        if (here.distanceTo(targetLatLng) <= 50) {
+        // arrival check within ~50m
+        const dist = window.google.maps.geometry ? window.google.maps.geometry.spherical.computeDistanceBetween(here, tgt) : null;
+        if (dist !== null && dist <= 50) {
           if (watchIdRef.current) navigator.geolocation.clearWatch(watchIdRef.current);
           watchIdRef.current = null;
           clearRouteState();
-          // Remove the route when destination is reached
-          if (routeControlRef.current) {
-            try {
-              routeControlRef.current.setWaypoints([]);
-              map.current?.removeControl(routeControlRef.current);
-              routeControlRef.current = null;
-            } catch {}
-          }
+          directionsRendererRef.current && directionsRendererRef.current.set('directions', null);
           if (typeof onArrive === 'function') onArrive();
         }
       },
-      (err) => {
-        setCurrentLocation((p) => ({ ...p, error: err?.message || 'Location error' }));
-      },
+      (err) => setCurrentLocation((p) => ({ ...p, error: err?.message || 'Location error' })),
       { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 }
     );
   };
@@ -376,13 +308,8 @@ const Amb_Ridedetails = () => {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
     }
-    if (routeControlRef.current) {
-      try {
-        // Clear waypoints first to prevent LRM trying to remove non-existing layers
-        routeControlRef.current.setWaypoints([]);
-      } catch {}
-      try { map.current && map.current.removeControl(routeControlRef.current); } catch {}
-      routeControlRef.current = null;
+    if (directionsRendererRef.current) {
+      try { directionsRendererRef.current.set('directions', null); } catch {}
     }
     routeCoordsRef.current = [];
     clearRouteState();
@@ -593,28 +520,24 @@ const Amb_Ridedetails = () => {
           // Start navigation: current -> pickup
           if (ride?.pickuplocation?.coordinates) {
             const [plng, plat] = ride.pickuplocation.coordinates;
-            const pickupLL = L.latLng(plat, plng);
-            // ensure we have a current fix first
+            const pickupLL = new window.google.maps.LatLng(plat, plng);
             if (navigator.geolocation) {
               navigator.geolocation.getCurrentPosition(() => {
                 startWatchToTarget(pickupLL, () => {
-                  // on arrival at pickup, switch to drop
                   if (ride?.droplocation?.coordinates) {
                     const [dlng, dlat] = ride.droplocation.coordinates;
-                    const dropLL = L.latLng(dlat, dlng);
+                    const dropLL = new window.google.maps.LatLng(dlat, dlng);
                     startWatchToTarget(dropLL, () => {
-                      // arrived at drop
                       stopWatchAndClearRoute();
                       MySwal.fire({ title: 'Ride Completed', text: 'Reached destination.', icon: 'success' });
                     });
                   }
                 });
               }, () => {
-                // fallback start even if immediate fix fails
                 startWatchToTarget(pickupLL, () => {
                   if (ride?.droplocation?.coordinates) {
                     const [dlng, dlat] = ride.droplocation.coordinates;
-                    const dropLL = L.latLng(dlat, dlng);
+                    const dropLL = new window.google.maps.LatLng(dlat, dlng);
                     startWatchToTarget(dropLL, () => {
                       stopWatchAndClearRoute();
                       MySwal.fire({ title: 'Ride Completed', text: 'Reached destination.', icon: 'success' });
