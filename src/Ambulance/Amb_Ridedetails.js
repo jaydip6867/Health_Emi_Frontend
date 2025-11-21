@@ -121,7 +121,7 @@ const Amb_Ridedetails = () => {
           directionsRendererRef.current = new window.google.maps.DirectionsRenderer({
             map: mapRef.current,
             suppressMarkers: true,
-            preserveViewport: true,
+            preserveViewport: false,
           });
         }
 
@@ -201,9 +201,13 @@ const Amb_Ridedetails = () => {
     if (viaPoint) request.waypoints = [{ location: viaPoint }];
 
     directionsServiceRef.current.route(request, (result, status) => {
-      if (status === window.google.maps.DirectionsStatus.OK) {
+      if (status === 'OK') {
         directionsRendererRef.current.setDirections(result);
-        // Flatten overview path for heading calc
+        // Ensure route is visible
+        const bounds = result.routes?.[0]?.bounds;
+        if (bounds && mapRef.current) {
+          mapRef.current.fitBounds(bounds);
+        }
         const overview = result.routes?.[0]?.overview_path || [];
         routeCoordsRef.current = overview.map(ll => [ll.lat(), ll.lng()]);
       } else {
