@@ -11,6 +11,7 @@ const NavBar = ({ logindata }) => {
   const location = useLocation();
   const [activeLink, setActiveLink] = useState("");
   const [activeDropdown, setActiveDropdown] = useState(false);
+  console.log(logindata)
 
   useEffect(() => {
     // Set active link based on current path

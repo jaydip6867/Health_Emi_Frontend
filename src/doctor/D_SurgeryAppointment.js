@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Button, Card, Col, Container, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
 import DoctorNav from './DoctorNav'
@@ -12,6 +12,9 @@ import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye } from 'reac
 import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
+import { FiClipboard, FiClock } from 'react-icons/fi'
+import NavBar from '../Visitor/Component/NavBar'
+import FooterBar from '../Visitor/Component/FooterBar'
 const D_SurgeryAppointment = () => {
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
@@ -55,7 +58,7 @@ const D_SurgeryAppointment = () => {
                 Authorization: token
             }
         }).then((res) => {
-            // console.log(res.data.Data)
+            console.log(res.data.Data)
             setappointment(res.data.Data)
         }).catch(function (error) {
             console.log(error);
@@ -172,17 +175,12 @@ const D_SurgeryAppointment = () => {
     // Get status badge styling
     const getStatusBadge = (status) => {
         const statusConfig = {
-            'Accept': { bg: '#10B981', text: 'Accepted', dot: '#10B981' },
-            'Pending': { bg: '#F59E0B', text: 'Pending', dot: '#F59E0B' },
-            'Cancel': { bg: '#EF4444', text: 'Cancelled', dot: '#EF4444' },
-            'Discharged': { bg: '#10B981', text: 'Discharged', dot: '#10B981' },
-            'Ext. hospitalization': { bg: '#F97316', text: 'Ext. hospitalization', dot: '#F97316' },
-            'Unavailable': { bg: '#6B7280', text: 'Unavailable', dot: '#6B7280' },
-            'Surgical intervention': { bg: '#8B5CF6', text: 'Surgical intervention', dot: '#8B5CF6' },
-            'In surgery': { bg: '#EAB308', text: 'In surgery', dot: '#EAB308' },
-            'Expected hospital stay': { bg: '#8B5CF6', text: 'Expected hospital stay', dot: '#8B5CF6' }
+            'Accept': { bg: 'var(--primary-color-600)', text: 'Accepted', dot: 'var(--primary-color-600)' },
+            'Pending': { bg: 'var(--secondary-color-600)', text: 'Pending', dot: 'var(--secondary-color-600)' },
+            'Cancel': { bg: 'var(--grayscale-color-700)', text: 'Cancelled', dot: 'var(--grayscale-color-700)' },
+            'Completed': { bg: 'var(--tertary-color-600)', text: 'Completed', dot: 'var(--tertary-color-600)' },
         };
-        return statusConfig[status] || { bg: '#6B7280', text: status, dot: '#6B7280' };
+        return statusConfig[status] || { bg: 'var(--grayscale-color-500)', text: status, dot: 'var(--grayscale-color-500)' };
     };
 
     // Custom table styles
@@ -253,92 +251,53 @@ const D_SurgeryAppointment = () => {
         name: 'Patient Name',
         selector: row => row.patientname,
         cell: row => (
-            <div className="d-flex align-items-center flex-wrap gap-3">
-                <div
-                    className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-                    style={{
-                        width: '40px',
-                        height: '40px',
-                        backgroundColor: '#6366F1',
-                        fontSize: '14px'
-                    }}
-                >
-                    {getInitials(row.patientname)}
-                </div>
-                <span className="fw-medium" style={{ color: '#111827' }}>{row.patientname}</span>
+            <div className="d-flex align-items-center text-truncate gap-3">
+                <img
+                    // src={row.doctorid?.profile_pic}
+                    src={row.patientid?.profile_pic || require('../Visitor/assets/profile_icon_img.png')}
+                    alt="Patient"
+                    className="rounded-circle appt-avatar"
+                />
+                <span className="fw-semibold appt-doctor-name">{row?.patientname}</span>
             </div>
         ),
     },
     {
-        name: 'Deases',
+        name: 'Surgery Name',
         selector: row => row.surgerydetails?.name || '',
-        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.surgerydetails?.name}</span>,
+        cell: row => (
+            <div className="d-flex align-items-center gap-2 text-muted small">
+                <FiClipboard size={16} />
+                <span>{row.surgerydetails?.name}</span>
+            </div>
+        )
     },
     {
         name: 'Date & Time',
         selector: row => `${row.date || ''} ${row.time || ''}`,
-        cell: row => <span style={{ color: '#6B7280', fontSize: '14px' }}>{`${row.date} ${row.time}`}</span>,
+        cell: row => (
+            <div className="d-flex align-items-center gap-2 text-muted small">
+                <FiClock size={16} className="text-muted" />
+                <span>{`${row.date} , ${row.time}`}</span>
+            </div>
+        ),
     },
     {
-        name: 'Status',
+        name: 'Amount',
         selector: row => row.status || '',
-        cell: row => {
-            const statusInfo = getStatusBadge(row.status);
-            return (
-                <div className="d-flex align-items-center gap-2">
-                    <div
-                        className="rounded-circle"
-                        style={{
-                            width: '8px',
-                            height: '8px',
-                            backgroundColor: statusInfo.dot
-                        }}
-                    ></div>
-                    <span style={{ color: '#6B7280', fontSize: '14px' }}>
-                        {statusInfo.text}
-                    </span>
-                </div>
-            );
-        },
-        width: '120px',
+        cell: row => (
+            <div className="d-flex align-items-center gap-2 text-muted small">
+                <span className="text-muted appt-price">₹</span>
+                <span className="text-truncate"> ₹ {row?.price || '0'}</span>
+            </div>
+        ),
     },
-    // {
-    //     name: 'Payment Status',
-    //     selector: row => row.payment_status || '',
-    //     cell: row => {
-    //         const statusInfo = getStatusBadge(row.payment_status);
-    //         return (
-    //             <div className="d-flex align-items-center gap-2">
-    //                 <div
-    //                     className="rounded-circle"
-    //                     style={{
-    //                         width: '8px',
-    //                         height: '8px',
-    //                         backgroundColor: statusInfo.dot
-    //                     }}
-    //                 ></div>
-    //                 <span style={{ color: '#6B7280', fontSize: '14px' }}>
-    //                     {statusInfo.text}
-    //                 </span>
-    //             </div>
-    //         );
-    //     },
-    //     width: '150px',
-    // },
     {
         name: 'View',
         cell: row => (
             <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
                 <button
-                    className="btn btn-sm p-1"
-                    style={{
-                        border: 'none',
-                        backgroundColor: 'transparent',
-                        color: '#6366F1',
-                        borderRadius: '6px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#F3F4F6'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                    className="btn btn-sm p-1 appt-view-btn"
                     onClick={() => btnview(row._id)}
                 >
                     <MdOutlineRemoveRedEye size={18} />
@@ -355,15 +314,7 @@ const D_SurgeryAppointment = () => {
                     <>
                         <OverlayTrigger placement="top" overlay={renderTooltip('Accept')}>
                             <button
-                                className="btn btn-sm p-1"
-                                style={{
-                                    border: 'none',
-                                    backgroundColor: 'transparent',
-                                    color: '#10B981',
-                                    borderRadius: '6px'
-                                }}
-                                onMouseEnter={(e) => e.target.style.backgroundColor = '#F0FDF4'}
-                                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                className="btn btn-sm p-1 apt_status_btn success"
                                 onClick={() => appointmentbtn(row._id, 'Accept')}
                             >
                                 <MdDone size={18} />
@@ -372,15 +323,7 @@ const D_SurgeryAppointment = () => {
 
                         <OverlayTrigger placement="top" overlay={renderTooltip('Cancel')}>
                             <button
-                                className="btn btn-sm p-1"
-                                style={{
-                                    border: 'none',
-                                    backgroundColor: 'transparent',
-                                    color: '#EF4444',
-                                    borderRadius: '6px'
-                                }}
-                                onMouseEnter={(e) => e.target.style.backgroundColor = '#FEF2F2'}
-                                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                className="btn btn-sm p-1 apt_status_btn danger"
                                 onClick={() => appointmentbtn(row._id, 'Cancel')}
                             >
                                 <MdClose size={18} />
@@ -389,15 +332,7 @@ const D_SurgeryAppointment = () => {
 
                         <OverlayTrigger placement="top" overlay={renderTooltip('Reschedule')}>
                             <button
-                                className="btn btn-sm p-1"
-                                style={{
-                                    border: 'none',
-                                    backgroundColor: 'transparent',
-                                    color: '#6B7280',
-                                    borderRadius: '6px'
-                                }}
-                                onMouseEnter={(e) => e.target.style.backgroundColor = '#F3F4F6'}
-                                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                className="btn btn-sm p-1 apt_status_btn dark"
                                 onClick={() => reschedule_modal(row._id)}
                             >
                                 <MdOutlineAutorenew size={18} />
@@ -405,22 +340,70 @@ const D_SurgeryAppointment = () => {
                         </OverlayTrigger>
                     </>
                 )}
+                {row.status === "Accept" && (
+                    <button
+                        className="btn btn-sm apt_accept_btn"
+                    // onClick={() => handleOpenStartAppointment(row)}
+                    >
+                        Start Appointment
+                    </button>
+                )}
+                {row.status === "Completed" && (
+                    <span className="btn btn-sm apt_complete_btn">Complete</span>
+                )}
+                {row.status === "Cancel" && (
+                    <span className="btn btn-sm apt_cancel_btn">Cancelled</span>
+                )}
 
             </div>
         ),
         width: '150px',
         center: true
     }]
+
+    const [activeTab, setActiveTab] = useState('Pending')
+
+    // Filter by status based on active tab
+    const filteredData = useMemo(() => {
+        if (!appointment) return []
+        const map = {
+            'Pending': ['Pending'],
+            'Accepted': ['Accept'],
+            'Completed': ['Completed'],
+            'Cancelled': ['Cancel']
+        }
+        const allowed = map[activeTab] || []
+        return appointment.filter(r => allowed.includes(r.status))
+    }, [appointment, activeTab])
+
+    const counts = useMemo(() => {
+        const c = { Pending: 0, Accepted: 0, Completed: 0, Cancelled: 0 }
+            ; (appointment || []).forEach(r => {
+                if (r.status === 'Pending') c.Pending++
+                else if (r.status === 'Accept') c.Accepted++
+                else if (r.status === 'Completed') c.Completed++
+                else if (r.status === 'Cancel') c.Cancelled++
+            })
+        return c
+    }, [appointment])
     return (
         <>
-            <Container fluid className='p-0 panel'>
-                <Row className='g-0'>
+            <NavBar />
+            <Container className='my-4'>
+                <Row className="align-items-start">
                     <DoctorSidebar />
-                    <Col xs={12} md={9} lg={10} className='p-3'>
-                        <DoctorNav doctorname={doctor && doctor.name} />
-                        <div className='bg-white rounded p-2'>
-                            <h5 className='mb-4'>All Surgery Appointment</h5>
-                            <SmartDataTable columns={columns} data={appointment ? appointment : []} pagination customStyles={customTableStyles} />
+                    <Col xs={12} md={9}>
+                        <div className='appointments-card mb-3'>
+                            <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
+                                <h4 className='mb-0'>Surgery Appointments</h4>
+                            </div>
+                            <div className='appt-tabs d-flex gap-2 mb-3 flex-wrap'>
+                                <button type='button' className={`appt-tab ${activeTab === 'Pending' ? 'active' : ''}`} onClick={() => setActiveTab('Pending')}>Pending <span className='count'>{counts.Pending}</span></button>
+                                <button type='button' className={`appt-tab ${activeTab === 'Accepted' ? 'active' : ''}`} onClick={() => setActiveTab('Accepted')}>Accepted <span className='count'>{counts.Accepted}</span></button>
+                                <button type='button' className={`appt-tab ${activeTab === 'Completed' ? 'active' : ''}`} onClick={() => setActiveTab('Completed')}>Completed <span className='count'>{counts.Completed}</span></button>
+                                <button type='button' className={`appt-tab ${activeTab === 'Cancelled' ? 'active' : ''}`} onClick={() => setActiveTab('Cancelled')}>Cancelled <span className='count'>{counts.Cancelled}</span></button>
+                            </div>
+                            <SmartDataTable className="appointments-table" columns={columns} data={filteredData} pagination customStyles={customTableStyles} />
                         </div>
                     </Col>
                 </Row>
@@ -678,6 +661,7 @@ const D_SurgeryAppointment = () => {
                     })
                 }
             </Container>
+            <FooterBar />
             {loading ? <Loader /> : ''}
         </>
     )

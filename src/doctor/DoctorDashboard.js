@@ -5,6 +5,9 @@ import { Col, Container, Row } from 'react-bootstrap';
 import DoctorSidebar from './DoctorSidebar';
 import CryptoJS from "crypto-js";
 import { SECRET_KEY, STORAGE_KEYS } from '../config';
+import Navbar from '../Visitor/Component/NavBar';
+import FooterBar from '../Visitor/Component/FooterBar';
+
 
 const DoctorDashboard = () => {
 
@@ -32,11 +35,13 @@ const DoctorDashboard = () => {
   return (
     <>
 
-      <Container fluid className='p-0 panel'>
-        <Row className='g-0'>
-          <DoctorSidebar />
-          <Col xs={12} md={9} lg={10} className='p-3'>
-            <DoctorNav doctorname={doctor && doctor.name} />
+      <Navbar/>
+
+      <Container className='my-4'>
+        <Row className="align-items-start">
+          <DoctorSidebar/>
+          <Col xs={12} md={9}>
+            {/* <DoctorNav doctorname={doctor && doctor.name} /> */}
             <div className='bg-white rounded p-2'>
               {
                 doctor === null ?
@@ -49,6 +54,7 @@ const DoctorDashboard = () => {
           </Col>
         </Row>
       </Container>
+      <FooterBar />
     </>
   )
 }

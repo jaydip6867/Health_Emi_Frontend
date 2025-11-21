@@ -172,8 +172,6 @@ const PatientProfile = () => {
                             <h4>Settings</h4>
 
                             <div className='py-3'>
-
-
                                 {
                                     profile !== null ? <div>
                                         <Tabs
@@ -182,7 +180,7 @@ const PatientProfile = () => {
                                             id="noanim-tab-example"
                                             className="mb-3 border-0 setting_tab gap-3"
                                         >
-                                            <Tab eventKey="profile" title="Profile" className=''>
+                                            <Tab eventKey="profile" title="Profile">
                                                 <Form className='register_doctor row g-4'>
                                                     <Form.Group as={Col} controlId="name" className='col-12 col-sm-6 col-md-4 col-lg-3'>
                                                         <div className='position-relative'>

@@ -13,29 +13,33 @@ const HomeSlider = () => {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-      };
-      const [banner, setBanner] = useState([]);
-      useEffect(() => {
+        autoplay: true,
+        autoplaySpeed: 3000,
+        pauseOnHover: true,
+        cssEase: "linear"
+    };
+    const [banner, setBanner] = useState([]);
+    useEffect(() => {
         axios.get(`${API_BASE_URL}/user/banner`)
-        .then((res) => {
-            // console.log(res.data.Data.banners);
-            setBanner(res.data.Data.banners);
-        })
-        .catch((err) => {
-            console.log(err);
-        })
-      }, [])
-  return (
-    <>
-        <Slider {...settings}>
-            {banner.map((item, index) => (
-                <div key={index}>
-                    <img src={item.path} alt={'banner title'+index} className='slider-img d-block' />
-                </div>
-            ))} 
-        </Slider>
-    </>
-  )
+            .then((res) => {
+                // console.log(res.data.Data.banners);
+                setBanner(res.data.Data.banners);
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+    }, [])
+    return (
+        <>
+            <Slider {...settings}>
+                {banner.map((item, index) => (
+                    <div key={index}>
+                        <img src={item.path} alt={'banner title' + index} className='slider-img d-block' />
+                    </div>
+                ))}
+            </Slider>
+        </>
+    )
 }
 
 export default HomeSlider

@@ -9,6 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
+import NavBar from "../Visitor/Component/NavBar";
 
 const D_Consultation = () => {
 
@@ -123,22 +124,20 @@ const D_Consultation = () => {
 
   return (
     <>
-      <Container fluid className="p-0 panel">
-        <Row className="g-0">
+    <NavBar />
+      <Container className="my-4">
+        <Row className="align-items-start">
           <DoctorSidebar />
-          <Col xs={12} md={9} lg={10} className="p-3">
-            <DoctorNav doctorname={doctor && doctor.name} />
-            <div className="bg-white rounded p-3 shadow ">
-              <Row className="mt-2 mb-3 justify-content-between">
-                <Col xs={"auto"}>
+          <Col xs={12} md={9}>
+            <div className="bg-white">
+              <div className='appointments-card mb-3'>
+                <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
                   <h4>My Consultation Charges</h4>
-                </Col>
-                <Col xs={"auto"}>
-                  <Button variant="primary" onClick={handleShow}>
+                  <Button variant="primary" onClick={handleShow} className="apt_accept_btn">
                     {consultdata !== null ? "Edit" : "Add"} Consultation
                   </Button>
-                </Col>
-              </Row>
+                </div>
+              </div>
               <div>
                 <p>
                   <b>Home Visit :- </b> {consultdata?.home_visit_price}

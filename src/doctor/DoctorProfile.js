@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DoctorSidebar from "./DoctorSidebar";
-import DoctorNav from "./DoctorNav";
-import { Button, Col, Container, Form, Row, Card, Modal } from "react-bootstrap";
+import { Button, Col, Container, Form, Row, Card, Modal, Tabs, Tab } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Loader from "../Loader";
 import axios from "axios";
@@ -10,10 +9,13 @@ import Swal from "sweetalert2";
 import { Country, State, City } from "country-state-city";
 import CryptoJS from "crypto-js";
 import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
+import NavBar from "../Visitor/Component/NavBar";
+import FooterBar from "../Visitor/Component/FooterBar";
 
 const DoctorProfile = () => {
-  
+
   var navigate = useNavigate();
   const [loading, setloading] = useState(false);
   const [IsDisable, setdisabled] = useState(true);
@@ -22,6 +24,9 @@ const DoctorProfile = () => {
   const [profilePicPreview, setProfilePicPreview] = useState(null);
   const [identityProof, setIdentityProof] = useState(null);
   const [identityProofFile, setIdentityProofFile] = useState(null);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // country , state , city
   const [countries, setCountries] = useState([]);
@@ -461,6 +466,7 @@ const DoctorProfile = () => {
         setprofile({
           ...res.data.Data,
           oldProfilePic: res.data.Data.profile_pic,
+          password: "",
         });
         console.log(res.data.Data)
       })
@@ -573,6 +579,13 @@ const DoctorProfile = () => {
     setloading(true);
 
     try {
+      if (profile?.password || confirmPassword) {
+        if (profile?.password !== confirmPassword) {
+          toast.error("Passwords do not match");
+          setloading(false);
+          return;
+        }
+      }
       let updatedProfile = { ...profile };
 
       // Check if there's a new file to upload
@@ -697,6 +710,9 @@ const DoctorProfile = () => {
         title: "Profile Update Successfully...",
         icon: "success",
       });
+      setConfirmPassword("");
+      setShowPassword(false);
+      setShowConfirmPassword(false);
     } catch (error) {
       // console.error("Error updating profile:", error);
       Swal.fire({
@@ -715,69 +731,30 @@ const DoctorProfile = () => {
     return url.toLowerCase().endsWith('.pdf') ||
       url.includes('/raw/upload/');
   };
+  const passwordMismatch = profile?.password && confirmPassword && profile.password !== confirmPassword;
 
   return (
     <>
-      <Container fluid className="p-0 panel">
-        <Row className="g-0">
+      <NavBar />
+      <Container className="my-4">
+        <Row>
           <DoctorSidebar />
-          <Col xs={12} md={9} lg={10} className="p-3">
-            <DoctorNav doctorname={doctor && doctor.name} />
-            <div className="bg-light p-4">
-              {/* Header */}
-              <Card className="mb-4 border-0 shadow-sm">
-                <Card.Header className="bg-primary text-white py-3">
-                  <h4 className="mb-0 text-white">
-                    Update your Doctor Profile
-                  </h4>
-                </Card.Header>
-              </Card>
+          <Col xs={12} md={9}>
+            <div>
+              <div className='appointments-card mb-3'>
+                <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
+                  <h4 className='mb-0'>Doctor Profile</h4>
+                </div>
+              </div>
 
               {profile !== null ? (
-                <Form>
-                  {/* Personal Information Section */}
-                  <Card className="mb-4 border-0 shadow-sm">
-                    <Card.Header className="bg-light border-bottom">
-                      <div className="d-flex flex-column flex-wrap flex-md-row gap-3 justify-content-between align-items-center">
-                        <h5 className="mb-0 text-primary">
-                          Personal Information
-                        </h5>
-                        {IsDisable ? (
-                          <Button
-                            variant="primary"
-                            className="px-5 me-3"
-                            onClick={() => setdisabled(false)}
-                          >
-                            Edit Profile
-                          </Button>
-                        ) : (
-                          <div className="d-flex flex-wrap justify-content-center gap-2">
-                            <Button
-                              variant="success"
-                              className="px-5 me-md-3"
-                              onClick={() => updateprofiledata(profile._id)}
-                            >
-                              Update Profile
-                            </Button>
-                            <Button
-                              variant="danger"
-                              className="px-4"
-                              onClick={() => {
-                                setdisabled(true);
-                                // Clear profile picture preview on cancel
-                                if (profilePicPreview) {
-                                  URL.revokeObjectURL(profilePicPreview);
-                                  setProfilePicPreview(null);
-                                }
-                              }}
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </Card.Header>
-                    <Card.Body className="p-4">
+                <Form className='register_doctor'>
+                  <Tabs
+                    defaultActiveKey="profile"
+                    id="uncontrolled-tab-example"
+                    className="mb-3 border-0 setting_tab gap-3"
+                  >
+                    <Tab eventKey="home" title="Personal">
                       <Row className="g-3">
                         <Col md={6} lg={4}>
                           <Form.Group>
@@ -893,6 +870,91 @@ const DoctorProfile = () => {
                             label={profile?.is_available === 'available' || profile?.is_available === true ? 'Yes' : 'No'}
                           />
                         </Col>
+                        <Col md={4}>
+                          <Form.Group>
+                            <Form.Label className="fw-semibold">
+                              Country
+                            </Form.Label>
+                            <Form.Select
+                              name="country"
+                              disabled={IsDisable}
+                              onChange={handleCountryChange}
+                              className="form-select"
+                            >
+                              <option value="">Select Country</option>
+                              {countries.map((country) => (
+                                <option
+                                  key={country.isoCode}
+                                  value={country.isoCode}
+                                  selected={profile?.country === country.name}
+                                >
+                                  {country.name}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          </Form.Group>
+                        </Col>
+                        <Col md={4}>
+                          <Form.Group>
+                            <Form.Label className="fw-semibold">
+                              State
+                            </Form.Label>
+                            <Form.Select
+                              name="state"
+                              onChange={handleStateChange}
+                              value={selectedStateCode}
+                              disabled={!selectedCountryCode || IsDisable}
+                              className="form-select"
+                            >
+                              {!selectedCountryCode ? (
+                                <option>
+                                  {profile?.state || "Select State"}
+                                </option>
+                              ) : (
+                                <option value="">Select State</option>
+                              )}
+                              {states.map((state) => (
+                                <option
+                                  key={state.isoCode}
+                                  value={state.isoCode}
+                                  selected={profile?.state === state.name}
+                                >
+                                  {state.name}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          </Form.Group>
+                        </Col>
+                        <Col md={4}>
+                          <Form.Group>
+                            <Form.Label className="fw-semibold">
+                              City
+                            </Form.Label>
+                            <Form.Select
+                              name="city"
+                              onChange={handleChange}
+                              disabled={!selectedStateCode || IsDisable}
+                              className="form-select"
+                            >
+                              {!selectedStateCode ? (
+                                <option>
+                                  {profile?.city || "Select City"}
+                                </option>
+                              ) : (
+                                <option value="">Select City</option>
+                              )}
+                              {cities?.map((city, vi) => (
+                                <option
+                                  key={vi}
+                                  value={city.name}
+                                  selected={profile?.city === city.name}
+                                >
+                                  {city.name}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          </Form.Group>
+                        </Col>
                         <Col xs={12}>
                           <Form.Label className="fw-semibold">
                             About me
@@ -907,18 +969,10 @@ const DoctorProfile = () => {
                             className="form-control"
                           />
                         </Col>
-                      </Row>
-                    </Card.Body>
-                  </Card>
 
-                  {/* Professional Information Section */}
-                  <Card className="mb-4 border-0 shadow-sm">
-                    <Card.Header className="bg-light border-bottom">
-                      <h5 className="mb-0 text-success">
-                        Professional Information
-                      </h5>
-                    </Card.Header>
-                    <Card.Body className="p-4">
+                      </Row>
+                    </Tab>
+                    <Tab eventKey="profile" title="Professional">
                       <Row className="g-3">
                         <Col md={6} lg={4}>
                           <Form.Group>
@@ -1018,29 +1072,8 @@ const DoctorProfile = () => {
                           </Form.Group>
                         </Col>
                       </Row>
-                    </Card.Body>
-                  </Card>
-
-                  {/* Hospital Information Section */}
-                  <Card className="mb-4 border-0 shadow-sm">
-                    <Card.Header className="bg-light border-bottom">
-                      <div className="d-flex justify-content-between align-items-center">
-                        <h5 className="mb-0 text-success">
-                          <i className="fas fa-hospital me-2"></i>
-                          Hospital Affiliations
-                        </h5>
-                        <Button
-                          variant="success"
-                          size="sm"
-                          onClick={handleAddHospital}
-                          disabled={IsDisable}
-                          className="d-flex align-items-center"
-                        >
-                          Add Hospital
-                        </Button>
-                      </div>
-                    </Card.Header>
-                    <Card.Body className="p-4">
+                    </Tab>
+                    <Tab eventKey="contact" title="Hospital">
                       <Row className="g-4">
                         {profile?.hospitals?.length > 0 ? (
                           profile.hospitals.map((hospital, index) => (
@@ -1088,6 +1121,7 @@ const DoctorProfile = () => {
                                 </Card.Body>
                               </Card>
                             </Col>
+
                           ))
                         ) : (
                           <Col xs={12} className="text-center py-4">
@@ -1098,19 +1132,21 @@ const DoctorProfile = () => {
                           </Col>
                         )}
                       </Row>
-                    </Card.Body>
-                  </Card>
-
-                  {/* Doctor & Identity Proof Section */}
-                  <Card className="mb-4 border-0 shadow-sm">
-                    <Card.Header className="bg-light border-bottom">
-                      <h5 className="mb-0 text-info">
-                        Doctor & Identity Proof
-                      </h5>
-                    </Card.Header>
-                    <Card.Body className="p-4">
+                      <div className="text-center">
+                        <Button
+                          variant="success"
+                          size="sm"
+                          onClick={handleAddHospital}
+                          disabled={IsDisable}
+                          className="d-flex align-items-center"
+                        >
+                          Add Hospital
+                        </Button>
+                      </div>
+                    </Tab>
+                    <Tab eventKey="identity" title="Identity">
                       <Row className="g-3">
-                        <Col sm={12} md={4} lg={3}>
+                        <Col sm={12} md={4}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">
                               Profile Picture
@@ -1202,7 +1238,7 @@ const DoctorProfile = () => {
                             )}
                           </Form.Group>
                         </Col>
-                        <Col sm={12} md={4} lg={3}>
+                        <Col sm={12} md={3}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">
                               Certificate Proof
@@ -1261,7 +1297,7 @@ const DoctorProfile = () => {
                             )}
                           </Form.Group>
                         </Col>
-                        <Col sm={12} md={4} lg={6}>
+                        <Col sm={12} md={4}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">
                               Identity Proof (Aadhar)
@@ -1269,7 +1305,7 @@ const DoctorProfile = () => {
                             {profile?.identityproof?.length > 0 ? (
                               <div className="row g-3">
                                 {profile.identityproof.map((doc, index) => (
-                                  <div key={index} className="col-6">
+                                  <div key={index}>
                                     <div className="border rounded p-3 bg-light">
                                       <div className="d-flex align-items-center justify-content-between mb-3">
                                         <div className="d-flex align-items-center">
@@ -1322,138 +1358,74 @@ const DoctorProfile = () => {
                         </Col>
 
                       </Row>
-                    </Card.Body>
-                  </Card>
-
-                  {/* Location Information Section */}
-                  <Card className="mb-4 border-0 shadow-sm">
-                    <Card.Header className="bg-light border-bottom">
-                      <h5 className="mb-0 text-warning">
-                        Location Information
-                      </h5>
-                    </Card.Header>
-                    <Card.Body className="p-4">
-                      <Row className="g-3">
-                        <Col md={4}>
-                          <Form.Group>
-                            <Form.Label className="fw-semibold">
-                              Country
-                            </Form.Label>
-                            <Form.Select
-                              name="country"
-                              disabled={IsDisable}
-                              onChange={handleCountryChange}
-                              className="form-select"
-                            >
-                              <option value="">Select Country</option>
-                              {countries.map((country) => (
-                                <option
-                                  key={country.isoCode}
-                                  value={country.isoCode}
-                                  selected={profile?.country === country.name}
-                                >
-                                  {country.name}
-                                </option>
-                              ))}
-                            </Form.Select>
-                          </Form.Group>
-                        </Col>
-                        <Col md={4}>
-                          <Form.Group>
-                            <Form.Label className="fw-semibold">
-                              State
-                            </Form.Label>
-                            <Form.Select
-                              name="state"
-                              onChange={handleStateChange}
-                              value={selectedStateCode}
-                              disabled={!selectedCountryCode || IsDisable}
-                              className="form-select"
-                            >
-                              {!selectedCountryCode ? (
-                                <option>
-                                  {profile?.state || "Select State"}
-                                </option>
-                              ) : (
-                                <option value="">Select State</option>
-                              )}
-                              {states.map((state) => (
-                                <option
-                                  key={state.isoCode}
-                                  value={state.isoCode}
-                                  selected={profile?.state === state.name}
-                                >
-                                  {state.name}
-                                </option>
-                              ))}
-                            </Form.Select>
-                          </Form.Group>
-                        </Col>
-                        <Col md={4}>
-                          <Form.Group>
-                            <Form.Label className="fw-semibold">
-                              City
-                            </Form.Label>
-                            <Form.Select
-                              name="city"
-                              onChange={handleChange}
-                              disabled={!selectedStateCode || IsDisable}
-                              className="form-select"
-                            >
-                              {!selectedStateCode ? (
-                                <option>
-                                  {profile?.city || "Select City"}
-                                </option>
-                              ) : (
-                                <option value="">Select City</option>
-                              )}
-                              {cities?.map((city, vi) => (
-                                <option
-                                  key={vi}
-                                  value={city.name}
-                                  selected={profile?.city === city.name}
-                                >
-                                  {city.name}
-                                </option>
-                              ))}
-                            </Form.Select>
-                          </Form.Group>
-                        </Col>
-                      </Row>
-                    </Card.Body>
-                  </Card>
-                  {/* Location Information Section */}
-                  <Card className="mb-4 border-0 shadow-sm">
-                    <Card.Header className="bg-light border-bottom">
-                      <h5 className="mb-0 text-primary">
-                        Change Password
-                      </h5>
-                    </Card.Header>
-                    <Card.Body className="p-4">
+                    </Tab>
+                    <Tab eventKey="password" title="Password">
                       <Row className="g-3">
                         <Col md={4}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">
                               Password
                             </Form.Label>
-                            <Form.Control
-                              type="password"
-                              placeholder="***"
-                              name="password"
-                              value={profile?.password || ""}
-                              disabled={IsDisable}
-                              onChange={handleChange}
-                              className="form-control"
-                            />
+                            <div className="position-relative">
+                              <Form.Control
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="***"
+                                name="password"
+                                value={profile?.password || ""}
+                                disabled={IsDisable}
+                                onChange={handleChange}
+                                className="form-control frm_input"
+                              />
+                              <button
+                                type="button"
+                                className="eye_btn position-absolute end-0 top-50 translate-middle-y"
+                                onClick={() => setShowPassword(!showPassword)}
+                                disabled={IsDisable}
+                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                              >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                              </button>
+                            </div>
+                          </Form.Group>
+                        </Col>
+                        <Col md={4}>
+                          <Form.Group>
+                            <Form.Label className="fw-semibold">
+                              Confirm Password
+                            </Form.Label>
+                            <div className="position-relative">
+                              <Form.Control
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                placeholder="***"
+                                name="confirmPassword"
+                                value={confirmPassword}
+                                disabled={IsDisable}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="form-control frm_input"
+                              />
+                              <button
+                                type="button"
+                                className="eye_btn position-absolute end-0 top-50 translate-middle-y"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                disabled={IsDisable}
+                                aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                              >
+                                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                              </button>
+                            </div>
+                            {passwordMismatch && (
+                              <Form.Text className="text-danger">Passwords do not match</Form.Text>
+                            )}
                           </Form.Group>
                         </Col>
                       </Row>
-                    </Card.Body>
-                  </Card>
-
+                    </Tab>
+                  </Tabs>
+                  
+                  <hr/>
                   {/* Action Buttons */}
                   <Card className="border-0 shadow-sm">
-                    <Card.Body className="p-4 text-center">
+                    <Card.Body className="text-center">
                       {IsDisable ? (
                         <Button
                           variant="primary"
@@ -1468,6 +1440,7 @@ const DoctorProfile = () => {
                             variant="success"
                             className="px-5 me-3"
                             onClick={() => updateprofiledata(profile._id)}
+                            disabled={passwordMismatch}
                           >
                             Update Profile
                           </Button>
@@ -1481,6 +1454,10 @@ const DoctorProfile = () => {
                                 URL.revokeObjectURL(profilePicPreview);
                                 setProfilePicPreview(null);
                               }
+                              setConfirmPassword("");
+                              setShowPassword(false);
+                              setShowConfirmPassword(false);
+                              setprofile((p) => ({ ...p, password: "" }));
                             }}
                           >
                             Cancel
@@ -1512,12 +1489,13 @@ const DoctorProfile = () => {
                     Delete Doctor Account
                   </Button>
                 </Card.Body>
-              </Card> */}
+                </Card> */}
             </div>
           </Col>
         </Row>
       </Container>
       {loading && <Loader />}
+
 
       {/* Edit Hospital Modal */}
       <Modal show={showEditHospitalModal} onHide={closeEditModal} size="lg">
@@ -1750,6 +1728,7 @@ const DoctorProfile = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <FooterBar />
     </>
   );
 };

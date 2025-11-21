@@ -13,6 +13,8 @@ import Loader from '../Loader';
 import { MdDeleteOutline, MdOutlineEditCalendar, MdOutlineRemoveRedEye } from 'react-icons/md';
 import SmartDataTable from '../components/SmartDataTable';
 import { API_BASE_URL, SECRET_KEY } from '../config';
+import NavBar from '../Visitor/Component/NavBar';
+import { FiClipboard, FiClock } from 'react-icons/fi';
 
 const D_Blog = () => {
 
@@ -60,7 +62,7 @@ const D_Blog = () => {
                 "search": "",
             }
         }).then((res) => {
-            // console.log(res.data.Data)
+            console.log(res.data.Data)
             setbloglist(res.data.Data)
             setdisplist(res.data.Data)
         }).catch(function (error) {
@@ -331,78 +333,48 @@ const D_Blog = () => {
             {label} Blog
         </Tooltip>
     );
-    // Custom table styles
+
+
+    // Minimal table inline styles; visuals handled in CSS
     const customTableStyles = {
-        table: {
-            style: {
-                backgroundColor: '#ffffff',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
-            },
-        },
-        headCells: {
-            style: {
-                fontSize: '14px',
-                fontWeight: '600',
-                backgroundColor: '#F9FAFB',
-                color: '#374151',
-                borderBottom: '1px solid #E5E7EB',
-                paddingTop: '16px',
-                paddingBottom: '16px',
-                paddingLeft: '16px',
-                paddingRight: '16px',
-            },
-        },
-        rows: {
-            style: {
-                borderBottom: '1px solid #F3F4F6',
-                '&:hover': {
-                    backgroundColor: '#F9FAFB',
-                    cursor: 'pointer'
-                },
-                '&:last-child': {
-                    borderBottom: 'none'
-                }
-            },
-        },
-        cells: {
-            style: {
-                paddingTop: '16px',
-                paddingBottom: '16px',
-                paddingLeft: '16px',
-                paddingRight: '16px',
-                fontSize: '14px',
-                color: '#374151'
-            },
-        },
-        pagination: {
-            style: {
-                borderTop: '1px solid #E5E7EB',
-                backgroundColor: '#F9FAFB'
-            }
-        }
+        table: { backgroundColor: 'transparent', borderRadius: 0, boxShadow: 'none' }
     };
 
     // table data
     const columns = [{
         name: 'No',
         selector: (row, index) => index + 1,
-        width: '80px',
+        width: '40px',
     }, {
         name: 'Title',
-        selector: (row) => row.title || '',
-        cell: row => <span className="fw-medium truncaate_description">{row.title}</span>,
+        selector: (row) => row?.title || '',
+        cell: row => (
+            <div className="d-flex align-items-center flex-wrap gap-3">
+                <img src={row?.image} className="appt-avatar rounded-circle" alt="blog_photo" />
+                <span className="fw-semibold appt-doctor-name text-truncate" style={{ maxWidth: '150px' }}>{row.title}</span>
+            </div>
+        ),
+        // <span className="fw-medium truncaate_description">{row.title}</span>,
     },
     {
         name: 'Description',
         selector: (row) => row.description || '',
-        cell: row => <span className="truncaate_description">{row.description}</span>,
+        cell: row => (
+            <div className="d-flex align-items-center gap-2 text-muted small">
+                <FiClipboard size={16} />
+                <span className="truncaate_description" style={{ maxWidth: '200px' }}>{row.description}</span>
+            </div>
+        ),
     },
     {
         name: 'Expiry Date',
         selector: row => row.expirydate || 'Not Defined',
-        cell: row => <>{row.expirydate === '' ? 'Not Defined' : row.expirydate}</>,
+        cell: row => (
+            <div className="d-flex align-items-center gap-2 text-muted small">
+                <FiClock size={16} className="text-muted" />
+                <span>{row.expirydate === '' ? 'Not Defined' : row.expirydate}</span>
+            </div>
+        ),
     },
     {
         name: 'Action',
@@ -410,15 +382,7 @@ const D_Blog = () => {
             <div className="d-flex align-items-center gap-1">
                 <OverlayTrigger placement="top" overlay={renderTooltip('Edit')}>
                     <button
-                        className="btn btn-sm p-1"
-                        style={{
-                            border: 'none',
-                            backgroundColor: 'transparent',
-                            color: '#10B981',
-                            borderRadius: '6px'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#F0FDF4'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                        className="btn btn-sm p-1 apt_status_btn success"
                         onClick={() => btnedit(row._id)}
                     >
                         <MdOutlineEditCalendar size={18} />
@@ -427,15 +391,7 @@ const D_Blog = () => {
 
                 <OverlayTrigger placement="top" overlay={renderTooltip('Delete')}>
                     <button
-                        className="btn btn-sm p-1"
-                        style={{
-                            border: 'none',
-                            backgroundColor: 'transparent',
-                            color: '#EF4444',
-                            borderRadius: '6px'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#FEF2F2'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                        className="btn btn-sm p-1 apt_status_btn danger"
                         onClick={() => deleteblog(row._id)}
                     >
                         <MdDeleteOutline size={18} />
@@ -444,15 +400,7 @@ const D_Blog = () => {
 
                 <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
                     <button
-                        className="btn btn-sm p-1"
-                        style={{
-                            border: 'none',
-                            backgroundColor: 'transparent',
-                            color: '#6366F1',
-                            borderRadius: '6px'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#F3F4F6'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                        className="btn btn-sm p-1 apt_status_btn dark"
                         onClick={() => btnview(row._id)}
                     >
                         <MdOutlineRemoveRedEye size={18} />
@@ -475,23 +423,17 @@ const D_Blog = () => {
 
     return (
         <>
-
-            <Container fluid className='p-0 panel'>
-                <Row className='g-0'>
+            <NavBar />
+            <Container className='my-4'>
+                <Row className="align-items-start">
                     <DoctorSidebar />
-                    <Col xs={12} md={9} lg={10} className='p-3'>
-                        <DoctorNav doctorname={doctor && doctor.name} />
-
-                        <div className='bg-white rounded p-3 mt-3 shadow'>
-                            <Row className='mt-2 mb-3 justify-content-between'>
-                                <Col xs={'auto'}>
-                                    <h4>My Blogs</h4>
-                                </Col>
-                                <Col xs={'auto'}>
-                                    <Button variant='primary' onClick={handleblogShow}>Add Blog</Button>
-                                </Col>
-                            </Row>
-                            <SmartDataTable columns={columns} data={displist ? displist : []} pagination customStyles={customTableStyles} />
+                    <Col xs={12} md={9}>
+                        <div className='appointments-card mb-3'>
+                            <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
+                                <h4 className='mb-0'>My Blogs</h4>
+                                <Button variant='primary' onClick={handleblogShow} className="apt_accept_btn">Add Blog</Button>
+                            </div>
+                            <SmartDataTable className="appointments-table" columns={columns} data={displist ? displist : []} pagination customStyles={customTableStyles} />
                         </div>
                     </Col>
                 </Row>

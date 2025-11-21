@@ -11,7 +11,8 @@ import SmartDataTable from '../components/SmartDataTable'
 import { MdOutlineRemoveRedEye, MdVerified } from 'react-icons/md'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 import { BsClipboard } from 'react-icons/bs'
-import { FiClock } from "react-icons/fi";
+import { FiClock, FiMail, FiPhone } from "react-icons/fi";
+
 
 const P_Surgeries = () => {
 
@@ -142,7 +143,7 @@ const P_Surgeries = () => {
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
                 <span className="text-muted appt-price">₹</span>
-                <span className="text-truncate" style={{ maxWidth: 280 }}>{row?.price}</span>
+                <span className="text-truncate">{row?.price}</span>
             </div>
         ),
         // cell: row => <span className=' text-nowrap'>₹{row?.surgerydetails?.price}/-</span>,
@@ -156,54 +157,7 @@ const P_Surgeries = () => {
                 <span>{`${row.date} , ${row.time}`}</span>
             </div>
         ),
-        // cell: row => `${row?.date} ${row?.time}`,
     },
-    // {
-    //     name: 'Status',
-    //     selector: row => row.status || '',
-    //     cell: row => {
-    //         const statusInfo = getStatusBadge(row.status);
-    //         return (
-    //             <div className="d-flex align-items-center gap-2">
-    //                 <div
-    //                     className="rounded-circle"
-    //                     style={{
-    //                         width: '8px',
-    //                         height: '8px',
-    //                         backgroundColor: statusInfo.dot
-    //                     }}
-    //                 ></div>
-    //                 <span style={{ color: '#6B7280', fontSize: '14px' }}>
-    //                     {statusInfo.text}
-    //                 </span>
-    //             </div>
-    //         );
-    //     },
-    //     width: '120px',
-    // },
-    // {
-    //     name: 'Payment Status',
-    //     selector: row => row.payment_status || '',
-    //     cell: row => {
-    //         const statusInfo = getStatusBadge(row.payment_status);
-    //         return (
-    //             <div className="d-flex align-items-center gap-2">
-    //                 <div
-    //                     className="rounded-circle"
-    //                     style={{
-    //                         width: '8px',
-    //                         height: '8px',
-    //                         backgroundColor: statusInfo.dot
-    //                     }}
-    //                 ></div>
-    //                 <span style={{ color: '#6B7280', fontSize: '14px' }}>
-    //                     {statusInfo.text}
-    //                 </span>
-    //             </div>
-    //         );
-    //     },
-    //     width: '150px',
-    // },
     {
         cell: row => (
             <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
@@ -268,12 +222,109 @@ const P_Surgeries = () => {
                 {/* view single surgery */}
                 {
                     single_view && single_view.map((v, i) => {
+                        const fee = Number(v?.price || 0);
+                        const status = getStatusBadge(v?.status);
                         return (
-                            <Modal show={show} onHide={handleClose} centered size="xl" key={i}>
+                            <Modal show={show} onHide={handleClose} centered size="lg" key={i}>
                                 <Modal.Header closeButton>
                                     <Modal.Title>Surgery Appointment Detail</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
+                                    <div className='p-2 rounded-3 border rounded' style={{ background: 'var(--white)' }}>
+                                        {/* Header: Doctor block and badges */}
+                                        <div className='d-flex flex-wrap align-items-center justify-content-between gap-3 p-3'>
+                                            <div className='d-flex align-items-center gap-3'>
+                                                <img src={v?.doctorid?.profile_pic} className='rounded-3' style={{ width: 72, height: 72, objectFit: 'cover' }} />
+                                                <div>
+                                                    <div className='d-flex align-items-center gap-2 flex-wrap'>
+                                                        <h5 className='mb-0'>{v?.doctorid?.name}</h5>
+                                                        <span className='text-primary d-inline-flex align-items-center' title='Verified'>
+                                                            <MdVerified size={18} fill='#0697B8' />
+                                                        </span>
+                                                    </div>
+                                                    <div className='text-muted small'><FiMail className='me-1' /> {v?.doctorid?.email}</div>
+                                                    <div className='text-muted small'><FiPhone className='me-1' /> +91 {v?.doctorid?.mobile}</div>
+                                                </div>
+                                            </div>
+                                            <div className='d-flex align-items-center gap-3 flex-wrap appointment_model'>
+                                                <div>
+                                                    <p className='mb-0 small'>Ward Type</p>
+                                                    <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{v?.roomtype}</span>
+                                                </div>
+                                                <div>
+                                                    <p className='mb-0 small'>Surgery Status</p>
+                                                    <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#E8F7EE', color: '#1F9254' }}>
+                                                        {status.text}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <p className='mb-0 small'>Consultation Fee</p>
+                                                    <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {fee}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Summary row */}
+                                        <div className='border rounded p-3 mt-3'>
+                                            <Row className='g-3'>
+                                                <Col md={6} xs={12}>
+                                                    <div className='text-muted small mb-1'>Clinic Name</div>
+                                                    <div className='d-flex align-items-center gap-2'>
+                                                        <span>{v?.surgerydetails?.name}</span>
+                                                    </div>
+                                                </Col>
+                                                <Col md={6} xs={12}>
+                                                    <div className='text-muted small mb-1'>Appointment Date & Time</div>
+                                                    <div className='d-flex align-items-center gap-2'>
+                                                        <FiClock />
+                                                        <span>{v?.date}, {v?.time}</span>
+                                                    </div>
+                                                </Col>
+                                                
+                                                <Col md={6} xs={12}>
+                                                    <div className='text-muted small mb-1'>Clinic Name</div>
+                                                    <div className='d-flex align-items-center gap-2'>
+                                                        <span className='text-truncate'>{v?.hospitalname || '-'}</span>
+                                                    </div>
+                                                </Col>
+                                                <Col md={6} xs={12}>
+                                                    <div className='text-muted small mb-1'>Clinic Address</div>
+                                                    <div className='d-flex align-items-center gap-2'>
+                                                        <span className='text-truncate'>{v?.clinicLocation || '-'}</span>
+                                                    </div>
+                                                </Col>
+                                            </Row>
+                                        </div>
+                                        <hr />
+                                        {/* Reports */}
+                                        <div className='mt-3'>
+                                            <div className='fw-semibold mb-3'>Reports</div>
+                                            <Row className='g-3'>
+                                                {(v?.report || []).length > 0 ? (
+                                                    v.report.map((url, idx) => (
+                                                        <Col md={4} sm={6} xs={12} key={idx}>
+                                                            <Card className='h-100'>
+                                                                <div className='ratio ratio-16x9 bg-light'>
+                                                                    <iframe src={url} title={`report_${idx}`} className='w-100 h-100 border-0'></iframe>
+                                                                </div>
+                                                                <Card.Body className='d-flex justify-content-between align-items-center'>
+                                                                    <div className='small text-muted'>Report {idx + 1}</div>
+                                                                    <Button size='sm' variant='outline-primary' onClick={() => window.open(url, '_blank')}>View</Button>
+                                                                </Card.Body>
+                                                            </Card>
+                                                        </Col>
+                                                    ))
+                                                ) : (
+                                                    <Col xs={12}>
+                                                        <div className='text-muted small'>No reports uploaded.</div>
+                                                    </Col>
+                                                )}
+                                            </Row>
+                                        </div>
+
+                                    </div>
+                                </Modal.Body>
+                                {/* <Modal.Body>
                                     <Row className="p-4">
                                         <Col xs={12} lg={6}>
                                             <Card className="mb-4 border-light">
@@ -301,7 +352,6 @@ const P_Surgeries = () => {
                                                     {Array.isArray(v.report) ? (
                                                         <div className="d-flex flex-column gap-3" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                                             {v.report?.map((r, i) => {
-                                                                // Determine file type based on URL extension
                                                                 const fileExtension = r.split('.').pop().toLowerCase();
                                                                 const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension);
                                                                 const isPdf = fileExtension === 'pdf';
@@ -342,7 +392,6 @@ const P_Surgeries = () => {
                                                                                         <div>
                                                                                             <strong>Report {i + 1}</strong>
                                                                                             <br />
-                                                                                            {/* <small className="text-muted">.{fileExtension} file</small> */}
                                                                                         </div>
                                                                                     </div>
                                                                                     <Button
@@ -404,7 +453,7 @@ const P_Surgeries = () => {
                                             </Card>
                                         </Col>
                                     </Row>
-                                </Modal.Body>
+                                </Modal.Body> */}
                             </Modal>
                         )
                     })
