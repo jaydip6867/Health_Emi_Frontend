@@ -28,6 +28,8 @@ import CryptoJS from "crypto-js";
 import SmartDataTable from '../components/SmartDataTable';
 import { FiAward, FiChevronsRight, FiClipboard, FiClock, FiPlus, FiX } from "react-icons/fi";
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
+import NavBar from "../Visitor/Component/NavBar";
+import FooterBar from "../Visitor/Component/FooterBar";
 
 const D_Surgery = () => {
   var navigate = useNavigate();
@@ -527,25 +529,15 @@ const D_Surgery = () => {
     {
       name: "No",
       selector: (row, index) => index + 1,
-      width: "50px",
+      width: "40px",
     },
     {
       name: "Surgery Name",
       selector: (row) => row.name,
       cell: (row) => (
         <div className="d-flex align-items-center flex-wrap gap-3">
-          <div
-            className="rounded-circle d-flex align-items-center overflow-hidden justify-content-center text-white fw-bold"
-            style={{
-              width: '40px',
-              height: '40px',
-              backgroundColor: '#6366F1',
-              fontSize: '14px'
-            }}
-          >
-            <img src={row.surgery_photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </div>
-          <span className="fw-medium" style={{ color: '#111827' }}>{row.name}</span>
+          <img src={row.surgery_photo} className="appt-avatar rounded-circle" alt="surgery_photo"/>
+          <span className="fw-semibold appt-doctor-name">{row.name}</span>
         </div>
       ),
     },
@@ -618,14 +610,14 @@ const D_Surgery = () => {
 
   return (
     <>
-      <Container fluid className="p-0">
-        <Row className="g-0">
+    <NavBar />
+      <Container className="my-4">
+        <Row className="align-items-start">
           <DoctorSidebar />
-          <Col xs={12} md={9} lg={10} className="p-3">
-            <DoctorNav doctorname={doctor && doctor.name} />
+          <Col xs={12} md={9}>
 
-            <div className='appointments-card p-3 mb-3'>
-              <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3'>
+            <div className='appointments-card mb-3'>
+              <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
                 <h4 className='mb-0'>Consultation Appointments</h4>
                 <Button variant="primary" onClick={handlesurShow} className="apt_accept_btn">
                   Add Surgery
@@ -1790,6 +1782,7 @@ const D_Surgery = () => {
         )}
       </Container>
       <ToastContainer />
+      <FooterBar />
       {loading ? <Loader /> : ""}
     </>
   );

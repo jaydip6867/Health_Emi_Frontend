@@ -13,6 +13,8 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import CryptoJS from "crypto-js";
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
+import NavBar from '../Visitor/Component/NavBar'
+import FooterBar from '../Visitor/Component/FooterBar'
 
 dayjs.extend(utc);
 
@@ -114,26 +116,24 @@ const D_Calender = () => {
     };
     return (
         <>
-            <Container fluid className='p-0 panel'>
-                <Row className='g-0'>
+        <NavBar />
+            <Container className='my-4'>
+                <Row className='align-items-start'>
                     <DoctorSidebar />
-                    <Col xs={12} md={9} lg={10} className='p-3'>
-                        <DoctorNav doctorname={doctor && doctor.name} />
+                    <Col xs={12} md={9}>
                         {/* Calendar Header */}
-                        <Card className='mb-4 border-0 shadow-sm'>
-                            <Card.Header className='bg-primary text-white py-3'>
-                                <div className='d-flex justify-content-between align-items-center'>
-                                    <h4 className='mb-0 text-white'>Appointment Calendar</h4>
-                                    <Badge bg='light' text='dark' className='px-3 py-2'>
-                                        {appointment ? appointment.length : 0} Appointments
-                                    </Badge>
-                                </div>
-                            </Card.Header>
-                        </Card>
+                        <div className='appointments-card mb-3'>
+                            <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
+                                <h4>All Appointments</h4>
+                                <Badge text='white' className='apt_accept_btn'>
+                                    {appointment ? appointment.length : 0} Appointments
+                                </Badge>
+                            </div>
+                        </div>
 
                         {/* Calendar Container */}
                         <Card className='border-0 shadow-sm'>
-                            <Card.Body className='p-4'>
+                            <Card.Body>
                                 <style>
                                     {`
                                         .fc {
@@ -366,6 +366,7 @@ const D_Calender = () => {
                     </Row>
                 </Modal.Body>
             </Modal>
+            <FooterBar />
             {loading ? <Loader /> : ''}
         </>
     )

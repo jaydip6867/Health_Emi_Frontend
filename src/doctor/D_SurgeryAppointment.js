@@ -13,6 +13,8 @@ import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 import { FiClipboard, FiClock } from 'react-icons/fi'
+import NavBar from '../Visitor/Component/NavBar'
+import FooterBar from '../Visitor/Component/FooterBar'
 const D_SurgeryAppointment = () => {
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
@@ -265,8 +267,8 @@ const D_SurgeryAppointment = () => {
         selector: row => row.surgerydetails?.name || '',
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
-                <FiClipboard size={16}/>
-                <span style={{ color: '#6B7280', fontSize: '14px' }}>{row.surgerydetails?.name}</span>
+                <FiClipboard size={16} />
+                <span>{row.surgerydetails?.name}</span>
             </div>
         )
     },
@@ -274,11 +276,11 @@ const D_SurgeryAppointment = () => {
         name: 'Date & Time',
         selector: row => `${row.date || ''} ${row.time || ''}`,
         cell: row => (
-                    <div className="d-flex align-items-center gap-2 text-muted small">
-                        <FiClock size={16} className="text-muted" />
-                        <span>{`${row.date} , ${row.time}`}</span>
-                    </div>
-                ),
+            <div className="d-flex align-items-center gap-2 text-muted small">
+                <FiClock size={16} className="text-muted" />
+                <span>{`${row.date} , ${row.time}`}</span>
+            </div>
+        ),
     },
     {
         name: 'Amount',
@@ -386,13 +388,13 @@ const D_SurgeryAppointment = () => {
     }, [appointment])
     return (
         <>
-            <Container fluid className='p-0'>
-                <Row className='g-0'>
+            <NavBar />
+            <Container className='my-4'>
+                <Row className="align-items-start">
                     <DoctorSidebar />
-                    <Col xs={12} md={9} lg={10} className='p-3'>
-                        <DoctorNav doctorname={doctor && doctor.name} />
-                        <div className='appointments-card p-3 mb-3'>
-                            <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3'>
+                    <Col xs={12} md={9}>
+                        <div className='appointments-card mb-3'>
+                            <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
                                 <h4 className='mb-0'>Surgery Appointments</h4>
                             </div>
                             <div className='appt-tabs d-flex gap-2 mb-3 flex-wrap'>
@@ -659,6 +661,7 @@ const D_SurgeryAppointment = () => {
                     })
                 }
             </Container>
+            <FooterBar />
             {loading ? <Loader /> : ''}
         </>
     )

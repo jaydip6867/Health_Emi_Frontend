@@ -19,6 +19,8 @@ import { FiClock } from 'react-icons/fi'
 import { PiHospital } from 'react-icons/pi'
 import { HiOutlineHome } from 'react-icons/hi'
 import { BsCameraVideo } from 'react-icons/bs'
+import NavBar from '../Visitor/Component/NavBar'
+import FooterBar from '../Visitor/Component/FooterBar'
 
 const D_Appointment = () => {
     var navigate = useNavigate();
@@ -603,13 +605,14 @@ const D_Appointment = () => {
 
     return (
         <>
-            <Container fluid className='p-0'>
-                <Row className='g-0'>
+
+        <NavBar />
+            <Container className='my-4'>
+                <Row className="align-items-start">
                     <DoctorSidebar />
-                    <Col xs={12} md={9} lg={10} className='p-3'>
-                        <DoctorNav doctorname={doctor && doctor.name} />
-                        <div className='appointments-card p-3 mb-3'>
-                            <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3'>
+                    <Col xs={12} md={9}>
+                        <div className='appointments-card mb-3'>
+                            <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
                                 <h4 className='mb-0'>Consultation Appointments</h4>
                             </div>
                             <div className='appt-tabs d-flex gap-2 mb-3 flex-wrap'>
@@ -1293,6 +1296,7 @@ const D_Appointment = () => {
                     <div style={{ opacity: 0.08, fontWeight: 800, fontSize: 48, marginTop: 12 }}>HEALTH EASY EMI</div>
                 </div>
             </div>
+            <FooterBar />
             {loading ? <Loader /> : ''}
         </>
     )

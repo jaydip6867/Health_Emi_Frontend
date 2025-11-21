@@ -1,9 +1,8 @@
 import { Button, Col } from 'react-bootstrap'
-import { GoGear } from "react-icons/go";
-import { AiFillSchedule } from "react-icons/ai";
 import { NavLink, useNavigate } from 'react-router-dom'
 import { MdOutlineLogout } from 'react-icons/md';
 import { IoCalendarOutline } from "react-icons/io5";
+import { FiSettings } from 'react-icons/fi';
 const P_Sidebar = () => {
     const navigate = useNavigate();
     return (
@@ -20,7 +19,7 @@ const P_Sidebar = () => {
                             <NavLink to={'/patient/appointment'} className={({ isActive }) => (isActive ? 'active' : '')} ><IoCalendarOutline /><span>Consultation Appointment</span></NavLink>
                             <NavLink to={'/patient/surgeries'} className={({ isActive }) => (isActive ? 'active' : '')} ><IoCalendarOutline /><span>Surgeries Appointment</span></NavLink>
                             {/* <NavLink to={'/patient/blog'} className={({ isActive }) => (isActive ? 'active' : '')}><BiSolidCommentAdd /><span>Blog</span></NavLink> */}
-                            <NavLink to={'/patient/patientprofile'} className={({ isActive }) => (isActive ? 'active' : '')}><GoGear /><span>Settings</span></NavLink>
+                            <NavLink to={'/patient/patientprofile'} className={({ isActive }) => (isActive ? 'active' : '')}><FiSettings /><span>Settings</span></NavLink>
                         </div>
                     </div>
                     <div className='mx-2'>
