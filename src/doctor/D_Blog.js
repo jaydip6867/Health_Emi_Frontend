@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import DoctorNav from './DoctorNav';
-import { Button, Col, Container, Form, Modal, OverlayTrigger, Row, ToastContainer, Tooltip } from 'react-bootstrap';
+import { Badge, Button, Col, Container, Form, Modal, OverlayTrigger, Row, ToastContainer, Tooltip } from 'react-bootstrap';
 import DoctorSidebar from './DoctorSidebar';
 import CryptoJS from "crypto-js";
 import DatePicker from 'react-datepicker';
@@ -15,6 +15,7 @@ import SmartDataTable from '../components/SmartDataTable';
 import { API_BASE_URL, SECRET_KEY } from '../config';
 import NavBar from '../Visitor/Component/NavBar';
 import { FiClipboard, FiClock } from 'react-icons/fi';
+
 
 const D_Blog = () => {
 
@@ -426,7 +427,7 @@ const D_Blog = () => {
             <NavBar />
             <Container className='my-4'>
                 <Row className="align-items-start">
-                    <DoctorSidebar />
+                    <DoctorSidebar doctor={doctor} />
                     <Col xs={12} md={9}>
                         <div className='appointments-card mb-3'>
                             <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
@@ -440,41 +441,13 @@ const D_Blog = () => {
                 {/* add blog modal */}
                 <Modal show={show_ad_blog} onHide={handleblogClose} centered size="lg">
                     <Modal.Header closeButton>
-                        <Modal.Title>Add Surgery Detail</Modal.Title>
+                        <Modal.Title>Add Blog Detail</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <Row className='g-4'>
                             <Col xs={12}>
-                                <Form className='row register_doctor px-2 gy-3'>
-                                    <Form.Group controlId="title">
-                                        <div>
-                                            <Form.Label>Title</Form.Label>
-                                            <Form.Control placeholder="Ex:- What is Tomato Flu: Symptoms, Causes, Treatment & Preventive Tips" name="title" value={blog.title} onChange={(e) => setblog({ ...blog, title: e.target.value })} />
-                                        </div>
-                                    </Form.Group>
-                                    <Form.Group controlId="description">
-                                        <div>
-                                            <Form.Label>Description</Form.Label>
-                                            <Form.Control as="textarea" placeholder="The ‘new’ virus, tomato flu, is a variant of already existing hand, " name="description" value={blog.description} onChange={(e) => setblog({ ...blog, description: e.target.value })} />
-                                        </div>
-                                    </Form.Group>
-                                    <Form.Group controlId="expirydate" className='col-4'>
-                                        <Form.Label>Expiry Date</Form.Label>
-                                        <div>
-                                            <DatePicker selected={blog.expirydate}
-                                                onChange={(date) => setblog({ ...blog, expirydate: date })}
-                                                dateFormat="dd-MM-y"
-                                                placeholderText="Select date"
-                                                locale={enGB}
-                                                value={blog.expirydate}
-                                                minDate={new Date()} />
-                                        </div>
-                                        <div className='mb-3 mt-4'>
-                                            <Form.Check type="switch" name="showto_doctor" label="Display Blog to doctor" id="docshow" checked={blog.showto_doctor} onChange={(e) => setblog({ ...blog, showto_doctor: e.target.checked })} />
-                                            <Form.Check type="switch" name="showto_patient" label="Display Blog to patient" id="patshow" checked={blog.showto_patient} onChange={(e) => setblog({ ...blog, showto_patient: e.target.checked })} />
-                                        </div>
-                                    </Form.Group>
-                                    <Form.Group className='col-8'>
+                                <Form className='row register_doctor border rounded m-1 px-2 gy-3'>
+                                    <Form.Group className='col-12'>
                                         <Form.Label>Blog Image</Form.Label>
                                         <Form.Control
                                             type="file"
@@ -511,7 +484,34 @@ const D_Blog = () => {
                                         )}
                                     </Form.Group>
 
-
+                                    <Form.Group controlId="title">
+                                        <div>
+                                            <Form.Label>Title</Form.Label>
+                                            <Form.Control placeholder="Ex:- What is Tomato Flu: Symptoms, Causes, Treatment & Preventive Tips" name="title" value={blog.title} onChange={(e) => setblog({ ...blog, title: e.target.value })} />
+                                        </div>
+                                    </Form.Group>
+                                    <Form.Group controlId="description">
+                                        <div>
+                                            <Form.Label>Description</Form.Label>
+                                            <Form.Control as="textarea" placeholder="The ‘new’ virus, tomato flu, is a variant of already existing hand, " name="description" value={blog.description} rows={4} onChange={(e) => setblog({ ...blog, description: e.target.value })} />
+                                        </div>
+                                    </Form.Group>
+                                    <Form.Group controlId="expirydate" className='col-4'>
+                                        <Form.Label>Expiry Date</Form.Label>
+                                        <div>
+                                            <DatePicker selected={blog.expirydate}
+                                                onChange={(date) => setblog({ ...blog, expirydate: date })}
+                                                dateFormat="dd-MM-y"
+                                                placeholderText="Select date"
+                                                locale={enGB}
+                                                value={blog.expirydate}
+                                                minDate={new Date()} />
+                                        </div>
+                                        <div className='mb-3 mt-4'>
+                                            <Form.Check type="switch" name="showto_doctor" label="Display Blog to doctor" id="docshow" checked={blog.showto_doctor} onChange={(e) => setblog({ ...blog, showto_doctor: e.target.checked })} />
+                                            <Form.Check type="switch" name="showto_patient" label="Display Blog to patient" id="patshow" checked={blog.showto_patient} onChange={(e) => setblog({ ...blog, showto_patient: e.target.checked })} />
+                                        </div>
+                                    </Form.Group>
                                 </Form>
                             </Col>
                         </Row>
@@ -531,26 +531,31 @@ const D_Blog = () => {
                                     <Modal.Title>Blog Detail</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <Row>
-                                        <Col xs={12}>
-                                            <div className='label_box'>
-                                                <span className="label_title">Title:</span>
-                                                <p>{v?.title}</p>
-                                            </div>
-                                        </Col>
-                                        <Col xs={12}>
-                                            <div className='label_box'>
-                                                <span className="label_title">Description:</span>
-                                                <p>{v?.description}</p>
-                                            </div>
-                                        </Col>
-                                        <Col xs={12}>
-                                            <div className="label_box">
-                                                <span className="label_title">Image:</span>
-                                                {!v?.image || v?.image === '' ? <p>No Image Specified.</p> : <img src={v?.image} alt={`${v?.title} blog...`} className="w-50 img-thumbnail" style={{ objectFit: 'cover', borderRadius: '10px', maxHeight: '200px', maxWidth: '200px' }} />}
-                                            </div>
-                                        </Col>
-                                    </Row>
+                                    <div className='p-3 border rounded'>
+                                        <Row className='g-3'>
+                                            <Col xs={6}>
+                                                <div className="label_box">
+                                                    <span className="label_title">Image:</span>
+                                                    {!v?.image || v?.image === '' ? <p>No Image Specified.</p> : <img src={v?.image} alt={`${v?.title} blog...`} className="rounded" />}
+                                                </div>
+                                            </Col>
+                                            <Col xs={12}>
+                                                <span className='fs-5 fw-medium'>{v?.title}</span>
+                                            </Col>
+                                            <Col xs={12}>
+                                                <div className='py-2 px-4 d-inline-block rounded ' style={{ backgroundColor: 'var(--primary-color-50)' }}>
+                                                    <span className='text-muted small'><FiClock /> Expired On</span>
+                                                    <p className='m-0 fw-medium' style={{ color: 'var(--grayscale-color-800)' }}>{v?.expirydate}</p>
+                                                </div>
+                                            </Col>
+                                            <Col xs={12}>
+                                                <div>
+                                                    <p>{v?.description}</p>
+                                                </div>
+                                            </Col>
+
+                                        </Row>
+                                    </div>
                                 </Modal.Body>
                             </Modal>
                         )
@@ -564,71 +569,74 @@ const D_Blog = () => {
                                 <Modal.Title>Update Blog</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
-                                <Form className='row register_doctor'>
-                                    <Form.Group controlId="title" className='mb-3'>
-                                        <div>
-                                            <Form.Label>Title</Form.Label>
-                                            <Form.Control placeholder="Ex:- What is Tomato Flu: Symptoms, Causes, Treatment & Preventive Tips" name="title" value={edit_record.title} onChange={(e) => seteditrecord({ ...edit_record, title: e.target.value })} />
-                                        </div>
-                                    </Form.Group>
-                                    <Form.Group controlId="description" className='mb-3'>
-                                        <div>
-                                            <Form.Label>Description</Form.Label>
-                                            <Form.Control as="textarea" placeholder="The ‘new’ virus, tomato flu, is a variant of already existing hand, " name="description" value={edit_record.description} onChange={(e) => seteditrecord({ ...edit_record, description: e.target.value })} />
-                                        </div>
-                                    </Form.Group>
-                                    <Form.Group controlId="expirydate" className='mb-3'>
-                                        <Form.Label>Expiry Date</Form.Label>
-                                        <div>
-                                            <DatePicker selected={startDate}
-                                                onChange={(date) => setStartDate(date)}
-                                                dateFormat="dd-MM-y"
-                                                placeholderText="Select date"
-                                                locale={enGB}
-                                                minDate={new Date()} />
-                                        </div>
-                                    </Form.Group>
-                                    <div className='mb-3'>
-                                        <Form.Check type="switch" name="showto_doctor" label="Display Blog to doctor" id="docshow" checked={edit_record.showto_doctor} onChange={(e) => seteditrecord({ ...edit_record, showto_doctor: e.target.checked })} />
-                                        <Form.Check type="switch" name="showto_patient" label="Display Blog to patient" id="patshow" checked={edit_record.showto_patient} onChange={(e) => seteditrecord({ ...edit_record, showto_patient: e.target.checked })} />
-                                    </div>
-                                    <Form.Group controlId="editImage" className='mb-3'>
-                                        <Form.Label>Blog Image</Form.Label>
-                                        <Form.Control
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => {
-                                                const file = e.target.files[0];
-                                                if (file) {
-                                                    setEditSelectedImage(file);
-                                                    const reader = new FileReader();
-                                                    reader.onload = (e) => {
-                                                        setEditImagePreview(e.target.result);
-                                                    };
-                                                    reader.readAsDataURL(file);
-                                                } else {
-                                                    setEditSelectedImage(null);
-                                                    setEditImagePreview(edit_record?.image || null);
-                                                }
-                                            }}
-                                        />
-                                        {editImagePreview && (
-                                            <div className="mt-3">
-                                                <img
-                                                    src={editImagePreview}
-                                                    alt="Preview"
-                                                    style={{
-                                                        maxWidth: '200px',
-                                                        maxHeight: '200px',
-                                                        objectFit: 'cover',
-                                                        border: '1px solid #ddd',
-                                                        borderRadius: '4px'
-                                                    }}
-                                                />
+                                <div className='p-3 border rounded'>
+                                    <Form className='row register_doctor'>
+                                        <Form.Group controlId="editImage" className='mb-3'>
+                                            <Form.Label>Blog Image</Form.Label>
+                                            <Form.Control
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        setEditSelectedImage(file);
+                                                        const reader = new FileReader();
+                                                        reader.onload = (e) => {
+                                                            setEditImagePreview(e.target.result);
+                                                        };
+                                                        reader.readAsDataURL(file);
+                                                    } else {
+                                                        setEditSelectedImage(null);
+                                                        setEditImagePreview(edit_record?.image || null);
+                                                    }
+                                                }}
+                                            />
+                                            {editImagePreview && (
+                                                <div className="mt-3">
+                                                    <img
+                                                        src={editImagePreview}
+                                                        alt="Preview"
+                                                        style={{
+                                                            maxWidth: '200px',
+                                                            maxHeight: '200px',
+                                                            objectFit: 'cover',
+                                                            border: '1px solid #ddd',
+                                                            borderRadius: '4px'
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Form.Group>
+                                        <Form.Group controlId="title" className='mb-3'>
+                                            <div>
+                                                <Form.Label>Title</Form.Label>
+                                                <Form.Control placeholder="Ex:- What is Tomato Flu: Symptoms, Causes, Treatment & Preventive Tips" name="title" value={edit_record.title} onChange={(e) => seteditrecord({ ...edit_record, title: e.target.value })} />
                                             </div>
-                                        )}
-                                    </Form.Group>
-                                </Form>
+                                        </Form.Group>
+                                        <Form.Group controlId="description" className='mb-3'>
+                                            <div>
+                                                <Form.Label>Description</Form.Label>
+                                                <Form.Control as="textarea" placeholder="The ‘new’ virus, tomato flu, is a variant of already existing hand, " name="description" value={edit_record.description} onChange={(e) => seteditrecord({ ...edit_record, description: e.target.value })} />
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group controlId="expirydate" className='mb-3'>
+                                            <Form.Label>Expiry Date</Form.Label>
+                                            <div>
+                                                <DatePicker selected={startDate}
+                                                    onChange={(date) => setStartDate(date)}
+                                                    dateFormat="dd-MM-y"
+                                                    placeholderText="Select date"
+                                                    locale={enGB}
+                                                    minDate={new Date()} />
+                                            </div>
+                                        </Form.Group>
+                                        <div className='mb-3'>
+                                            <Form.Check type="switch" name="showto_doctor" label="Display Blog to doctor" id="docshow" checked={edit_record.showto_doctor} onChange={(e) => seteditrecord({ ...edit_record, showto_doctor: e.target.checked })} />
+                                            <Form.Check type="switch" name="showto_patient" label="Display Blog to patient" id="patshow" checked={edit_record.showto_patient} onChange={(e) => seteditrecord({ ...edit_record, showto_patient: e.target.checked })} />
+                                        </div>
+
+                                    </Form>
+                                </div>
                             </Modal.Body>
                             <Modal.Footer>
                                 <Form.Group >

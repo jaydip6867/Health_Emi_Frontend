@@ -567,3 +567,10 @@ select.frm_input {
     border-radius: 5rem;
     font-weight: 500;
 }
+
+.surgery_model img{
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+}

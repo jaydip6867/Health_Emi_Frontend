@@ -57,6 +57,9 @@ const DoctorLogin = () => {
             url: `${API_BASE_URL}/doctor/login`,
             data: frmdoctor
         }).then((res) => {
+            // console.log(res.data.Data)
+            var logindata = {...res.data.Data.doctorData, logintype: 'doctor'}
+            console.log(logindata)
             const encrypted = CryptoJS.AES.encrypt(JSON.stringify(res.data.Data), SECRET_KEY).toString();
           
             localStorage.setItem('doctor_chanelid', res.data.Data.doctorData.channelid)

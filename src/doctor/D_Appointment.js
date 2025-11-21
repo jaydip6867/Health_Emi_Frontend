@@ -15,7 +15,7 @@ import { format } from 'date-fns'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
-import { FiClock } from 'react-icons/fi'
+import { FiClock, FiMail, FiPhone } from 'react-icons/fi'
 import { PiHospital } from 'react-icons/pi'
 import { HiOutlineHome } from 'react-icons/hi'
 import { BsCameraVideo } from 'react-icons/bs'
@@ -606,10 +606,10 @@ const D_Appointment = () => {
     return (
         <>
 
-        <NavBar />
+            <NavBar />
             <Container className='my-4'>
                 <Row className="align-items-start">
-                    <DoctorSidebar />
+                    <DoctorSidebar doctor={doctor} />
                     <Col xs={12} md={9}>
                         <div className='appointments-card mb-3'>
                             <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
@@ -634,180 +634,118 @@ const D_Appointment = () => {
                                     <Modal.Title>Appointment Detail</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <Row className="g-3">
-                                        <Col xs={12} md={6}>
-                                            <Card className="mb-4 border-light">
-                                                <Card.Body>
-                                                    <Card.Title className="label_head">Patient Information</Card.Title>
-                                                    <Row>
-                                                        <Col xs={12}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Patient Name:</span>
-                                                                <p>{v?.patientname}</p>
-                                                            </div>
-                                                        </Col>
-                                                        <Col xs={12}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Patient Mobile:</span>
-                                                                <p>{v?.mobile}</p>
-                                                            </div>
-                                                        </Col>
-                                                        <Col xs={6}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Blood Group:</span>
-                                                                <p>{!v?.createdByuser?.blood_group ? 'Not Defined.' : v?.createdByuser?.blood_group}</p>
-                                                            </div>
-                                                        </Col>
-                                                        <Col xs={6}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Gender:</span>
-                                                                <p>{!v?.createdByuser?.gender ? 'Not Defined.' : v?.createdByuser?.gender}</p>
-                                                            </div>
-                                                        </Col>
-                                                        {!v?.alt_name ? '' : <Col xs={12}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Alternative Name:</span>
-                                                                <p>{v?.alt_name}</p>
-                                                            </div>
-                                                        </Col>}
-                                                        {!v?.alt_mobile ? '' : <Col xs={12}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Alternative Mobile:</span>
-                                                                <p>{v?.alt_mobile}</p>
-                                                            </div>
-                                                        </Col>}
-                                                    </Row>
-                                                </Card.Body>
-                                            </Card>
-
-                                        </Col>
-                                        <Col md={6}>
-                                            <Card className="mb-4 border-light">
-                                                <Card.Body>
-                                                    <Card.Title className="label_head">Surgery Information</Card.Title>
-                                                    <Row>
-                                                        <Col xs={12}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Surgery:</span>
-                                                                <p>{v?.surgerydetails?.name}</p>
-                                                            </div>
-                                                        </Col>
-                                                        <Col xs={12}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Date & Time:</span>
-                                                                <p>{v?.date} , {v?.time}</p>
-                                                            </div>
-                                                        </Col>
-                                                        <Col xs={12}>
-                                                            <div className='label_box'>
-                                                                <span className="label_title">Reason:</span>
-                                                                <p>{v?.appointment_reason}</p>
-                                                            </div>
-                                                        </Col>
-                                                    </Row>
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                        <Col md={4}>
-                                            <Card className='border-light text-center'>
-                                                <Card.Body>
-                                                    <Card.Title className="label_head">Payment Status</Card.Title>
-                                                    <Badge className="rounded-pill px-4 py-2 fs-6" bg={v?.payment_status === "Pending" ? "warning" : "success"}>{v.payment_status}</Badge>
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                        <Col md={4}>
-                                            <Card className='border-light'>
-                                                <Card.Body className="text-center">
-                                                    <Card.Title className="label_head">Visit Type</Card.Title>
-                                                    <div className='label_box'>
-                                                        <Badge className="rounded-pill px-4 py-2 fs-6" bg={'secondary'}>{v?.visit_types}</Badge>
+                                    <div className='p-2 rounded-3 border rounded' style={{ background: 'var(--white)' }}>
+                                        <div className='d-flex flex-wrap align-items-center justify-content-between gap-3 p-3'>
+                                            <div className='d-flex align-items-center gap-3'>
+                                                <img src={v?.doctorid?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} className='rounded-3' style={{ width: 72, height: 72, objectFit: 'cover' }} />
+                                                <div>
+                                                    <div className='d-flex align-items-center gap-2 flex-wrap'>
+                                                        <h5 className='mb-0'>{v?.patientname}</h5>
                                                     </div>
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                        <Col md={6}>
-                                            <Card className="border-light">
-                                                <Card.Body>
-                                                    <Card.Title className="label_head">Features Available</Card.Title>
-                                                    <div className='d-flex flex-wrap gap-2'>
-                                                        {
-                                                            v?.surgerydetails?.additional_features?.split(',')?.map((feature, index) => {
-                                                                const colors = [
-                                                                    "primary", "secondary", "success", "warning", "info"
-                                                                ];
+                                                    <div className='text-muted small'><FiMail className='me-1' /> {v?.createdByuser?.email}</div>
+                                                    <div className='text-muted small'><FiPhone className='me-1' /> +91 {v?.createdByuser?.mobile}</div>
+                                                </div>
+                                            </div>
+                                            <div className='d-flex align-items-center gap-3 flex-wrap appointment_model'>
+                                                <div>
+                                                    <p className='mb-0 small'>Ward Type</p>
+                                                    <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{v?.visit_types}</span>
+                                                </div>
+                                                <div>
+                                                    <p className='mb-0 small'>Surgery Status</p>
+                                                    <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#E8F7EE', color: '#1F9254' }}>
+                                                        {v?.status}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <p className='mb-0 small'>Consultation Fee</p>
+                                                    <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.totalamount}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <Row className='g-3'>
+                                            <Col md={6} xs={12}>
+                                                <div className='text-muted small mb-1'>Appointment Date & Time</div>
+                                                <div className='d-flex align-items-center gap-2'>
+                                                    <FiClock />
+                                                    <span>{v?.date}, {v?.time}</span>
+                                                </div>
+                                            </Col>
+                                            <Col md={6} xs={12}>
+                                                <div className='text-muted small mb-1'>Clinic Name</div>
+                                                <div className='d-flex align-items-center gap-2'>
+                                                    <span>{v?.hospitalname?.name || '-'}</span>
+                                                </div>
+                                            </Col>
 
-                                                                // Pick a random color class
-                                                                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                                            <Col md={6} xs={12}>
+                                                <div className='text-muted small mb-1'>Clinic Location</div>
+                                                <div className='d-flex align-items-center gap-2'>
+                                                    <span className='text-truncate'>{v?.hospitalname || '-'}</span>
+                                                </div>
+                                            </Col>
+                                            <Col md={6} xs={12}>
+                                                <div className='text-muted small mb-1'>Reason</div>
+                                                <div className='d-flex align-items-center gap-2'>
+                                                    <span className='text-truncate'>{v?.appointment_reason || '-'}</span>
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                        <hr />
+                                        <div>
+                                            <div className='fw-semibold mb-3'>Reports</div>
+                                            <Row className='g-3'>
+                                                {(v?.report || []).length > 0 ? (
+                                                    v.report.map((url, idx) => (
+                                                        <Col md={4} sm={6} xs={12} key={idx}>
+                                                            <Card className='h-100'>
+                                                                <div className='ratio ratio-16x9 bg-light'>
+                                                                    <iframe src={url} title={`report_${idx}`} className='w-100 h-100 border-0'></iframe>
+                                                                </div>
+                                                                <Card.Body className='d-flex justify-content-between align-items-center'>
+                                                                    <div className='small text-muted'>Report {idx + 1}</div>
+                                                                    <Button size='sm' variant='outline-primary' onClick={() => window.open(url, '_blank')}>View</Button>
+                                                                </Card.Body>
+                                                            </Card>
+                                                        </Col>
+                                                    ))
+                                                ) : (
+                                                    <Col xs={12}>
+                                                        <div className='text-muted small'>No reports uploaded.</div>
+                                                    </Col>
+                                                )}
+                                            </Row>
+                                        </div>
+                                        <hr />
+                                        <div>
+                                            <div className='fw-semibold mb-3'>Prescription</div>
+                                            <div className='border rounded p-3 mt-3 col-lg-5 col-md-9 col-12'>
+                                                {v?.doctor_remark ? (
+                                                    <>
+                                                        {/* <div className='d-flex gap-2 mb-2'>
+                                    <Button variant='outline-primary' size='sm' onClick={() => window.open(v.doctor_remark, '_blank')} className='d-flex align-items-center gap-2'>
+                                      <MdVisibility size={18} /> View
+                                    </Button>
+                                    <Button variant='primary' size='sm' onClick={() => handleDownloadPDF(v.doctor_remark, patient?.name)} className='d-flex align-items-center gap-2'>
+                                      <MdDownload size={18} /> Download
+                                    </Button>
+                                  </div> */}
+                                                        <div className='border rounded' style={{ backgroundColor: '#f8f9fa' }}>
+                                                            <iframe
+                                                                src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`}
+                                                                style={{ width: '100%', height: '200px', border: 'none', borderRadius: '4px' }}
+                                                                title='Prescription PDF'
+                                                            />
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <div className='text-muted small'>No prescription uploaded.</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                                                return (
-                                                                    <Badge
-                                                                        className={`me-1 bg-${randomColor}-subtle text-${randomColor} fs-6 fw-normal px-3 py-2 rounded-pill`}
-                                                                        key={index}
-                                                                    >
-                                                                        {feature}
-                                                                    </Badge>
-                                                                );
-                                                            })
-                                                        }
-                                                    </div>
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                        <Col md={6}>
-                                            <Card className="border-light">
-                                                <Card.Body>
-                                                    <Card.Title className="label_head">Reports</Card.Title>
-                                                    {
-                                                        !v?.report || v?.report?.length === 0 ? (
-                                                            <div className="label_box"><p>No Reports.</p></div>
-                                                        ) : (
-                                                            <div className='d-flex flex-column gap-2'>
-                                                                {v?.report?.map((report, idx) => {
-                                                                    const isPDF = report?.type?.toUpperCase() === 'PDF' || report?.type?.toUpperCase() === 'DOC' || report?.type?.toUpperCase() === 'DOCX';
-                                                                    const viewerUrl = `https://drive.google.com/viewerng/viewer?url=${encodeURIComponent(report?.path)}`;
-                                                                    return (
-                                                                        <div key={idx} className='border rounded p-2'>
-                                                                            <div className='d-flex justify-content-between align-items-center mb-2'>
-                                                                                <Badge bg="info" className='text-uppercase'>{report?.type || 'Document'}</Badge>
-                                                                                {isPDF && (
-                                                                                    <a
-                                                                                        href={viewerUrl}
-                                                                                        target="_blank"
-                                                                                        rel="noopener noreferrer"
-                                                                                        className='btn btn-sm btn-primary'
-                                                                                    >
-                                                                                        <MdOutlineRemoveRedEye className='me-1' />
-                                                                                        View Report
-                                                                                    </a>
-                                                                                )}
-                                                                            </div>
-                                                                            {isPDF ? (
-                                                                                // <iframe 
-                                                                                //     src={viewerUrl}
-                                                                                //     className='w-100 border-0 rounded'
-                                                                                //     style={{ height: '300px' }}
-                                                                                //     title={`Report ${idx + 1}`}
-                                                                                // ></iframe>
-                                                                                <></>
-                                                                            ) : (
-                                                                                <img
-                                                                                    src={report?.path}
-                                                                                    alt={`Report ${idx + 1}`}
-                                                                                    className='w-100 rounded img-thumbnail'
-                                                                                    style={{ maxHeight: '300px', objectFit: 'contain' }}
-                                                                                />
-                                                                            )}
-                                                                        </div>
-                                                                    );
-                                                                })}
-                                                            </div>
-                                                        )
-                                                    }
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                    </Row>
                                 </Modal.Body>
                             </Modal>
                         )

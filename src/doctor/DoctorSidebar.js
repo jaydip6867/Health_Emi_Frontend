@@ -13,7 +13,7 @@ const DoctorSidebar = ({ doctor }) => {
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
     };
-    console.log(doctor)
+    // console.log(doctor)
 
     return (
         <>
@@ -38,35 +38,36 @@ const DoctorSidebar = ({ doctor }) => {
                                 <p className='m-0' style={{ color: '#0E9384' }}>{doctor?.specialty} Psychologist</p>
                             </div>
                         </div>
-                    </div>
-                    <div className="sidebar_nav mt-3 px-3">
-                        <NavLink to={'/doctor/doctordashboard'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <FiLayout /> Dashboard
-                        </NavLink>
-                        <NavLink to={'/doctor/doctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <IoCalendarOutline /> Consultant Appointment
-                        </NavLink>
-                        <NavLink to={'/doctor/doctorsurgeryappointment'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <IoCalendarOutline /> Surgery Appointment
-                        </NavLink>
-                        <NavLink to={'/doctor/doctorsurgery'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <FiActivity /> My Surgery
-                        </NavLink>
-                        <NavLink to={'/doctor/doctorblog'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <FiFilePlus /> Blog
-                        </NavLink>
-                        <NavLink to={'/doctor/doctorconsultation'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <FiDollarSign /> Consultation
-                        </NavLink>
-                        <NavLink to={'/doctor/calender'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <FiCalendar /> Calendar
-                        </NavLink>
-                        <NavLink to={'/doctor/ambulance-request'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <FiTruck /> Ambulance Booking
-                        </NavLink>
-                        <NavLink to={'/doctor/doctorprofile'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                            <FiSettings />Settings
-                        </NavLink>
+
+                        <div className="sidebar_nav mt-3 px-3">
+                            <NavLink to={'/doctor/doctordashboard'} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <FiLayout /> Dashboard
+                            </NavLink>
+                            <NavLink to={'/doctor/doctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <IoCalendarOutline /> Consultant Appointment
+                            </NavLink>
+                            <NavLink to={'/doctor/doctorsurgeryappointment'} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <IoCalendarOutline /> Surgery Appointment
+                            </NavLink>
+                            <NavLink to={'/doctor/doctorsurgery'} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <FiActivity /> My Surgery
+                            </NavLink>
+                            <NavLink to={'/doctor/doctorblog'} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <FiFilePlus /> Blog
+                            </NavLink>
+                            <NavLink to={'/doctor/doctorconsultation'} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <FiDollarSign /> Consultation
+                            </NavLink>
+                            <NavLink to={'/doctor/calender'} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <FiCalendar /> Calendar
+                            </NavLink>
+                            <NavLink to={'/doctor/ambulance-request'} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <FiTruck /> Ambulance Booking
+                            </NavLink>
+                            <NavLink to={'/doctor/doctorprofile'} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <FiSettings />Settings
+                            </NavLink>
+                        </div>
                     </div>
                     <div className='mx-2'>
                         <Button className='w-100 logout-btn' onClick={() => (localStorage.removeItem('healthdoctor'), navigate('/doctor'))}><FiLogOut size={20} /> Logout</Button>

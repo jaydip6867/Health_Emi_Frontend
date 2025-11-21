@@ -1,19 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import NavBar from './Component/NavBar'
-import FooterBar from './Component/FooterBar'
-import { Card, Col, Container, Image, Row } from 'react-bootstrap'
-import { FaAngleRight } from 'react-icons/fa'
-import axios from 'axios'
-import Loader from '../Loader'
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider from 'react-slick'
-import AppDownload from './Component/AppDownload'
-import CryptoJS from "crypto-js";
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL, SECRET_KEY } from '../config';
+import CryptoJS from "crypto-js";
+import NavBar from './Component/NavBar';
+import FooterBar from './Component/FooterBar';
+import FunctionalitySec from './Component/FunctionalitySec';
+import { Container, Row, Col, Card } from "react-bootstrap";
+import HeadTitle from './Component/HeadTitle';
 
 const VideoConsult = () => {
+    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
 
     const [patient, setpatient] = useState(null)
@@ -31,184 +26,133 @@ const VideoConsult = () => {
             settoken(`Bearer ${data.accessToken}`)
         }
     }, [navigate])
-    var settings = {
-        infinite: true,
-        speed: 500,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        centerPadding: '15px',
-        responsive: [
-            {
-                breakpoint: 992,
-                settings: {
-                    slidesToShow: 4,
-                }
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 3,
-                }
-            },
-            {
-                breakpoint: 576,
-                settings: {
-                    slidesToShow: 2,
-                }
-            }
-        ]
-    };
-    const [loading, setloading] = useState(false)
-    const [doctorlist, setdoctorlist] = useState([])
-    useEffect(() => {
-        setloading(true)
-        getdoctordata()
-    }, [])
-
-    const getdoctordata = async () => {
-        await axios({
-            method: 'post',
-            url: `${API_BASE_URL}/user/doctors`,
-            data: {
-                "page": 1,
-                "limit": 10,
-                "search": ''
-            }
-        }).then((res) => {
-            console.log(res.data.Data.docs)
-            setdoctorlist(res.data.Data.docs)
-        }).catch(function (error) {
-            console.log(error);
-        }).finally(() => {
-            setloading(false)
-        });
-    }
-
     return (
         <>
             <NavBar logindata={patient} />
-            {/* offers section */}
-            <section className='py-5'>
-                <Container>
-                    <div className='text-center sec_head'>
-                        <h2>Offers</h2>
-                        {/* <p>Private online consultations with verified doctors in all specialists</p> */}
-                    </div>
-                    <Row>
-                        <Col xs={12} md={6}>
-                            <div className='offer_box rounded-1 p-4' style={{ 'backgroundColor': '#96d3bf' }}>
-                                <div className='offer_box_content'>
-                                    <div className='badge bg-light text-success px-3 py-2 rounded-0 fs-6'>OFFER</div>
-                                    <h3 className='my-3'>Download the App & get ₹200 HealthCash</h3>
-                                    <h5 className='mb-0'>Download App <FaAngleRight /></h5>
-                                </div>
-                            </div>
-                        </Col>
-                        <Col xs={12} md={6}>
-                            <div className='offer_box rounded-1 p-4' style={{ 'backgroundColor': '#feba7f' }}>
-                                <div className='offer_box_content'>
-                                    <div className='badge bg-light text-warning px-3 py-2 rounded-0 fs-6'>OFFER</div>
-                                    <h3 className='my-3'>Consult with specialists at just ₹199</h3>
-                                    <h5 className='mb-0'>Consult Now <FaAngleRight /></h5>
-                                </div>
+
+            {/* Hero Section */}
+            <section className="page_banner consult_banner ">
+                <Container fluid className='p-0'>
+                    <Row className="align-items-center justify-content-between g-0">
+                        <Col md={6}>
+                            <div className='ps-5'>
+                                <h2 className="fw-bold mb-2" style={{color: 'var(--grayscale-color-900)'}}>Consult Top Doctors Anytime, Anywhere</h2>
+                                <p className=" mb-4" style={{color: 'var(--grayscale-color-800)'}}>Skip the travel, traffic, and waiting lines. <br /> With E-OPD, you can consult certified doctors via secure video calls — <br />from the comfort of your home.</p>
+
                             </div>
                         </Col>
                     </Row>
                 </Container>
             </section>
-            {/* Our Doctors Section */}
-            <section className='py-5'>
+
+            <section className="spacer-t bg-white">
                 <Container>
-                    <div className='text-center sec_head'>
-                        <h2>Our Doctors</h2>
-                        {/* <p>Private online consultations with verified doctors in all specialists</p> */}
-                    </div>
-                    <Slider {...settings} className='doctor_slider'>
-                        {
-                            doctorlist.map((v, i) => {
-                                return (
-                                    <div key={i} className='px-2'>
-                                        <Card className="rounded-4" key={i}>
-                                            <Row className="g-0 align-items-center">
-                                                <Col xs={4}>
-                                                    {v.identityproof === '' ? <Image src={require('../assets/image/doctor_img.jpg')} roundedCircle fluid className="m-2" width={80} /> : <Image src={v.identityproof} roundedCircle fluid width={80} className="m-2" />}
-                                                </Col>
-                                                <Col xs={8}>
-                                                    <Card.Body className="p-2">
-                                                        {/* Doctor Name & Favorite Icon */}
-                                                        <div className="d-flex justify-content-between align-items-center">
-                                                            <Card.Title className="mb-1 fs-6 fw-bold">{v.name}</Card.Title>
-                                                        </div>
+                    {/* Heading */}
+                    <h2 className='head_sec mb-3'><HeadTitle title="Service We Provider" /></h2>
 
-                                                        {/* Specialty */}
-                                                        <Card.Text className="mb-1 text-secondary" style={{ fontSize: '0.9rem' }}>
-                                                            {v.specialty}
-                                                        </Card.Text>
+                    {/* Services */}
+                    <Row className="g-3 g-md-4 justify-content-center service_amb">
+                        <Col xs={12} md={6} lg={4}>
+                            <Card className="border rounded-4 shadow-sm h-100 overflow-hidden">
+                                <Card.Body className="text-center py-4" style={{ backgroundColor: '#F9FAFB' }}>
+                                    <div className="fw-bold">Instant Video Consultation</div>
+                                    <div className="text-muted small mt-1">Connect with specialists across 50+ medical fields.</div>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        <Col xs={12} md={6} lg={4}>
+                            <Card className="border rounded-4 shadow-sm h-100 overflow-hidden">
+                                <Card.Body className="text-center py-4" style={{ backgroundColor: '#F9FAFB' }}>
+                                    <div className="fw-bold">Flexible Scheduling</div>
+                                    <div className="text-muted small mt-1">Choose time slots that suit you best.</div>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        <Col xs={12} md={6} lg={4}>
+                            <Card className="border rounded-4 shadow-sm h-100 overflow-hidden">
+                                <Card.Body className="text-center py-4" style={{ backgroundColor: '#F9FAFB' }}>
+                                    <div className="fw-bold">Digital Prescriptions</div>
+                                    <div className="text-muted small mt-1">Get authenticated e-prescriptions right after consultation.</div>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        <Col xs={12} md={6} lg={4} className="">
+                            <Card className="border rounded-4 shadow-sm h-100 overflow-hidden">
+                                <Card.Body className="text-center py-4" style={{ backgroundColor: '#F9FAFB' }}>
+                                    <div className="fw-bold">Affordable Pricing</div>
+                                    <div className="text-muted small mt-1">Pay securely online compare consultation fees before booking.</div>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        <Col xs={12} md={6} lg={4}>
+                            <Card className="border rounded-4 shadow-sm h-100 overflow-hidden">
+                                <Card.Body className="text-center py-4" style={{ backgroundColor: '#F9FAFB' }}>
+                                    <div className="fw-bold">Follow-up Made Easy</div>
+                                    <div className="text-muted small mt-1">Continue treatment and monitoring through chat or repeat calls.</div>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    </Row>
 
-                                                    </Card.Body>
-                                                </Col>
-                                            </Row>
-                                        </Card>
+                    <section className='spacer-y'>
+                        {/* Key Features */}
+                        <h2 className='head_sec mb-4'><HeadTitle title="Why Choose Health Easy EMI’s E-OPD?" /></h2>
+
+                        <Row className="g-4 justify-content-center feature_icon_sec">
+                            <Col xs={6} md={4} lg className="text-center">
+                                <div className='border rounded p-3 h-100'>
+                                    <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
+                                        {/* <FaMapMarkerAlt /> */}
+                                        <img src={require('./assets/icon/24-7.png')} alt="" />
+
                                     </div>
-                                )
-                            })
-                        }
-                    </Slider>
-                </Container>
-            </section>
-            {/* benefit section */}
-            <section className='py-5 text-bg-dark'>
-                <Container>
-                    <div className='text-center sec_head'>
-                        <h2>Benefits of Online Consultation</h2>
-                        {/* <p>Private online consultations with verified doctors in all specialists</p> */}
-                    </div>
-                    <div>
-                        <Row>
-                            <Col xs={12} sm={6} md={4}>
-                                <div className='benefit_box p-3'>
-                                    <h4>Consult Top Doctors 24x7</h4>
-                                    <p>Connect instantly with a 24x7 specialist or choose to video visit a particular doctor.</p>
+                                    <div className="text-muted small">Trusted, verified doctors available 24×7</div>
                                 </div>
                             </Col>
-                            <Col xs={12} sm={6} md={4}>
-                                <div className='benefit_box p-3'>
-                                    <h4>Consult Top Doctors 24x7</h4>
-                                    <p>Connect instantly with a 24x7 specialist or choose to video visit a particular doctor.</p>
+                            <Col xs={6} md={4} lg className="text-center">
+                                <div className="border rounded p-3 h-100">
+                                    <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
+                                        <img src={require('./assets/icon/user-private.png')} alt="" />
+                                    </div>
+                                    <div className="text-muted small">Private, encrypted, and confidential video sessions</div>
                                 </div>
                             </Col>
-                            <Col xs={12} sm={6} md={4}>
-                                <div className='benefit_box p-3'>
-                                    <h4>Consult Top Doctors 24x7</h4>
-                                    <p>Connect instantly with a 24x7 specialist or choose to video visit a particular doctor.</p>
+                            <Col xs={6} md={4} lg className="text-center">
+                                <div className="border rounded p-3 h-100">
+                                    <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
+                                        <img src={require('./assets/icon/calendar.png')} alt="" />
+                                    </div>
+                                    <div className="text-muted small">Suitable for second opinions, chronic care, and follow-ups</div>
                                 </div>
                             </Col>
-                            <Col xs={12} sm={6} md={4}>
-                                <div className='benefit_box p-3'>
-                                    <h4>Consult Top Doctors 24x7</h4>
-                                    <p>Connect instantly with a 24x7 specialist or choose to video visit a particular doctor.</p>
-                                </div>
-                            </Col>
-                            <Col xs={12} sm={6} md={4}>
-                                <div className='benefit_box p-3'>
-                                    <h4>Consult Top Doctors 24x7</h4>
-                                    <p>Connect instantly with a 24x7 specialist or choose to video visit a particular doctor.</p>
-                                </div>
-                            </Col>
-                            <Col xs={12} sm={6} md={4}>
-                                <div className='benefit_box p-3'>
-                                    <h4>Consult Top Doctors 24x7</h4>
-                                    <p>Connect instantly with a 24x7 specialist or choose to video visit a particular doctor.</p>
+                            <Col xs={6} md={4} lg className="text-center">
+                                <div className="border rounded p-3 h-100">
+                                    <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
+                                        <img src={require('./assets/icon/bed.png')} alt="" />
+                                    </div>
+                                    <div className="text-muted small">Option to switch to physical visit or surgery with same doctor</div>
                                 </div>
                             </Col>
                         </Row>
-                    </div>
+                    </section>
+
+                    {/* CTA */}
+                    <Card className="border-0 rounded-4 matter_bg">
+                        <Card.Body className="p-4 text-center">
+                            <h2 className='display-5 fw-bold' style={{color: 'var(--primary-color-500)'}}>Your health, one click away.</h2>
+                            <div className="text-muted fs-5">
+                               Book an <span className="fw-bold ">E-OPD video consultation</span> now through <span className="fw-bold">Health Easy EMI.</span>
+                            </div>
+                        </Card.Body>
+                    </Card>
                 </Container>
             </section>
-            {/* App Download Section */}
-            <AppDownload />
+
+            <section className='spacer-y'>
+                <FunctionalitySec />
+            </section>
+
             <FooterBar />
-            {loading ? <Loader /> : ''}
         </>
     )
 }

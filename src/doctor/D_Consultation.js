@@ -127,7 +127,7 @@ const D_Consultation = () => {
     <NavBar />
       <Container className="my-4">
         <Row className="align-items-start">
-          <DoctorSidebar />
+          <DoctorSidebar doctor={doctor}/>
           <Col xs={12} md={9}>
             <div className="bg-white">
               <div className='appointments-card mb-3'>

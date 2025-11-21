@@ -11,7 +11,7 @@ const NavBar = ({ logindata }) => {
   const location = useLocation();
   const [activeLink, setActiveLink] = useState("");
   const [activeDropdown, setActiveDropdown] = useState(false);
-  console.log(logindata)
+  // console.log(logindata)
 
   useEffect(() => {
     // Set active link based on current path
@@ -102,23 +102,47 @@ const NavBar = ({ logindata }) => {
               onToggle={(isOpen) => setActiveDropdown(isOpen)}
             >
               {logindata ? (
-                <>
-                  <NavDropdown.Item as={Link} to={'/patient/patientprofile'} className='text-decoration-none d-block text-center p-2 profile_nav'>Profile</NavDropdown.Item>
-                  <NavDropdown.Item as={Button} className="text-center text-danger" onClick={() => (localStorage.removeItem('PatientLogin'), navigate('/patient'))}>Logout</NavDropdown.Item>
-                </>
+                logindata.logintype === 'doctor' ? (
+                  <>
+                    <NavDropdown.Item as={Link} to="/doctor/doctorprofile">
+                      Profile
+                    </NavDropdown.Item>
+                    <NavDropdown.Item
+                      as={Button}
+                      className="text-center text-danger"
+                      onClick={() => {
+                        localStorage.removeItem('healthdoctor');
+                        navigate('/doctor');
+                      }}
+                    >
+                      Logout
+                    </NavDropdown.Item>
+                  </>
+                ) : (
+                  <>
+                    <NavDropdown.Item as={Link} to="/patient/patientprofile" className="text-center">
+                      Profile
+                    </NavDropdown.Item>
+                    <NavDropdown.Item
+                      as={Button}
+                      className="text-center text-danger"
+                      onClick={() => {
+                        localStorage.removeItem('PatientLogin');
+                        navigate('/patient');
+                      }}
+                    >
+                      Logout
+                    </NavDropdown.Item>
+                  </>
+                )
               ) : (
                 <>
-                  <NavDropdown.Item as={Link} to="/doctor">
-                    Doctor
-                  </NavDropdown.Item>
-                  <NavDropdown.Item as={Link} to="/patient">
-                    Patient
-                  </NavDropdown.Item>
-                  <NavDropdown.Item as={Link} to="/ambulance">
-                    Ambulance
-                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/doctor">Doctor</NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/patient">Patient</NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/ambulance">Ambulance</NavDropdown.Item>
                 </>
               )}
+
               {/* <NavDropdown.Item as={Link} to="/doctor">
                 Doctor
               </NavDropdown.Item>

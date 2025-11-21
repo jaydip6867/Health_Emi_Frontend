@@ -27,6 +27,7 @@ const DoctorDashboard = () => {
       navigate('/doctor')
     }
     else {
+      // var doctorData = {...data.doctorData,logintype: 'doctor'};
       setdoctor(data.doctorData);
       settoken(`Bearer ${data.accessToken}`)
     }
@@ -35,11 +36,11 @@ const DoctorDashboard = () => {
   return (
     <>
 
-      <Navbar/>
+      <Navbar logindata={doctor}/>
 
       <Container className='my-4'>
         <Row className="align-items-start">
-          <DoctorSidebar/>
+          <DoctorSidebar doctor={doctor}/>
           <Col xs={12} md={9}>
             {/* <DoctorNav doctorname={doctor && doctor.name} /> */}
             <div className='bg-white rounded p-2'>

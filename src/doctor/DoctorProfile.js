@@ -738,7 +738,7 @@ const DoctorProfile = () => {
       <NavBar />
       <Container className="my-4">
         <Row>
-          <DoctorSidebar />
+          <DoctorSidebar doctor={doctor}/>
           <Col xs={12} md={9}>
             <div>
               <div className='appointments-card mb-3'>
