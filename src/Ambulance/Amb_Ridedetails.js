@@ -44,7 +44,7 @@ const loadGoogleMaps = () => {
     }
     const s = document.createElement('script');
     s.id = id;
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_MAPS_API_KEY)}&libraries=places,marker`;
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_MAPS_API_KEY)}&libraries=places,marker,geometry`;
     s.async = true;
     s.defer = true;
     s.onload = () => resolve(window.google);
@@ -83,9 +83,12 @@ const Amb_Ridedetails = () => {
   const directionsServiceRef = useRef(null); // google.maps.DirectionsService
   const directionsRendererRef = useRef(null); // google.maps.DirectionsRenderer
   const markersRef = useRef({ pickup: null, drop: null, ambulance: null });
+  const tempLineRef = useRef(null); // straight line fallback while routing
+  const trailRef = useRef(null);    // breadcrumb trail of ambulance
   const watchIdRef = useRef(null);
   const lastTargetRef = useRef(null);
   const routeCoordsRef = useRef([]);
+  const routeInitializedRef = useRef(false);
   const [liveSpeed, setLiveSpeed] = useState(0);
   const [mapError, setMapError] = useState(null);
 
@@ -122,6 +125,16 @@ const Amb_Ridedetails = () => {
             map: mapRef.current,
             suppressMarkers: true,
             preserveViewport: false,
+            polylineOptions: {
+              strokeColor: '#1E88E5',
+              strokeWeight: 6,
+              strokeOpacity: 0.9,
+              icons: [{
+                icon: { path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW, scale: 3, strokeOpacity: 0.9 },
+                offset: '25px',
+                repeat: '80px'
+              }]
+            }
           });
         }
 
@@ -151,6 +164,7 @@ const Amb_Ridedetails = () => {
           if (m) bounds.extend(m.getPosition());
         });
         if (!bounds.isEmpty()) mapRef.current.fitBounds(bounds);
+
 
         // Show current location once
         if (navigator.geolocation) {
@@ -189,29 +203,28 @@ const Amb_Ridedetails = () => {
   }, [ride]);
 
   // Draw or update route using Google Directions
-  const drawRoute = (fromLatLng, toLatLng, viaPoint = null) => {
+  const drawRoute = (fromLatLng, toLatLng) => {
     if (!mapRef.current || !directionsServiceRef.current || !directionsRendererRef.current) return;
 
     const request = {
       origin: fromLatLng,
       destination: toLatLng,
       travelMode: window.google.maps.TravelMode.DRIVING,
-      optimizeWaypoints: true,
+      optimizeWaypoints: false,
     };
-    if (viaPoint) request.waypoints = [{ location: viaPoint }];
 
     directionsServiceRef.current.route(request, (result, status) => {
       if (status === 'OK') {
         directionsRendererRef.current.setDirections(result);
-        // Ensure route is visible
         const bounds = result.routes?.[0]?.bounds;
         if (bounds && mapRef.current) {
           mapRef.current.fitBounds(bounds);
         }
         const overview = result.routes?.[0]?.overview_path || [];
         routeCoordsRef.current = overview.map(ll => [ll.lat(), ll.lng()]);
+        routeInitializedRef.current = true;
       } else {
-        setTimeout(() => drawRoute(fromLatLng, toLatLng, viaPoint), 2000);
+        setTimeout(() => drawRoute(fromLatLng, toLatLng), 2000);
       }
     });
   };
@@ -259,10 +272,24 @@ const Amb_Ridedetails = () => {
     const isGoingToPickup = pickupLL && tgt.equals(pickupLL);
 
     const cur = new window.google.maps.LatLng(currentLocation.lat || 0, currentLocation.lng || 0);
-    const viaPoint = isGoingToPickup && dropLL ? pickupLL : null;
-    const finalTarget = isGoingToPickup && dropLL ? dropLL : tgt;
+    const finalTarget = tgt; // always route to current leg target
 
-    drawRoute(cur, finalTarget, viaPoint);
+    // Draw route with the freshest origin possible
+    routeInitializedRef.current = false;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const origin = new window.google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+          drawRoute(origin, finalTarget);
+        },
+        () => {
+          drawRoute(cur, finalTarget);
+        },
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    } else {
+      drawRoute(cur, finalTarget);
+    }
 
     let lastRouteUpdate = Date.now();
     const ROUTE_UPDATE_INTERVAL = 5000;
@@ -285,11 +312,33 @@ const Amb_Ridedetails = () => {
             title: 'You'
           });
         }
+        // Update breadcrumb trail
+        if (mapRef.current) {
+          if (!trailRef.current) {
+            trailRef.current = new window.google.maps.Polyline({
+              map: mapRef.current,
+              path: [here],
+              strokeColor: '#0d6efd',
+              strokeOpacity: 0.8,
+              strokeWeight: 3,
+            });
+          } else {
+            const path = trailRef.current.getPath();
+            path.push(here);
+          }
+        }
+        // Update temporary straight line endpoint while waiting for route
+        if (tempLineRef.current) {
+          tempLineRef.current.setPath([here, finalTarget]);
+        }
         mapRef.current?.panTo(here);
 
-        if (now - lastRouteUpdate > ROUTE_UPDATE_INTERVAL) {
+        if (!routeInitializedRef.current) {
+          drawRoute(here, finalTarget);
+          routeInitializedRef.current = true;
+        } else if (now - lastRouteUpdate > ROUTE_UPDATE_INTERVAL) {
           lastRouteUpdate = now;
-          drawRoute(here, finalTarget, viaPoint);
+          drawRoute(here, finalTarget);
         }
 
         // arrival check within ~50m
@@ -314,6 +363,14 @@ const Amb_Ridedetails = () => {
     }
     if (directionsRendererRef.current) {
       try { directionsRendererRef.current.set('directions', null); } catch {}
+    }
+    if (tempLineRef.current) {
+      try { tempLineRef.current.setMap(null); } catch {}
+      tempLineRef.current = null;
+    }
+    if (trailRef.current) {
+      try { trailRef.current.setMap(null); } catch {}
+      trailRef.current = null;
     }
     routeCoordsRef.current = [];
     clearRouteState();
