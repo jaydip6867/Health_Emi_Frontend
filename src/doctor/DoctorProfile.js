@@ -466,7 +466,6 @@ const DoctorProfile = () => {
         setprofile({
           ...res.data.Data,
           oldProfilePic: res.data.Data.profile_pic,
-          password: "",
         });
         console.log(res.data.Data)
       })
@@ -553,6 +552,13 @@ const DoctorProfile = () => {
         [name]: checked,
       }));
     } else {
+      if(name === "newpassword") {
+        setnewpassword(value);
+        setprofile((profile) => ({
+          ...profile,
+          password: value,
+        }));
+      }
       // Handle regular form inputs
       setprofile((profile) => ({
         ...profile,
@@ -579,14 +585,15 @@ const DoctorProfile = () => {
     setloading(true);
 
     try {
-      if (profile?.password || confirmPassword) {
-        if (profile?.password !== confirmPassword) {
+      const confirm = confirmPassword || "";
+      // Only validate when either field has a value
+      if (newPassword || confirm) {
+        if (newPassword !== confirm) {
           toast.error("Passwords do not match");
           setloading(false);
-          return;
         }
       }
-      let updatedProfile = { ...profile };
+      let updatedProfile = { ...profile, };
 
       // Check if there's a new file to upload
       if (
@@ -710,11 +717,12 @@ const DoctorProfile = () => {
         title: "Profile Update Successfully...",
         icon: "success",
       });
+      setnewpassword("");
       setConfirmPassword("");
       setShowPassword(false);
       setShowConfirmPassword(false);
     } catch (error) {
-      // console.error("Error updating profile:", error);
+      console.error("Error updating profile:", error);
       Swal.fire({
         title: "Profile Not Update.",
         text: "Something went wrong. Please check details and try again.",
@@ -733,6 +741,7 @@ const DoctorProfile = () => {
   };
   const passwordMismatch = profile?.password && confirmPassword && profile.password !== confirmPassword;
 
+  const [newPassword, setnewpassword] = useState("");
   return (
     <>
       <NavBar logindata={doctor}/>
@@ -750,7 +759,7 @@ const DoctorProfile = () => {
               {profile !== null ? (
                 <Form className='register_doctor'>
                   <Tabs
-                    defaultActiveKey="profile"
+                    defaultActiveKey="home"
                     id="uncontrolled-tab-example"
                     className="mb-3 border-0 setting_tab gap-3"
                   >
@@ -967,6 +976,7 @@ const DoctorProfile = () => {
                             disabled={IsDisable}
                             onChange={handleChange}
                             className="form-control"
+                            rows={4}
                           />
                         </Col>
 
@@ -1364,14 +1374,14 @@ const DoctorProfile = () => {
                         <Col md={4}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">
-                              Password
+                              New Password
                             </Form.Label>
                             <div className="position-relative">
                               <Form.Control
                                 type={showPassword ? 'text' : 'password'}
                                 placeholder="***"
-                                name="password"
-                                value={profile?.password || ""}
+                                name="newpassword"
+                                value={newPassword}
                                 disabled={IsDisable}
                                 onChange={handleChange}
                                 className="form-control frm_input"
@@ -1457,7 +1467,6 @@ const DoctorProfile = () => {
                               setConfirmPassword("");
                               setShowPassword(false);
                               setShowConfirmPassword(false);
-                              setprofile((p) => ({ ...p, password: "" }));
                             }}
                           >
                             Cancel
