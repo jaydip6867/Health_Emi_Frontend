@@ -14,7 +14,7 @@ import FunctionalitySec from './Component/FunctionalitySec'
 import BestDoctor from './Component/BestDoctor'
 import HeadTitle from './Component/HeadTitle'
 import HomeSlider from './Component/HomeSlider'
-
+import { SECRET_KEY, STORAGE_KEYS } from '../config'
 const Home = () => {
 
   const SECRET_KEY = "health-emi";
@@ -25,7 +25,7 @@ const Home = () => {
   const [token, settoken] = useState(null)
 
   useEffect(() => {
-    var getlocaldata = localStorage.getItem('PatientLogin');
+    var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
     if (getlocaldata != null) {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
