@@ -611,7 +611,7 @@ const D_Surgery = () => {
 
   return (
     <>
-      <NavBar />
+      <NavBar logindata={doctor}/>
       <Container className="my-4">
         <Row className="align-items-start">
           <DoctorSidebar doctor={doctor} />

@@ -735,7 +735,7 @@ const DoctorProfile = () => {
 
   return (
     <>
-      <NavBar />
+      <NavBar logindata={doctor}/>
       <Container className="my-4">
         <Row>
           <DoctorSidebar doctor={doctor}/>

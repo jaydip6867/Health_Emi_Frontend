@@ -424,7 +424,7 @@ const D_Blog = () => {
 
     return (
         <>
-            <NavBar />
+            <NavBar logindata={doctor}/>
             <Container className='my-4'>
                 <Row className="align-items-start">
                     <DoctorSidebar doctor={doctor} />
@@ -447,7 +447,7 @@ const D_Blog = () => {
                         <Row className='g-4'>
                             <Col xs={12}>
                                 <Form className='row register_doctor border rounded m-1 px-2 gy-3'>
-                                    <Form.Group className='col-12'>
+                                    <Form.Group className='col-12 col-md-6'>
                                         <Form.Label>Blog Image</Form.Label>
                                         <Form.Control
                                             type="file"
@@ -571,7 +571,7 @@ const D_Blog = () => {
                             <Modal.Body>
                                 <div className='p-3 border rounded'>
                                     <Form className='row register_doctor'>
-                                        <Form.Group controlId="editImage" className='mb-3'>
+                                        <Form.Group controlId="editImage" className='mb-3 col-12 col-md-6'>
                                             <Form.Label>Blog Image</Form.Label>
                                             <Form.Control
                                                 type="file"
