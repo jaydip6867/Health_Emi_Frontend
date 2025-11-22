@@ -104,11 +104,10 @@ const NavBar = ({ logindata }) => {
               {logindata ? (
                 logindata.logintype === 'doctor' ? (
                   <>
-                    <NavDropdown.Item as={Link} to="/doctor/doctorprofile">
+                    <NavDropdown.Item as={Link} to="/doctor/doctorprofile" className="text-center">
                       Profile
                     </NavDropdown.Item>
                     <NavDropdown.Item
-                      as={Button}
                       className="text-center text-danger"
                       onClick={() => {
                         localStorage.removeItem('healthdoctor');
@@ -124,7 +123,6 @@ const NavBar = ({ logindata }) => {
                       Profile
                     </NavDropdown.Item>
                     <NavDropdown.Item
-                      as={Button}
                       className="text-center text-danger"
                       onClick={() => {
                         localStorage.removeItem('PatientLogin');

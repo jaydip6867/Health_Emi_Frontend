@@ -246,19 +246,19 @@ const P_Surgeries = () => {
                                                     <div className='text-muted small'><FiPhone className='me-1' /> +91 {v?.doctorid?.mobile}</div>
                                                 </div>
                                             </div>
-                                            <div className='d-flex align-items-center gap-3 flex-wrap appointment_model'>
+                                            <div className='d-flex align-items-center text-center gap-3 flex-wrap appointment_model'>
                                                 <div>
-                                                    <p className='mb-0 small'>Ward Type</p>
+                                                    <p className='mb-0'>Ward Type</p>
                                                     <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{v?.roomtype}</span>
                                                 </div>
                                                 <div>
-                                                    <p className='mb-0 small'>Surgery Status</p>
+                                                    <p className='mb-0'>Surgery Status</p>
                                                     <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#E8F7EE', color: '#1F9254' }}>
                                                         {status.text}
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <p className='mb-0 small'>Consultation Fee</p>
+                                                    <p className='mb-0'>Consultation Fee</p>
                                                     <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {fee}</span>
                                                 </div>
                                             </div>
@@ -280,7 +280,7 @@ const P_Surgeries = () => {
                                                         <span>{v?.date}, {v?.time}</span>
                                                     </div>
                                                 </Col>
-                                                
+
                                                 <Col md={6} xs={12}>
                                                     <div className='text-muted small mb-1'>Clinic Name</div>
                                                     <div className='d-flex align-items-center gap-2'>
@@ -321,9 +321,36 @@ const P_Surgeries = () => {
                                                 )}
                                             </Row>
                                         </div>
-
+                                        {/* Prescription */}
+                                        <div >
+                                            <div className='fw-semibold mb-3'>Prescription</div>
+                                            <div className='border rounded p-3 mt-3 col-lg-5 col-md-9 col-12'>
+                                                {v?.doctor_remark ? (
+                                                    <>
+                                                        {/* <div className='d-flex gap-2 mb-2'>
+                                    <Button variant='outline-primary' size='sm' onClick={() => window.open(v.doctor_remark, '_blank')} className='d-flex align-items-center gap-2'>
+                                      <MdVisibility size={18} /> View
+                                    </Button>
+                                    <Button variant='primary' size='sm' onClick={() => handleDownloadPDF(v.doctor_remark, patient?.name)} className='d-flex align-items-center gap-2'>
+                                      <MdDownload size={18} /> Download
+                                    </Button>
+                                  </div> */}
+                                                        <div className='border rounded' style={{ backgroundColor: '#f8f9fa' }}>
+                                                            <iframe
+                                                                src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`}
+                                                                style={{ width: '100%', height: '200px', border: 'none', borderRadius: '4px' }}
+                                                                title='Prescription PDF'
+                                                            />
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <div className='text-muted small'>No prescription uploaded.</div>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                </Modal.Body>
+
+                            </Modal.Body>
                                 {/* <Modal.Body>
                                     <Row className="p-4">
                                         <Col xs={12} lg={6}>
@@ -455,12 +482,13 @@ const P_Surgeries = () => {
                                     </Row>
                                 </Modal.Body> */}
                             </Modal>
-                        )
+            )
                     })
                 }
-            </Container>
-            {loading ? <Loader /> : ''}
-            <FooterBar />
+        </Container >
+            { loading?<Loader /> : ''
+}
+<FooterBar />
         </>
     )
 }

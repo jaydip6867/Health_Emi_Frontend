@@ -11,9 +11,10 @@ import SmartDataTable from '../components/SmartDataTable'
 import { BsCameraVideo, BsClipboard } from 'react-icons/bs'
 import { PiHospital } from "react-icons/pi";
 import { HiOutlineHome } from "react-icons/hi";
-import { MdOutlineRemoveRedEye, MdDownload, MdVisibility, MdVerified } from 'react-icons/md'
+import { MdOutlineRemoveRedEye, MdDownload, MdVisibility, MdVerified, MdClose } from 'react-icons/md'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 import { FiClock, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
+import Swal from 'sweetalert2'
 
 const P_Appointment = () => {
 
@@ -179,19 +180,57 @@ const P_Appointment = () => {
   {
     name: 'View',
     cell: row => (
-      <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
-        <button
-          className="btn btn-sm p-1 appt-view-btn"
-          onClick={() => btnview(row._id)}
-        >
-          <MdOutlineRemoveRedEye size={18} />
-        </button>
-      </OverlayTrigger>
+      <div className='d-inline-flex gap-2 align-items-center'>
+        <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
+          <button
+            className="btn btn-sm p-1 appt-view-btn"
+            onClick={() => btnview(row._id)}
+          >
+            <MdOutlineRemoveRedEye size={18} />
+          </button>
+        </OverlayTrigger>
+        {row.status === "Pending" && (
+          <OverlayTrigger placement="top" overlay={renderTooltip('Cancel')}>
+            <button
+              className="btn btn-sm p-1 apt_status_btn danger"
+              onClick={() => appointmentbtn(row._id)}
+            >
+              <MdClose size={18} />
+            </button>
+          </OverlayTrigger>
+        )}
+      </div>
+
     ),
     width: '80px',
     center: true
   }]
 
+  const appointmentbtn = async (id, s) => {
+    setloading(true)
+    await axios({
+      method: 'post',
+      url: `${API_BASE_URL}/user/appointments/cancel`,
+      headers: {
+        Authorization: token
+      },
+      data: {
+        appointmentid: id,
+      }
+    }).then((res) => {
+      // console.log(res)
+      Swal.fire({
+        title: `Surgery Appointment ${s}...`,
+        icon: "success",
+      });
+      getappointments();
+    }).catch(function (error) {
+      console.log(error);
+      // toast(error.response.data.Message,{className:'custom-toast-error'})
+    }).finally(() => {
+      setloading(false)
+    });
+  }
   // Filter by status based on active tab
   const filteredData = useMemo(() => {
     if (!appoint_data) return []
@@ -268,20 +307,19 @@ const P_Appointment = () => {
                           <div className='text-muted small'><FiPhone className='me-1' /> +91 {v?.doctorid?.mobile}</div>
                         </div>
                       </div>
-                      <div className='d-flex align-items-center gap-3 flex-wrap appointment_model'>
+                      <div className='d-flex align-items-center text-center gap-3 flex-wrap appointment_model'>
                         <div>
-                          <p className='mb-0 small'>Visit Type</p>
+                          <p className='mb-0'>Visit Type</p>
                           <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{typePill.icon}{typePill.label}</span>
                         </div>
                         <div>
-                          <p className='mb-0 small'>Consultation Status</p>
-                          <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#E8F7EE', color: '#1F9254' }}>
-                            <span className='rounded-circle' style={{ width: 8, height: 8, background: status.dot }} />
+                          <p className='mb-0'>Consultation Status</p>
+                          <span className='badge' style={{ background: '#E8F7EE', color: '#1F9254' }}>
                             {status.text}
                           </span>
                         </div>
                         <div>
-                          <p className='mb-0 small'>Consultation Fee</p>
+                          <p className='mb-0'>Consultation Fee</p>
                           <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {fee}</span>
                         </div>
                       </div>

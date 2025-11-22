@@ -13,7 +13,6 @@ const DoctorSidebar = ({ doctor }) => {
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
     };
-    // console.log(doctor)
 
     return (
         <>
@@ -29,10 +28,10 @@ const DoctorSidebar = ({ doctor }) => {
                 <div className="bg-white patient_side_height sidebar-inner">
                     <div className="">
                         <div className='patient_profile'>
-                            <img src={require('../Visitor/assets/profile_icon_img.png')} />
+                            <img src={doctor?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} />
                         </div>
                         <div className='text-center py-3 align-items-center d-flex flex-column gap-2'>
-                            <span className='apt_complete_btn small'>{doctor?.is_available}Available</span>
+                            {doctor?.is_available === true ? <span className='apt_complete_btn small'>Available</span> : <span className='apt_dark_btn small'>Not Available</span>}
                             <div>
                                 <h5 style={{ color: 'var(--grayscale-color-800)' }}>{doctor?.name}</h5>
                                 <p className='m-0' style={{ color: '#0E9384' }}>{doctor?.specialty} Psychologist</p>

@@ -153,6 +153,7 @@ const Surgerydoctorlist = () => {
     }, [d_id])
 
     const getdoctorlist = async (d) => {
+        // console.log(d)
         await axios({
             method: 'post',
             url: `${API_BASE_URL}/user/doctors/list`,

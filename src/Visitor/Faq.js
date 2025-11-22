@@ -6,26 +6,33 @@ import FooterBar from './Component/FooterBar'
 import { Container, Row, Col, Nav, Accordion } from 'react-bootstrap'
 import { BsEnvelope, BsGlobe } from "react-icons/bs";
 import { MdCall } from 'react-icons/md';
+import {SECRET_KEY, STORAGE_KEYS } from '../config'
 
 const Faq = () => {
-    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
 
-    const [patient, setpatient] = useState(null)
+    const [logdata, setlogdata] = useState(null)
     const [token, settoken] = useState(null)
     const [activeTab, setActiveTab] = useState('General Information')
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('PatientLogin');
-        if (getlocaldata != null) {
-            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
-            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-            var data = JSON.parse(decrypted);
-        }
-        if (data) {
-            setpatient(data.userData);
-            settoken(`Bearer ${data.accessToken}`)
-        }
+        var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+                var dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+                if (pgetlocaldata != null) {
+                    const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
+                    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+                    var data = JSON.parse(decrypted);
+                    setlogdata(data.userData);
+                }
+                else if (dgetlocaldata != null) {
+                    const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
+                    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+                    var data = JSON.parse(decrypted);
+                    setlogdata(data.doctorData);
+                }
+                if (data) {
+                    settoken(`Bearer ${data.accessToken}`)
+                }
     }, [navigate])
 
     useEffect(() => {
@@ -33,7 +40,7 @@ const Faq = () => {
     }, [])
     return (
         <>
-            <NavBar logindata={patient} />
+            <NavBar logindata={logdata} />
             {/* breadcrumb section */}
             <section className='breadcrumb_Sec'>
                 <Container className='text-center '>

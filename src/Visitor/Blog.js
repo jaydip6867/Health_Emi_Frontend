@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import CryptoJS from "crypto-js";
 import NavBar from './Component/NavBar';
 import FooterBar from './Component/FooterBar';
 import Loader from '../Loader';
-import { Card, Col, Container, Row, Pagination } from 'react-bootstrap';
+import { Col, Container, Row, Pagination } from 'react-bootstrap';
 import axios from 'axios';
-import { IoCalendarOutline } from "react-icons/io5";
 import BlogBox from './Component/BlogBox';
 import { FiSearch } from 'react-icons/fi';
 import { API_BASE_URL, SECRET_KEY, DEFAULT_PAGE_LIMIT, STORAGE_KEYS } from '../config';
@@ -15,18 +14,25 @@ const Blog = () => {
     var navigate = useNavigate();
 
     const [loading, setloading] = useState(false)
-    const [patient, setpatient] = useState(null)
     const [token, settoken] = useState(null)
+    const [logdata, setlogdata] = useState(null)
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
-        if (getlocaldata != null) {
-            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+        var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+        var dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+        if (pgetlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
             var data = JSON.parse(decrypted);
+            setlogdata(data.userData);
+        }
+        else if (dgetlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+            setlogdata(data.doctorData);
         }
         if (data) {
-            setpatient(data.userData);
             settoken(`Bearer ${data.accessToken}`)
         }
         getblog()
@@ -71,7 +77,7 @@ const Blog = () => {
         });
     }
 
-    function searchblog(e){
+    function searchblog(e) {
         const val = e.target.value;
         setSearchQuery(val)
         setPage(1)
@@ -91,10 +97,10 @@ const Blog = () => {
         setPage(p)
         getblog(p, searchQuery)
     }
-    
+
     return (
         <>
-            <NavBar />
+            <NavBar logindata={logdata} />
             {/* breadcrumb section */}
             <section className='breadcrumb_Sec'>
                 <Container className='text-center '>
@@ -108,7 +114,7 @@ const Blog = () => {
                         <Col xs={6}>
                             <div className='blog_search_bar position-relative'>
                                 <input type="text" placeholder='Search blog details' onChange={searchblog} />
-                                <FiSearch className='position-absolute' style={{ left: 14, top: 12}}  />
+                                <FiSearch className='position-absolute' style={{ left: 14, top: 12 }} />
                             </div>
                         </Col>
                     </Row>

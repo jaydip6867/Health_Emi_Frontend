@@ -251,10 +251,10 @@ const D_Appointment = () => {
             an: false,
             ev: false,
             nt: false,
-            moDose: 1,
-            anDose: 1,
-            evDose: 1,
-            ntDose: 1,
+            moDose: 0,
+            anDose: 0,
+            evDose: 0,
+            ntDose: 0,
             days: 1,
             quantity: 0,
             instruction: '-SELECT-'
@@ -329,7 +329,7 @@ const D_Appointment = () => {
                 data: {
                     appointmentid: currentAppointment?._id,
                     payment_mode: 'Cash',
-                    totalamount: 1000,
+                    totalamount: appointment?.price,
                     doctor_remark: uploadedFileUrl
                 }
             });
@@ -606,7 +606,7 @@ const D_Appointment = () => {
     return (
         <>
 
-            <NavBar logindata={doctor}/>
+            <NavBar logindata={doctor} />
             <Container className='my-4'>
                 <Row className="align-items-start">
                     <DoctorSidebar doctor={doctor} />
@@ -646,20 +646,20 @@ const D_Appointment = () => {
                                                     <div className='text-muted small'><FiPhone className='me-1' /> +91 {v?.createdByuser?.mobile}</div>
                                                 </div>
                                             </div>
-                                            <div className='d-flex align-items-center gap-3 flex-wrap appointment_model'>
+                                            <div className='d-flex align-items-center gap-4 flex-wrap appointment_model text-center'>
                                                 <div>
-                                                    <p className='mb-0 small'>Ward Type</p>
+                                                    <p className='mb-0'>Ward Type</p>
                                                     <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{v?.visit_types}</span>
                                                 </div>
                                                 <div>
-                                                    <p className='mb-0 small'>Surgery Status</p>
+                                                    <p className='mb-0'>Surgery Status</p>
                                                     <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#E8F7EE', color: '#1F9254' }}>
                                                         {v?.status}
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <p className='mb-0 small'>Consultation Fee</p>
-                                                    <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.totalamount}</span>
+                                                    <p className='mb-0'>Consultation Fee</p>
+                                                    <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.totalamount || 0}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -675,7 +675,7 @@ const D_Appointment = () => {
                                             <Col md={6} xs={12}>
                                                 <div className='text-muted small mb-1'>Clinic Name</div>
                                                 <div className='d-flex align-items-center gap-2'>
-                                                    <span>{v?.hospitalname?.name || '-'}</span>
+                                                    <span>{v?.hospital_name || '-'}</span>
                                                 </div>
                                             </Col>
 
@@ -853,10 +853,10 @@ const D_Appointment = () => {
                                     <span className='text-muted'>Time</span>
                                     <span className='fw-semibold'>{currentAppointment.time}</span>
                                 </div>
-                                <div>
+                                {/* <div>
                                     <span className='text-muted d-block'>Reason</span>
                                     <span>{currentAppointment.appointment_reason || 'Not provided'}</span>
-                                </div>
+                                </div> */}
                             </div>
                         ) : (
                             <p className='text-muted mb-0'>No appointment selected.</p>
@@ -983,7 +983,7 @@ const D_Appointment = () => {
                                                         </Form.Select>
                                                     </Form.Group>
                                                 </Col>
-                                                <Col md={3}>
+                                                <Col md={2}>
                                                     <Form.Group>
                                                         <Form.Label>Medicine Name *</Form.Label>
                                                         <Form.Control
@@ -994,10 +994,10 @@ const D_Appointment = () => {
                                                         />
                                                     </Form.Group>
                                                 </Col>
-                                                <Col md={4}>
+                                                <Col md={5}>
                                                     <Form.Group>
                                                         <Form.Label>Dosage (Check when to take)</Form.Label>
-                                                        <div className='d-flex flex-wrap gap-3'>
+                                                        <div className='d-flex flex-wrap gap-2'>
                                                             {[
                                                                 { id: 'mo', label: 'MO' },
                                                                 { id: 'an', label: 'AN' },
@@ -1017,7 +1017,7 @@ const D_Appointment = () => {
                                                                         type='number'
                                                                         min='0'
                                                                         size='sm'
-                                                                        style={{ width: '50px' }}
+                                                                        style={{ width: '40px' }}
                                                                         value={newPrescriptionItem[`${time.id}Dose`]}
                                                                         onChange={(e) => handleNewItemChange(`${time.id}Dose`, Math.max(0, e.target.value))}
                                                                         disabled={!newPrescriptionItem[time.id]}
@@ -1159,6 +1159,9 @@ const D_Appointment = () => {
                         </div>
                         <div style={{ fontWeight: 700, fontSize: 14 }}>
                             Date : <span style={{ fontWeight: 400 }}>{currentAppointment ? `${currentAppointment.date}${currentAppointment.time ? `, ${currentAppointment.time}` : ''}` : '-'}</span>
+                        </div>
+                        <div style={{ fontWeight: 700, fontSize: 14 }}>
+                            BP : <span style={{ fontWeight: 400 }}>{currentAppointment ? `${currentAppointment.bp}` : '-'}</span>
                         </div>
                     </div>
                     {prescriptionData?.complain ? (

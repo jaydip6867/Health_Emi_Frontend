@@ -67,16 +67,25 @@ const DoctorProfilePage = () => {
 
   const [patient, setpatient] = useState(null)
   const [token, settoken] = useState(null)
+  const [logdata, setlogdata] = useState(null)
 
   useEffect(() => {
-    var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
-    if (getlocaldata != null) {
-      const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+    var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+    var dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+    if (pgetlocaldata != null) {
+      const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var data = JSON.parse(decrypted);
+      setpatient(data.userData);
+      setlogdata(data.userData);
+    }
+    else if (dgetlocaldata != null) {
+      const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
+      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+      var data = JSON.parse(decrypted);
+      setlogdata(data.doctorData);
     }
     if (data) {
-      setpatient(data.userData);
       settoken(`Bearer ${data.accessToken}`)
     }
   }, [navigate])
@@ -258,22 +267,24 @@ const DoctorProfilePage = () => {
       : '';
 
 
-  var surg_obj = { patientname: '', mobile: '', alt_name: '', alt_mobile: '', surgeryid: '', date: '', time: '', appointment_reason: '', report: [], doctorid: '', roomtype: '' }
+  var surg_obj = { patientname: '', mobile: '', alt_name: '', alt_mobile: '', surgeryid: '', date: '', time: '', appointment_reason: '', report: [], doctorid: '', roomtype: '', hospital_name: '' }
   const [addsurgery, setaddsurgery] = useState(surg_obj)
   const [reportFiles, setReportFiles] = useState([])
   const [reportPreviews, setReportPreviews] = useState([])
   const [isUploadingReports, setIsUploadingReports] = useState(false)
   const [single_surg, setsingle_surg] = useState(null)
   const [addshow, setaddshow] = useState(false)
+  const [surgeryHospitalError, setSurgeryHospitalError] = useState(false)
   const handleAddSurgeryClose = () => setaddshow(false)
   function handleAddSurgery(surgdata, d_id) {
-    var surg_apt_data = { ...addsurgery, surgeryid: surgdata._id, doctorid: d_id, patientname: patient?.name, mobile: patient?.mobile }
+    var surg_apt_data = { ...addsurgery, surgeryid: surgdata._id, doctorid: d_id, patientname: patient?.name, mobile: patient?.mobile, hospital_name: '' }
     setaddsurgery(surg_apt_data)
     setsingle_surg(surgdata)
     if (!patient) {
       navigate('/patient')
     }
     else {
+      setSurgeryHospitalError(false)
       setaddshow(true)
       // setShow(true)
     }
@@ -365,6 +376,15 @@ const DoctorProfilePage = () => {
 
     if (patient) {
       // console.log('book surgery : ',addsurgery, d_id)
+      if (!addsurgery?.hospital_name) {
+        Swal.fire({
+          title: "Please select Hospital",
+          icon: "warning",
+          confirmButtonText: 'Ok'
+        });
+        setSurgeryHospitalError(true)
+        return;
+      }
       // Split at the space before the time
       const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
       // Combine time + meridiem
@@ -428,7 +448,7 @@ const DoctorProfilePage = () => {
 
   return (
     <>
-      <NavBar logindata={patient} />
+      <NavBar logindata={logdata} />
       {/* doctor profile section */}
       <section className='doctor-profile-section' style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
         {doctor_profile && <Container className="py-4">
@@ -484,8 +504,7 @@ const DoctorProfilePage = () => {
                                 <svg width="21" height="21" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M8.96001 0C5.62546 0 2.91455 2.71091 2.91455 6.04545C2.91455 9.31636 5.47273 11.9636 8.80728 12.0782C8.9091 12.0655 9.01091 12.0655 9.08728 12.0782C9.11273 12.0782 9.12546 12.0782 9.15091 12.0782C9.16364 12.0782 9.16364 12.0782 9.17637 12.0782C12.4346 11.9636 14.9927 9.31636 15.0055 6.04545C15.0055 2.71091 12.2946 0 8.96001 0Z" fill="#1C2A3A" />
                                   <path d="M15.4255 15.4639C11.8745 13.0967 6.08364 13.0967 2.50727 15.4639C0.890909 16.5457 0 18.0094 0 19.5748C0 21.1403 0.890909 22.5912 2.49455 23.6603C4.27636 24.8567 6.61818 25.4548 8.96 25.4548C11.3018 25.4548 13.6436 24.8567 15.4255 23.6603C17.0291 22.5785 17.92 21.1276 17.92 19.5494C17.9073 17.9839 17.0291 16.533 15.4255 15.4639Z" fill="#1C2A3A" />
-                                  <path d="M22.947 6.79614C23.1507 9.26523 21.3943 11.4289 18.9634 11.7216C18.9507 11.7216 18.9507 11.7216 18.9379 11.7216H18.8997C18.8234 11.7216 18.747 11.7216 18.6834 11.747C17.4488 11.8107 16.3161 11.4161 15.4634 10.6907C16.7743 9.51977 17.5252 7.76341 17.3725 5.85432C17.2834 4.82341 16.927 3.88159 16.3925 3.07977C16.8761 2.83795 17.4361 2.68523 18.0088 2.63432C20.5034 2.41795 22.7307 4.27614 22.947 6.79614Z" fill="#1C2A3A" />
-                                  <path d="M25.4929 18.5692C25.391 19.8038 24.6019 20.8729 23.2783 21.5983C22.0056 22.2983 20.4019 22.6292 18.811 22.5911C19.7274 21.7638 20.2619 20.7329 20.3638 19.6383C20.491 18.0602 19.7401 16.5456 18.2383 15.3365C17.3856 14.662 16.3929 14.1274 15.311 13.7329C18.1238 12.9183 21.6619 13.4656 23.8383 15.222C25.0092 16.1638 25.6074 17.3474 25.4929 18.5692Z" fill="#1C2A3A" />
+                                  <path d="M22.947 6.79614C23.1507 9.26523 21.3943 11.4289 18.9634 11.7216C22.6801 16.6473 22.2346 16.3418 22.2346 15.8964L22.2474 11.1873C22.2474 6.09636 19.3328 3.18182 14.2419 3.18182L6.491 3.19455C6.04555 3.19455 5.74009 2.74909 5.96918 2.36727C6.92373 0.789091 8.65464 0 11.1874 0H19.3328C23.3928 0 25.4292 2.03636 25.4292 6.09636Z" fill="#1C2A3A" />
                                 </svg>
 
 
@@ -681,36 +700,7 @@ const DoctorProfilePage = () => {
                       <p>No reviews available</p>
                     )
                   }
-                  {/* <div className='card p-3 shadow'>
-                    <div className="d-flex align-items-start mb-3 pb-2 border-bottom">
-                      <Image
-                        src={require("../assets/image/doctor_img.jpg")}
-                        roundedCircle
-                        width={50}
-                        height={50}
-                        className="me-3"
-                      />
-                      <div className="flex-grow-1">
-                        <div className="d-flex align-items-center mb-2">
-                          <h6 className="fw-bold mb-0 me-2">Bharti patel</h6>
-                        </div>
-                        <div className="d-flex align-items-center mb-2">
-                          {[...Array(5)].map((_, i) => (
-                            <BsStarFill key={i} className="text-warning me-1" size={14} />
-                          ))}
-                          <span className="small text-muted ms-2">5.0</span>
-                        </div>
 
-                      </div>
-
-                    </div>
-                    <h6 className="fw-bold mb-2">Visit For Root Canal Treatment</h6>
-                    <p className="text-muted small mb-0">
-                      I had a lot of pain in my tooth and not involved in just one sitting. Earlier I have had a bad experience
-                      with dentists but after getting my treatment done here I have overcome my fears. The doctor is very
-                      good in her work and also knows how to take care of my teeth after treatment.
-                    </p>
-                  </div> */}
                 </Card.Body>
               </Card>
             </Col>
@@ -745,7 +735,6 @@ const DoctorProfilePage = () => {
                               <svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2.8125 0.390625H11.8125C12.057 0.390625 12.292 0.487271 12.4648 0.660156C12.6377 0.833042 12.7344 1.068 12.7344 1.3125V7.89062H18.5625C18.807 7.89062 19.042 7.98727 19.2148 8.16016C19.3877 8.33304 19.4844 8.568 19.4844 8.8125V16.8906H20.8125C20.8581 16.8906 20.9014 16.9092 20.9336 16.9414C20.9658 16.9736 20.9844 17.0169 20.9844 17.0625C20.9844 17.1081 20.9658 17.1514 20.9336 17.1836C20.9014 17.2158 20.8581 17.2344 20.8125 17.2344H0.5625C0.516915 17.2344 0.473638 17.2158 0.441406 17.1836C0.409174 17.1514 0.390625 17.1081 0.390625 17.0625C0.390625 17.0169 0.409174 16.9736 0.441406 16.9414C0.473638 16.9092 0.516915 16.8906 0.5625 16.8906H1.89062V1.3125C1.89063 1.068 1.98727 0.833041 2.16016 0.660156C2.33304 0.487271 2.568 0.390625 2.8125 0.390625ZM2.8125 0.734375C2.65917 0.734375 2.51174 0.7949 2.40332 0.90332C2.2949 1.01174 2.23438 1.15917 2.23438 1.3125V16.8906H4.89062V11.8125C4.89062 11.7669 4.90917 11.7236 4.94141 11.6914C4.97364 11.6592 5.01692 11.6406 5.0625 11.6406H9.5625C9.60809 11.6406 9.65136 11.6592 9.68359 11.6914C9.71583 11.7236 9.73438 11.7669 9.73438 11.8125V16.8906H12.3906V1.3125C12.3906 1.19771 12.3566 1.08636 12.2939 0.992188L12.2217 0.90332L12.1328 0.831055C12.0386 0.768399 11.9273 0.734375 11.8125 0.734375H2.8125ZM5.23438 16.8906H9.39062V11.9844H5.23438V16.8906ZM12.7344 16.8906H19.1406V8.8125C19.1406 8.69771 19.1066 8.58636 19.0439 8.49219L18.9717 8.40332L18.8828 8.33105C18.7886 8.2684 18.6773 8.23438 18.5625 8.23438H12.7344V16.8906ZM7.3125 3.39062C7.35808 3.39062 7.40136 3.40917 7.43359 3.44141C7.46583 3.47364 7.48438 3.51692 7.48438 3.5625V5.64062H9.5625C9.60808 5.64062 9.65136 5.65917 9.68359 5.69141C9.71583 5.72364 9.73438 5.76692 9.73438 5.8125C9.73438 5.85808 9.71583 5.90136 9.68359 5.93359C9.65136 5.96583 9.60808 5.98438 9.5625 5.98438H7.48438V8.0625C7.48438 8.10808 7.46583 8.15136 7.43359 8.18359C7.40136 8.21583 7.35808 8.23438 7.3125 8.23438C7.26692 8.23438 7.22364 8.21583 7.19141 8.18359C7.15917 8.15136 7.14062 8.10808 7.14062 8.0625V5.98438H5.0625C5.01692 5.98438 4.97364 5.96583 4.94141 5.93359C4.90917 5.90136 4.89062 5.85808 4.89062 5.8125C4.89062 5.76692 4.90917 5.72364 4.94141 5.69141C4.97364 5.65917 5.01692 5.64062 5.0625 5.64062H7.14062V3.5625C7.14062 3.51692 7.15917 3.47364 7.19141 3.44141C7.22364 3.40917 7.26692 3.39062 7.3125 3.39062Z" fill="black" stroke="#FBB03F" stroke-width="0.78125" />
                               </svg>
-
                             </div>
                             <div className="d-flex flex-column mt-1">
                               <span className="fw-bold">Clinic Visit</span>
@@ -1196,6 +1185,20 @@ const DoctorProfilePage = () => {
             <Form.Group className='col-6'>
               <Form.Label>Alt Mobile No</Form.Label>
               <Form.Control type="text" name='alt_mobile' value={addsurgery?.alt_mobile} onChange={surghandlechange} />
+            </Form.Group>
+            <Form.Group className='col-6'>
+              <Form.Label>Hospital</Form.Label>
+              <Form.Select
+                name='hospital_name'
+                value={addsurgery?.hospital_name || ''}
+                onChange={(e) => { surghandlechange(e); setSurgeryHospitalError(false); }}
+              >
+                <option value=''>Select Hospital</option>
+                {doctor_profile?.hospitals?.map((v, i) => (
+                  <option key={i} value={v?.name}>{v?.name}</option>
+                ))}
+              </Form.Select>
+              {surgeryHospitalError && <div className="text-danger small mt-1">Please select hospital</div>}
             </Form.Group>
             <Form.Group className='col-4'>
               <Form.Label>Room Type</Form.Label>

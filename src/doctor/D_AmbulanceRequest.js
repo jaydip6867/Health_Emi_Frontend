@@ -16,6 +16,7 @@ import {
   FaMotorcycle,
   FaCar,
 } from "react-icons/fa";
+import NavBar from "../Visitor/Component/NavBar";
 
 let gmapsPromise = null;
 const loadGoogleMaps = () => {
@@ -738,11 +739,11 @@ const D_AmbulanceRequest = () => {
 
   return (
     <>
-    
-      <Container fluid className="p-0 panel">
+      <NavBar logindata={doctor}/>
+      <Container className="my-4">
         <Row className="g-0">
           <DoctorSidebar />
-          <Col xs={12} md={9} lg={10} className="p-3">
+          <Col xs={12} md={9} className="p-3">
             <DoctorNav doctorname={doctor && doctor.name} />
             <div className="bg-white rounded p-2">
               <div

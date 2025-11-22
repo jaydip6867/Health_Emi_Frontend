@@ -5,29 +5,35 @@ import NavBar from './Component/NavBar';
 import FooterBar from './Component/FooterBar';
 import FunctionalitySec from './Component/FunctionalitySec';
 import { Container, Row, Col, Card } from "react-bootstrap";
-
+import {SECRET_KEY, STORAGE_KEYS } from '../config'
 const AmbulancePage = () => {
-    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
 
-    const [patient, setpatient] = useState(null)
+    const [logdata, setlogdata] = useState(null)
     const [token, settoken] = useState(null)
-
+    
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('PatientLogin');
-        if (getlocaldata != null) {
-            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
-            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-            var data = JSON.parse(decrypted);
-        }
-        if (data) {
-            setpatient(data.userData);
-            settoken(`Bearer ${data.accessToken}`)
-        }
-    }, [navigate])
+            var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+            var dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+            if (pgetlocaldata != null) {
+                const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
+                const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+                var data = JSON.parse(decrypted);
+                setlogdata(data.userData);
+            }
+            else if (dgetlocaldata != null) {
+                const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
+                const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+                var data = JSON.parse(decrypted);
+                setlogdata(data.doctorData);
+            }
+            if (data) {
+                settoken(`Bearer ${data.accessToken}`)
+            }   
+        }, [navigate])
     return (
         <>
-            <NavBar logindata={patient} />
+            <NavBar logindata={logdata} />
 
             {/* Hero Section */}
             <section className="page_banner ambulance_banner">

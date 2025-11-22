@@ -6,29 +6,36 @@ import FooterBar from './Component/FooterBar';
 import FunctionalitySec from './Component/FunctionalitySec';
 import { Container, Row, Col, Card } from "react-bootstrap";
 import HeadTitle from './Component/HeadTitle';
+import { SECRET_KEY, STORAGE_KEYS } from '../config'
 
 const VideoConsult = () => {
-    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
 
-    const [patient, setpatient] = useState(null)
     const [token, settoken] = useState(null)
+    const [logdata, setlogdata] = useState(null)
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem('PatientLogin');
-        if (getlocaldata != null) {
-            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+        var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+        var dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+        if (pgetlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
             var data = JSON.parse(decrypted);
+            setlogdata(data.userData);
+        }
+        else if (dgetlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+            setlogdata(data.doctorData);
         }
         if (data) {
-            setpatient(data.userData);
             settoken(`Bearer ${data.accessToken}`)
         }
     }, [navigate])
     return (
         <>
-            <NavBar logindata={patient} />
+            <NavBar logindata={logdata} />
 
             {/* Hero Section */}
             <section className="page_banner consult_banner ">
@@ -36,8 +43,8 @@ const VideoConsult = () => {
                     <Row className="align-items-center justify-content-between g-0">
                         <Col md={6}>
                             <div className='ps-5'>
-                                <h2 className="fw-bold mb-2" style={{color: 'var(--grayscale-color-900)'}}>Consult Top Doctors Anytime, Anywhere</h2>
-                                <p className=" mb-4" style={{color: 'var(--grayscale-color-800)'}}>Skip the travel, traffic, and waiting lines. <br /> With E-OPD, you can consult certified doctors via secure video calls — <br />from the comfort of your home.</p>
+                                <h2 className="fw-bold mb-2" style={{ color: 'var(--grayscale-color-900)' }}>Consult Top Doctors Anytime, Anywhere</h2>
+                                <p className=" mb-4" style={{ color: 'var(--grayscale-color-800)' }}>Skip the travel, traffic, and waiting lines. <br /> With E-OPD, you can consult certified doctors via secure video calls — <br />from the comfort of your home.</p>
 
                             </div>
                         </Col>
@@ -139,9 +146,9 @@ const VideoConsult = () => {
                     {/* CTA */}
                     <Card className="border-0 rounded-4 matter_bg">
                         <Card.Body className="p-4 text-center">
-                            <h2 className='display-5 fw-bold' style={{color: 'var(--primary-color-500)'}}>Your health, one click away.</h2>
+                            <h2 className='display-5 fw-bold' style={{ color: 'var(--primary-color-500)' }}>Your health, one click away.</h2>
                             <div className="text-muted fs-5">
-                               Book an <span className="fw-bold ">E-OPD video consultation</span> now through <span className="fw-bold">Health Easy EMI.</span>
+                                Book an <span className="fw-bold ">E-OPD video consultation</span> now through <span className="fw-bold">Health Easy EMI.</span>
                             </div>
                         </Card.Body>
                     </Card>

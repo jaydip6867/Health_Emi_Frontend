@@ -1286,7 +1286,7 @@ const D_Surgery = () => {
                         </div>
                       </Col>
                       <Col xs={12} md={4}>
-                        <Row className="g-0">
+                        <Row className="g-0 justify-content-center">
                           <Col xs={6}>
                             <div className="text-center p-1 h-100">
                               <div>
@@ -1334,22 +1334,6 @@ const D_Surgery = () => {
                                 <div className="d-flex flex-column mt-1">
                                   <span className="fw-bold">{v?.days}</span>
                                   <small className="text-muted">Stays Days</small>
-                                </div>
-                              </div>
-                            </div>
-                          </Col>
-                          <Col xs={6}>
-                            <div className="text-center p-1 h-100">
-                              <div>
-                                <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#F8EFE1', fontSize: '14px' }} >
-                                  <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M10.0713 17.5215C9.73425 17.5327 9.40283 17.614 9.15039 17.7666L6.12109 19.5664C3.9537 20.8466 2.63569 19.8964 3.20605 17.4375L3.92871 14.3193C4.04268 13.711 3.80193 12.887 3.38379 12.4688L0.861328 9.94629C-0.621578 8.46335 -0.140196 6.96817 1.92578 6.61328L5.1582 6.08105C5.70299 5.9922 6.34891 5.51066 6.58984 5.0166L8.37695 1.44141C8.84761 0.512455 9.4572 0.0324938 10.0713 0.000976562V17.5215Z" fill="#FEB052" />
-                                    <path d="M10.0713 0.00195312C10.7305 -0.0317732 11.3952 0.452158 11.9004 1.45605L13.6875 5.03027C13.9283 5.52459 14.5751 5.99333 15.1201 6.09473L18.3525 6.62695C20.4182 6.9693 20.8998 8.46541 19.417 9.96094L16.8945 12.4834C16.4764 12.9017 16.2356 13.7257 16.375 14.3213L17.0977 17.4385C17.668 19.8974 16.349 20.8612 14.1816 19.5684L11.1523 17.7686C10.8599 17.5918 10.4618 17.5105 10.0713 17.5234V0.00195312Z" fill="#FEB052" />
-                                  </svg>
-                                </div>
-                                <div className="d-flex flex-column mt-1">
-                                  <span className="fw-bold">{v?.averageRating ? 0 : v?.averageRating || '0'}</span>
-                                  <small className="text-muted">Rating</small>
                                 </div>
                               </div>
                             </div>

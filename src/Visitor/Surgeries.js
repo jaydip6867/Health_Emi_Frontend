@@ -62,6 +62,7 @@ const Surgeries = () => {
             }
         }).then((res) => {
             const data = res?.data?.Data || [];
+            // console.log(data)
             setAllSurgeries(data);
             setsurgerylist(data);
         }).catch(function (error) {
@@ -101,13 +102,13 @@ const Surgeries = () => {
                                     const img = item?.surgery_photo;
                                     // Surgerydoctorlist expects a surgerytypeid in the API body.
                                     // Prefer nested id if available, fallback to string field or surgery id to avoid crashes.
-                                    const typeId = item?.surgerytypeid?._id || item?.surgerytypeid || item?._id;
+                                    // const typeId = item?.surgerytypeid?._id;
                                     return (
-                                        <Link to={`/surgery/${encodeURIComponent(btoa(typeId))}`} className='surgery_list_box' key={item?._id}>
+                                        <Link to={`/surgery/${encodeURIComponent(btoa(item?.name))}`} className='surgery_list_box' key={item?._id}>
                                             <img
                                                 src={img || defaultSurgeryIcon}
                                                 alt={name}
-                                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultSurgeryIcon; }}
+                                                // onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultSurgeryIcon; }}
                                             />
                                             <p className='mt-2 fw-semibold text-capitalize'>{name}</p>
                                         </Link>

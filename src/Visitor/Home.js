@@ -14,25 +14,31 @@ import FunctionalitySec from './Component/FunctionalitySec'
 import BestDoctor from './Component/BestDoctor'
 import HeadTitle from './Component/HeadTitle'
 import HomeSlider from './Component/HomeSlider'
-import { SECRET_KEY, STORAGE_KEYS } from '../config'
+import { SECRET_KEY, STORAGE_KEYS } from '../config'  
 const Home = () => {
 
-  const SECRET_KEY = "health-emi";
   var navigate = useNavigate();
 
-  const [loading, setloading] = useState(false)
-  const [patient, setpatient] = useState(null)
+  const [loading, setloading] = useState(false) 
   const [token, settoken] = useState(null)
+  const [logdata, setlogdata] = useState(null)
 
   useEffect(() => {
-    var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
-    if (getlocaldata != null) {
-      const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+    var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+    var dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+    if (pgetlocaldata != null) {
+      const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var data = JSON.parse(decrypted);
+      setlogdata(data.userData);
+    }
+    else if (dgetlocaldata != null) {
+      const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
+      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+      var data = JSON.parse(decrypted);
+      setlogdata(data.doctorData);
     }
     if (data) {
-      setpatient(data.userData);
       settoken(`Bearer ${data.accessToken}`)
     }
   }, [navigate])
@@ -41,7 +47,7 @@ const Home = () => {
 
   return (
     <>
-      <NavBar logindata={patient} />
+      <NavBar logindata={logdata} />
       {/* search by city and doctor name or surgery */}
       <section className='position-relative'>
         <HomeSlider />

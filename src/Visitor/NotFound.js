@@ -6,32 +6,39 @@ import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { SECRET_KEY, STORAGE_KEYS } from '../config'
 
 const NotFound = () => {
 
-  const SECRET_KEY = "health-emi";
   var navigate = useNavigate();
 
-  const [patient, setpatient] = useState(null)
+  const [logdata, setlogdata] = useState(null)
   const [token, settoken] = useState(null)
 
   useEffect(() => {
-    var getlocaldata = localStorage.getItem('PatientLogin');
-    if (getlocaldata != null) {
-      const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+    var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+    var dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+    if (pgetlocaldata != null) {
+      const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var data = JSON.parse(decrypted);
+      setlogdata(data.userData);
+    }
+    else if (dgetlocaldata != null) {
+      const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
+      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+      var data = JSON.parse(decrypted);
+      setlogdata(data.doctorData);
     }
     if (data) {
-      setpatient(data.userData);
       settoken(`Bearer ${data.accessToken}`)
-  }
+    }
   }, [navigate])
 
   return (
     <>
       <div className='d-flex flex-column min-vh-100'>
-        <NavBar logindata={patient} />
+        <NavBar logindata={logdata} />
         <section className='py-5'>
           <Container>
             <h3 className='text-center py-5'>Page Not Found</h3>

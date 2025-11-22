@@ -17,20 +17,28 @@ const BlogDetail = () => {
     // console.log(id)
 
     const [loading, setloading] = useState(false)
-    const [patient, setpatient] = useState(null)
+
     const [token, settoken] = useState(null)
     const [blog, setblog] = useState(null)
     const [bloglist, setbloglist] = useState(null)
+    const [logdata, setlogdata] = useState(null)
 
     useEffect(() => {
-        var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
-        if (getlocaldata != null) {
-            const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+        var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+        var dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+        if (pgetlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
             var data = JSON.parse(decrypted);
+            setlogdata(data.userData);
+        }
+        else if (dgetlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+            setlogdata(data.doctorData);
         }
         if (data) {
-            setpatient(data.userData);
             settoken(`Bearer ${data.accessToken}`)
         }
         getblogdetail()
@@ -90,7 +98,7 @@ const BlogDetail = () => {
     }
     return (
         <>
-            <NavBar />
+            <NavBar logindata={logdata} />
             {/* breadcrumb section */}
             <section className='breadcrumb_Sec'>
                 <Container className='text-center '>
@@ -132,7 +140,7 @@ const BlogDetail = () => {
                 <Container>
                     <Row>
                         {bloglist?.map((item, index) => (
-                            <BlogBox item={item} index={index} key={index}/>
+                            <BlogBox item={item} index={index} key={index} />
                         ))}
                     </Row>
                 </Container>
