@@ -12,7 +12,7 @@ const FunctionalitySec = () => {
                         <Card className='functionality_box'>
                             <Card.Img src={require('../assets/find-doctor-image.png')} alt='video consultant' />
                             <Card.Body>
-                                <Card.Title><Link to='/compare-doctor' className='d-flex align-items-center w-100 justify-content-between'>Compare Doctor <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
+                                <Card.Title><Link to='/comparedoctor' className='d-flex align-items-center w-100 justify-content-between'>Compare Doctor <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
                             </Card.Body>
                         </Card>
                     </Col>

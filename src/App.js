@@ -58,7 +58,7 @@ function App() {
         <Route path='/doctorprofile/:id' element={<DoctorProfilePage />}></Route>
         <Route path='/surgery' element={<Surgeries />}></Route>
         <Route path='/surgery/:id' element={<Surgerydoctorlist />}></Route>
-        <Route path='/compare-doctor' element={<CompareDoctor />}></Route>
+        <Route path='/comparedoctor' element={<CompareDoctor />}></Route>
         <Route path='/ambulancepage' element={<AmbulancePage />}></Route>
         <Route path='/faq' element={<Faq />}></Route>
         <Route path='/blog' element={<Blog />}></Route>

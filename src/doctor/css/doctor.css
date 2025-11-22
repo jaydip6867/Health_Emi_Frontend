@@ -574,3 +574,6 @@ select.frm_input {
     object-fit: cover;
     border-radius: 12px;
 }
+.btn-primary{
+    background-color: var(--primary-color-600);
+}
