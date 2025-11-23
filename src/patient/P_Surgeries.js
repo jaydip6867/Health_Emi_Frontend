@@ -201,7 +201,7 @@ const P_Surgeries = () => {
             <NavBar logindata={patient} />
             <Container>
                 <Row>
-                    <P_Sidebar />
+                    <P_Sidebar patient={patient} />
                     <Col xs={12} md={9} className='p-3'>
                         {/* <P_nav patientname={patient && patient.name} /> */}
                         <div className='appointments-card p-3 mb-3'>
@@ -321,6 +321,7 @@ const P_Surgeries = () => {
                                                 )}
                                             </Row>
                                         </div>
+                                        <hr/>
                                         {/* Prescription */}
                                         <div >
                                             <div className='fw-semibold mb-3'>Prescription</div>

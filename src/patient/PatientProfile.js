@@ -10,6 +10,7 @@ import Loader from '../Loader';
 import CryptoJS from "crypto-js";
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 import { FiEyeOff, FiEye } from "react-icons/fi";
+import { FiEdit2 } from 'react-icons/fi';
 
 const PatientProfile = () => {
 
@@ -25,6 +26,8 @@ const PatientProfile = () => {
     const [showNewPwd, setShowNewPwd] = useState(false)
     const [showConfirmPwd, setShowConfirmPwd] = useState(false)
     const [errors, setErrors] = useState({ newPassword: '', confirmPassword: '' })
+    const [profilePicPreview, setProfilePicPreview] = useState('')
+    const [profilePicFile, setProfilePicFile] = useState(null)
 
     useEffect(() => {
         var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
@@ -63,6 +66,8 @@ const PatientProfile = () => {
                 newPassword: '',
                 confirmPassword: ''
             })
+            console.log(data)
+            setProfilePicPreview(data?.profile_pic || '')
             setErrors({ newPassword: '', confirmPassword: '' })
         }).catch(function (error) {
             console.log(error);
@@ -105,8 +110,25 @@ const PatientProfile = () => {
         })
     }
 
-    function updateprofiledata(id) {
+    const onSelectProfilePic = (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) {
+            setProfilePicFile(file);
+            setProfilePicPreview(URL.createObjectURL(file));
+        }
+    };
 
+    const uploadFile = async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await axios.post(`${API_BASE_URL}/user/upload`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return res?.data?.Data?.url || '';
+    }
+
+    async function updateprofiledata(id) {
+        setloading(true)
         console.log('update profile data = ', id, profile)
         const hasNew = (profile?.newPassword || '').trim().length > 0;
         const currentErrors = validatePasswords(profile);
@@ -129,11 +151,19 @@ const PatientProfile = () => {
             "mobile": profile.mobile,
             "pincode": profile.pincode,
             "blood_group": profile.blood_group,
-            "password": passwordToSend || ''
+            "password": passwordToSend || profile.password
         };
-        if (!payload.password) {
-            delete payload.password;
+        // if (!payload.password) {
+        //     delete payload.password;
+        // }
+
+        if (profilePicFile) {
+            const url = await uploadFile(profilePicFile);
+            if (url) payload.profile_pic = url;
+        } else {
+            payload.profile_pic = profile?.profile_pic;
         }
+        // console.log(payload)
 
         axios({
             method: 'post',
@@ -152,7 +182,7 @@ const PatientProfile = () => {
         }).catch(function (error) {
             Swal.fire({
                 title: "Profile Not Update.",
-                text: "Something Is Missing. Please Check Details...",
+                text: error?.response?.data?.Message,
                 icon: "error",
             });
         }).finally(() => {
@@ -165,13 +195,13 @@ const PatientProfile = () => {
             <NavBar logindata={patient} />
             <Container>
                 <Row>
-                    <P_Sidebar />
+                    <P_Sidebar patient={patient} />
                     <Col xs={12} md={9} className='p-3'>
                         {/* <P_nav patientname={patient && patient.name} /> */}
                         <div className='p-3 py-4 mb-3'>
                             <h4>Settings</h4>
 
-                            <div className='py-3'>
+                            <div className='py-3 border-top'>
                                 {
                                     profile !== null ? <div>
                                         <Tabs
@@ -181,56 +211,83 @@ const PatientProfile = () => {
                                             className="mb-3 border-0 setting_tab gap-3"
                                         >
                                             <Tab eventKey="profile" title="Profile">
-                                                <Form className='register_doctor row g-4'>
-                                                    <Form.Group as={Col} controlId="name" className='col-12 col-sm-6 col-md-4 col-lg-3'>
-                                                        <div className='position-relative'>
-                                                            <Form.Label>Name</Form.Label>
-                                                            <Form.Control type="text" placeholder="Full Name" className='frm_input' name="name" value={profile && profile.name} disabled onChange={profiledata} />
+                                                <Row>
+                                                    <Col xs={12} md={3}>
+                                                        <div className='d-flex flex-column align-items-start mb-3'>
+                                                            <div className='position-relative' style={{ width: 150, height: 150 }}>
+                                                                <img
+                                                                    src={profilePicPreview || require('../Visitor/assets/profile_icon_img.png')}
+                                                                    alt="profile"
+                                                                    style={{ width: '150px', height: '150px', borderRadius: '16px', objectFit: 'cover' }}
+                                                                />
+                                                                <Button
+                                                                    type="button"
+                                                                    size="sm"
+                                                                    variant="light"
+                                                                    style={{ width: 32, height: 32 }}
+                                                                    className='p-1 position-absolute end-0 bottom-0 rounded-circle border'
+                                                                    onClick={() => document.getElementById('edit_patient_profile_pic_input').click()}
+                                                                >
+                                                                    <FiEdit2 />
+                                                                </Button>
+                                                                <input id='edit_patient_profile_pic_input' type='file' accept='image/*' className='d-none' onChange={onSelectProfilePic} />
+                                                            </div>
                                                         </div>
-                                                    </Form.Group>
+                                                    </Col>
+                                                    <Col xs={12} md={9}>
+                                                        <Form className='register_doctor row g-4'>
+                                                            <Form.Group as={Col} controlId="name" className='col-12 col-sm-6 col-md-4'>
+                                                                <div className='position-relative'>
+                                                                    <Form.Label>Name</Form.Label>
+                                                                    <Form.Control type="text" placeholder="Full Name" className='frm_input' name="name" value={profile && profile.name} disabled onChange={profiledata} />
+                                                                </div>
+                                                            </Form.Group>
 
-                                                    <Form.Group as={Col} controlId="email" className='col-12 col-sm-6 col-md-4 col-lg-3'>
-                                                        <div className="position-relative">
-                                                            <Form.Label>Email</Form.Label>
-                                                            <Form.Control type="email" placeholder="Email" className='frm_input' name="email" value={profile && profile.email} disabled onChange={profiledata} />
-                                                        </div>
-                                                    </Form.Group>
+                                                            <Form.Group as={Col} controlId="email" className='col-12 col-sm-6 col-md-4'>
+                                                                <div className="position-relative">
+                                                                    <Form.Label>Email</Form.Label>
+                                                                    <Form.Control type="email" placeholder="Email" className='frm_input' name="email" value={profile && profile.email} disabled onChange={profiledata} />
+                                                                </div>
+                                                            </Form.Group>
 
-                                                    <Form.Group controlId="mobile" className='col-12 col-sm-6 col-md-4 col-lg-3'>
-                                                        <div className="position-relative">
-                                                            <Form.Label>Mobile No.</Form.Label>
-                                                            <Form.Control placeholder="Mobile No." className='frm_input' name='mobile' value={profile && profile.mobile} disabled onChange={profiledata} />
-                                                        </div>
-                                                    </Form.Group>
+                                                            <Form.Group controlId="mobile" className='col-12 col-sm-6 col-md-4'>
+                                                                <div className="position-relative">
+                                                                    <Form.Label>Mobile No.</Form.Label>
+                                                                    <Form.Control placeholder="Mobile No." className='frm_input' name='mobile' value={profile && profile.mobile} disabled onChange={profiledata} />
+                                                                </div>
+                                                            </Form.Group>
 
-                                                    <Form.Group controlId="gender" className='col-12 col-sm-6 col-md-4 col-lg-3'>
-                                                        <Form.Label>Gender </Form.Label>
-                                                        <div className='d-flex gap-3'>
-                                                            <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' checked={profile && profile.gender === "Male" ? true : false} onChange={profiledata} /> Male</label>
-                                                            <label><Form.Check type='radio' name='gender' value={'Female'} className='d-inline-block me-2' checked={profile && profile.gender === "Female" ? true : false} onChange={profiledata} /> Female</label>
-                                                        </div>
-                                                    </Form.Group>
+                                                            <Form.Group controlId="gender" className='col-12 col-sm-6 col-md-4'>
+                                                                <Form.Label>Gender </Form.Label>
+                                                                <div className='d-flex gap-3'>
+                                                                    <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' checked={profile && profile.gender === "Male" ? true : false} onChange={profiledata} /> Male</label>
+                                                                    <label><Form.Check type='radio' name='gender' value={'Female'} className='d-inline-block me-2' checked={profile && profile.gender === "Female" ? true : false} onChange={profiledata} /> Female</label>
+                                                                </div>
+                                                            </Form.Group>
 
-                                                    <Form.Group controlId="mobile" className='col-6 col-md-4 col-lg-3'>
-                                                        <div className="position-relative">
-                                                            <Form.Label>Pincode</Form.Label>
-                                                            <Form.Control placeholder="Pincode" className='frm_input' name='pincode' value={profile && profile.pincode} onChange={profiledata} />
-                                                        </div>
-                                                    </Form.Group>
+                                                            <Form.Group controlId="pincode" className='col-6 col-md-4'>
+                                                                <div className="position-relative">
+                                                                    <Form.Label>Pincode</Form.Label>
+                                                                    <Form.Control placeholder="Pincode" className='frm_input' name='pincode' value={profile && profile.pincode} onChange={profiledata} />
+                                                                </div>
+                                                            </Form.Group>
 
-                                                    <Form.Group controlId="blood_group" className='col-6 col-md-4 col-lg-3'>
-                                                        <div className="position-relative">
-                                                            <Form.Label>Blood Group</Form.Label>
-                                                            <Form.Select name='blood_group' value={profile.blood_group} className='frm_input' onChange={profiledata}>
-                                                                {
-                                                                    blood_g.map((v, i) => {
-                                                                        return (<option key={i} value={v} selected={profile && profile.blood_group === v ? true : false}>{v}</option>)
-                                                                    })
-                                                                }
-                                                            </Form.Select>
-                                                        </div>
-                                                    </Form.Group>
-                                                </Form>
+                                                            <Form.Group controlId="blood_group" className='col-6 col-md-4'>
+                                                                <div className="position-relative">
+                                                                    <Form.Label>Blood Group</Form.Label>
+                                                                    <Form.Select name='blood_group' value={profile.blood_group} className='frm_input' onChange={profiledata}>
+                                                                        {
+                                                                            blood_g.map((v, i) => {
+                                                                                return (<option key={i} value={v} selected={profile && profile.blood_group === v ? true : false}>{v}</option>)
+                                                                            })
+                                                                        }
+                                                                    </Form.Select>
+                                                                </div>
+                                                            </Form.Group>
+                                                        </Form>
+                                                    </Col>
+                                                </Row>
+
                                             </Tab>
                                             <Tab eventKey="password" title="Change Password">
                                                 <Row className='register_doctor'>

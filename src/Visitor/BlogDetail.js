@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Loader from "../Loader"
 import FooterBar from "./Component/FooterBar"
 import NavBar from "./Component/NavBar"
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import CryptoJS from "crypto-js";
 import axios from "axios";
 import { Container, Row, Col, Card } from "react-bootstrap";
@@ -57,6 +57,7 @@ const BlogDetail = () => {
                 "blogid": id,
             }
         }).then((res) => {
+            console.log(res.data.Data)
             setblog(res.data.Data)
         }).catch(function (error) {
             console.log(error);
@@ -116,10 +117,10 @@ const BlogDetail = () => {
                         <Col xs={12} md={6} className="blog">
                             <h2>{blog?.title}</h2>
                             <div className='d-flex justify-content-between blog_box mb-2'>
-                                <div className='d-flex align-items-center gap-1'>
+                                <Link to={`/doctorprofile/${encodeURIComponent(btoa(blog?.createdBy?._id))}`} className='d-flex align-items-center gap-1'>
                                     <img src={blog?.createdBy?.profile_pic}></img>
                                     <span>{blog?.createdBy?.name}</span>
-                                </div>
+                                </Link>
                                 <div className='d-flex align-items-center gap-1'>
                                     <IoCalendarOutline />
                                     <FormattedDate isoString={blog?.createdAt} />
@@ -127,7 +128,7 @@ const BlogDetail = () => {
                             </div>
                             <div className="blog_expired">
                                 <span className="d-flex align-items-center gap-2"><BsClock />Expired On</span>
-                                <div className="fw-bold"><FormattedDate isoString={blog?.createdAt} /></div>
+                                <div className="fw-bold">{blog?.expirydate}</div>
                             </div>
                             <p className="mt-2">{blog?.description}</p>
                         </Col>

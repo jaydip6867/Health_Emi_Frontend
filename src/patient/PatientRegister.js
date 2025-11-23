@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Col, Container, Form, Row, Modal } from 'react-bootstrap'
+
 import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
 import { Link, useNavigate } from 'react-router-dom'
@@ -8,6 +9,7 @@ import Loader from '../Loader'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import { API_BASE_URL, STORAGE_KEYS } from '../config'
+import { FiEdit2 } from 'react-icons/fi'
 
 const PatientRegister = () => {
 
@@ -19,6 +21,9 @@ const PatientRegister = () => {
 
   const [blood_g, setbloog_g] = useState(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']);
   const [patient, setpatient] = useState({ name: '', email: '', gender: '', mobile: '', pincode: '', blood_group: '', password: '' })
+  const [profilePicPreview, setProfilePicPreview] = useState('')
+  const [profilePicFile, setProfilePicFile] = useState(null)
+
   const [otp, setotp] = useState('');
 
   const [showTcModal, setShowTcModal] = useState(false);
@@ -27,12 +32,30 @@ const PatientRegister = () => {
   const [shortTerms, setShortTerms] = useState('');
 
   const patientch = (e) => {
+
     const { name, value } = e.target;
     setpatient(patient => ({
       ...patient,
       [name]: value
     }))
   };
+
+  const onSelectProfilePic = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      setProfilePicFile(file);
+      setProfilePicPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await axios.post(`${API_BASE_URL}/user/upload`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return res?.data?.Data?.url || '';
+  }
 
   const fetchTermsAndConditions = async () => {
     try {
@@ -56,27 +79,33 @@ const PatientRegister = () => {
     }
   }, [navigate])
 
-  function patientsignup() {
+  async function patientsignup() {
     if (!termsAccepted) {
       toast('Please accept the terms and conditions to continue', { className: 'custom-toast-error' });
       return;
     }
     console.log(patient)
     setloading(true)
-    axios({
-      method: 'post',
-      url: `${API_BASE_URL}/user/signup`,
-      data: patient
-    }).then((res) => {
+    try {
+      let payload = { ...patient };
+      if (profilePicFile) {
+        const url = await uploadFile(profilePicFile);
+        if (url) payload.profile_pic = url;
+      }
+      const res = await axios({
+        method: 'post',
+        url: `${API_BASE_URL}/user/signup`,
+        data: payload
+      });
       toast(res.data.Message, { className: 'custom-toast-success' });
       setpatreg(false);
       setpatotp(true);
-    }).catch(function (error) {
+    } catch (error) {
       console.log(error);
-      toast(error.response.data.Message, { className: 'custom-toast-error' })
-    }).finally(() => {
+      toast(error?.response?.data?.Message || 'Signup failed', { className: 'custom-toast-error' })
+    } finally {
       setloading(false)
-    });
+    }
   }
 
   function otpverifydone() {
@@ -107,6 +136,45 @@ const PatientRegister = () => {
       setloading(false)
     });
   }
+
+  const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
+
+  // Handle OTP input change
+  const handleOtpChange = (index, value) => {
+    // Only allow single digit
+    if (value.length > 1) return;
+
+    // Only allow numbers
+    if (value && !/^[0-9]$/.test(value)) return;
+
+    const newOtpDigits = [...otpDigits];
+    newOtpDigits[index] = value;
+    setOtpDigits(newOtpDigits);
+
+    // Update the main otp variable
+    const otpString = newOtpDigits.join("");
+    setotp(otpString);
+
+    // Auto focus to next input
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  // Handle backspace
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      if (prevInput) {
+        prevInput.focus();
+        const newOtpDigits = [...otpDigits];
+        newOtpDigits[index - 1] = "";
+        setOtpDigits(newOtpDigits);
+        setotp(newOtpDigits.join(""));
+      }
+    }
+  };
 
   return (
     <>
@@ -161,6 +229,27 @@ const PatientRegister = () => {
                     <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
                   </div>
                   <Form>
+
+                    <div className='d-flex flex-column align-items-center mb-3'>
+                      <div className='position-relative' style={{ width: 120, height: 120 }}>
+                        <img
+                          src={profilePicPreview || require('../Visitor/assets/profile_icon_img.png')}
+                          alt="profile"
+                          style={{ width: '120px', height: '120px', borderRadius: '16px', objectFit: 'cover' }}
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="light"
+                          style={{ width: '32px', height: '32px' }}
+                          className='p-1 position-absolute end-0 bottom-0 rounded-circle border'
+                          onClick={() => document.getElementById('patient_profile_pic_input').click()}
+                        >
+                          <FiEdit2 />
+                        </Button>
+                        <input id='patient_profile_pic_input' type='file' accept='image/*' className='d-none' onChange={onSelectProfilePic} />
+                      </div>
+                    </div>
 
                     <Form.Group controlId="name" className='position-relative mb-3'>
                       <Form.Label>Name</Form.Label>
@@ -251,26 +340,68 @@ const PatientRegister = () => {
               </Col> : ''
             }
             {
-              pat_otp === true ? <Col xs={12} md={8} lg={5}>
-                <div className='register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100'>
-                  <div className='text-center'>
-                    <h3>OTP Verification</h3>
-                    <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
-                    <Form>
-                      <Form.Group as={Col} controlId="fullname" className='position-relative my-3'>
-                        <Form.Control type="text" name='otp' value={otp} onChange={(e) => setotp(e.target.value)} placeholder="Ex:- 1234" className='otpfield' pattern='[0-9]{4}' />
-                      </Form.Group>
-                    </Form>
-                    <div className='form_bottom_div text-end mt-3'>
-                      <p><Link className='form-link'>Resend OTP ?</Link> </p>
+              pat_otp === true ? (
+                <Col md={8} lg={5}>
+                  <div className="register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100">
+                    <div className="text-center">
+                      <h3>OTP Verification</h3>
+                      <p className="w-75 mx-auto">
+                        Lorem Ipsum is simply dummy text of the printing and
+                        typesetting industry
+                      </p>
+                      <Form>
+                        <div className="my-4">
+                          <Form.Label className="d-block text-center mb-3 fw-bold">
+                            Enter 6-Digit OTP
+                          </Form.Label>
+                          <div className="d-flex justify-content-center gap-2">
+                            {otpDigits.map((digit, index) => (
+                              <Form.Control
+                                key={index}
+                                id={`otp-${index}`}
+                                type="text"
+                                value={digit}
+                                onChange={(e) =>
+                                  handleOtpChange(index, e.target.value)
+                                }
+                                onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                                className="text-center fw-bold border-2"
+                                style={{
+                                  width: "50px",
+                                  height: "50px",
+                                  fontSize: "20px",
+                                  borderRadius: "8px",
+                                }}
+                                maxLength="1"
+                              />
+                            ))}
+                          </div>
+                          <small className="d-block text-center text-muted mt-2">
+                            Enter the 6-digit code sent to your email
+                          </small>
+                        </div>
+                      </Form>
+                      <div className="form_bottom_div text-end mt-3">
+                        <p>
+                          <Link className="form-link">Resend OTP ?</Link>{" "}
+                        </p>
+                      </div>
                     </div>
-                  </div>
 
-                  <Button type="button" onClick={otpverifydone} className='d-block w-100 theme_btn my-3'>
-                    Verify OTP
-                  </Button>
-                </div>
-              </Col> : ''
+                    <Button
+                      type="button"
+                      onClick={otpverifydone}
+                      className="d-block w-100 theme_btn my-3"
+                      disabled={otp.length !== 6}
+                    >
+                      {otp.length === 6
+                        ? "Verify OTP"
+                        : `Enter ${6 - otp.length} more digit${6 - otp.length > 1 ? "s" : ""
+                        }`}
+                    </Button>
+                  </div>
+                </Col>
+              ) : ''
             }
           </Row>
         </Container>

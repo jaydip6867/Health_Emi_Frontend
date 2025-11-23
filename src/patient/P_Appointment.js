@@ -259,7 +259,7 @@ const P_Appointment = () => {
       <NavBar logindata={patient} />
       <Container>
         <Row className='align-items-start'>
-          <P_Sidebar />
+          <P_Sidebar patient={patient} />
           <Col xs={12} md={9} className='p-3'>
             {/* <P_nav patientname={patient && patient.name} /> */}
             <div className='appointments-card p-3 mb-3'>

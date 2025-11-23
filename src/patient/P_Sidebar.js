@@ -3,15 +3,16 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { MdOutlineLogout } from 'react-icons/md';
 import { IoCalendarOutline } from "react-icons/io5";
 import { FiSettings } from 'react-icons/fi';
-const P_Sidebar = () => {
+const P_Sidebar = ({patient}) => {
     const navigate = useNavigate();
+    console.log(patient)
     return (
         <Col xs={12} md={3} className='sticky-top pe-0'>
             <div className='py-5'>
                 <div className='bg-white patient_side_height m-md-0'>
                     <div>
                         <div className='patient_profile'>
-                            <img src={require('../Visitor/assets/patient_pic.jpg')} />
+                            <img src={patient?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} />
                         </div>
                         <div className='sidebar_nav mt-3 px-2 py-3'>
                             {/* <NavLink to={'/patient/patientdahsboard'} className={({ isActive }) => (isActive ? 'active' : '')}><MdSpaceDashboard />Dashboard</NavLink> */}
