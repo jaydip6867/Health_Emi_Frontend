@@ -5,7 +5,6 @@ import { IoCalendarOutline } from "react-icons/io5";
 import { FiSettings } from 'react-icons/fi';
 const P_Sidebar = ({patient}) => {
     const navigate = useNavigate();
-    console.log(patient)
     return (
         <Col xs={12} md={3} className='sticky-top pe-0'>
             <div className='py-5'>

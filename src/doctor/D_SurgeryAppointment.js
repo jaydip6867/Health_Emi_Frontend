@@ -622,7 +622,7 @@ const D_SurgeryAppointment = () => {
                                                 <Col md={6} xs={12}>
                                                     <div className='text-muted small mb-1'>Clinic Name</div>
                                                     <div className='d-flex align-items-center gap-2'>
-                                                        <span className='text-truncate'>{v?.hospitalname || '-'}</span>
+                                                        <span className='text-truncate'>{v?.hospital_name || '-'}</span>
                                                     </div>
                                                 </Col>
                                                 <Col md={6} xs={12}>
@@ -946,12 +946,6 @@ const D_SurgeryAppointment = () => {
                                                 <DatePicker selected={followUpTime} onChange={setFollowUpTime} showTimeSelect showTimeSelectOnly timeIntervals={15} timeCaption='Time' dateFormat='hh:mm aa' className='form-control' placeholderText='Select time' />
                                             </Form.Group>
                                         </Col>
-                                        {/* <Col md={4}>
-                                            <Form.Group>
-                                                <Form.Label><strong>Total Amount</strong></Form.Label>
-                                                <Form.Control type='number' min='0' value={totalAmount} onChange={(e) => setTotalAmount(e.target.value)} placeholder='₹ 0' />
-                                            </Form.Group>
-                                        </Col> */}
                                     </Row>
                                 </Form>
                             </div>

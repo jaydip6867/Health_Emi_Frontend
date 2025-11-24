@@ -12,7 +12,8 @@ import { MdOutlineRemoveRedEye, MdVerified } from 'react-icons/md'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 import { BsClipboard } from 'react-icons/bs'
 import { FiClock, FiMail, FiPhone } from "react-icons/fi";
-
+import Swal from 'sweetalert2'
+import { AiFillStar, AiOutlineStar } from 'react-icons/ai'
 
 const P_Surgeries = () => {
 
@@ -50,6 +51,14 @@ const P_Surgeries = () => {
     const [appoint_data, setappoint] = useState(null)
     const [activeTab, setActiveTab] = useState('Pending')
 
+    // review modal state
+    const [showReview, setShowReview] = useState(false)
+    const [reviewTitle, setReviewTitle] = useState('')
+    const [reviewDesc, setReviewDesc] = useState('')
+    const [reviewRating, setReviewRating] = useState(0)
+    const [reviewTargetId, setReviewTargetId] = useState(null)
+    const [submittingReview, setSubmittingReview] = useState(false)
+
     function getappointments(d) {
         axios({
             method: 'get',
@@ -74,12 +83,54 @@ const P_Surgeries = () => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-
     function btnview(id) {
         var datasingle = appoint_data.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
         console.log(datasingle)
+    }
+
+    function openReviewModal(appointmentId) {
+        setReviewTargetId(appointmentId)
+        setShowReview(true)
+    }
+
+    function closeReviewModal() {
+        if (submittingReview) return
+        setShowReview(false)
+        setReviewTitle('')
+        setReviewDesc('')
+        setReviewRating(0)
+        setReviewTargetId(null)
+    }
+
+    async function submitSurgeryReview(e) {
+        e && e.preventDefault()
+        if (!reviewTargetId || !reviewTitle || !reviewDesc || !reviewRating) {
+            Swal.fire({ title: 'Please complete all fields', icon: 'warning' })
+            return
+        }
+        try {
+            setSubmittingReview(true)
+            await axios({
+                method: 'post',
+                url: `${API_BASE_URL}/user/surgeryappointments/review`,
+                headers: { Authorization: token },
+                data: {
+                    appointmentid: reviewTargetId,
+                    title: reviewTitle,
+                    description: reviewDesc,
+                    rating: reviewRating,
+                }
+            })
+            Swal.fire({ title: 'Review submitted', icon: 'success' })
+            closeReviewModal()
+        } catch (error) {
+            console.log(error)
+            Swal.fire({ title: error?.response?.data?.Message || 'Failed to submit review', icon: 'error' })
+        } finally {
+            setSubmittingReview(false)
+        }
     }
 
     // Generate initials for profile picture fallback
@@ -123,7 +174,7 @@ const P_Surgeries = () => {
                     src={row.doctorid?.profile_pic}
                     className="rounded-circle appt-avatar"
                 />
-                <span className="fw-semibold appt-doctor-name">{row.doctorid?.name} <span className="verified"><MdVerified size={16} /></span></span>
+                <span className="fw-semibold appt-doctor-name" >{row.doctorid?.name} <span className="verified"><MdVerified size={16} /></span></span>
             </div>
         ),
     },
@@ -131,7 +182,7 @@ const P_Surgeries = () => {
         name: 'Surgery Name',
         selector: row => row?.surgerydetails?.name || '',
         cell: row => (
-            <div className="d-flex align-items-center gap-2 text-muted small">
+            <div className="d-flex align-items-center gap-2 text-muted">
                 <BsClipboard size={16} className="text-muted" />
                 <span className="text-truncate" style={{ maxWidth: 280 }}>{row?.surgerydetails?.name}</span>
             </div>
@@ -141,7 +192,7 @@ const P_Surgeries = () => {
         name: 'Price',
         selector: row => `${row?.price || ''}`,
         cell: row => (
-            <div className="d-flex align-items-center gap-2 text-muted small">
+            <div className="d-flex align-items-center gap-2 text-muted">
                 <span className="text-muted appt-price">₹</span>
                 <span className="text-truncate">{row?.price}</span>
             </div>
@@ -152,7 +203,7 @@ const P_Surgeries = () => {
         name: 'Date & Time',
         selector: row => `${row?.date || ''} ${row?.time || ''}`,
         cell: row => (
-            <div className="d-flex align-items-center gap-2 text-muted small">
+            <div className="d-flex align-items-center gap-2 text-muted">
                 <FiClock size={16} className="text-muted" />
                 <span>{`${row.date} , ${row.time}`}</span>
             </div>
@@ -196,6 +247,7 @@ const P_Surgeries = () => {
             })
         return c
     }, [appoint_data])
+
     return (
         <>
             <NavBar logindata={patient} />
@@ -321,7 +373,7 @@ const P_Surgeries = () => {
                                                 )}
                                             </Row>
                                         </div>
-                                        <hr/>
+                                        <hr />
                                         {/* Prescription */}
                                         <div >
                                             <div className='fw-semibold mb-3'>Prescription</div>
@@ -348,10 +400,15 @@ const P_Surgeries = () => {
                                                     <div className='text-muted small'>No prescription uploaded.</div>
                                                 )}
                                             </div>
+                                            {
+                                                v.status === "Completed" ? <div className='d-flex justify-content-end mt-4'>
+                                                    <Button variant='primary' onClick={() => openReviewModal(v?._id)}>Write a Review</Button>
+                                                </div> : ''
+                                            }
                                         </div>
                                     </div>
 
-                            </Modal.Body>
+                                </Modal.Body>
                                 {/* <Modal.Body>
                                     <Row className="p-4">
                                         <Col xs={12} lg={6}>
@@ -483,13 +540,60 @@ const P_Surgeries = () => {
                                     </Row>
                                 </Modal.Body> */}
                             </Modal>
-            )
+                        )
                     })
                 }
-        </Container >
-            { loading?<Loader /> : ''
-}
-<FooterBar />
+            </Container >
+            {/* Review Modal */}
+            <Modal show={showReview} onHide={closeReviewModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Write a Review</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form onSubmit={submitSurgeryReview}>
+                        <div className='mb-3'>
+                            <label className='form-label'>Title</label>
+                            <input
+                                type='text'
+                                className='form-control'
+                                value={reviewTitle}
+                                onChange={(e) => setReviewTitle(e.target.value)}
+                                placeholder='Great experience'
+                            />
+                        </div>
+                        <div className='mb-3'>
+                            <label className='form-label'>Description</label>
+                            <textarea
+                                className='form-control'
+                                rows={4}
+                                value={reviewDesc}
+                                onChange={(e) => setReviewDesc(e.target.value)}
+                                placeholder='Share details about your surgery process'
+                            />
+                        </div>
+                        <div className='mb-3'>
+                            <label className='form-label me-2'>Rating</label>
+                            <div className='d-inline-flex gap-1 align-items-center'>
+                                {[1, 2, 3, 4, 5].map(n => (
+                                    <button key={n} type='button' className='btn btn-link p-0' onClick={() => setReviewRating(n)} aria-label={`Rate ${n} star`}>
+                                        {reviewRating >= n ? <AiFillStar size={22} color="#f5a623" /> : <AiOutlineStar size={22} color="#f5a623" />}
+                                    </button>
+                                ))}
+                                <span className='ms-2 small text-muted'>{reviewRating} / 5</span>
+                            </div>
+                        </div>
+                        <div className='d-flex justify-content-end gap-2'>
+                            <Button variant='secondary' onClick={closeReviewModal} disabled={submittingReview}>Cancel</Button>
+                            <Button variant='primary' type='submit' disabled={submittingReview}>
+                                {submittingReview ? 'Submitting...' : 'Submit Review'}
+                            </Button>
+                        </div>
+                    </form>
+                </Modal.Body>
+            </Modal>
+            {loading ? <Loader /> : ''
+            }
+            <FooterBar />
         </>
     )
 }

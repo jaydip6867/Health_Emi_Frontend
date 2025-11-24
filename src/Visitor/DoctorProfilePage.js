@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import NavBar from './Component/NavBar'
-import { Card, Col, Container, Row, Button, Image, Form, Modal } from 'react-bootstrap'
+import { Card, Col, Container, Row, Button, Image, Form, Modal, Badge } from 'react-bootstrap'
 import FooterBar from './Component/FooterBar'
 import Loader from '../Loader'
 import { useParams } from 'react-router-dom'
@@ -1037,10 +1037,175 @@ const DoctorProfilePage = () => {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>Service Details - {selectedService.name}</Modal.Title>
+            <Modal.Title>Surgery Details - {selectedService?.name}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Container fluid>
+            <div className="p-2 rounded-3 border rounded surgery_model" style={{ background: 'var(--white)' }}>
+              <Row className="align-items-center">
+                <Col xs={12} md={8}>
+                  <div className="d-flex align-items-start gap-4">
+                    <div>
+                      <img src={selectedService?.surgery_photo} alt={`surgery photo of ${selectedService?.name}`} />
+                    </div>
+                    <div>
+                      <h5>{selectedService?.name}</h5>
+                      <span className="text-muted small">Surgery Type:</span>
+                      <p className="fw-medium">{selectedService?.surgerytype}</p>
+                    </div>
+                  </div>
+                </Col>
+                <Col xs={12} md={4}>
+                  <Row className="g-0 justify-content-center">
+                    <Col xs={6}>
+                      <div className="text-center p-1 h-100">
+                        <div>
+                          <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#d5E1EA', fontSize: '14px' }} >
+                            <svg width="21" height="21" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M8.96001 0C5.62546 0 2.91455 2.71091 2.91455 6.04545C2.91455 9.31636 5.47273 11.9636 8.80728 12.0782C8.9091 12.0655 9.01091 12.0655 9.08728 12.0782C9.11273 12.0782 9.12546 12.0782 9.15091 12.0782C9.16364 12.0782 9.16364 12.0782 9.17637 12.0782C12.4346 11.9636 14.9927 9.31636 15.0055 6.04545C15.0055 2.71091 12.2946 0 8.96001 0Z" fill="#1C2A3A" />
+                              <path d="M15.4255 15.4639C11.8745 13.0967 6.08364 13.0967 2.50727 15.4639C0.890909 16.5457 0 18.0094 0 19.5748C0 21.1403 0.890909 22.5912 2.49455 23.6603C4.27636 24.8567 6.61818 25.4548 8.96 25.4548C11.3018 25.4548 13.6436 24.8567 15.4255 23.6603C17.0291 22.5785 17.92 21.1276 17.92 19.5494C17.9073 17.9839 17.0291 16.533 15.4255 15.4639Z" fill="#1C2A3A" />
+                              <path d="M22.947 6.79614C23.1507 9.26523 21.3943 11.4289 18.9634 11.7216C18.9507 11.7216 18.9507 11.7216 18.9379 11.7216H18.8997C18.8234 11.7216 18.747 11.7216 18.6834 11.747C17.4488 11.8107 16.3161 11.4161 15.4634 10.6907C16.7743 9.51977 17.5252 7.76341 17.3725 5.85432C17.2834 4.82341 16.927 3.88159 16.3925 3.07977C16.8761 2.83795 17.4361 2.68523 18.0088 2.63432C20.5034 2.41795 22.7307 4.27614 22.947 6.79614Z" fill="#1C2A3A" />
+                              <path d="M25.4929 18.5692C25.391 19.8038 24.6019 20.8729 23.2783 21.5983C22.0056 22.2983 20.4019 22.6292 18.811 22.5911C19.7274 21.7638 20.2619 20.7329 20.3638 19.6383C20.491 18.0602 19.7401 16.5456 18.2383 15.3365C17.3856 14.662 16.3929 14.1274 15.311 13.7329C18.1238 12.9183 21.6619 13.4656 23.8383 15.222C25.0092 16.1638 25.6074 17.3474 25.4929 18.5692Z" fill="#1C2A3A" />
+                            </svg>
+                          </div>
+                          <div className="d-flex flex-column mt-1">
+                            <span className="fw-bold">{selectedService?.completed_surgery}</span>
+                            <small className="text-muted">Surgery Done</small>
+                          </div>
+                        </div>
+
+                      </div>
+                    </Col>
+                    <Col xs={6}>
+                      <div className="text-center p-1 h-100">
+                        <div>
+                          <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#E2E7F2', fontSize: '14px' }} >
+                            <svg width="21" height="21" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M14.2418 5.09082H6.09636C5.76545 5.09082 5.44727 5.10355 5.14182 5.14173C1.71818 5.43446 0 7.45809 0 11.1872V16.2781C0 21.369 2.03636 22.3745 6.09636 22.3745H6.60545C6.88545 22.3745 7.25455 22.5654 7.42 22.7817L8.94727 24.8181C9.62182 25.7217 10.7164 25.7217 11.3909 24.8181L12.9182 22.7817C13.1091 22.5272 13.4145 22.3745 13.7327 22.3745H14.2418C17.9709 22.3745 19.9945 20.669 20.2873 17.2326C20.3255 16.9272 20.3382 16.609 20.3382 16.2781V11.1872C20.3382 7.12718 18.3018 5.09082 14.2418 5.09082ZM5.72727 15.2726C5.01455 15.2726 4.45455 14.6999 4.45455 13.9999C4.45455 13.2999 5.02727 12.7272 5.72727 12.7272C6.42727 12.7272 7 13.2999 7 13.9999C7 14.6999 6.42727 15.2726 5.72727 15.2726ZM10.1691 15.2726C9.45636 15.2726 8.89636 14.6999 8.89636 13.9999C8.89636 13.2999 9.46909 12.7272 10.1691 12.7272C10.8691 12.7272 11.4418 13.2999 11.4418 13.9999C11.4418 14.6999 10.8818 15.2726 10.1691 15.2726ZM14.6236 15.2726C13.9109 15.2726 13.3509 14.6999 13.3509 13.9999C13.3509 13.2999 13.9236 12.7272 14.6236 12.7272C15.3236 12.7272 15.8964 13.2999 15.8964 13.9999C15.8964 14.6999 15.3236 15.2726 14.6236 15.2726Z" fill="#3F5FAB" />
+                              <path d="M25.4292 6.09636V11.1873C25.4292 13.7327 24.6401 15.4636 23.0619 16.4182C22.6801 16.6473 22.2346 16.3418 22.2346 15.8964L22.2474 11.1873C22.2474 6.09636 19.3328 3.18182 14.2419 3.18182L6.491 3.19455C6.04555 3.19455 5.74009 2.74909 5.96918 2.36727C6.92373 0.789091 8.65464 0 11.1874 0H19.3328C23.3928 0 25.4292 2.03636 25.4292 6.09636Z" fill="#3F5FAB" />
+                            </svg>
+                          </div>
+                          <div className="d-flex flex-column mt-1">
+                            <span className="fw-bold">{selectedService?.yearsof_experience}</span>
+                            <small className="text-muted">Surgery Experience</small>
+                          </div>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col xs={6}>
+                      <div className="text-center p-1  h-100">
+                        <div>
+                          <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#D8F3F1', fontSize: '14px' }} >
+                            <svg width="24" height="24" viewBox="0 0 18 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M8.59091 16.5455C13.3355 16.5455 17.1818 12.8416 17.1818 8.27273C17.1818 3.70383 13.3355 0 8.59091 0C3.84628 0 0 3.70383 0 8.27273C0 12.8416 3.84628 16.5455 8.59091 16.5455Z" fill="#12A79D" />
+                              <path d="M13.4147 17.3212C13.8347 17.1048 14.3183 17.423 14.3183 17.8939V24.0667C14.3183 25.2121 13.5165 25.7721 12.5238 25.3012L9.11286 23.6848C8.82013 23.5576 8.36195 23.5576 8.06922 23.6848L4.65831 25.3012C3.66559 25.7594 2.86377 25.1994 2.86377 24.0539L2.88922 17.8939C2.88922 17.423 3.38559 17.1176 3.79286 17.3212C5.23104 18.0467 6.86013 18.4539 8.59104 18.4539C10.322 18.4539 11.9638 18.0467 13.4147 17.3212Z" fill="#12A79D" />
+                            </svg>
+                          </div>
+                          <div className="d-flex flex-column mt-1">
+                            <span className="fw-bold">{selectedService?.days}</span>
+                            <small className="text-muted">Stays Days</small>
+                          </div>
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+              <hr />
+              <Row>
+                <Col xs={12} md={8}>
+                  <h6>Description</h6>
+                  <p className="text-muted">{selectedService?.description}</p>
+                </Col>
+                <Col xs={12} md={4}>
+                  <Row className="g-2">
+                    <Col xs={6}>
+                      <div className="bg-success-subtle p-2 rounded-3 text-center">
+                        <span className="small text-muted">General Price</span>
+                        <p className="fw-bold m-0">{selectedService?.general_price}</p>
+                      </div>
+                    </Col>
+                    <Col xs={6}>
+                      <div className="bg-success-subtle p-2 rounded-3 text-center">
+                        <span className="small text-muted">Semi-Private Price</span>
+                        <p className="fw-bold m-0">{selectedService?.semiprivate_price}</p>
+                      </div>
+                    </Col>
+                    <Col xs={6}>
+                      <div className="bg-success-subtle p-2 rounded-3 text-center">
+                        <span className="small text-muted">Private Price</span>
+                        <p className="fw-bold m-0">{selectedService?.private_price}</p>
+                      </div>
+                    </Col>
+                    <Col xs={6}>
+                      <div className="bg-success-subtle p-2 rounded-3 text-center">
+                        <span className="small text-muted">Delux Price</span>
+                        <p className="fw-bold m-0">{selectedService?.delux_price}</p>
+                      </div>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+              <hr />
+              <div>
+                <h6>Additional Facility</h6>
+                <div className="d-flex flex-wrap gap-2">
+                  {
+                    selectedService?.additional_features?.split(',')?.map((feature, index) => {
+
+                      return (
+                        <Badge
+                          className={`me-1 bg-secondary-subtle text-dark fs-7 fw-normal px-3 py-2`}
+                          key={index}
+                        >
+                          {feature}
+                        </Badge>
+                      );
+                    })
+                  }
+                </div>
+              </div>
+              <hr />
+              <Row>
+                <Col xs={12} md={6}>
+                  <h6>Included</h6>
+                  {selectedService?.inclusive ? (
+                    <ul className="list-unstyled mb-0">
+                      {selectedService.inclusive.split(', ').map((item, index) => (
+                        <li key={index} className="mb-1">
+                          <svg width="15" height="10" viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1.16669 5.00016L5.33335 9.16683L13.6667 0.833496" stroke="#2E7D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+
+                          <span className="ms-2 text-muted small">{item.trim()}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-muted mb-0">No inclusive items specified</p>
+                  )}
+                </Col>
+                <Col xs={12} md={6}>
+                  <h6>Excluded</h6>
+                  {selectedService?.exclusive ? (
+                    <ul className="list-unstyled mb-0">
+                      {selectedService.exclusive.split(',').map((item, index) => (
+                        <li key={index} className="mb-1">
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 5L5 15" stroke="#D32F2F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M5 5L15 15" stroke="#D32F2F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+
+                          <span className="ms-2 text-muted small">{item.trim()}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-muted mb-0">No exclusive items specified</p>
+                  )}
+                </Col>
+              </Row>
+            </div>
+            {/* <Container fluid>
               <Row className="g-4">
                 <Col md={4}>
                   <Card className="h-100">
@@ -1155,8 +1320,19 @@ const DoctorProfilePage = () => {
                   </Row>
                 </Col>
               </Row>
-            </Container>
+            </Container> */}
           </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="primary"
+              onClick={() => {
+                handleAddSurgery(selectedService, doctor_profile._id)
+                handleServiceModalClose()
+              }}
+            >
+              Book Appointment for this Surgery
+            </Button>
+          </Modal.Footer>
         </Modal>
       )}
 

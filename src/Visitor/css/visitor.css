@@ -177,7 +177,9 @@ h6 {
     background-image: none;
     background-color: var(--grayscale-color-950);
 }
-
+.pointer{
+    cursor: pointer;
+}
 
 /* ----------------------------------------------------------------- */
 /* ----------------------- Header CSS -------------------------- */
@@ -2144,7 +2146,7 @@ body::-webkit-scrollbar-thumb:hover {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 12px;
+    padding: 4px 12px;
     border-radius: 999px;
     font-weight: 700;
     font-size: 12px;
