@@ -15,6 +15,7 @@ import { MdOutlineRemoveRedEye, MdDownload, MdVisibility, MdVerified, MdClose } 
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 import { FiClock, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 import Swal from 'sweetalert2'
+import { AiFillStar, AiOutlineStar } from 'react-icons/ai'
 
 const P_Appointment = () => {
 
@@ -52,6 +53,14 @@ const P_Appointment = () => {
   const [appoint_data, setappoint] = useState(null)
   const [activeTab, setActiveTab] = useState('Pending')
 
+  // review modal state
+  const [showReview, setShowReview] = useState(false)
+  const [reviewTitle, setReviewTitle] = useState('')
+  const [reviewDesc, setReviewDesc] = useState('')
+  const [reviewRating, setReviewRating] = useState(0)
+  const [reviewTargetId, setReviewTargetId] = useState(null)
+  const [submittingReview, setSubmittingReview] = useState(false)
+
   function getappointments(d) {
     axios({
       method: 'get',
@@ -81,6 +90,49 @@ const P_Appointment = () => {
     setsingleview(datasingle);
     handleShow()
     console.log(datasingle)
+  }
+
+  function openReviewModal(appointmentId) {
+    setReviewTargetId(appointmentId)
+    setShowReview(true)
+  }
+
+  function closeReviewModal() {
+    if (submittingReview) return
+    setShowReview(false)
+    setReviewTitle('')
+    setReviewDesc('')
+    setReviewRating(0)
+    setReviewTargetId(null)
+  }
+
+  async function submitAppointmentReview(e) {
+    e && e.preventDefault()
+    if (!reviewTargetId || !reviewTitle || !reviewDesc || !reviewRating) {
+      Swal.fire({ title: 'Please complete all fields', icon: 'warning' })
+      return
+    }
+    try {
+      setSubmittingReview(true)
+      await axios({
+        method: 'post',
+        url: `${API_BASE_URL}/user/appointments/review`,
+        headers: { Authorization: token },
+        data: {
+          appointmentid: reviewTargetId,
+          title: reviewTitle,
+          description: reviewDesc,
+          rating: reviewRating,
+        }
+      })
+      Swal.fire({ title: 'Review submitted', icon: 'success' })
+      closeReviewModal()
+    } catch (error) {
+      console.log(error)
+      Swal.fire({ title: error?.response?.data?.Message || 'Failed to submit review', icon: 'error' })
+    } finally {
+      setSubmittingReview(false)
+    }
   }
 
   // Download PDF function
@@ -148,7 +200,7 @@ const P_Appointment = () => {
     name: 'Reason',
     selector: row => row.appointment_reason || '',
     cell: row => (
-      <div className="d-flex align-items-center gap-2 text-muted small">
+      <div className="d-flex align-items-center gap-2 text-muted">
         <BsClipboard size={16} className="text-muted" />
         <span className="text-truncate" style={{ maxWidth: 280 }}>{row.appointment_reason}</span>
       </div>
@@ -158,7 +210,7 @@ const P_Appointment = () => {
     name: 'Date & Time',
     selector: row => `${row.date || ''} ${row.time || ''}`,
     cell: row => (
-      <div className="d-flex align-items-center gap-2 text-muted small">
+      <div className="d-flex align-items-center gap-2 text-muted">
         <FiClock size={16} className="text-muted" />
         <span>{`${row.date} , ${row.time}`}</span>
       </div>
@@ -207,30 +259,42 @@ const P_Appointment = () => {
   }]
 
   const appointmentbtn = async (id, s) => {
-    setloading(true)
-    await axios({
-      method: 'post',
-      url: `${API_BASE_URL}/user/appointments/cancel`,
-      headers: {
-        Authorization: token
-      },
-      data: {
-        appointmentid: id,
+    await Swal.fire({
+      title: "Are you sure?",
+      text: "You Want to Cancel this Appointment?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "var(--primary-color-600)",
+      cancelButtonColor: "#ff0000",
+      confirmButtonText: "Yes, Cancel it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios({
+          method: 'post',
+          url: `${API_BASE_URL}/user/appointments/cancel`,
+          headers: {
+            Authorization: token
+          },
+          data: {
+            appointmentid: id,
+          }
+        }).then((res) => {
+          getappointments();
+        }).catch(function (error) {
+          console.log(error);
+          // toast(error.response.data.Message,{className:'custom-toast-error'})
+        }).finally(() => {
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success"
+          });
+        });
       }
-    }).then((res) => {
-      // console.log(res)
-      Swal.fire({
-        title: `Surgery Appointment ${s}...`,
-        icon: "success",
-      });
-      getappointments();
-    }).catch(function (error) {
-      console.log(error);
-      // toast(error.response.data.Message,{className:'custom-toast-error'})
-    }).finally(() => {
-      setloading(false)
     });
+
   }
+
   // Filter by status based on active tab
   const filteredData = useMemo(() => {
     if (!appoint_data) return []
@@ -408,12 +472,67 @@ const P_Appointment = () => {
                         <div className='text-muted small'>No prescription uploaded.</div>
                       )}
                     </div>
+                    {
+                      v.status === "Completed" ? (
+                        <div className='d-flex justify-content-end mt-4'>
+                          <Button variant='primary' onClick={() => openReviewModal(v?._id)}>Write a Review</Button>
+                        </div>
+                      ) : null
+                    }
                   </div>
                 </Modal.Body>
               </Modal>
             )
           })
         }
+
+        {/* Review Modal */}
+        <Modal show={showReview} onHide={closeReviewModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Write a Review</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <form onSubmit={submitAppointmentReview}>
+              <div className='mb-3'>
+                <label className='form-label'>Title</label>
+                <input
+                  type='text'
+                  className='form-control'
+                  value={reviewTitle}
+                  onChange={(e) => setReviewTitle(e.target.value)}
+                  placeholder='Great experience'
+                />
+              </div>
+              <div className='mb-3'>
+                <label className='form-label'>Description</label>
+                <textarea
+                  className='form-control'
+                  rows={4}
+                  value={reviewDesc}
+                  onChange={(e) => setReviewDesc(e.target.value)}
+                  placeholder='Share details about your consultation'
+                />
+              </div>
+              <div className='mb-3'>
+                <label className='form-label me-2'>Rating</label>
+                <div className='d-inline-flex gap-1 align-items-center'>
+                  {[1, 2, 3, 4, 5].map(n => (
+                    <button key={n} type='button' className='btn btn-link p-0' onClick={() => setReviewRating(n)} aria-label={`Rate ${n} star`}>
+                      {reviewRating >= n ? <AiFillStar size={22} color="#f5a623" /> : <AiOutlineStar size={22} color="#f5a623" />}
+                    </button>
+                  ))}
+                  <span className='ms-2 small text-muted'>{reviewRating} / 5</span>
+                </div>
+              </div>
+              <div className='d-flex justify-content-end gap-2'>
+                <Button variant='secondary' onClick={closeReviewModal} disabled={submittingReview}>Cancel</Button>
+                <Button variant='primary' type='submit' disabled={submittingReview}>
+                  {submittingReview ? 'Submitting...' : 'Submit Review'}
+                </Button>
+              </div>
+            </form>
+          </Modal.Body>
+        </Modal>
 
       </Container>
       {loading ? <Loader /> : ''}

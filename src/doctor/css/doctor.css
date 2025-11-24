@@ -517,6 +517,10 @@ select.frm_input {
     font-weight: 400;
 }
 
+.appt-doctor-name{
+    font-size: 16px;
+}
+
 .apt_status_btn{
     height: 24px;
     width: 24px;

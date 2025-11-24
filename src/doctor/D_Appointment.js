@@ -157,6 +157,8 @@ const D_Appointment = () => {
         bp: '',
         complain: '',
         pasHistory: '',
+        followUpDate: '',
+        followUpTime: '',
         prescriptionItems: []
     });
 
@@ -329,8 +331,10 @@ const D_Appointment = () => {
                 data: {
                     appointmentid: currentAppointment?._id,
                     payment_mode: 'Cash',
-                    totalamount: appointment?.price,
-                    doctor_remark: uploadedFileUrl
+                    totalamount: 1000,
+                    doctor_remark: uploadedFileUrl,
+                    followup_date: prescriptionData.followUpDate,
+                    followup_time: prescriptionData.followUpTime
                 }
             });
 
@@ -339,7 +343,7 @@ const D_Appointment = () => {
             handleClosePrescriptionModal();
 
             // Reset form
-            setPrescriptionData({ diagnosis: '', instructions: '', bp: '', complain: '', pasHistory: '', prescriptionItems: [] });
+            setPrescriptionData({ diagnosis: '', instructions: '', bp: '', complain: '', pasHistory: '', followUpDate: '', followUpTime: '', prescriptionItems: [] });
         } catch (error) {
             console.error('Error completing appointment:', error);
             Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to complete appointment.', 'error');
@@ -1115,7 +1119,28 @@ const D_Appointment = () => {
                                         </Card.Body>
                                     </Card>
 
-
+                                    <Row className='g-3'>
+                                        <Col md={6}>
+                                            <Form.Group>
+                                                <Form.Label><strong>Follow-up Date</strong></Form.Label>
+                                                <Form.Control
+                                                    type='date'
+                                                    value={prescriptionData.followUpDate}
+                                                    onChange={(e) => handlePrescriptionChange('followUpDate', e.target.value)}
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group>
+                                                <Form.Label><strong>Follow-up Time</strong></Form.Label>
+                                                <Form.Control
+                                                    type='time'
+                                                    value={prescriptionData.followUpTime}
+                                                    onChange={(e) => handlePrescriptionChange('followUpTime', e.target.value)}
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
 
                                 </Form>
                             </div>
@@ -1213,6 +1238,16 @@ const D_Appointment = () => {
                                         </div>
                                     );
                                 })}
+                            </div>
+                        </div>
+                    ) : null}
+                    {(prescriptionData?.followUpDate || prescriptionData?.followUpTime) ? (
+                        <div style={{ background: '#FEF3C7', borderRadius: 8, padding: '10px 14px', marginTop: 12 }}>
+                            <div style={{ color: '#92400E', fontWeight: 700, fontSize: 13, lineHeight: '18px' }}>Follow-up :</div>
+                            <div style={{ marginTop: 4, fontSize: 14 }}>
+                                {prescriptionData.followUpDate ? `Date: ${prescriptionData.followUpDate}` : ''}
+                                {prescriptionData.followUpDate && prescriptionData.followUpTime ? ' | ' : ''}
+                                {prescriptionData.followUpTime ? `Time: ${prescriptionData.followUpTime}` : ''}
                             </div>
                         </div>
                     ) : null}
