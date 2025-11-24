@@ -1058,17 +1058,6 @@ const Amb_Ridedetails = () => {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
-      if (!otpResult.success) {
-        await MySwal.fire({
-          title: "OTP Verification Failed",
-          text: otpResult.message || "Please try again.",
-          icon: "error",
-          confirmButtonText: "OK",
-          confirmButtonColor: "#dc3545",
-        });
-        return;
-      }
-
       
 
       // 2) Complete ride
