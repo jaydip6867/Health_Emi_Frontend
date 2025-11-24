@@ -849,20 +849,7 @@ const Amb_Ridedetails = () => {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
-      const response = await axios.post(
-        `${API_BASE_URL}/ambulance/ambulancerequest/accept`,
-        { ambulancerequestid: id },
-        {
-          headers: {
-            Authorization: `Bearer ${data.accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.data.IsSuccess) {
-        throw new Error(response.data.message || "Failed to accept ride");
-      }
+      
 
       const startRes = await axios.post(
         `${API_BASE_URL}/ambulance/ambulancerequest/startride`,
@@ -899,7 +886,6 @@ const Amb_Ridedetails = () => {
         confirmButtonColor: "#198754",
       });
 
-      
       const response = await axios.post(
         `${API_BASE_URL}/ambulance/ambulancerequest/accept`,
         { ambulancerequestid: id },
@@ -1083,7 +1069,7 @@ const Amb_Ridedetails = () => {
         return;
       }
 
-        
+      
 
       // 2) Complete ride
       const response = await axios.post(
