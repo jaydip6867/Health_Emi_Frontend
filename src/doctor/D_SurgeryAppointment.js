@@ -412,7 +412,7 @@ const D_SurgeryAppointment = () => {
             <div className="d-flex align-items-center text-truncate gap-3">
                 <img
                     // src={row.doctorid?.profile_pic}
-                    src={row.patientid?.profile_pic || require('../Visitor/assets/profile_icon_img.png')}
+                    src={row.createdByuser?.profile_pic || require('../Visitor/assets/profile_icon_img.png')}
                     alt="Patient"
                     className="rounded-circle appt-avatar"
                 />
