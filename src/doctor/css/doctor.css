@@ -485,6 +485,11 @@ select.frm_input {
 }
 
 
+.dashboard-card svg{
+    color: var(--primary-color-600);
+    font-size: 38px;
+}
+
 /* display modal data */
 .label_head{
     margin-bottom: 24px;

@@ -7,7 +7,9 @@ import CryptoJS from "crypto-js";
 import { SECRET_KEY, STORAGE_KEYS } from '../config';
 import Navbar from '../Visitor/Component/NavBar';
 import FooterBar from '../Visitor/Component/FooterBar';
-
+import axios from 'axios';
+import { API_BASE_URL } from '../config';
+import { FiClipboard } from 'react-icons/fi';
 
 const DoctorDashboard = () => {
 
@@ -31,26 +33,76 @@ const DoctorDashboard = () => {
       setdoctor(data.doctorData);
       settoken(`Bearer ${data.accessToken}`)
     }
+    getcount();
   }, [navigate])
+
+  const [count, setcount] = useState(null)
+  
+  const getcount = () => {  
+    axios({
+      method: 'get',
+      url: `${API_BASE_URL}/doctor/count`,
+      headers: {
+        Authorization: token
+      }
+    }).then((res) => {
+      // console.log('count = ', res.data.Data);
+      setcount(res.data.Data)
+    }).catch(function (error) {
+      console.log(error);
+    });
+  }
 
   return (
     <>
 
-      <Navbar logindata={doctor}/>
+      <Navbar logindata={doctor} />
 
       <Container className='my-4'>
         <Row className="align-items-start">
-          <DoctorSidebar doctor={doctor}/>
+          <DoctorSidebar doctor={doctor} />
           <Col xs={12} md={9}>
-            {/* <DoctorNav doctorname={doctor && doctor.name} /> */}
-            <div className='bg-white rounded p-2'>
-              {
-                doctor === null ?
-                  'data loading' :
-                  <div className='ps-2'>
-                    hello doctor {doctor.name}
-                  </div>
-              }
+            <div className='bg-white rounded dashboard-card p-2'>
+              <Col xs={12}>
+                <Row>
+                  <Col xs={6} md={3}>
+                    <div className='bg-light rounded h-100 p-3 d-flex align-items-center gap-3 shadow'>
+                      <FiClipboard />
+                      <div className='d-flex flex-column'>
+                        <small>Today Consultation</small>
+                        <span className='fw-bold text-dark'>{count?.todayConsultationsAppointment}</span>
+                      </div>
+                    </div>
+                  </Col>
+                  <Col xs={6} md={3}>
+                    <div className='bg-light rounded h-100 p-3 d-flex align-items-center gap-3 shadow'>
+                      <FiClipboard />
+                      <div className='d-flex flex-column'>
+                        <small>Today EOPD</small>
+                        <span className='fw-bold text-dark'>{count?.todayEOPDAppointment}</span>
+                      </div>
+                    </div>
+                  </Col>
+                  <Col xs={6} md={3}>
+                    <div className='bg-light rounded h-100 p-3 d-flex align-items-center gap-3 shadow'>
+                      <FiClipboard />
+                      <div className='d-flex flex-column'>
+                        <small>Today Surgery</small>
+                        <span className='fw-bold text-dark'>{count?.todaySurgeryAppointment}</span>
+                      </div>
+                    </div>
+                  </Col>
+                  <Col xs={6} md={3}>
+                    <div className='bg-light rounded h-100 p-3 d-flex align-items-center gap-3 shadow'>
+                      <FiClipboard />
+                      <div className='d-flex flex-column'>
+                        <small>Today Earning</small>
+                        <span className='fw-bold text-dark'>{count?.todayEarnings}</span>
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
+              </Col>
             </div>
           </Col>
         </Row>

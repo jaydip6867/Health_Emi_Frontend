@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import './css/visitor.css'
 import { FaEnvelope } from 'react-icons/fa'
 import { BsStarFill, BsGeoAlt } from 'react-icons/bs'
-import { format } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import Swal from 'sweetalert2'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -543,8 +543,6 @@ const DoctorProfilePage = () => {
                                   <path d="M8.59091 16.5455C13.3355 16.5455 17.1818 12.8416 17.1818 8.27273C17.1818 3.70383 13.3355 0 8.59091 0C3.84628 0 0 3.70383 0 8.27273C0 12.8416 3.84628 16.5455 8.59091 16.5455Z" fill="#12A79D" />
                                   <path d="M13.4147 17.3212C13.8347 17.1048 14.3183 17.423 14.3183 17.8939V24.0667C14.3183 25.2121 13.5165 25.7721 12.5238 25.3012L9.11286 23.6848C8.82013 23.5576 8.36195 23.5576 8.06922 23.6848L4.65831 25.3012C3.66559 25.7594 2.86377 25.1994 2.86377 24.0539L2.88922 17.8939C2.88922 17.423 3.38559 17.1176 3.79286 17.3212C5.23104 18.0467 6.86013 18.4539 8.59104 18.4539C10.322 18.4539 11.9638 18.0467 13.4147 17.3212Z" fill="#12A79D" />
                                 </svg>
-
-
                               </div>
                               <div className="d-flex flex-column mt-1">
                                 <span className="fw-bold">{!doctor_profile?.experience ? '0 Years' : doctor_profile?.experience}</span>
@@ -1182,7 +1180,8 @@ const DoctorProfilePage = () => {
                     </ul>
                   ) : (
                     <p className="text-muted mb-0">No inclusive items specified</p>
-                  )}
+                  )
+                }
                 </Col>
                 <Col xs={12} md={6}>
                   <h6>Excluded</h6>
@@ -1425,7 +1424,7 @@ const DoctorProfilePage = () => {
                 timeIntervals={15}
                 dateFormat="dd-MM-yyyy hh:mm a"
                 placeholderText="Select date and time"
-                minDate={new Date()}
+                minDate={addDays(new Date(), 3)}
                 className="form-control"
               />
             </Form.Group>
