@@ -520,6 +520,17 @@ const Amb_Ridedetails = () => {
           saved.target?.lat &&
           saved.target?.lng
         ) {
+          // Clear static route and reset breadcrumb before live tracking
+          if (polyline) {
+            polyline.setMap(null);
+            setPolyline(null);
+          }
+          pathCoordinatesRef.current = [];
+          savePathToStorage([]);
+          if (trailRef.current) {
+            trailRef.current.setMap(null);
+            trailRef.current = null;
+          }
           startWatchToTarget(
             new window.google.maps.LatLng(saved.target.lat, saved.target.lng),
             () => {}
@@ -849,8 +860,6 @@ const Amb_Ridedetails = () => {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
-      
-
       const startRes = await axios.post(
         `${API_BASE_URL}/ambulance/ambulancerequest/startride`,
         { ambulancerequestid: ride?._id || id },
@@ -878,14 +887,6 @@ const Amb_Ridedetails = () => {
         return false; // do not start ride/socket/nav
       }
 
-      await MySwal.fire({
-        title: "Ride Accepted!",
-        text: "OTP verified. You can start to the pickup location.",
-        icon: "success",
-        confirmButtonText: "Start Ride",
-        confirmButtonColor: "#198754",
-      });
-
       const response = await axios.post(
         `${API_BASE_URL}/ambulance/ambulancerequest/accept`,
         { ambulancerequestid: id },
@@ -900,7 +901,13 @@ const Amb_Ridedetails = () => {
       if (!response.data.IsSuccess) {
         throw new Error(response.data.message || "Failed to accept ride");
       }
-
+      await MySwal.fire({
+        title: "Ride Accepted!",
+        text: "OTP verified. You can start to the pickup location.",
+        icon: "success",
+        confirmButtonText: "Start Ride",
+        confirmButtonColor: "#198754",
+      });
       // Refresh ride details to show updated status
       fetchRideDetails();
 
@@ -968,7 +975,12 @@ const Amb_Ridedetails = () => {
       if (result.isConfirmed) {
         try {
           setIsAccepting(true);
-          await handleAcceptRide();
+          const ok = await handleAcceptRide();
+          if (!ok) {
+            // user canceled or OTP failed — do not set status or show success toast
+            return;
+          }
+
           setRide((prev) => (prev ? { ...prev, status: "accepted" } : prev));
           MySwal.fire({
             title: "Ride Accepted",
@@ -1057,8 +1069,6 @@ const Amb_Ridedetails = () => {
       const getlocaldata = localStorage.getItem(STORAGE_KEYS.AMBULANCE);
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-
-      
 
       // 2) Complete ride
       const response = await axios.post(
