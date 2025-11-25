@@ -615,7 +615,7 @@ const D_Appointment = () => {
                 <Row className="align-items-start">
                     <DoctorSidebar doctor={doctor} />
                     <Col xs={12} md={9}>
-                        <div className='appointments-card mb-3'>
+                        <div className='appointments-card mb-3 '>
                             <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
                                 <h4 className='mb-0'>Consultation Appointments</h4>
                             </div>

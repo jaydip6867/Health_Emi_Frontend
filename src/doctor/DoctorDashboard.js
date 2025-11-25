@@ -44,23 +44,20 @@ const DoctorDashboard = () => {
 
   const [count, setcount] = useState(null)
 
-  useEffect(() => {
-    const getcount = () => {
-      axios({
-        method: 'get',
-        url: `${API_BASE_URL}/doctor/count`,
-        headers: {
-          Authorization: token
-        }
-      }).then((res) => {
-        // console.log('count = ', res.data.Data);
-        setcount(res.data.Data)
-      }).catch(function (error) {
-        console.log(error);
-      });
-    }
-    getcount()
-  })
+  const getcount = async () => {
+    await axios({
+      method: 'get',
+      url: `${API_BASE_URL}/doctor/count`,
+      headers: {
+        Authorization: token
+      }
+    }).then((res) => {
+      // console.log('count = ', res.data.Data);
+      setcount(res.data.Data)
+    }).catch(function (error) {
+      console.log(error);
+    });
+  }
 
   const [appointment, setappointment] = useState([])
   // const [surgeryapt, setsurgeryapt] = useState([])
@@ -68,6 +65,7 @@ const DoctorDashboard = () => {
   useEffect(() => {
     setloading(true)
     if (doctor) {
+      getcount()
       appointmentlist()
       // surgappointmentlist()
     }
@@ -82,7 +80,7 @@ const DoctorDashboard = () => {
         Authorization: token
       }
     }).then((res) => {
-      console.log(res.data.Data)
+      // console.log(res.data.Data)
       const today = format(new Date(), 'dd-MM-yyyy')
       const all = Array.isArray(res.data?.Data) ? res.data.Data : []
       const onlyToday = all.filter(item => item?.date === today)
@@ -233,7 +231,7 @@ const DoctorDashboard = () => {
                     </div>
                   </Col>
                 </Row>
-                <Row className='pt-4 g-5'>
+                <Row className='pt-4 g-5 '>
                   <Col xs={12}>
                     <h4 className='mt-3'>Today Appointments</h4>
                     <SmartDataTable className="appointments-table" columns={columns} data={appointment} pagination perPage={5} customStyles={customTableStyles} />

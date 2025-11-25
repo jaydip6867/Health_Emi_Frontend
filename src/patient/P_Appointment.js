@@ -69,8 +69,8 @@ const P_Appointment = () => {
         Authorization: token
       }
     }).then((res) => {
-      // console.log('appointment = ', res.data.Data.docs);
-      setappoint(res.data.Data.docs)
+      console.log('appointment = ', res.data.Data);
+      setappoint(res.data.Data)
     }).catch(function (error) {
       console.log(error);
     }).finally(() => {
@@ -326,7 +326,7 @@ const P_Appointment = () => {
           <P_Sidebar patient={patient} />
           <Col xs={12} md={9} className='p-3'>
             {/* <P_nav patientname={patient && patient.name} /> */}
-            <div className='appointments-card p-3 mb-3'>
+            <div className='appointments-card p-3 mb-3 position-sticky top-0'>
               <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3'>
                 <h4 className='mb-0'>Consultation Appointments</h4>
               </div>
@@ -473,7 +473,7 @@ const P_Appointment = () => {
                       )}
                     </div>
                     {
-                      v.status === "Completed" ? (
+                      v.status === "Completed" && v?.is_review === false ? (
                         <div className='d-flex justify-content-end mt-4'>
                           <Button variant='primary' onClick={() => openReviewModal(v?._id)}>Write a Review</Button>
                         </div>

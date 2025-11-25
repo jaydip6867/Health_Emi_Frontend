@@ -38,14 +38,8 @@ const PatientDashboard = () => {
           <P_Sidebar />
           <Col xs={12} md={10} className='p-3'>
             {/* <P_nav patientname={patient && patient.name} /> */}
-            <div className='bg-white rounded p-2'>
-              {
-                patient === null ?
-                  'data loading' :
-                  <div>
-                    hello {patient.name}
-                  </div>
-              }
+            <div className='bg-white rounded p-2 position-sticky top-0'>
+              
             </div>
           </Col>
         </Row>
