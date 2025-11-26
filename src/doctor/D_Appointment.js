@@ -472,7 +472,7 @@ const D_Appointment = () => {
             <div className="d-flex align-items-center text-truncate gap-3">
                 <img
                     // src={row.doctorid?.profile_pic}
-                    src={row.patientid?.profile_pic || require('../Visitor/assets/profile_icon_img.png')}
+                    src={row.createdByuser?.profile_pic || require('../Visitor/assets/profile_icon_img.png')}
                     alt='patient'
                     className="rounded-circle appt-avatar"
                 />
@@ -615,7 +615,7 @@ const D_Appointment = () => {
                 <Row className="align-items-start">
                     <DoctorSidebar doctor={doctor} />
                     <Col xs={12} md={9}>
-                        <div className='appointments-card mb-3'>
+                        <div className='appointments-card mb-3 '>
                             <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
                                 <h4 className='mb-0'>Consultation Appointments</h4>
                             </div>

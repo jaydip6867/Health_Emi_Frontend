@@ -24,7 +24,7 @@ const DoctorSidebar = ({ doctor }) => {
             </div>
 
             {/* Sidebar */}
-            <Col xs={12} sm={4} md={3} className={`sidebar-wrapper ${isOpen ? 'open' : ''} d-none d-md-block d-sm-block position-sticky top-0`} >
+            <Col xs={12} sm={4} md={3} className={`sidebar-wrapper ${isOpen ? 'open' : ''} d-none d-md-block d-sm-block position-sticky min-vh-100 top-0`} >
                 <div className="bg-white patient_side_height sidebar-inner">
                     <div className="">
                         <div className='patient_profile'>

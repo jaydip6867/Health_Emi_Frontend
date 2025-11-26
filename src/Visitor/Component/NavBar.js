@@ -104,8 +104,8 @@ const NavBar = ({ logindata }) => {
               {logindata ? (
                 logindata.logintype === 'doctor' ? (
                   <>
-                    <NavDropdown.Item as={Link} to="/doctor/doctorprofile" className="text-center">
-                      Profile
+                    <NavDropdown.Item as={Link} to="/doctor/doctordashboard" className="text-center">
+                      Dashboard
                     </NavDropdown.Item>
                     <NavDropdown.Item
                       className="text-center text-danger"

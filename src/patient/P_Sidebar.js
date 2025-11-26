@@ -6,7 +6,7 @@ import { FiSettings } from 'react-icons/fi';
 const P_Sidebar = ({patient}) => {
     const navigate = useNavigate();
     return (
-        <Col xs={12} md={3} className='sticky-top pe-0'>
+        <Col xs={12} md={3} className='sticky-top min-vh-100 pe-0'>
             <div className='py-5'>
                 <div className='bg-white patient_side_height m-md-0'>
                     <div>

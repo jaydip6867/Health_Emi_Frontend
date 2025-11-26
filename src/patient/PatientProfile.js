@@ -198,7 +198,7 @@ const PatientProfile = () => {
                     <P_Sidebar patient={patient} />
                     <Col xs={12} md={9} className='p-3'>
                         {/* <P_nav patientname={patient && patient.name} /> */}
-                        <div className='p-3 py-4 mb-3'>
+                        <div className='p-3 py-4 mb-3 position-sticky top-0'>
                             <h4>Settings</h4>
 
                             <div className='py-3 border-top'>
