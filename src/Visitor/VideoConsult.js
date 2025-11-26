@@ -7,6 +7,7 @@ import FunctionalitySec from './Component/FunctionalitySec';
 import { Container, Row, Col, Card } from "react-bootstrap";
 import HeadTitle from './Component/HeadTitle';
 import { SECRET_KEY, STORAGE_KEYS } from '../config'
+import FadeIn from '../components/FadeIn';
 
 const VideoConsult = () => {
     var navigate = useNavigate();
@@ -51,6 +52,7 @@ const VideoConsult = () => {
                     </Row>
                 </Container>
             </section>
+
 
             <section className="spacer-t bg-white">
                 <Container>
@@ -100,49 +102,56 @@ const VideoConsult = () => {
                             </Card>
                         </Col>
                     </Row>
+                </Container>
+            </section>
+            <section className='spacer-y'>
+                <Container>
+                    <FadeIn>
+                    <h2 className='head_sec mb-4'><HeadTitle title="Why Choose Health Easy EMI’s E-OPD?" /></h2>
 
-                    <section className='spacer-y'>
-                        {/* Key Features */}
-                        <h2 className='head_sec mb-4'><HeadTitle title="Why Choose Health Easy EMI’s E-OPD?" /></h2>
+                    <Row className="g-4 justify-content-center feature_icon_sec">
+                        <Col xs={6} md={4} lg className="text-center">
+                            <div className='border rounded p-3 h-100'>
+                                <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
+                                    {/* <FaMapMarkerAlt /> */}
+                                    <img src={require('./assets/icon/24-7.png')} alt="" />
 
-                        <Row className="g-4 justify-content-center feature_icon_sec">
-                            <Col xs={6} md={4} lg className="text-center">
-                                <div className='border rounded p-3 h-100'>
-                                    <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                        {/* <FaMapMarkerAlt /> */}
-                                        <img src={require('./assets/icon/24-7.png')} alt="" />
+                                </div>
+                                <div className="text-muted small">Trusted, verified doctors available 24×7</div>
+                            </div>
+                        </Col>
+                        <Col xs={6} md={4} lg className="text-center">
+                            <div className="border rounded p-3 h-100">
+                                <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
+                                    <img src={require('./assets/icon/user-private.png')} alt="" />
+                                </div>
+                                <div className="text-muted small">Private, encrypted, and confidential video sessions</div>
+                            </div>
+                        </Col>
+                        <Col xs={6} md={4} lg className="text-center">
+                            <div className="border rounded p-3 h-100">
+                                <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
+                                    <img src={require('./assets/icon/calendar.png')} alt="" />
+                                </div>
+                                <div className="text-muted small">Suitable for second opinions, chronic care, and follow-ups</div>
+                            </div>
+                        </Col>
+                        <Col xs={6} md={4} lg className="text-center">
+                            <div className="border rounded p-3 h-100">
+                                <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
+                                    <img src={require('./assets/icon/bed.png')} alt="" />
+                                </div>
+                                <div className="text-muted small">Option to switch to physical visit or surgery with same doctor</div>
+                            </div>
+                        </Col>
+                    </Row>
+                    </FadeIn>
+                </Container>
+            </section>
 
-                                    </div>
-                                    <div className="text-muted small">Trusted, verified doctors available 24×7</div>
-                                </div>
-                            </Col>
-                            <Col xs={6} md={4} lg className="text-center">
-                                <div className="border rounded p-3 h-100">
-                                    <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                        <img src={require('./assets/icon/user-private.png')} alt="" />
-                                    </div>
-                                    <div className="text-muted small">Private, encrypted, and confidential video sessions</div>
-                                </div>
-                            </Col>
-                            <Col xs={6} md={4} lg className="text-center">
-                                <div className="border rounded p-3 h-100">
-                                    <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                        <img src={require('./assets/icon/calendar.png')} alt="" />
-                                    </div>
-                                    <div className="text-muted small">Suitable for second opinions, chronic care, and follow-ups</div>
-                                </div>
-                            </Col>
-                            <Col xs={6} md={4} lg className="text-center">
-                                <div className="border rounded p-3 h-100">
-                                    <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                        <img src={require('./assets/icon/bed.png')} alt="" />
-                                    </div>
-                                    <div className="text-muted small">Option to switch to physical visit or surgery with same doctor</div>
-                                </div>
-                            </Col>
-                        </Row>
-                    </section>
-
+            <section>
+                <FadeIn>
+                <Container>
                     {/* CTA */}
                     <Card className="border-0 rounded-4 matter_bg">
                         <Card.Body className="p-4 text-center">
@@ -153,6 +162,7 @@ const VideoConsult = () => {
                         </Card.Body>
                     </Card>
                 </Container>
+                </FadeIn>
             </section>
 
             <section className='spacer-y'>

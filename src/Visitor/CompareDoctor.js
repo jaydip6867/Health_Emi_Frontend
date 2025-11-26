@@ -179,7 +179,7 @@ return (
               ))}
             </Form.Select>
           </Col>
-          {
+          {/* {
             selectedSurgery && (
               <Col xs={12} md={6} lg={3}>
                 <Form.Label className='fw-semibold'>Choose a Category</Form.Label>
@@ -201,7 +201,7 @@ return (
                 </Form.Select>
               </Col>
             )
-          }
+          } */}
 
         </Row>
 

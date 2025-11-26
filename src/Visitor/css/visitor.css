@@ -1,5 +1,3 @@
-
-
 /* roboto-regular - latin */
 @font-face {
     font-display: swap;
@@ -177,9 +175,22 @@ h6 {
     background-image: none;
     background-color: var(--grayscale-color-950);
 }
-.pointer{
+
+.pointer {
     cursor: pointer;
 }
+
+.fadein {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.7s ease-out;
+}
+
+.fadein.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 
 /* ----------------------------------------------------------------- */
 /* ----------------------- Header CSS -------------------------- */

@@ -9,6 +9,7 @@ import axios from 'axios';
 import BlogBox from './Component/BlogBox';
 import { FiSearch } from 'react-icons/fi';
 import { API_BASE_URL, SECRET_KEY, DEFAULT_PAGE_LIMIT, STORAGE_KEYS } from '../config';
+import FadeIn from '../components/FadeIn';
 
 const Blog = () => {
     var navigate = useNavigate();
@@ -124,11 +125,13 @@ const Blog = () => {
             {/* blog lists */}
             <section className='py-5'>
                 <Container>
+                    <FadeIn>
                     <Row className='g-4'>
                         {bloglist && bloglist?.map((item, index) => (
                             <BlogBox key={index} item={item} />
                         ))}
                     </Row>
+                    </FadeIn>
                 </Container>
             </section>
             <section className='pb-5'>
