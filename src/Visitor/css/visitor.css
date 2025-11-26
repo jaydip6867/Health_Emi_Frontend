@@ -2376,3 +2376,18 @@ body::-webkit-scrollbar-thumb:hover {
         font-size: 1.1rem;
     }
 }
+.list_disc{
+    list-style-type: disc;
+    padding-left: 20px;
+}
+.list_roman{
+    list-style-type: upper-roman;
+    padding-left: 20px;
+}
+.list_alpha{
+    list-style: upper-alpha;
+    padding-left: 20px;
+}
+.list_number{
+    list-style-type: decimal;
+}
