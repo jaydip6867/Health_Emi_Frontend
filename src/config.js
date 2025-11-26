@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://healtheasy-o25g.onrender.com';
+export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'api.healtheasyemi.com';
 export const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || API_BASE_URL;
 export const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || 'health-emi';
 export const DEFAULT_PAGE_LIMIT = Number(process.env.REACT_APP_DEFAULT_PAGE_LIMIT) || 12;
@@ -11,3 +11,4 @@ export const STORAGE_KEYS = {
 
 // Google Maps API key (set REACT_APP_GOOGLE_MAPS_API_KEY in .env)
 export const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'AIzaSyBoGhF4LGSyzplqWd4qJXmELcDrbZIIQDA';
+// api.healtheasyemi.com
