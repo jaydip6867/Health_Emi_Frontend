@@ -63,11 +63,11 @@ const FooterBar = () => {
           <Col sm={5} xs={12} md={3} lg={2} className="footer-links">
             <h4>More Pages</h4>
             <ul>
-              <li>
+              {/* <li>
                 <Link to="#">Privacy Policy</Link>
-              </li>
+              </li> */}
               <li>
-                <Link to="#">Terms & Conditions</Link>
+                <Link to="termsandcondition">Terms & Conditions</Link>
               </li>
             </ul>
           </Col>
