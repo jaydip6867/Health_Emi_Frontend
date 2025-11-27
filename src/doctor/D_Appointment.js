@@ -11,7 +11,7 @@ import Swal from 'sweetalert2'
 import SmartDataTable from '../components/SmartDataTable'
 import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye } from 'react-icons/md'
 import DatePicker from 'react-datepicker'
-import { format } from 'date-fns'
+import { format, parse } from 'date-fns'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
@@ -132,9 +132,31 @@ const D_Appointment = () => {
         handlerescheduleShow()
     }
     const handleOpenStartAppointment = (appointmentRow) => {
+        const scheduledStr = `${appointmentRow?.date || ''} ${appointmentRow?.time || ''}`;
+        try {
+            const scheduledAt = parse(scheduledStr.trim(), 'dd-MM-yyyy hh:mm a', new Date());
+            if (isNaN(scheduledAt.getTime())) {
+                throw new Error('Invalid date');
+            }
+            const now = new Date();
+            if (now < scheduledAt) {
+                Swal.fire({
+                    title: 'Too Early',
+                    text: 'You can start the appointment at the scheduled time or later.',
+                    icon: 'warning',
+                });
+                return;
+            }
+        } catch (e) {
+            Swal.fire({
+                title: 'Invalid schedule',
+                text: 'Appointment date/time is invalid. Please reschedule or try again.',
+                icon: 'warning',
+            });
+            return;
+        }
         setCurrentAppointment(appointmentRow);
         setShowStartAppointment(true);
-        console.log(appointmentRow)
     };
 
     const handleCloseStartAppointment = () => {
@@ -323,6 +345,8 @@ const D_Appointment = () => {
 
             if (!uploadedFileUrl) throw new Error('Failed to get uploaded file URL');
 
+            // console.log(currentAppointment)
+
             // Mark appointment complete with prescription URL
             await axios({
                 method: 'post',
@@ -331,23 +355,24 @@ const D_Appointment = () => {
                 data: {
                     appointmentid: currentAppointment?._id,
                     payment_mode: 'Cash',
-                    totalamount: 1000,
+                    totalamount: currentAppointment?.price,
                     doctor_remark: uploadedFileUrl,
+                    prescription: prescriptionData.prescriptionItems,
                     followup_date: prescriptionData.followUpDate,
                     followup_time: prescriptionData.followUpTime
                 }
             });
 
             Swal.fire('Success', 'Prescription saved and appointment completed!', 'success');
-            appointmentlist();
             handleClosePrescriptionModal();
-
+            
             // Reset form
             setPrescriptionData({ diagnosis: '', instructions: '', bp: '', complain: '', pasHistory: '', followUpDate: '', followUpTime: '', prescriptionItems: [] });
         } catch (error) {
             console.error('Error completing appointment:', error);
             Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to complete appointment.', 'error');
         } finally {
+            appointmentlist();
             setloading(false);
         }
     };
@@ -496,7 +521,7 @@ const D_Appointment = () => {
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
                 <span className="text-muted appt-price">₹</span>
-                <span className="text-truncate"> ₹ {row?.price || '0'}</span>
+                <span className="text-truncate"> ₹ {row?.status === "Cancel" || row?.status === "Pending" || row?.status === "Accept" ? row?.price === "" ? "0" : row?.price : row?.totalamount}</span>
             </div>
         ),
     },
@@ -513,7 +538,7 @@ const D_Appointment = () => {
         },
     },
     {
-        name: '',
+        name: 'View',
         cell: row => (
             <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
                 <button
@@ -652,18 +677,18 @@ const D_Appointment = () => {
                                             </div>
                                             <div className='d-flex align-items-center gap-4 flex-wrap appointment_model text-center'>
                                                 <div>
-                                                    <p className='mb-0'>Ward Type</p>
+                                                    <p className='mb-0'>Consultation Type</p>
                                                     <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{v?.visit_types}</span>
                                                 </div>
                                                 <div>
-                                                    <p className='mb-0'>Surgery Status</p>
+                                                    <p className='mb-0'>Consultation Status</p>
                                                     <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#E8F7EE', color: '#1F9254' }}>
                                                         {v?.status}
                                                     </span>
                                                 </div>
                                                 <div>
                                                     <p className='mb-0'>Consultation Fee</p>
-                                                    <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.totalamount || 0}</span>
+                                                    <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.status === "Cancel" || v?.status === "Pending" || v?.status === "Accept" ? v?.price === "" ? "0" : v?.price : v?.totalamount}</span>
                                                 </div>
                                             </div>
                                         </div>

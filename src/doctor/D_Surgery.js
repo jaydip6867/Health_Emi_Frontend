@@ -628,7 +628,7 @@ const D_Surgery = () => {
       ),
     },
     {
-      name: "Stays Days",
+      name: "Stay",
       selector: (row) => `${row?.days || ''}`,
       cell: (row) => (
         <div className="d-flex align-items-center gap-2 text-muted small">
@@ -1014,7 +1014,7 @@ const D_Surgery = () => {
                       <div className="card shadow-sm">
                         <div className="card-header bg-light">
                           <h6 className="mb-0 fw-bold">
-                            Inclusive Items
+                            Included
                           </h6>
                         </div>
                         <div className="card-body">
@@ -1093,7 +1093,7 @@ const D_Surgery = () => {
                         <div className="card-header bg-light">
                           <h6 className="mb-0 fw-bold">
                             <i className="fas fa-times-circle text-danger me-2"></i>
-                            Exclusive Items
+                            Excluded
                           </h6>
                         </div>
                         <div className="card-body">
@@ -1238,7 +1238,7 @@ const D_Surgery = () => {
                       </div>
                     </Form.Group>
 
-                    <Form.Group className="col-12">
+                    <Form.Group className="col-auto mx-auto">
                       <Form.Control
                         type="button"
                         value={"Add Surgery Deatil"}
@@ -1969,7 +1969,7 @@ const D_Surgery = () => {
 
 
 
-                  <Form.Group className="mb-3 col-12">
+                  <Form.Group className="col-auto mx-auto">
                     <Form.Control
                       type="button"
                       value={"Update Surgery"}

@@ -44,6 +44,8 @@ import Faq from './Visitor/Faq';
 import Blog from './Visitor/Blog';
 import BlogDetail from './Visitor/BlogDetail';
 import Terms from './Visitor/Terms';
+import DoctorTC from './Visitor/T&CPage/DoctorTC';
+import DoctorTelemedicineTC from './Visitor/T&CPage/DoctorTelemedicineTC';
 function App() {
   return (
     <div className="App">
@@ -62,6 +64,8 @@ function App() {
         <Route path='/blog' element={<Blog />}></Route>
         <Route path='/blog/:id' element={<BlogDetail />}></Route>
         <Route path='termsandcondition' element={<Terms/>}></Route>
+        <Route path='doctor-tc' element={<DoctorTC />}></Route>
+        <Route path='doctor-telemedicine-tc' element={<DoctorTelemedicineTC />}></Route>
         <Route path='/doctor'>
           <Route path='' index element={<DoctorLogin />}></Route>
           <Route path='doctorregister' element={<DoctorRegister />}></Route>

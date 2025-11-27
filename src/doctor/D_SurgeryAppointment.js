@@ -10,13 +10,14 @@ import Swal from 'sweetalert2'
 import SmartDataTable from '../components/SmartDataTable'
 import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye } from 'react-icons/md'
 import DatePicker from 'react-datepicker'
-import { format } from 'date-fns'
+import { format, parse } from 'date-fns'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 import { FiClipboard, FiClock, FiMail, FiPhone } from 'react-icons/fi'
 import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
+
 const D_SurgeryAppointment = () => {
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
@@ -223,9 +224,33 @@ const D_SurgeryAppointment = () => {
     const [totalAmount, setTotalAmount] = useState(0)
 
     const handleOpenStartAppointment = (appointmentRow) => {
+        const scheduledStr = `${appointmentRow?.date || ''} ${appointmentRow?.time || ''}`;
+        try {
+            const scheduledAt = parse(scheduledStr.trim(), 'dd-MM-yyyy hh:mm a', new Date());
+            if (isNaN(scheduledAt.getTime())) {
+                throw new Error('Invalid date');
+            }
+            const now = new Date();
+            if (now < scheduledAt) {
+                Swal.fire({
+                    title: 'Too Early',
+                    text: 'You can start the appointment at the scheduled time or later.',
+                    icon: 'warning',
+                });
+                return;
+            }
+        } catch (e) {
+            Swal.fire({
+                title: 'Invalid schedule',
+                text: 'Appointment date/time is invalid. Please reschedule or try again.',
+                icon: 'warning',
+            });
+            return;
+        }
         setCurrentAppointment(appointmentRow)
         setShowStartAppointment(true)
     }
+
     const handleCloseStartAppointment = () => {
         setShowStartAppointment(false)
         setCurrentAppointment(null)

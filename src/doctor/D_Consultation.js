@@ -138,15 +138,18 @@ const D_Consultation = () => {
                   </Button>
                 </div>
               </div>
-              <div>
+              <div className="d-flex gap-3 register_doctor">
                 <p>
-                  <b>Home Visit :- </b> {consultdata?.home_visit_price}
+                  <Form.Label>Home Visit</Form.Label>
+                  <Form.Control type="text" value={consultdata?.home_visit_price} readOnly/>
                 </p>
                 <p>
-                  <b>Clinic Visit :- </b> {consultdata?.clinic_visit_price}
+                  <Form.Label>Clinic Visit</Form.Label>
+                  <Form.Control type="text" value={consultdata?.clinic_visit_price} readOnly/>
                 </p>
                 <p>
-                  <b>EOPD :- </b> {consultdata?.eopd_price}
+                  <Form.Label>EOPD</Form.Label>
+                  <Form.Control type="text" value={consultdata?.eopd_price} readOnly/>
                 </p>
               </div>
             </div>
@@ -161,7 +164,7 @@ const D_Consultation = () => {
             <Row className="g-4">
               <Col xs={12} md={12}>
                 <div className="bg-white rounded p-3 shadow">
-                  <Form className="row register_doctor">
+                  <Form className="row register_doctor justfify-content-center">
                     <Form.Group controlId="hv" className="mb-3 col-md-4">
                       <div className="position-relative">
                         <Form.Label>Home Visit Price</Form.Label>
@@ -198,7 +201,7 @@ const D_Consultation = () => {
                       </div>
                     </Form.Group>
 
-                    <Form.Group className="col-12">
+                    <Form.Group className="col-auto mx-auto">
                       <Form.Control
                         type="button"
                         value={
@@ -206,7 +209,7 @@ const D_Consultation = () => {
                           consult?.clinic_visit_price === "" &&
                           consult?.eopd_price === ""
                             ? "Add Consultation"
-                            : "Edit Consultation"
+                            : "Update Consultation"
                         }
                         onClick={addconsultant}
                         className="theme_btn"

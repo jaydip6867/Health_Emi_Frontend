@@ -230,7 +230,7 @@ const P_Appointment = () => {
     },
   },
   {
-    name: 'View',
+    name: 'Action',
     cell: row => (
       <div className='d-inline-flex gap-2 align-items-center'>
         <OverlayTrigger placement="top" overlay={renderTooltip('View Details')}>
