@@ -70,7 +70,7 @@ const P_Surgeries = () => {
             // console.log('appointment = ', res.data.Data);
             setappoint(res.data.Data)
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
         }).finally(() => {
             setloading(false)
         });
@@ -87,7 +87,7 @@ const P_Surgeries = () => {
         var datasingle = appoint_data.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        console.log(datasingle)
+        // console.log(datasingle)
     }
 
     function openReviewModal(appointmentId) {
@@ -126,7 +126,7 @@ const P_Surgeries = () => {
             Swal.fire({ title: 'Review submitted', icon: 'success' })
             closeReviewModal()
         } catch (error) {
-            console.log(error)
+            // console.log(error)
             Swal.fire({ title: error?.response?.data?.Message || 'Failed to submit review', icon: 'error' })
         } finally {
             setSubmittingReview(false)

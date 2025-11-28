@@ -55,7 +55,7 @@ const DoctorDashboard = () => {
       // console.log('count = ', res.data.Data);
       setcount(res.data.Data)
     }).catch(function (error) {
-      console.log(error);
+      // console.log(error);
     });
   }
 
@@ -86,7 +86,7 @@ const DoctorDashboard = () => {
       const onlyToday = all.filter(item => item?.date === today)
       setappointment(onlyToday)
     }).catch(function (error) {
-      console.log(error);
+      // console.log(error);
       // toast(error.response.data.Message,{className:'custom-toast-error'})
     }).finally(() => {
       setloading(false)

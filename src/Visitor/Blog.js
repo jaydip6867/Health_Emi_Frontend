@@ -72,7 +72,7 @@ const Blog = () => {
                 setTotalPages(1)
             }
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
         }).finally(() => {
             setloading(false)
         });

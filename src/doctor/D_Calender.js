@@ -81,7 +81,7 @@ const D_Calender = () => {
             // console.log(formattedAppointments)
             setappointment(formattedAppointments);
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
             // toast(error.response.data.Message,{className:'custom-toast-error'})
         }).finally(() => {
             setloading(false)
@@ -274,7 +274,7 @@ const D_Calender = () => {
                                             setSelectedAppointment(info.event.extendedProps);
                                             setShowModal(true);
                                         }
-                                        console.log(info.event.extendedProps)
+                                        // console.log(info.event.extendedProps)
                                     }}
                                     height="auto"
                                     dayMaxEvents={3}

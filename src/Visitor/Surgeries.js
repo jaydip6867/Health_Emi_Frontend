@@ -66,7 +66,7 @@ const Surgeries = () => {
             setAllSurgeries(data);
             setsurgerylist(data);
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
             setsurgerylist([]);
         }).finally(() => {
             setloading(false)

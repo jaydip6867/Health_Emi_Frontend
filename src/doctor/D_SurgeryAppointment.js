@@ -60,10 +60,10 @@ const D_SurgeryAppointment = () => {
                 Authorization: token
             }
         }).then((res) => {
-            console.log(res.data.Data)
+            // console.log(res.data.Data)
             setappointment(res.data.Data)
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
             // toast(error.response.data.Message,{className:'custom-toast-error'})
         }).finally(() => {
             setloading(false)
@@ -90,7 +90,7 @@ const D_SurgeryAppointment = () => {
             });
             appointmentlist()
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
             // toast(error.response.data.Message,{className:'custom-toast-error'})
         }).finally(() => {
             setloading(false)
@@ -108,7 +108,7 @@ const D_SurgeryAppointment = () => {
         var datasingle = appointment.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        console.log(datasingle)
+        // console.log(datasingle)
     }
 
     // reschedule appoinetment date
@@ -127,7 +127,7 @@ const D_SurgeryAppointment = () => {
         setschedule_data(data)
         // console.log(data)
         handlerescheduleShow()
-        console.log(data)
+        // console.log(data)
     }
 
     const formattedDateTime = selectedDate
@@ -161,7 +161,7 @@ const D_SurgeryAppointment = () => {
             appointmentlist()
             handlerescheduleClose()
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
         }).finally(() => {
             setloading(false)
         });

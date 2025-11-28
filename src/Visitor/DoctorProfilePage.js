@@ -36,6 +36,12 @@ const DoctorProfilePage = () => {
     { time: '10:30 AM', available: true },
     { time: '11:00 AM', available: true },
     { time: '11:30 AM', available: true },
+    { time: '12:00 PM', available: true },
+    { time: '12:30 PM', available: true },
+    { time: '01:00 PM', available: true },
+    { time: '01:30 PM', available: true },
+    { time: '02:00 PM', available: true },
+    { time: '02:30 PM', available: true },
     { time: '03:00 PM', available: true },
     { time: '03:30 PM', available: true },
     { time: '04:00 PM', available: true },
@@ -50,9 +56,34 @@ const DoctorProfilePage = () => {
     { time: '08:30 PM', available: true }
   ];
 
+  // Helpers: determine if a slot can be selected relative to now and selected date
+  const isSameCalendarDay = (d1, d2) => {
+    if (!d1 || !d2) return false;
+    return format(d1, 'yyyy-MM-dd') === format(d2, 'yyyy-MM-dd');
+  };
+
+  const isSlotInFutureForSelectedDate = (slotTime) => {
+    if (!selectedDate) return true;
+    // If selected date is not today, all slots are in the future (minDate prevents past dates)
+    if (!isSameCalendarDay(selectedDate, new Date())) return true;
+
+    // Parse 'hh:mm AM/PM' and build a Date on selectedDate
+    const [time, meridiem] = slotTime.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+    hours = (hours % 12) + (meridiem === 'PM' ? 12 : 0);
+    const slotDateTime = new Date(selectedDate);
+    slotDateTime.setHours(hours, minutes, 0, 0);
+    return slotDateTime.getTime() > Date.now();
+  };
+
+  const canSelectSlot = (slot) => {
+    if (!slot?.available) return false;
+    return isSlotInFutureForSelectedDate(slot.time);
+  };
+
   // Handle time slot selection
   const handleTimeSlotSelect = (timeSlot) => {
-    if (timeSlot.available) {
+    if (canSelectSlot(timeSlot)) {
       setSelectedTimeSlot(timeSlot.time);
     }
   };
@@ -891,17 +922,17 @@ const DoctorProfilePage = () => {
                                       variant={
                                         selectedTimeSlot === slot.time
                                           ? "dark"
-                                          : slot.available
+                                          : canSelectSlot(slot)
                                             ? "light"
-                                            : "outline-danger"
+                                            : "outline-secondary"
                                       }
                                       size="sm"
                                       className="w-100 btn-hour"
-                                      disabled={!slot.available}
+                                      disabled={!canSelectSlot(slot)}
                                       onClick={() => handleTimeSlotSelect(slot)}
                                       style={{
-                                        opacity: slot.available ? 1 : 0.5,
-                                        cursor: slot.available ? 'pointer' : 'not-allowed',
+                                        opacity: canSelectSlot(slot) ? 1 : 0.5,
+                                        cursor: canSelectSlot(slot) ? 'pointer' : 'not-allowed',
                                         fontSize: '12px',
                                         padding: '8px 4px'
                                       }}

@@ -66,11 +66,11 @@ const PatientProfile = () => {
                 newPassword: '',
                 confirmPassword: ''
             })
-            console.log(data)
+            // console.log(data)
             setProfilePicPreview(data?.profile_pic || '')
             setErrors({ newPassword: '', confirmPassword: '' })
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
         }).finally(() => {
             setloading(false)
         });
@@ -129,7 +129,7 @@ const PatientProfile = () => {
 
     async function updateprofiledata(id) {
         setloading(true)
-        console.log('update profile data = ', id, profile)
+        // console.log('update profile data = ', id, profile)
         const hasNew = (profile?.newPassword || '').trim().length > 0;
         const currentErrors = validatePasswords(profile);
         setErrors(currentErrors);

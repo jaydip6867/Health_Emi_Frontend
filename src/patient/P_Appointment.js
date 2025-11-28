@@ -69,10 +69,10 @@ const P_Appointment = () => {
         Authorization: token
       }
     }).then((res) => {
-      console.log('appointment = ', res.data.Data);
+      // console.log('appointment = ', res.data.Data);
       setappoint(res.data.Data)
     }).catch(function (error) {
-      console.log(error);
+      // console.log(error);
     }).finally(() => {
       setloading(false)
     });
@@ -89,7 +89,7 @@ const P_Appointment = () => {
     var datasingle = appoint_data.filter((v, i) => { return v._id === id })
     setsingleview(datasingle);
     handleShow()
-    console.log(datasingle)
+    // console.log(datasingle)
   }
 
   function openReviewModal(appointmentId) {
@@ -128,7 +128,7 @@ const P_Appointment = () => {
       Swal.fire({ title: 'Review submitted', icon: 'success' })
       closeReviewModal()
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       Swal.fire({ title: error?.response?.data?.Message || 'Failed to submit review', icon: 'error' })
     } finally {
       setSubmittingReview(false)
@@ -281,7 +281,7 @@ const P_Appointment = () => {
         }).then((res) => {
           getappointments();
         }).catch(function (error) {
-          console.log(error);
+          // console.log(error);
           // toast(error.response.data.Message,{className:'custom-toast-error'})
         }).finally(() => {
           Swal.fire({

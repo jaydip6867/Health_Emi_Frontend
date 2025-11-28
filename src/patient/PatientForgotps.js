@@ -36,7 +36,7 @@ const PatientForgotps = () => {
             setpatient_email(false);
             setpatient_forgt_otp(true);
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         }).finally(() => {
             setloading(false)
@@ -55,7 +55,7 @@ const PatientForgotps = () => {
         }).then((res) => {
 
             toast('OTP Verify Successfully...', { className: 'custom-toast-success' })
-            console.log(res)
+            // console.log(res)
             setpatient_forgt_otp(false);
             setdoc_rest_ps(true);
         }).catch(function (error) {

@@ -57,10 +57,10 @@ const BlogDetail = () => {
                 "blogid": id,
             }
         }).then((res) => {
-            console.log(res.data.Data)
+            // console.log(res.data.Data)
             setblog(res.data.Data)
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
         }).finally(() => {
             setloading(false)
         });
@@ -92,7 +92,7 @@ const BlogDetail = () => {
         }).then((res) => {
             setbloglist(res.data.Data.docs)
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
         }).finally(() => {
             setloading(false)
         });

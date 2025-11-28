@@ -54,7 +54,7 @@ const CompareDoctor = () => {
         // console.log(list)
         setSurgeryOptions(list)
       } catch (e) {
-        console.log(e)
+        // console.log(e)
       } finally {
         setloading(false)
       }
@@ -77,7 +77,7 @@ const CompareDoctor = () => {
         setDoctors(res?.data?.Data || [])
         // console.log(res?.data?.Data)
       } catch (e) {
-        console.log(e)
+        // console.log(e)
       } finally {
         setloading(false)
       }
@@ -123,11 +123,11 @@ const CompareDoctor = () => {
       })
       // Be resilient to both shapes: { Data: [...] } or { Data: { docs: [...] } }
       const list = res.data.Data
-      console.log(list)
+      // console.log(list)
       setCategoryOptions(list)
       setcategory_list(list)
     } catch (e) {
-      console.log(e)
+      // console.log(e)
     } finally {
       setloading(false)
     }
@@ -138,7 +138,7 @@ const CompareDoctor = () => {
     
     var cat_list = categoryOptions?.filter((x) => x?.surgerytypeid?._id === value);
     setcategory_list(cat_list);
-    console.log(doctors)
+    // console.log(doctors)
   };
 
 return (

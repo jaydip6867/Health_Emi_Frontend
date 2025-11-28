@@ -467,7 +467,7 @@ const DoctorProfile = () => {
           ...res.data.Data,
           oldProfilePic: res.data.Data.profile_pic,
         });
-        console.log(res.data.Data)
+        // console.log(res.data.Data)
       })
       .catch(function (error) {
         // console.log(error);

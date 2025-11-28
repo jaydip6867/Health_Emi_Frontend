@@ -50,7 +50,7 @@ const DoctorListComponents = ({ details }) => {
                             <Row className="align-items-center g-2 consultation_fees justify-content-between">
                                 <Col xs="auto">
                                     <small className="small">Consultation Fees</small>
-                                    <div className="fees-amount">₹ {details?.consultationsDetails?.clinic_visit_price || 0}</div>
+                                    <div className="fees-amount">₹ {details?.consultationsDetails?.clinic_visit_price || '-'}</div>
                                 </Col>
                                 <Col xs="auto" className="text-end">
                                     <button onClick={() => navigate(`/doctorprofile/${encodeURIComponent(btoa(details._id))}`)} className="btn-book px-4 py-2 d-flex align-items-center gap-2 ">

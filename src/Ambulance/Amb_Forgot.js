@@ -37,7 +37,7 @@ const Amb_Forgot = () => {
             setamb_email(false);
             setamb_forgt_otp(true);
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         }).finally(()=>{
             setloading(false)
@@ -55,7 +55,7 @@ const Amb_Forgot = () => {
             }
         }).then((res) => {
             toast('OTP Verify Successfully...', { className: 'custom-toast-success' })
-            console.log(res)
+            // console.log(res)
             setamb_forgt_otp(false);
             setamb_rest_ps(true);
         }).catch(function (error) {

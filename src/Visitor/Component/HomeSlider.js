@@ -26,7 +26,7 @@ const HomeSlider = () => {
                 setBanner(res.data.Data.banners);
             })
             .catch((err) => {
-                console.log(err);
+                // console.log(err);
             })
     }, [])
     return (

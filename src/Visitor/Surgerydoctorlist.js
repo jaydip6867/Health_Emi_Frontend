@@ -164,7 +164,7 @@ const Surgerydoctorlist = () => {
             setdoclist(res.data.Data)
             // console.log('doctor ', res.data.Data)
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
         }).finally(() => {
             setloading(false)
         });

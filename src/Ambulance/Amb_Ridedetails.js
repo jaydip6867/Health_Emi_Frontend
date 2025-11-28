@@ -786,7 +786,7 @@ const Amb_Ridedetails = () => {
           },
         }
       );
-      console.log(data.accessToken);
+      // console.log(data.accessToken);
       if (response.data.IsSuccess && response.data.Data) {
         setRide(response.data.Data);
       } else {
@@ -1051,7 +1051,7 @@ const Amb_Ridedetails = () => {
       setIsCompleting(true);
 
       // Resolve ride/request id from your current ride object
-      console.log(ride?.ambulancerequestid);
+      // console.log(ride?.ambulancerequestid);
       const requestId = ride?._id || ride?.ambulancerequestid || ride?.id;
       if (!requestId) {
         await MySwal.fire({

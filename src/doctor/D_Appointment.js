@@ -63,10 +63,10 @@ const D_Appointment = () => {
                 Authorization: token
             }
         }).then((res) => {
-            console.log(res.data.Data)
+            // console.log(res.data.Data)
             setappointment(res.data.Data)
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
             // toast(error.response.data.Message,{className:'custom-toast-error'})
         }).finally(() => {
             setloading(false)
@@ -93,7 +93,7 @@ const D_Appointment = () => {
             });
             appointmentlist()
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
             // toast(error.response.data.Message,{className:'custom-toast-error'})
         }).finally(() => {
             setloading(false)
@@ -111,7 +111,7 @@ const D_Appointment = () => {
         var datasingle = appointment.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        console.log(datasingle)
+        // console.log(datasingle)
     }
 
     // reschedule appoinetment date
@@ -369,7 +369,7 @@ const D_Appointment = () => {
             // Reset form
             setPrescriptionData({ diagnosis: '', instructions: '', bp: '', complain: '', pasHistory: '', followUpDate: '', followUpTime: '', prescriptionItems: [] });
         } catch (error) {
-            console.error('Error completing appointment:', error);
+            console.log('Error completing appointment:', error);
             Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to complete appointment.', 'error');
         } finally {
             appointmentlist();
@@ -441,7 +441,7 @@ const D_Appointment = () => {
             appointmentlist();
             handlerescheduleClose();
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
             Swal.fire({
                 title: 'Reschedule Failed!',
                 text: error.response?.data?.Message || 'This time slot may already be booked or unavailable. Please select a different time.',

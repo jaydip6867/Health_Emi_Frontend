@@ -41,7 +41,7 @@ const DoctorForgot = () => {
             setdoc_email(false);
             setdoc_forgt_otp(true);
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         }).finally(() => {
             setloading(false)
@@ -59,7 +59,7 @@ const DoctorForgot = () => {
             }
         }).then((res) => {
             toast('OTP Verify Successfully...', { className: 'custom-toast-success' })
-            console.log(res)
+            // console.log(res)
             setdoc_forgt_otp(false);
             setdoc_rest_ps(true);
         }).catch(function (error) {

@@ -49,7 +49,7 @@ const SearchBox = () => {
             // console.log('suggestions = ',res.data.Data)
             setreclist(res.data.Data)
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
         }).finally(() => {
             setloading(false)
         });

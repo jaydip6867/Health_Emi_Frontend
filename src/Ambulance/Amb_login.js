@@ -93,7 +93,7 @@ const Amb_login = () => {
         navigate("ambdashboard");
       })
       .catch(function (error) {
-        console.log(error);
+        // console.log(error);
         toast(error.response.data.Message, { className: "custom-toast-error" });
       })
       .finally(() => {

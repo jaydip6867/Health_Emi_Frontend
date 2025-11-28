@@ -208,7 +208,7 @@ const D_Blog = () => {
         var datasingle = bloglist.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        console.log(datasingle);
+        // console.log(datasingle);
     }
 
     // Edit Blog display surgery in model
@@ -254,7 +254,7 @@ const D_Blog = () => {
 
     async function editblog() {
         setloading(true)
-        console.log(edit_record)
+        // console.log(edit_record)
         try {
             // Decide image URL: keep existing unless a new file is selected
             let imageUrl = edit_record?.oldImage || edit_record?.image || '';

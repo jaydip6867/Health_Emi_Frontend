@@ -84,7 +84,7 @@ const PatientRegister = () => {
       toast('Please accept the terms and conditions to continue', { className: 'custom-toast-error' });
       return;
     }
-    console.log(patient)
+    // console.log(patient)
     setloading(true)
     try {
       let payload = { ...patient };
@@ -101,7 +101,7 @@ const PatientRegister = () => {
       setpatreg(false);
       setpatotp(true);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast(error?.response?.data?.Message || 'Signup failed', { className: 'custom-toast-error' })
     } finally {
       setloading(false)
@@ -130,7 +130,7 @@ const PatientRegister = () => {
         }
       });
     }).catch(function (error) {
-      console.log(error);
+      // console.log(error);
       toast(error, { className: 'custom-toast-error' })
     }).finally(() => {
       setloading(false)
