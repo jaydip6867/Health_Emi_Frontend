@@ -28,6 +28,37 @@
     background-color: var(--primary-color-900);
 }
 
+.modal-header .btn-close{
+    height: 36px;
+    width: 36px;
+    border-radius: 50%;
+    padding: 0;
+    box-sizing: border-box;
+    margin-right: 4px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
+    opacity: 1;
+    border: 1px solid var(--primary-color-500);
+    box-shadow: none;
+    /* Circle with X (stroke in primary) */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'><path d='M12 12 L24 24 M24 12 L12 24' stroke='%230084E9' stroke-width='2' stroke-linecap='round'/></svg>");
+}
+
+.modal-header .btn-close:hover,
+.modal-header .btn-close:focus {
+    background-color: var(--primary-color-900);
+    border-color: var(--primary-color-900);
+    outline: none;
+    /* White X over primary background */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'><path d='M12 12 L24 24 M24 12 L12 24' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round'/></svg>");
+}
+
+.modal-header .btn-close:active {
+    opacity: 0.9;
+}
+
 .register_doctor .form-label{
     color: var(--grayscale-color-600);
 }
