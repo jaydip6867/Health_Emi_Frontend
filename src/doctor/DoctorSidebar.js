@@ -3,7 +3,7 @@ import { Col } from 'react-bootstrap';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { Button } from 'react-bootstrap';
-import { FiActivity, FiCalendar, FiDollarSign, FiFilePlus, FiLayout, FiLogOut, FiSettings, FiTruck } from "react-icons/fi";
+import { FiActivity, FiCalendar, FiDollarSign, FiFilePlus, FiLayout, FiLogOut, FiMessageSquare, FiSettings, FiTruck } from "react-icons/fi";
 import { IoCalendarOutline } from "react-icons/io5";
 
 const DoctorSidebar = ({ doctor }) => {
@@ -56,6 +56,9 @@ const DoctorSidebar = ({ doctor }) => {
                             </NavLink>
                             <NavLink to={'/doctor/doctorconsultation'} className={({ isActive }) => (isActive ? 'active' : '')}>
                                 <FiDollarSign /> Consultation
+                            </NavLink>
+                            <NavLink to={'/doctor/doctorreviews'} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <FiMessageSquare /> Reviews
                             </NavLink>
                             <NavLink to={'/doctor/calender'} className={({ isActive }) => (isActive ? 'active' : '')}>
                                 <FiCalendar /> Calendar

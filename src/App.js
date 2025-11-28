@@ -46,6 +46,7 @@ import BlogDetail from './Visitor/BlogDetail';
 import Terms from './Visitor/Terms';
 import DoctorTC from './Visitor/T&CPage/DoctorTC';
 import DoctorTelemedicineTC from './Visitor/T&CPage/DoctorTelemedicineTC';
+import D_Review from './doctor/D_Review';
 function App() {
   return (
     <div className="App">
@@ -77,6 +78,7 @@ function App() {
           <Route path='doctorblog' element={<D_Blog />}></Route>
           <Route path='doctorsurgery' element={<D_Surgery />}></Route>
           <Route path='doctorconsultation' element={<D_Consultation />}></Route>
+          <Route path='doctorreviews' element={<D_Review />}></Route>
           <Route path='calender' element={<D_Calender />}></Route>
           <Route path='ambulance-request' element={<D_AmbulanceRequest />}></Route>
           <Route path="ambulance-request/status/:id" element={<D_StatusAmbulance />} />

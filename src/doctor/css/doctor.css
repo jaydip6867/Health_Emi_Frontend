@@ -484,6 +484,12 @@ select.frm_input {
     }
 }
 
+.review_profile img{
+    height: 40px;
+    width: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+}
 
 .dashboard-card svg{
     color: var(--primary-color-600);
