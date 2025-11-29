@@ -533,7 +533,7 @@ const D_Blog = () => {
                                 <Modal.Body>
                                     <div className='p-3 border rounded'>
                                         <Row className='g-3'>
-                                            <Col xs={6}>
+                                            <Col xs={4}>
                                                 <div className="label_box">
                                                     <span className="label_title">Image:</span>
                                                     {!v?.image || v?.image === '' ? <p>No Image Specified.</p> : <img src={v?.image} alt={`${v?.title} blog...`} className="rounded" />}

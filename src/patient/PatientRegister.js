@@ -30,14 +30,102 @@ const PatientRegister = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsContent, setTermsContent] = useState('');
   const [shortTerms, setShortTerms] = useState('');
+  const [termsError, setTermsError] = useState('');
+
+  const [validationErrors, setValidationErrors] = useState({
+    name: '',
+    email: '',
+    mobile: '',
+    pincode: '',
+    gender: '',
+    password: ''
+  });
+
+  const validateName = (name) => {
+    const nameRegex = /^[A-Za-z\s]+$/;
+    if (!name?.trim()) return 'Name is required';
+    if (!nameRegex.test(name)) return 'Name should contain only letters and spaces';
+    return '';
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email?.trim()) return 'Email is required';
+    if (!emailRegex.test(email)) return 'Please enter a valid email address';
+    return '';
+  };
+
+  const validateMobile = (m) => {
+    const trimmed = (m || '').trim();
+    if (!trimmed) return 'Mobile number is required';
+    const indianMobileRegex = /^[6-9]\d{9}$/;
+    if (!indianMobileRegex.test(trimmed)) return 'Enter a valid 10-digit Indian mobile (starts with 6-9)';
+    return '';
+  };
+
+  const validatePincode = (p) => {
+    const pincodeRegex = /^[0-9]{6}$/;
+    if (!p?.trim()) return 'Pincode is required';
+    if (!pincodeRegex.test(p)) return 'Pincode should be exactly 6 numeric digits';
+    return '';
+  };
+
+  const validateGender = (g) => {
+    if (!g) return 'Please select a gender';
+    return '';
+  };
+
+  const validatePassword = (p) => {
+    const v = (p || '').trim();
+    if (!v) return 'Password is required';
+    if (v.length < 3) return 'Password must be at least 3 characters';
+    return '';
+  };
+
+  const validateForm = () => {
+    const errors = {
+      name: validateName(patient.name),
+      email: validateEmail(patient.email),
+      mobile: validateMobile(patient.mobile),
+      pincode: validatePincode(patient.pincode),
+      gender: validateGender(patient.gender),
+      password: validatePassword(patient.password)
+    };
+    setValidationErrors(errors);
+    return !Object.values(errors).some((e) => e !== '');
+  };
 
   const patientch = (e) => {
-
     const { name, value } = e.target;
-    setpatient(patient => ({
-      ...patient,
-      [name]: value
-    }))
+    let newVal = value;
+    // Sanitize specific fields
+    if (name === 'mobile') {
+      newVal = (value || '').replace(/\D/g, '').slice(0, 10);
+    }
+    if (name === 'pincode') {
+      newVal = (value || '').replace(/\D/g, '').slice(0, 6);
+    }
+
+    setpatient(prev => ({
+      ...prev,
+      [name]: newVal
+    }));
+
+    // Live per-field validation
+    let fieldError = '';
+    if (name === 'name') fieldError = validateName(newVal);
+    else if (name === 'email') fieldError = validateEmail(newVal);
+    else if (name === 'mobile') fieldError = validateMobile(newVal);
+    else if (name === 'pincode') fieldError = validatePincode(newVal);
+    else if (name === 'gender') fieldError = validateGender(newVal);
+    else if (name === 'password') fieldError = validatePassword(newVal);
+
+    if (name in validationErrors) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [name]: fieldError
+      }));
+    }
   };
 
   const onSelectProfilePic = (e) => {
@@ -79,12 +167,20 @@ const PatientRegister = () => {
     }
   }, [navigate])
 
+  const isValidIndianMobile = (m) => /^[6-9]\d{9}$/.test((m || '').trim());
+
   async function patientsignup() {
-    if (!termsAccepted) {
-      toast('Please accept the terms and conditions to continue', { className: 'custom-toast-error' });
+
+    // Final validation on submit
+    if (!validateForm()) {
       return;
     }
-    // console.log(patient)
+    if (!termsAccepted) {
+      setTermsError('Please accept the terms and conditions to continue');
+      return;
+    } else {
+      setTermsError('');
+    }
     setloading(true)
     try {
       let payload = { ...patient };
@@ -97,11 +193,12 @@ const PatientRegister = () => {
         url: `${API_BASE_URL}/user/signup`,
         data: payload
       });
+      // Optional success toast retained
       toast(res.data.Message, { className: 'custom-toast-success' });
       setpatreg(false);
       setpatotp(true);
     } catch (error) {
-      // console.log(error);
+      // Optional error toast retained for server errors
       toast(error?.response?.data?.Message || 'Signup failed', { className: 'custom-toast-error' })
     } finally {
       setloading(false)
@@ -253,12 +350,18 @@ const PatientRegister = () => {
 
                     <Form.Group controlId="name" className='position-relative mb-3'>
                       <Form.Label>Name</Form.Label>
-                      <Form.Control placeholder="Enter Name" name='name' value={patient.name} className='frm_input' onChange={patientch} />
+                      <Form.Control placeholder="Enter Name" name='name' value={patient.name} className={`frm_input ${validationErrors.name ? 'is-invalid' : ''}`} onChange={patientch} />
+                      {validationErrors.name && (
+                        <div className="invalid-feedback">{validationErrors.name}</div>
+                      )}
                     </Form.Group>
 
                     <Form.Group controlId="email" className='position-relative mb-3'>
                       <Form.Label>Email</Form.Label>
-                      <Form.Control placeholder="Enter Email" name='email' value={patient.email} className='frm_input' onChange={patientch} />
+                      <Form.Control placeholder="Enter Email" name='email' value={patient.email} className={`frm_input ${validationErrors.email ? 'is-invalid' : ''}`} onChange={patientch} />
+                      {validationErrors.email && (
+                        <div className="invalid-feedback">{validationErrors.email}</div>
+                      )}
                     </Form.Group>
 
                     <Form.Group controlId="gender" className='position-relative mb-3'>
@@ -267,16 +370,43 @@ const PatientRegister = () => {
                         <label><Form.Check type='radio' name='gender' value={'Male'} className='d-inline-block me-2' onChange={patientch} /> Male</label>
                         <label><Form.Check type='radio' name='gender' value={'Female'} className='d-inline-block me-2' onChange={patientch} /> Female</label>
                       </div>
+                      {validationErrors.gender && (
+                        <div className="text-danger small mt-1">{validationErrors.gender}</div>
+                      )}
                     </Form.Group>
 
                     <Form.Group controlId="mobile" className='position-relative mb-3'>
                       <Form.Label>Mobile</Form.Label>
-                      <Form.Control placeholder="Enter Mobile" name='mobile' value={patient.mobile} className='frm_input' onChange={patientch} pattern='[0-9]{10}' />
+                      <Form.Control
+                        placeholder="Enter Mobile"
+                        name='mobile'
+                        value={patient.mobile}
+                        className={`frm_input ${validationErrors.mobile ? 'is-invalid' : ''}`}
+                        onChange={patientch}
+                        pattern='[6-9][0-9]{9}'
+                        maxLength="10"
+                        inputMode="numeric"
+                      />
+                      {validationErrors.mobile && (
+                        <div className="invalid-feedback">{validationErrors.mobile}</div>
+                      )}
                     </Form.Group>
 
                     <Form.Group controlId="pincode" className='position-relative mb-3'>
                       <Form.Label>Pincode</Form.Label>
-                      <Form.Control placeholder="Enter Pincode" name='pincode' value={patient.pincode} className='frm_input' onChange={patientch} />
+                      <Form.Control
+                        placeholder="Enter Pincode"
+                        name='pincode'
+                        value={patient.pincode}
+                        className={`frm_input ${validationErrors.pincode ? 'is-invalid' : ''}`}
+                        onChange={patientch}
+                        maxLength="6"
+                        inputMode="numeric"
+                        pattern="[0-9]{6}"
+                      />
+                      {validationErrors.pincode && (
+                        <div className="invalid-feedback">{validationErrors.pincode}</div>
+                      )}
                     </Form.Group>
 
                     <Form.Group controlId="blood_group" className='position-relative mb-3'>
@@ -292,7 +422,10 @@ const PatientRegister = () => {
 
                     <Form.Group controlId="password" className='position-relative mb-1'>
                       <Form.Label>Password</Form.Label>
-                      <Form.Control type='password' placeholder="Enter Password" name='password' value={patient.password} className='frm_input' onChange={patientch} />
+                      <Form.Control type='password' placeholder="Enter Password" name='password' value={patient.password} className={`frm_input ${validationErrors.password ? 'is-invalid' : ''}`} onChange={patientch} />
+                      {validationErrors.password && (
+                        <div className="invalid-feedback">{validationErrors.password}</div>
+                      )}
                     </Form.Group>
 
                     <div className="my-3 form-check ps-0">
@@ -317,11 +450,9 @@ const PatientRegister = () => {
                           </span>
                         }
                       />
-                      {/* {shortTerms && (
-                        <div className="form-text text-muted" style={{ maxHeight: '60px', overflow: 'hidden' }}>
-                          {shortTerms}
-                        </div>
-                      )} */}
+                      {termsError && (
+                        <div className="text-danger small mt-1">{termsError}</div>
+                      )}
                     </div>
 
                     <Button

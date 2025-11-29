@@ -231,6 +231,9 @@ const D_Appointment = () => {
         'SOS For Abdominal Pain'
     ];
 
+    const [followUpDate, setFollowUpDate] = useState(null);
+    const [followUpTime, setFollowUpTime] = useState(null);
+
     const handlePrescriptionChange = (field, value) => {
         setPrescriptionData(prev => ({
             ...prev,
@@ -348,6 +351,8 @@ const D_Appointment = () => {
             // console.log(currentAppointment)
 
             // Mark appointment complete with prescription URL
+            const followup_date = followUpDate ? format(followUpDate, 'dd-MM-yyyy') : '';
+            const followup_time = followUpTime ? format(followUpTime, 'hh:mm a') : '';
             await axios({
                 method: 'post',
                 url: `${API_BASE_URL}/doctor/appointments/complete`,
@@ -358,8 +363,8 @@ const D_Appointment = () => {
                     totalamount: currentAppointment?.price,
                     doctor_remark: uploadedFileUrl,
                     prescription: prescriptionData.prescriptionItems,
-                    followup_date: prescriptionData.followUpDate,
-                    followup_time: prescriptionData.followUpTime
+                    followup_date,
+                    followup_time
                 }
             });
 
@@ -368,6 +373,8 @@ const D_Appointment = () => {
             
             // Reset form
             setPrescriptionData({ diagnosis: '', instructions: '', bp: '', complain: '', pasHistory: '', followUpDate: '', followUpTime: '', prescriptionItems: [] });
+            setFollowUpDate(null);
+            setFollowUpTime(null);
         } catch (error) {
             console.log('Error completing appointment:', error);
             Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to complete appointment.', 'error');
@@ -1148,21 +1155,13 @@ const D_Appointment = () => {
                                         <Col md={6}>
                                             <Form.Group>
                                                 <Form.Label><strong>Follow-up Date</strong></Form.Label>
-                                                <Form.Control
-                                                    type='date'
-                                                    value={prescriptionData.followUpDate}
-                                                    onChange={(e) => handlePrescriptionChange('followUpDate', e.target.value)}
-                                                />
+                                                <DatePicker selected={followUpDate} onChange={setFollowUpDate} dateFormat='dd-MM-yyyy' className='form-control' minDate={new Date()} placeholderText='Select follow-up date' />
                                             </Form.Group>
                                         </Col>
                                         <Col md={6}>
                                             <Form.Group>
                                                 <Form.Label><strong>Follow-up Time</strong></Form.Label>
-                                                <Form.Control
-                                                    type='time'
-                                                    value={prescriptionData.followUpTime}
-                                                    onChange={(e) => handlePrescriptionChange('followUpTime', e.target.value)}
-                                                />
+                                                <DatePicker selected={followUpTime} onChange={setFollowUpTime} showTimeSelect showTimeSelectOnly timeIntervals={30} timeCaption='Time' dateFormat='hh:mm aa' className='form-control' placeholderText='Select time' />
                                             </Form.Group>
                                         </Col>
                                     </Row>
@@ -1232,47 +1231,13 @@ const D_Appointment = () => {
                             <div style={{ marginTop: 4, fontSize: 14, lineHeight: '20px' }}>{prescriptionData.diagnosis}</div>
                         </div>
                     ) : null}
-                    {prescriptionData?.prescriptionItems?.length ? (
-                        <div style={{ marginTop: 14, border: '1px solid #E5E7EB', borderRadius: 8, overflow: 'hidden' }}>
-                            <div style={{ background: '#132031', color: '#fff', padding: '8px 12px', fontWeight: 700, fontSize: 13, lineHeight: '18px', display: 'grid', gridTemplateColumns: '40px 80px 1fr 160px 150px 60px 60px', gap: 8 }}>
-                                <div>No.</div>
-                                <div>Type</div>
-                                <div>Medicine</div>
-                                <div>Schedule</div>
-                                <div>Instruction</div>
-                                <div>Days</div>
-                                <div>Qty</div>
-                            </div>
-                            <div style={{ lineHeight: '18px' }}>
-                                {prescriptionData.prescriptionItems.map((item, idx) => {
-                                    const times = [];
-                                    if (item.mo) times.push(`MO(${item.moDose})`);
-                                    if (item.an) times.push(`AN(${item.anDose})`);
-                                    if (item.ev) times.push(`EV(${item.evDose})`);
-                                    if (item.nt) times.push(`NT(${item.ntDose})`);
-                                    const instr = item.instruction && item.instruction !== '-SELECT-' ? item.instruction : '-';
-                                    return (
-                                        <div key={idx} style={{ padding: '8px 12px', fontSize: 13, display: 'grid', gridTemplateColumns: '40px 80px 1fr 160px 150px 60px 60px', gap: 8, background: idx % 2 === 0 ? '#FCFDFF' : '#FFFFFF', borderTop: '1px solid #F3F4F6', lineHeight: '18px' }}>
-                                            <div>{idx + 1}</div>
-                                            <div>{item.type}</div>
-                                            <div>{item.medicine}</div>
-                                            <div>{times.join(', ') || '-'}</div>
-                                            <div>{instr}</div>
-                                            <div>{item.days}</div>
-                                            <div>{item.quantity}</div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    ) : null}
-                    {(prescriptionData?.followUpDate || prescriptionData?.followUpTime) ? (
+                    {(followUpDate || followUpTime) ? (
                         <div style={{ background: '#FEF3C7', borderRadius: 8, padding: '10px 14px', marginTop: 12 }}>
                             <div style={{ color: '#92400E', fontWeight: 700, fontSize: 13, lineHeight: '18px' }}>Follow-up :</div>
                             <div style={{ marginTop: 4, fontSize: 14 }}>
-                                {prescriptionData.followUpDate ? `Date: ${prescriptionData.followUpDate}` : ''}
-                                {prescriptionData.followUpDate && prescriptionData.followUpTime ? ' | ' : ''}
-                                {prescriptionData.followUpTime ? `Time: ${prescriptionData.followUpTime}` : ''}
+                                {followUpDate ? `Date: ${format(followUpDate, 'dd-MM-yyyy')}` : ''}
+                                {followUpDate && followUpTime ? ' | ' : ''}
+                                {followUpTime ? `Time: ${format(followUpTime, 'hh:mm a')}` : ''}
                             </div>
                         </div>
                     ) : null}

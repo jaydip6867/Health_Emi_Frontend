@@ -11,6 +11,7 @@ import './css/visitor.css'
 import { FaEnvelope } from 'react-icons/fa'
 import { BsStarFill, BsGeoAlt } from 'react-icons/bs'
 import { format, addDays } from 'date-fns';
+// import { format } from 'date-fns';
 import Swal from 'sweetalert2'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -196,19 +197,30 @@ const DoctorProfilePage = () => {
 
   var app_obj = { alt_mobile: '', surgeryid: '', appointment_reason: '', report: [], visit_types: '' }
   const [apt_data, setaptdata] = useState(app_obj)
+  const [appointmentErrors, setAppointmentErrors] = useState({ alt_mobile: '' })
 
   function appchangedata(e) {
     const { name, value, type, files } = e.target;
-    setaptdata(apt_data => ({
-      ...apt_data,
-      [name]: type === 'file' ? files : value
+    const sanitized = name === 'alt_mobile' ? (value || '').replace(/\D/g, '').slice(0, 10) : value;
+    setaptdata(prev => ({
+      ...prev,
+      [name]: type === 'file' ? files : sanitized
     }))
+    if (name === 'alt_mobile' && appointmentErrors.alt_mobile) {
+      setAppointmentErrors(prev => ({ ...prev, alt_mobile: '' }))
+    }
   }
 
   async function appointmentbtn(id) {
     if (patient) {
       try {
         setloading(true);
+        // Validate alt_mobile if filled
+        if (apt_data.alt_mobile && !/^[6-9]\d{9}$/.test((apt_data.alt_mobile || '').trim())) {
+          setAppointmentErrors(prev => ({ ...prev, alt_mobile: 'Enter a valid 10-digit Indian mobile (starts with 6-9)' }));
+          setloading(false);
+          return;
+        }
         const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
         const timeWithMeridiem = `${timePart} ${meridiem}`;
 
@@ -285,7 +297,7 @@ const DoctorProfilePage = () => {
           icon: "error",
         });
       } finally {
-        setloading(false);
+        setloading(false)
       }
     } else {
       // navigate('/patient')
@@ -297,7 +309,6 @@ const DoctorProfilePage = () => {
       ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
       : '';
 
-
   var surg_obj = { patientname: '', mobile: '', alt_name: '', alt_mobile: '', surgeryid: '', date: '', time: '', appointment_reason: '', report: [], doctorid: '', roomtype: '', hospital_name: '' }
   const [addsurgery, setaddsurgery] = useState(surg_obj)
   const [reportFiles, setReportFiles] = useState([])
@@ -305,7 +316,10 @@ const DoctorProfilePage = () => {
   const [isUploadingReports, setIsUploadingReports] = useState(false)
   const [single_surg, setsingle_surg] = useState(null)
   const [addshow, setaddshow] = useState(false)
+  const [surgeryDate, setSurgeryDate] = useState(addDays(new Date(), 3))
+  const [surgeryErrors, setSurgeryErrors] = useState({ alt_mobile: '' })
   const [surgeryHospitalError, setSurgeryHospitalError] = useState(false)
+
   const handleAddSurgeryClose = () => setaddshow(false)
   function handleAddSurgery(surgdata, d_id) {
     var surg_apt_data = { ...addsurgery, surgeryid: surgdata._id, doctorid: d_id, patientname: patient?.name, mobile: patient?.mobile, hospital_name: '' }
@@ -324,11 +338,15 @@ const DoctorProfilePage = () => {
 
   const surghandlechange = (e) => {
     const { name, value } = e.target;
-    setaddsurgery(addsurgery => ({
-      ...addsurgery,
-      [name]: value
+    const sanitized = name === 'alt_mobile' ? (value || '').replace(/\D/g, '').slice(0, 10) : value;
+    setaddsurgery(prev => ({
+      ...prev,
+      [name]: sanitized
     }))
-  }
+    if (name === 'alt_mobile' && surgeryErrors.alt_mobile) {
+      setSurgeryErrors(prev => ({ ...prev, alt_mobile: '' }))
+    }
+  };
 
   // Handle multiple report files selection
   const handleReportFilesChange = (e) => {
@@ -416,10 +434,15 @@ const DoctorProfilePage = () => {
         setSurgeryHospitalError(true)
         return;
       }
-      // Split at the space before the time
-      const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
-      // Combine time + meridiem
-      const timeWithMeridiem = `${timePart} ${meridiem}`;
+      // Validate alt_mobile if filled
+      if (addsurgery.alt_mobile && !/^[6-9]\d{9}$/.test((addsurgery.alt_mobile || '').trim())) {
+        setSurgeryErrors(prev => ({ ...prev, alt_mobile: 'Enter a valid 10-digit Indian mobile (starts with 6-9)' }));
+        return;
+      }
+
+      // Build date and time from surgeryDate (independent from consultation selection)
+      const datePart = format(surgeryDate, 'dd-MM-yyyy');
+      const timeWithMeridiem = format(surgeryDate, 'hh:mm a');
 
       setloading(true)
 
@@ -533,7 +556,7 @@ const DoctorProfilePage = () => {
                             <div>
                               <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#d5E1EA', fontSize: '14px' }} >
                                 <svg width="21" height="21" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M8.96001 0C5.62546 0 2.91455 2.71091 2.91455 6.04545C2.91455 9.31636 5.47273 11.9636 8.80728 12.0782C8.9091 12.0655 9.01091 12.0655 9.08728 12.0782C9.11273 12.0782 9.12546 12.0782 9.15091 12.0782C9.16364 12.0782 9.16364 12.0782 9.17637 12.0782C12.4346 11.9636 14.9927 9.31636 15.0055 6.04545C15.0055 2.71091 12.2946 0 8.96001 0Z" fill="#1C2A3A" />
+                                  <path d="M8.96001 0C5.62546 0 2.91455 2.71091 2.91455 6.04545C2.91455 9.31636 5.47273 11.9636 8.80728 12.0782C8.9091 12.0655 9.01091 12.0655 9.08728 12.0782C9.11273 12.0782 9.12546 12.0782 9.15091 12.0782C9.16364 12.0782 9.16364 12.0782 9.17637 12.0782C12.4346 11.9636 14.9927 9.31636 15.0055 6.04545C15.0055 2.71091 12.2946 0 8.96001 0ZM5.72727 15.2726C5.01455 15.2726 4.45455 14.6999 4.45455 13.9999C4.45455 13.2999 5.02727 12.7272 5.72727 12.7272C6.42727 12.7272 7 13.2999 7 13.9999C7 14.6999 6.42727 15.2726 5.72727 15.2726ZM10.1691 15.2726C9.45636 15.2726 8.89636 14.6999 8.89636 13.9999C8.89636 13.2999 9.46909 12.7272 10.1691 12.7272C10.8691 12.7272 11.4418 13.2999 11.4418 13.9999C11.4418 14.6999 10.8818 15.2726 10.1691 15.2726ZM14.6236 15.2726C13.9109 15.2726 13.3509 14.6999 13.3509 13.9999C13.3509 13.2999 13.9236 12.7272 14.6236 12.7272C15.3236 12.7272 15.8964 13.2999 15.8964 13.9999C15.8964 14.6999 15.3236 15.2726 14.6236 15.2726Z" fill="#1C2A3A" />
                                   <path d="M15.4255 15.4639C11.8745 13.0967 6.08364 13.0967 2.50727 15.4639C0.890909 16.5457 0 18.0094 0 19.5748C0 21.1403 0.890909 22.5912 2.49455 23.6603C4.27636 24.8567 6.61818 25.4548 8.96 25.4548C11.3018 25.4548 13.6436 24.8567 15.4255 23.6603C17.0291 22.5785 17.92 21.1276 17.92 19.5494C17.9073 17.9839 17.0291 16.533 15.4255 15.4639Z" fill="#1C2A3A" />
                                   <path d="M22.947 6.79614C23.1507 9.26523 21.3943 11.4289 18.9634 11.7216C22.6801 16.6473 22.2346 16.3418 22.2346 15.8964L22.2474 11.1873C22.2474 6.09636 19.3328 3.18182 14.2419 3.18182L6.491 3.19455C6.04555 3.19455 5.74009 2.74909 5.96918 2.36727C6.92373 0.789091 8.65464 0 11.1874 0H19.3328C23.3928 0 25.4292 2.03636 25.4292 6.09636Z" fill="#1C2A3A" />
                                 </svg>
@@ -590,10 +613,6 @@ const DoctorProfilePage = () => {
                                   <path d="M10.0713 17.5215C9.73425 17.5327 9.40283 17.614 9.15039 17.7666L6.12109 19.5664C3.9537 20.8466 2.63569 19.8964 3.20605 17.4375L3.92871 14.3193C4.04268 13.711 3.80193 12.887 3.38379 12.4688L0.861328 9.94629C-0.621578 8.46335 -0.140196 6.96817 1.92578 6.61328L5.1582 6.08105C5.70299 5.9922 6.34891 5.51066 6.58984 5.0166L8.37695 1.44141C8.84761 0.512455 9.4572 0.0324938 10.0713 0.000976562V17.5215Z" fill="#FEB052" />
                                   <path d="M10.0713 0.00195312C10.7305 -0.0317732 11.3952 0.452158 11.9004 1.45605L13.6875 5.03027C13.9283 5.52459 14.5751 5.99333 15.1201 6.09473L18.3525 6.62695C20.4182 6.9693 20.8998 8.46541 19.417 9.96094L16.8945 12.4834C16.4764 12.9017 16.2356 13.7257 16.375 14.3213L17.0977 17.4385C17.668 19.8974 16.349 20.8612 14.1816 19.5684L11.1523 17.7686C10.8599 17.5918 10.4618 17.5105 10.0713 17.5234V0.00195312Z" fill="#FEB052" />
                                 </svg>
-
-
-
-
                               </div>
                               <div className="d-flex flex-column mt-1">
                                 <span className="fw-bold">{!doctor_profile?.averageRating ? 0 : doctor_profile?.averageRating}</span>
@@ -1010,7 +1029,14 @@ const DoctorProfilePage = () => {
                         name="alt_mobile"
                         onChange={appchangedata}
                         placeholder="Alt. Phone Number"
-                      ></Form.Control>
+                        maxLength={10}
+                        inputMode="numeric"
+                        pattern="[6-9][0-9]{9}"
+                        className={appointmentErrors.alt_mobile ? 'is-invalid' : ''}
+                      />
+                      {appointmentErrors.alt_mobile && (
+                        <div className="invalid-feedback">{appointmentErrors.alt_mobile}</div>
+                      )}
                     </Col>
                     {/* <Col xs={4}>
                       <Form.Label>Surgery</Form.Label>
@@ -1048,7 +1074,6 @@ const DoctorProfilePage = () => {
               variant="primary"
               onClick={() => {
                 appointmentbtn(doctor_profile._id);
-                handleClose();
               }}
             >
               Save Changes
@@ -1378,19 +1403,46 @@ const DoctorProfilePage = () => {
           <Form className='row g-3'>
             <Form.Group className='col-6'>
               <Form.Label>Patient Name</Form.Label>
-              <Form.Control type="text" name='patientname' value={addsurgery?.patientname} disabled />
+              <Form.Control
+                type="text"
+                name='patientname'
+                value={addsurgery?.patientname}
+                disabled
+              />
             </Form.Group>
             <Form.Group className='col-6'>
               <Form.Label>Mobile No</Form.Label>
-              <Form.Control type="text" name='mobile' value={addsurgery?.mobile} disabled />
+              <Form.Control
+                type="text"
+                name='mobile'
+                value={addsurgery?.mobile}
+                disabled
+              />
             </Form.Group>
             <Form.Group className='col-6'>
               <Form.Label>Alt Name</Form.Label>
-              <Form.Control type="text" name='alt_name' value={addsurgery?.alt_name} onChange={surghandlechange} />
+              <Form.Control
+                type="text"
+                name='alt_name'
+                value={addsurgery?.alt_name}
+                onChange={surghandlechange}
+              />
             </Form.Group>
             <Form.Group className='col-6'>
               <Form.Label>Alt Mobile No</Form.Label>
-              <Form.Control type="text" name='alt_mobile' value={addsurgery?.alt_mobile} onChange={surghandlechange} />
+              <Form.Control
+                type="text"
+                name='alt_mobile'
+                value={addsurgery?.alt_mobile}
+                onChange={surghandlechange}
+                maxLength={10}
+                inputMode="numeric"
+                pattern="[6-9][0-9]{9}"
+                className={surgeryErrors.alt_mobile ? 'is-invalid' : ''}
+              />
+              {surgeryErrors.alt_mobile && (
+                <div className="invalid-feedback">{surgeryErrors.alt_mobile}</div>
+              )}
             </Form.Group>
             <Form.Group className='col-6'>
               <Form.Label>Hospital</Form.Label>
@@ -1447,18 +1499,19 @@ const DoctorProfilePage = () => {
             <Form.Group className='col-8'>
               <Form.Label>Appointment Date & Time</Form.Label>
               <DatePicker
-                selected={selectedDate}
-                onChange={(date) => setSelectedDate(date)}
+                selected={surgeryDate}
+                onChange={(date) => setSurgeryDate(date)}
                 inline
                 showTimeSelect
                 timeFormat="hh:mm a"
-                timeIntervals={15}
+                timeIntervals={30}
                 dateFormat="dd-MM-yyyy hh:mm a"
                 placeholderText="Select date and time"
                 minDate={addDays(new Date(), 3)}
                 className="form-control"
               />
             </Form.Group>
+
             <Form.Group className='col-4'>
               <Form.Label>Reports</Form.Label>
               <input

@@ -108,7 +108,7 @@ const D_SurgeryAppointment = () => {
         var datasingle = appointment.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        // console.log(datasingle)
+        console.log(datasingle)
     }
 
     // reschedule appoinetment date
@@ -683,24 +683,27 @@ const D_SurgeryAppointment = () => {
                                                 )}
                                             </Row>
                                         </div>
-                                        <hr />
-                                        <div>
-                                            <div className='fw-semibold mb-3'>Prescription</div>
-                                            <Row className='g-3'>
 
-                                                <Col md={4} sm={6}>
-                                                    <Card className='h-100'>
-                                                        <div className='ratio ratio-16x9 bg-light'>
-                                                            <iframe src={appointment?.doctor_remark} title={`prescription surgery`} className='w-100 h-100 border-0'></iframe>
-                                                        </div>
-                                                        <Card.Body className='d-flex justify-content-between align-items-center'>
-                                                            <div className='small text-muted'>Prescription</div>
-                                                            <Button size='sm' variant='outline-primary' onClick={() => window.open(appointment?.doctor_remark, '_blank')}>View</Button>
-                                                        </Card.Body>
-                                                    </Card>
-                                                </Col>
-                                            </Row>
-                                        </div>
+                                        {
+                                            single_view.status === "Completed" ? <div>
+                                                <hr />
+                                                <div className='fw-semibold mb-3'>Prescription</div>
+                                                <Row className='g-3'>
+
+                                                    <Col md={4} sm={6}>
+                                                        <Card className='h-100'>
+                                                            <div className='ratio ratio-16x9 bg-light'>
+                                                                <iframe src={appointment?.doctor_remark} title={`prescription surgery`} className='w-100 h-100 border-0'></iframe>
+                                                            </div>
+                                                            <Card.Body className='d-flex justify-content-between align-items-center'>
+                                                                <div className='small text-muted'>Prescription</div>
+                                                                <Button size='sm' variant='outline-primary' onClick={() => window.open(appointment?.doctor_remark, '_blank')}>View</Button>
+                                                            </Card.Body>
+                                                        </Card>
+                                                    </Col>
+                                                </Row>
+                                            </div> : null
+                                        }
                                     </div>
 
                                 </Modal.Body>
@@ -968,7 +971,7 @@ const D_SurgeryAppointment = () => {
                                         <Col md={4}>
                                             <Form.Group>
                                                 <Form.Label><strong>Follow-up Time</strong></Form.Label>
-                                                <DatePicker selected={followUpTime} onChange={setFollowUpTime} showTimeSelect showTimeSelectOnly timeIntervals={15} timeCaption='Time' dateFormat='hh:mm aa' className='form-control' placeholderText='Select time' />
+                                                <DatePicker selected={followUpTime} onChange={setFollowUpTime} showTimeSelect showTimeSelectOnly timeIntervals={30} timeCaption='Time' dateFormat='hh:mm aa' className='form-control' placeholderText='Select time' />
                                             </Form.Group>
                                         </Col>
                                     </Row>

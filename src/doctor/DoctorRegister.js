@@ -128,6 +128,7 @@ const DoctorRegister = () => {
     mobile: "",
     pincode: "",
     gender: "",
+    password: "",
   });
 
   // Profile validation errors state
@@ -155,15 +156,13 @@ const DoctorRegister = () => {
   };
 
   const validateMobile = (mobile) => {
-    const mobileRegex = /^[0-9]+$/;
-    if (!mobile.trim()) {
+    const trimmed = (mobile || "").trim();
+    if (!trimmed) {
       return "Mobile number is required";
     }
-    if (!mobileRegex.test(mobile)) {
-      return "Mobile number should contain only numeric digits";
-    }
-    if (mobile.length !== 10) {
-      return "Mobile number should be exactly 10 digits";
+    const indianMobileRegex = /^[6-9]\d{9}$/;
+    if (!indianMobileRegex.test(trimmed)) {
+      return "Enter a valid 10-digit Indian mobile (starts with 6-9)";
     }
     return "";
   };
@@ -194,6 +193,13 @@ const DoctorRegister = () => {
     if (!gender) {
       return "Please select a gender";
     }
+    return "";
+  };
+
+  const validatePassword = (p) => {
+    const v = (p || "").trim();
+    if (!v) return "Password is required";
+    if (v.length < 3) return "Password must be at least 3 characters";
     return "";
   };
 
@@ -264,6 +270,7 @@ const DoctorRegister = () => {
       mobile: validateMobile(frmdoctor.mobile),
       pincode: validatePincode(frmdoctor.pincode),
       gender: validateGender(frmdoctor.gender),
+      password: validatePassword(frmdoctor.password),
     };
 
     setValidationErrors(errors);
@@ -404,17 +411,19 @@ const DoctorRegister = () => {
 
   // Handle form submission
   const profileadd = async () => {
-    // First validate if terms are accepted
-    if (!termsAccepted) {
-      toast("Please accept the Terms and Conditions to continue", {
-        className: "custom-toast-error",
-      });
-      return;
-    }
+    
 
     // Then validate the form fields
     if (!validateProfileForm()) {
-      toast("Please fix the validation errors before proceeding", {
+      // toast("Please fix the validation errors before proceeding", {
+      //   className: "custom-toast-error",
+      // });
+      return;
+    }
+
+    // First validate if terms are accepted
+    if (!termsAccepted) {
+      toast("Please accept the Terms and Conditions to continue", {
         className: "custom-toast-error",
       });
       return;
@@ -501,11 +510,12 @@ const DoctorRegister = () => {
 
   const selfrmdata = (e) => {
     const { name, value } = e.target;
+    const sanitizedValue = name === 'mobile' ? (value || '').replace(/\D/g, '').slice(0, 10) : value;
 
     if (doc_reg) {
       setfrmdoctor((frmdoctor) => ({
         ...frmdoctor,
-        [name]: value,
+        [name]: sanitizedValue,
       }));
 
       // Clear validation error for this field when user starts typing
@@ -518,7 +528,7 @@ const DoctorRegister = () => {
     } else {
       setdocprofile((frmdocprofile) => ({
         ...frmdocprofile,
-        [name]: value,
+        [name]: sanitizedValue,
       }));
 
       // Clear profile validation error for this field when user starts typing
@@ -982,6 +992,8 @@ const DoctorRegister = () => {
                       value={frmdoctor.mobile}
                       onChange={selfrmdata}
                       maxLength="10"
+                      inputMode="numeric"
+                      pattern="[6-9][0-9]{9}"
                     />
                     {validationErrors.mobile && (
                       <div className="invalid-feedback">
@@ -1058,11 +1070,16 @@ const DoctorRegister = () => {
                       type="password"
                       placeholder="Password"
                       autoComplete="off"
-                      className="frm_input"
+                      className={`frm_input ${validationErrors.password ? "is-invalid" : ""}`}
                       name="password"
                       value={frmdoctor.password}
                       onChange={selfrmdata}
                     />
+                    {validationErrors.password && (
+                      <div className="invalid-feedback">
+                        {validationErrors.password}
+                      </div>
+                    )}
                   </Form.Group>
 
                   <Button

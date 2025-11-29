@@ -436,6 +436,7 @@ const DoctorProfile = () => {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var data = JSON.parse(decrypted);
+      // console.log(data)
     }
     if (!data) {
       navigate("/doctor");
@@ -721,8 +722,26 @@ const DoctorProfile = () => {
       setConfirmPassword("");
       setShowPassword(false);
       setShowConfirmPassword(false);
+      try {
+        const stored = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+        if (stored) {
+          const bytes = CryptoJS.AES.decrypt(stored, SECRET_KEY);
+          const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+          if (decrypted) {
+            const obj = JSON.parse(decrypted);
+            if (obj && obj.doctorData) {
+              const newAvail = typeof dataToSend?.is_available !== 'undefined' ? dataToSend.is_available : obj.doctorData.is_available;
+              obj.doctorData.is_available = newAvail;
+              const cipher = CryptoJS.AES.encrypt(JSON.stringify(obj), SECRET_KEY).toString();
+              localStorage.setItem(STORAGE_KEYS.DOCTOR, cipher);
+              // Update in-memory doctor state so UI reflects immediately
+              setdoctor((prev) => (prev ? { ...prev, is_available: newAvail } : prev));
+            }
+          }
+        }
+      } catch (e) {}
     } catch (error) {
-      console.error("Error updating profile:", error);
+      // console.error("Error updating profile:", error);
       Swal.fire({
         title: "Profile Not Update.",
         text: "Something went wrong. Please check details and try again.",
@@ -1142,7 +1161,7 @@ const DoctorProfile = () => {
                           </Col>
                         )}
                       </Row>
-                      <div className="text-center">
+                      <div className="text-center mt-3">
                         <Button
                           variant="success"
                           size="sm"
