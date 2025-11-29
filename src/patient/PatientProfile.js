@@ -69,6 +69,25 @@ const PatientProfile = () => {
             // console.log(data)
             setProfilePicPreview(data?.profile_pic || '')
             setErrors({ newPassword: '', confirmPassword: '' })
+            try {
+                const stored = localStorage.getItem(STORAGE_KEYS.PATIENT);
+                if (stored) {
+                    const bytes = CryptoJS.AES.decrypt(stored, SECRET_KEY);
+                    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+                    const parsed = JSON.parse(decrypted || '{}');
+                    const prevPic = parsed?.userData?.profile_pic || '';
+                    const newPic = data?.profile_pic || '';
+                    if (prevPic !== newPic && newPic) {
+                        const updated = {
+                            ...parsed,
+                            userData: { ...(parsed?.userData || {}), ...data }
+                        };
+                        const cipher = CryptoJS.AES.encrypt(JSON.stringify(updated), SECRET_KEY).toString();
+                        localStorage.setItem(STORAGE_KEYS.PATIENT, cipher);
+                        setpatient(updated.userData);
+                    }
+                }
+            } catch (e) {}
         }).catch(function (error) {
             // console.log(error);
         }).finally(() => {

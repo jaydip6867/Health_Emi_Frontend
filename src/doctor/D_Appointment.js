@@ -528,7 +528,7 @@ const D_Appointment = () => {
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
                 <span className="text-muted appt-price">₹</span>
-                <span className="text-truncate"> ₹ {row?.status === "Cancel" || row?.status === "Pending" || row?.status === "Accept" ? row?.price === "" ? "0" : row?.price : row?.totalamount}</span>
+                <span className="text-truncate"> {row?.status === "Cancel" || row?.status === "Pending" || row?.status === "Accept" ? row?.price === "" ? "0" : row?.price : row?.totalamount}</span>
             </div>
         ),
     },

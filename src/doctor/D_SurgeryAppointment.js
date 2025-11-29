@@ -471,7 +471,7 @@ const D_SurgeryAppointment = () => {
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
                 <span className="text-muted appt-price">₹</span>
-                <span className="text-truncate"> ₹ {row?.price || '0'}</span>
+                <span className="text-truncate">{row?.price || '0'}</span>
             </div>
         ),
     },

@@ -49,9 +49,9 @@ const Blog = () => {
         axios({
             method: 'post',
             url: `${API_BASE_URL}/user/blogs`,
-            headers: {
-                Authorization: token,
-            },
+            // headers: {
+            //     Authorization: token,
+            // },
             data: {
                 "page": pageArg,
                 "limit": limit,
@@ -59,6 +59,7 @@ const Blog = () => {
             }
         }).then((res) => {
             const data = res?.data?.Data;
+            console.log(data)
             if (data?.docs) {
                 setbloglist(data.docs)
                 if (data?.totalPages) setTotalPages(data.totalPages)

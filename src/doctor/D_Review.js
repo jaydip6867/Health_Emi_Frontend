@@ -89,19 +89,21 @@ const D_Review = () => {
                                     <h4>My Reviews</h4>
                                 </div>
                             </div>
-                            <Row>
+                            <Row className="g-3">
                                 {
                                     reviewdata?.map((item, index) => (
                                         <Col xs={12} md={4} key={index}>
                                             <Card>
                                                 <Card.Body>
-                                                    <div className="d-flex align-items-center flex-wrap gap-2 mb-2 review_profile">
+                                                    <div className="d-flex align-items-center flex-wrap gap-2 review_profile">
                                                         <img src={item?.createdBy?.profile_pic} alt="" />
-                                                        <h5>{item?.createdBy?.name}</h5>
-                                                        <small className="text-muted ms-auto badge bg-secondary-subtle position-absolute top-0 end-0"><FormattedDate isoString={item?.createdAt} /></small>
+                                                        <div className="ps-2">
+                                                            <h5>{item?.createdBy?.name}</h5>
+                                                            <small className="text-muted ms-auto badge bg-secondary-subtle"><FormattedDate isoString={item?.createdAt} /></small>
+                                                        </div>
                                                     </div>
                                                     <hr />
-                                                    <p className="">{item?.description}</p>
+                                                    <p className="m-0">{item?.description}</p>
                                                     <div>
                                                         {[...Array(5)].map((_, i) => (
                                                             <span key={i}>{i < item?.rating ? <FaStar fill="#F6B900" /> : <FaRegStar fill="#F6B900" />}</span>
