@@ -731,11 +731,17 @@ const DoctorProfile = () => {
             const obj = JSON.parse(decrypted);
             if (obj && obj.doctorData) {
               const newAvail = typeof dataToSend?.is_available !== 'undefined' ? dataToSend.is_available : obj.doctorData.is_available;
+              const newPic = typeof dataToSend?.profile_pic !== 'undefined' && dataToSend.profile_pic
+                ? dataToSend.profile_pic
+                : obj.doctorData.profile_pic;
               obj.doctorData.is_available = newAvail;
+              if (newPic) {
+                obj.doctorData.profile_pic = newPic;
+              }
               const cipher = CryptoJS.AES.encrypt(JSON.stringify(obj), SECRET_KEY).toString();
               localStorage.setItem(STORAGE_KEYS.DOCTOR, cipher);
               // Update in-memory doctor state so UI reflects immediately
-              setdoctor((prev) => (prev ? { ...prev, is_available: newAvail } : prev));
+              setdoctor((prev) => (prev ? { ...prev, is_available: newAvail, profile_pic: newPic || prev.profile_pic } : prev));
             }
           }
         }
