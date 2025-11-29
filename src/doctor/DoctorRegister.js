@@ -1474,7 +1474,7 @@ const DoctorRegister = () => {
                         type="file"
                         className="form-control"
                         multiple
-                        accept="image/*,.pdf"
+                        accept=".jpg,.pdf,.png"
                         onChange={handleIdentityProofsChange}
                         style={{ display: "none" }}
                         id="identity-proof-upload"
@@ -1528,7 +1528,7 @@ const DoctorRegister = () => {
                         type="file"
                         className="form-control"
                         multiple
-                        accept="image/*,.pdf"
+                        accept=".jpg,.pdf,.png"
                         onChange={handleCertificateProofsChange}
                         style={{ display: "none" }}
                         id="certificate-proof-upload"

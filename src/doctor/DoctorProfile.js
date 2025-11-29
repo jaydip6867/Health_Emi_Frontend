@@ -1180,30 +1180,10 @@ const DoctorProfile = () => {
                             <Form.Label className="fw-semibold">
                               Profile Picture
                             </Form.Label>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              name="profile_pic"
-                              disabled={IsDisable}
-                              onChange={handleChange}
-                              style={{ display: "none" }}
-                              id="profile-pic-upload"
-                            />
-                            <label
-                              htmlFor="profile-pic-upload"
-                              className="btn btn-outline-secondary w-100 mb-3"
-                              style={{
-                                cursor: "pointer",
-                                padding: "0.375rem 0.75rem",
-                              }}
-                            >
-                              {profile?.profile_pic || profilePicPreview
-                                ? "Change Profile Picture"
-                                : "Upload Profile Picture"}
-                            </label>
+                            
 
                             {(profile?.profile_pic || profilePicPreview) && (
-                              <div className="border rounded p-3 bg-light">
+                              <div className="border rounded p-3 pb-2 bg-light">
                                 <div className="d-flex align-items-center justify-content-between mb-3">
                                   <div className="d-flex align-items-center">
                                     <i className="fas fa-user-circle text-primary me-2 fs-5"></i>
@@ -1239,8 +1219,8 @@ const DoctorProfile = () => {
                                       alt="Profile Preview"
                                       className="img-thumbnail rounded-circle"
                                       style={{
-                                        width: "200px",
-                                        height: "200px",
+                                        width: "150px",
+                                        height: "150px",
                                         objectFit: "cover",
                                         border: "3px solid #fff",
                                         boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
@@ -1248,7 +1228,7 @@ const DoctorProfile = () => {
                                     />
                                   </div>
 
-                                  <div className="mt-3">
+                                  {/* <div className="mt-3">
                                     <a
                                       href={
                                         profilePicPreview ||
@@ -1261,13 +1241,36 @@ const DoctorProfile = () => {
                                       <i className="fas fa-expand me-2"></i>View
                                       Full Size
                                     </a>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                             )}
+                            <div className="mt-2">
+                              <input
+                              type="file"
+                              accept="image/*"
+                              name="profile_pic"
+                              disabled={IsDisable}
+                              onChange={handleChange}
+                              style={{ display: "none" }}
+                              id="profile-pic-upload"
+                            />
+                            <label
+                              htmlFor="profile-pic-upload"
+                              className="btn btn-outline-secondary w-100 mb-3"
+                              style={{
+                                cursor: "pointer",
+                                padding: "0.375rem 0.75rem",
+                              }}
+                            >
+                              {profile?.profile_pic || profilePicPreview
+                                ? "Change Profile Picture"
+                                : "Upload Profile Picture"}
+                            </label>
+                            </div>
                           </Form.Group>
                         </Col>
-                        <Col sm={12} md={3}>
+                        <Col sm={12} md={4}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">
                               Certificate Proof
@@ -1296,10 +1299,11 @@ const DoctorProfile = () => {
 
                                       <div className="text-center">
                                         {isPdf(doc) ? (
-                                          <div style={{ height: '200px' }}>
+                                          <div style={{ width: '200px', height: '200px', margin: '0 auto' }}>
                                             <iframe
                                               src={`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(doc)}`}
-                                              className="w-100 h-100 border-0"
+                                              style={{ width: '200px', height: '200px' }}
+                                              className="border-0"
                                               frameBorder="0"
                                               title={`Document ${index + 1}`}
                                             />
@@ -1309,8 +1313,8 @@ const DoctorProfile = () => {
                                             <img
                                               src={doc}
                                               alt={`Document ${index + 1}`}
-                                              className="img-fluid rounded border"
-                                              style={{ maxHeight: '200px', width: 'auto' }}
+                                              className="rounded border"
+                                              style={{ width: '200px', height: '200px', objectFit: 'cover' }}
                                             />
                                           </div>
                                         )}
@@ -1355,10 +1359,11 @@ const DoctorProfile = () => {
 
                                       <div className="text-center">
                                         {isPdf(doc) ? (
-                                          <div style={{ height: '200px' }}>
+                                          <div style={{ width: '200px', height: '200px', margin: '0 auto' }}>
                                             <iframe
                                               src={`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(doc)}`}
-                                              className="w-100 h-100 border-0"
+                                              style={{ width: '200px', height: '200px' }}
+                                              className="border-0"
                                               frameBorder="0"
                                               title={`Document ${index + 1}`}
                                             />
@@ -1368,8 +1373,8 @@ const DoctorProfile = () => {
                                             <img
                                               src={doc}
                                               alt={`Document ${index + 1}`}
-                                              className="img-fluid rounded border"
-                                              style={{ maxHeight: '200px', width: 'auto' }}
+                                              className="rounded border"
+                                              style={{ width: '200px', height: '200px', objectFit: 'cover' }}
                                             />
                                           </div>
                                         )}

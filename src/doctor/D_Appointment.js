@@ -370,7 +370,7 @@ const D_Appointment = () => {
 
             Swal.fire('Success', 'Prescription saved and appointment completed!', 'success');
             handleClosePrescriptionModal();
-            
+
             // Reset form
             setPrescriptionData({ diagnosis: '', instructions: '', bp: '', complain: '', pasHistory: '', followUpDate: '', followUpTime: '', prescriptionItems: [] });
             setFollowUpDate(null);
@@ -753,32 +753,27 @@ const D_Appointment = () => {
                                                 )}
                                             </Row>
                                         </div>
-                                        <hr />
                                         <div>
-                                            <div className='fw-semibold mb-3'>Prescription</div>
-                                            <div className='border rounded p-3 mt-3 col-lg-5 col-md-9 col-12'>
-                                                {v?.doctor_remark ? (
-                                                    <>
-                                                        {/* <div className='d-flex gap-2 mb-2'>
-                                    <Button variant='outline-primary' size='sm' onClick={() => window.open(v.doctor_remark, '_blank')} className='d-flex align-items-center gap-2'>
-                                      <MdVisibility size={18} /> View
-                                    </Button>
-                                    <Button variant='primary' size='sm' onClick={() => handleDownloadPDF(v.doctor_remark, patient?.name)} className='d-flex align-items-center gap-2'>
-                                      <MdDownload size={18} /> Download
-                                    </Button>
-                                  </div> */}
-                                                        <div className='border rounded' style={{ backgroundColor: '#f8f9fa' }}>
-                                                            <iframe
-                                                                src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`}
-                                                                style={{ width: '100%', height: '200px', border: 'none', borderRadius: '4px' }}
-                                                                title='Prescription PDF'
-                                                            />
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <div className='text-muted small'>No prescription uploaded.</div>
-                                                )}
-                                            </div>
+                                            {
+                                                v.status === "Completed" ? <div>
+                                                    <hr />
+                                                    <div className='fw-semibold mb-3'>Prescription</div>
+                                                    <Row className='g-3'>
+
+                                                        <Col md={4} sm={6}>
+                                                            <Card className='h-100'>
+                                                                <div className='ratio ratio-16x9 bg-light'>
+                                                                    <iframe src={v?.doctor_remark} title={`prescription surgery`} className='w-100 h-100 border-0'></iframe>
+                                                                </div>
+                                                                <Card.Body className='d-flex justify-content-between align-items-center'>
+                                                                    <div className='small text-muted'>Prescription</div>
+                                                                    <Button size='sm' variant='outline-primary' onClick={() => window.open(v?.doctor_remark, '_blank')}>View</Button>
+                                                                </Card.Body>
+                                                            </Card>
+                                                        </Col>
+                                                    </Row>
+                                                </div> : null
+                                            }
                                         </div>
                                     </div>
 
