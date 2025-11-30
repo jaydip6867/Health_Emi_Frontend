@@ -205,7 +205,9 @@ const Amb_Ridedetails = () => {
   const fetchOsrmRoute = async (startLatLng, endLatLng) => {
     const start = `${startLatLng.lng()},${startLatLng.lat()}`; // OSRM needs lon,lat
     const end = `${endLatLng.lng()},${endLatLng.lat()}`;
-    const url = `https://router.project-osrm.org/route/v1/driving/${start};${end}?overview=full&geometries=geojson`;
+    const url = `https://router.project-osrm.org/route/v1/driving/${encodeURIComponent(
+      start
+    )};${encodeURIComponent(end)}?overview=full&geometries=geojson`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`OSRM request failed: ${res.status}`);
     const data = await res.json();
@@ -853,6 +855,15 @@ const Amb_Ridedetails = () => {
     }
   };
 
+  const socket = io(SOCKET_URL);
+  const storedData = localStorage.getItem("ambulance_socket");
+  const ambulanceSocket = JSON.parse(storedData);
+  const ambulance_channelid = ambulanceSocket.channelId;
+  const ambulanceId = ambulanceSocket.ambulanceId;
+  let gpsWatchId = null;
+  let emitIntervalId = null;
+  let latestPosition = null;
+
   const handleAcceptRide = async () => {
     try {
       setIsAccepting(true);
@@ -912,35 +923,52 @@ const Amb_Ridedetails = () => {
       fetchRideDetails();
 
       // socket live updates after OTP success
-      const socket = io(SOCKET_URL);
-      const storedData = localStorage.getItem("ambulance_socket");
-      const ambulanceSocket = JSON.parse(storedData);
-      const ambulance_channelid = ambulanceSocket.channelId;
-      const ambulanceId = ambulanceSocket.ambulanceId;
 
       socket.emit("init", { channelid: ambulance_channelid });
 
+      // Start GPS watch to always update latestPosition
       if ("geolocation" in navigator) {
-        startRide = navigator.geolocation.watchPosition(
+        gpsWatchId = navigator.geolocation.watchPosition(
           (position) => {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            socket.emit("update-ambulance-location", {
-              ambulanceId: ambulanceId,
-              lat,
-              lng,
-            });
+            latestPosition = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+              accuracy: position.coords.accuracy,
+              heading: position.coords.heading,
+              speed: position.coords.speed,
+              timestamp: Date.now(),
+            };
           },
           (error) => console.error("❌ GPS Error:", error),
           {
             enableHighAccuracy: true,
             maximumAge: 0,
-            timeout: 5000,
+            timeout: 15000,
           }
         );
       } else {
-        console.error("❌ Geolocation not supported in this browser.");
+        console.error("Geolocation not available");
       }
+
+      // Emit to socket every 10 seconds using the freshest GPS data
+      if (emitIntervalId) clearInterval(emitIntervalId);
+      emitIntervalId = setInterval(() => {
+        if (!latestPosition) return;
+        socket.emit("update-ambulance-location", {
+          ambulanceId, // keep your existing id
+          lat: latestPosition.lat,
+          lng: latestPosition.lng,
+          accuracy: latestPosition.accuracy,
+          heading: latestPosition.heading,
+          speed: latestPosition.speed,
+          at: latestPosition.timestamp,
+        });
+        console.log(
+          "Sent live location:",
+          latestPosition.lat,
+          latestPosition.lng
+        );
+      }, 5000);
 
       return true;
     } catch (error) {
@@ -1081,6 +1109,19 @@ const Amb_Ridedetails = () => {
           },
         }
       );
+
+      // On finish/cancel/unmount
+      if (gpsWatchId !== null) {
+        navigator.geolocation.clearWatch(gpsWatchId);
+        gpsWatchId = null;
+      }
+      if (emitIntervalId) {
+        clearInterval(emitIntervalId);
+        emitIntervalId = null;
+      }
+      if (socket && socket.connected) {
+        socket.disconnect();
+      }
 
       if (response.data.IsSuccess) {
         await MySwal.fire({

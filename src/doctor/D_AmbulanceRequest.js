@@ -50,7 +50,7 @@ const D_AmbulanceRequest = () => {
   const [loading, setLoading] = useState(false);
   const [doctor, setDoctor] = useState(null);
   const [token, setToken] = useState(null);
-
+  
   useEffect(() => {
     let data;
     const getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
@@ -63,10 +63,11 @@ const D_AmbulanceRequest = () => {
       navigate("/doctor");
     } else {
       setDoctor(data.doctorData);
+      
       setToken(`Bearer ${data.accessToken}`);
     }
   }, [navigate]);
-
+   console.log(doctor,'rewuesyt')
   const [form, setForm] = useState({
     pickupaddress: "",
     pickup_longitude: "",
@@ -676,6 +677,7 @@ const D_AmbulanceRequest = () => {
           distance: 0,
         });
         setPlatformFee(0);
+        localStorage.setItem('amb_req_id',res.data.Data.requestId)
         navigate(`/doctor/ambulance-request/status/${res.data.Data.requestId}`);
       })
       .catch((error) => {
@@ -776,8 +778,27 @@ const D_AmbulanceRequest = () => {
                   </div>
                 </div>
               </div>
-
-              <Row>
+              {
+                localStorage.getItem('amb_req_id') != null ?
+                 <div className="d-flex justify-content-end mt-2">
+                          <Button
+                            type="submit"
+                            className="px-4"
+                            style={{ backgroundColor: "#4F46E5" }}
+                            onClick={()=>{navigate(`/doctor/ambulance-request/status/${localStorage.getItem('amb_req_id')}`)}}
+                            
+                          >
+                            {loading ? (
+                              <span
+                                className="spinner-border spinner-border-sm me-2"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                            ) : null}
+                            ambulace ride pogress
+                          </Button>
+                        </div>
+                :<Row>
                 <Col xs={12} md={5}>
                   {/* Map + Geocoder */}
                   <Card className="mt-3 shadow-sm border-0">
@@ -1163,7 +1184,8 @@ const D_AmbulanceRequest = () => {
                             type="submit"
                             className="px-4"
                             style={{ backgroundColor: "#4F46E5" }}
-                            disabled={loading || !token || !canSubmit}
+                            disabled={loading || !token || !canSubmit }
+                          
                           >
                             {loading ? (
                               <span
@@ -1172,15 +1194,16 @@ const D_AmbulanceRequest = () => {
                                 aria-hidden="true"
                               ></span>
                             ) : null}
-                            Request Ambulance
+                           Request Ambulance
                           </Button>
                         </div>
                       </Form>
                     </Card.Body>
                   </Card>
-
                 </Col>
               </Row>
+              }
+              
 
             </div>
           </Col>

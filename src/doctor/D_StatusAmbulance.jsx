@@ -20,15 +20,92 @@ import {
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import Swal from "sweetalert2";
-import { API_BASE_URL, SECRET_KEY } from '../config';
+import { API_BASE_URL, SECRET_KEY } from "../config";
 
 const D_StatusAmbulance = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const mapElRef = React.useRef(null);
+  const mapRef = React.useRef(null);
+  const pickupMarkerRef = React.useRef(null);
+  const dropMarkerRef = React.useRef(null);
+  const ambulanceMarkerRef = React.useRef(null);
   const [loading, setLoading] = useState(true);
   const [request, setRequest] = useState(null);
   const [error, setError] = useState(null);
-  
+
+  let gmapsPromise = null;
+  const GOOGLE_MAPS_API_KEY = "AIzaSyBoGhF4LGSyzplqWd4qJXmELcDrbZIIQDA"; // or from your config
+  const fifteenSecRef = React.useRef(null);
+  const twoMinRef = React.useRef(null);
+  const loadGoogleMaps = () => {
+    if (window.google && window.google.maps)
+      return Promise.resolve(window.google);
+    if (gmapsPromise) return gmapsPromise;
+    gmapsPromise = new Promise((resolve, reject) => {
+      const id = "gmaps-loader";
+      const existing = document.getElementById(id);
+      if (existing) {
+        existing.addEventListener("load", () => resolve(window.google));
+        existing.addEventListener("error", reject);
+        return;
+      }
+      const s = document.createElement("script");
+      s.id = id;
+      s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
+        GOOGLE_MAPS_API_KEY || ""
+      )}&libraries=places,marker,geometry`;
+      s.async = true;
+      s.defer = true;
+      s.onload = () => resolve(window.google);
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+    return gmapsPromise;
+  };
+
+  const initMapIfNeeded = async (pickup, drop) => {
+    if (!pickup || !drop) return;
+    await loadGoogleMaps();
+    const gmaps = window.google.maps;
+    if (!mapRef.current) {
+      mapRef.current = new gmaps.Map(mapElRef.current, {
+        center: pickup,
+        zoom: 14,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+      });
+    }
+    // Create or update pickup marker
+    if (!pickupMarkerRef.current) {
+      pickupMarkerRef.current = new gmaps.Marker({
+        position: pickup,
+        map: mapRef.current,
+        label: { text: "Pickup", color: "#fff" },
+      });
+    } else {
+      pickupMarkerRef.current.setPosition(pickup);
+    }
+
+    // Create or update drop marker
+    if (!dropMarkerRef.current) {
+      dropMarkerRef.current = new gmaps.Marker({
+        position: drop,
+        map: mapRef.current,
+        label: { text: "Drop", color: "#fff" },
+      });
+    } else {
+      dropMarkerRef.current.setPosition(drop);
+    }
+
+    // Fit bounds to pickup + drop
+    const bounds = new gmaps.LatLngBounds();
+    bounds.extend(pickup);
+    bounds.extend(drop);
+    mapRef.current.fitBounds(bounds);
+  };
 
   const fetchRequestDetails = async () => {
     try {
@@ -113,13 +190,94 @@ const D_StatusAmbulance = () => {
     }
   };
 
+  const fetchRequestStatusLight = async () => {
+    try {
+      const getlocaldata = localStorage.getItem("healthdoctor");
+      if (!getlocaldata) {
+        navigate("/doctor");
+        return null;
+      }
+      const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+      const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
+      const res = await axios.post(
+        `${API_BASE_URL}/doctor/ambulancerequests/getone`,
+        { ambulancerequestid: id },
+        {
+          headers: {
+            Authorization: `Bearer ${data.accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const reqData = res?.data?.Data || null;
+      if (reqData) setRequest(reqData); // keep UI in sync
+      return reqData;
+    } catch (e) {
+      console.error("Polling error:", e);
+      return null;
+    }
+  };
+
+ useEffect(() => {
+  // Initial full load
+  fetchRequestDetails();
+
+  // Start 15s polling
+  const poll15s = async () => {
+    const data = await fetchRequestStatusLight();
+    if (data?.status === "accepted") {
+      // Switch to phase 2
+      if (fifteenSecRef.current) clearInterval(fifteenSecRef.current);
+
+      // Start 2-minute polling immediately and then on interval
+      const startTwoMinPhase = async () => {
+        const d = await fetchRequestStatusLight();
+        if (d?.status === "completed") {
+          try {
+            localStorage.removeItem("amb_req_id");
+          } catch (_) {}
+          // back to page (or navigate to listing)
+          navigate(-1); // or navigate("/doctor/ambulance-request");
+          return;
+        }
+      };
+
+      // Run once immediately
+      startTwoMinPhase();
+      // And then every 2 minutes
+      twoMinRef.current = setInterval(startTwoMinPhase, 120000);
+    }
+  };
+
+  // Fire immediately once, then every 15s
+  poll15s();
+  fifteenSecRef.current = setInterval(poll15s, 15000);
+
+  return () => {
+    if (fifteenSecRef.current) clearInterval(fifteenSecRef.current);
+    if (twoMinRef.current) clearInterval(twoMinRef.current);
+  };
+}, [id, navigate]);
+
   useEffect(() => {
-    fetchRequestDetails();
-    // Refresh data every 10 seconds
-    // const interval = setInterval(fetchRequestDetails, 10000);
-    // return () => clearInterval(interval);
-    fetchRequestDetails();
-  }, [id, navigate]);
+    if (!request) return;
+    const pc = request?.pickuplocation?.coordinates;
+    const dc = request?.droplocation?.coordinates;
+    if (!pc || !dc) return;
+
+    const pickup = { lat: pc[1], lng: pc[0] };
+    const drop = { lat: dc[1], lng: dc[0] };
+
+    // If you want to delay until accepted + 20s, gate with status and setTimeout
+    if (
+      request.status === "accepted" ||
+      request.status === "in_progress" ||
+      request.status === "completed"
+    ) {
+      initMapIfNeeded(pickup, drop);
+    }
+  }, [request]);
 
   if (loading) {
     return (
@@ -194,7 +352,17 @@ const D_StatusAmbulance = () => {
               </div>
             </Col>
           </Row>
-
+          <div
+            className="mt-3"
+            style={{
+              width: "100%",
+              height: 400,
+              borderRadius: 8,
+              overflow: "hidden",
+            }}
+          >
+            <div ref={mapElRef} style={{ width: "100%", height: "100%" }} />
+          </div>
           <div className="mb-3">
             <h6>Near by ambulance</h6>
             <div className="d-flex align-items-center">
