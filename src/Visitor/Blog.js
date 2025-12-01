@@ -59,7 +59,7 @@ const Blog = () => {
             }
         }).then((res) => {
             const data = res?.data?.Data;
-            console.log(data)
+            // console.log(data)
             if (data?.docs) {
                 setbloglist(data.docs)
                 if (data?.totalPages) setTotalPages(data.totalPages)
