@@ -68,14 +68,14 @@ const SearchBox = () => {
     return (
         <>
             <Container>
-                <Row className='justify-content-center'>
+                <Row className='justify-content-center position-relative' style={{ zIndex: 100 }}>
                     <Col xs={12} md={10} lg={8}>
                         <div className='px-2 py-1'>
                             <div className='d-md-flex searchbox align-items-center position-relative'>
                                 <div className='d-flex align-items-center position-relative selectsize'>
                                     <FiMapPin className='position-absolute' style={{ left: 12}} />
                                     <Form.Select
-                                        className='ps-5 pe-4 py-2 bg-transparent border-0'
+                                        className='ps-5 pe-1 py-2 bg-transparent border-0'
                                         value={selectedState}
                                         onChange={(e) => {
                                             const iso = e.target.value;
@@ -90,7 +90,7 @@ const SearchBox = () => {
                                         name='state'
                                         style={{ background: 'transparent'}}
                                     >
-                                        <option value=''>State</option>
+                                        <option value=''>Choose State</option>
                                         {states && states.map((st) => (
                                             <option key={st.isoCode} value={st.isoCode}>{st.name}</option>
                                         ))}
@@ -101,7 +101,7 @@ const SearchBox = () => {
                                     <div className='d-flex align-items-center w-100 position-relative selectsize'>
                                         <FiMapPin className='position-absolute' style={{ left: 12}} />
                                         <Form.Select
-                                            className='ps-5 pe-4 py-2 bg-transparent border-0'
+                                            className='ps-5 pe-1 py-2 bg-transparent border-0'
                                             value={selectedCity}
                                             onChange={(e) => {
                                                 const v = e.target.value;
@@ -115,7 +115,7 @@ const SearchBox = () => {
                                             disabled={!selectedState}
                                             style={{ background: 'transparent'}}
                                         >
-                                            <option value=''>City</option>
+                                            <option value=''>Choose City</option>
                                             {cities && cities.map((city) => (
                                                 <option key={city.name} value={city.name}>{city.name}</option>
                                             ))}
@@ -141,7 +141,7 @@ const SearchBox = () => {
                                     {showList && (
                                         <ul style={{
                                             position: 'absolute',
-                                            top: '42px',
+                                            top: '100%',
                                             left: 0,
                                             width: '100%',
                                             border: '1px solid #e5e7eb',
@@ -151,7 +151,7 @@ const SearchBox = () => {
                                             margin: '0',
                                             maxHeight: '350px',
                                             overflowY: 'auto',
-                                            zIndex: 10,
+                                            zIndex: 1000,
                                             borderRadius: '14px',
                                             boxShadow: '0 8px 24px rgba(0,0,0,0.08)'
                                         }}>

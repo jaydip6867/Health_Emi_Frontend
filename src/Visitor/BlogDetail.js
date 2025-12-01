@@ -208,7 +208,7 @@ const BlogDetail = () => {
                             <div className='d-flex justify-content-between blog_box mb-2'>
                                 <Link to={`/doctorprofile/${encodeURIComponent(btoa(blog?.createdBy?._id))}`} className='d-flex align-items-center gap-1'>
                                     <img src={blog?.createdBy?.profile_pic}></img>
-                                    <span>{blog?.createdBy?.name}</span>
+                                    <span>Dr. {blog?.createdBy?.name}</span>
                                 </Link>
                                 <div className='d-flex align-items-center gap-1'>
                                     <IoCalendarOutline />
