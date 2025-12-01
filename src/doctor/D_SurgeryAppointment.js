@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Card, Col, Container, Modal, OverlayTrigger, Row, Tooltip, Form, Table } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
-import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Loader from '../Loader'
@@ -719,8 +718,6 @@ const D_SurgeryAppointment = () => {
                                     <Modal.Title>Reschedule Surgery</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    {/* <p>Surgery Name :- {v?.surgerydetails.name}</p> */}
-                                    {/* <Form.Label>New Appointment Date</Form.Label><br /> */}
                                     <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                                         <h5 >Select New Appointment Date & Time</h5>
                                         <div style={{

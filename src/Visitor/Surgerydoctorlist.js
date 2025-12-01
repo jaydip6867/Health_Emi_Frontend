@@ -149,7 +149,6 @@ const Surgerydoctorlist = () => {
         } else {
             setloading(false)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [d_id])
 
     const getdoctorlist = async (d) => {
@@ -162,16 +161,13 @@ const Surgerydoctorlist = () => {
             }
         }).then((res) => {
             setdoclist(res.data.Data)
-            // console.log('doctor ', res.data.Data)
         }).catch(function (error) {
-            // console.log(error);
         }).finally(() => {
             setloading(false)
         });
     }
 
     // Helpers for filters
-    // Resolve a consult price from consultationsDetails based on a given type
     const getConsultPrice = (doc, type) => {
         const cd = doc?.consultationsDetails || doc?.consultations_details
         if (!cd) return undefined

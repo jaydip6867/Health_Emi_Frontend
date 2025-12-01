@@ -90,7 +90,6 @@ const Amb_Profile = () => {
                     <Col md={4} className="mb-4">
                       <Card className="shadow-sm h-100 border-0">
                         <Card.Body className="text-center p-4">
-                          {/* Profile Header with Status */}
 
                           <div className="d-flex justify-content-center">
                             <Image
@@ -106,11 +105,10 @@ const Amb_Profile = () => {
                             />
                           </div>
 
-                          {/* Driver Info */}
                           <div className="mb-4">
                             <h3 className="mb-1 fw-bold text-dark">
-                               
-                            {ambulance.fullname}
+
+                              {ambulance.fullname}
                             </h3>
                             <p className="text-muted mb-3">
                               <i className="bi bi-envelope me-2"></i>
@@ -134,26 +132,25 @@ const Amb_Profile = () => {
                                 <i className="bi bi-star-fill text-warning me-1"></i>
                                 {ambulance.experience}
                               </Badge>
-                            <Badge
+                              <Badge
                                 bg="light"
                                 className={
-                                    ambulance.ambulance_status === "available"
-                                      ? "text-success border border-success px-3 py-2"
-                                      : "text-danger border border-danger px-3 py-2"
+                                  ambulance.ambulance_status === "available"
+                                    ? "text-success border border-success px-3 py-2"
+                                    : "text-danger border border-danger px-3 py-2"
                                 }
                                 style={{ fontSize: "0.9rem" }}
                               >
                                 <i className="bi bi-ambulance me-1 text-primary"></i>
                                 {ambulance.ambulance_status
-                                    .charAt(0)
-                                    .toUpperCase() +
-                                    ambulance.ambulance_status.slice(1)}
+                                  .charAt(0)
+                                  .toUpperCase() +
+                                  ambulance.ambulance_status.slice(1)}
                               </Badge>
-                             
+
                             </div>
                           </div>
 
-                          {/* Contact Details */}
                           <div className="bg-light p-3 rounded-3">
                             <div className="d-flex align-items-center mb-2">
                               <div className="bg-primary bg-opacity-10 p-2 rounded-circle me-3">
@@ -194,7 +191,6 @@ const Amb_Profile = () => {
                             </div>
                           </div>
 
-                          {/* Vehicle Info */}
                           <div className="mt-4">
                             <h6 className="text-uppercase text-muted mb-3">
                               Vehicle Information

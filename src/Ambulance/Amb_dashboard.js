@@ -19,14 +19,12 @@ const Amb_dashboard = () => {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var data = JSON.parse(decrypted);
-      // console.log(data)
     }
     if (!data) {
       navigate('/ambulance')
     }
     else {
       setambulance(data.ambulanceData);
-      // console.log(data.accessToken)
       settoken(`Bearer ${data.accessToken}`)
     }
 

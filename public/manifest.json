@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "HealthEMI",
+  "name": "Health Easy EMI",
+  "description": "A platform that makes healthcare payments simple and affordable through easy EMI options.",
   "icons": [
     {
       "src": "favicon.ico",

@@ -452,14 +452,6 @@ const P_Appointment = () => {
                     <div className='border rounded p-3 mt-3 col-lg-5 col-md-9 col-12'>
                       {v?.doctor_remark ? (
                         <>
-                          {/* <div className='d-flex gap-2 mb-2'>
-                                    <Button variant='outline-primary' size='sm' onClick={() => window.open(v.doctor_remark, '_blank')} className='d-flex align-items-center gap-2'>
-                                      <MdVisibility size={18} /> View
-                                    </Button>
-                                    <Button variant='primary' size='sm' onClick={() => handleDownloadPDF(v.doctor_remark, patient?.name)} className='d-flex align-items-center gap-2'>
-                                      <MdDownload size={18} /> Download
-                                    </Button>
-                                  </div> */}
                           <div className='border rounded' style={{ backgroundColor: '#f8f9fa' }}>
                             <iframe
                               src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`}

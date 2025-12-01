@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import DoctorNav from "./DoctorNav";
 import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import DoctorSidebar from "./DoctorSidebar";
 import CryptoJS from "crypto-js";

@@ -11,7 +11,7 @@ import { io } from "socket.io-client";
 import { API_BASE_URL, SOCKET_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const Amb_login = () => {
-  
+
 
   var navigate = useNavigate();
   const [loading, setloading] = useState(false);
@@ -46,9 +46,6 @@ const Amb_login = () => {
           SECRET_KEY
         ).toString();
         localStorage.setItem(STORAGE_KEYS.AMBULANCE, encrypted);
-
-        // console.log(encrypted)
-        // toast(res.data.Message, { className: 'custom-toast-success' });
         const socket = io(SOCKET_URL);
         const ambulance_channelid = res.data.Data.ambulanceData.channelid;
         const ambulanceId = res.data.Data.ambulanceData._id;
@@ -59,16 +56,15 @@ const Amb_login = () => {
           channelId: ambulance_channelid,
           ambulanceId: ambulanceId
         };
-        
-        // Store it in localStorage
+
         localStorage.setItem("ambulance_socket", JSON.stringify(ambulance_socket));
-        
+
         if ("geolocation" in navigator) {
           let loginLoction = navigator.geolocation.watchPosition(
             (position) => {
               const lat = position.coords.latitude;
               const lng = position.coords.longitude;
-          
+
               socket.emit("update-ambulance-location", {
                 ambulanceId: ambulanceId,
                 lat,
@@ -93,7 +89,6 @@ const Amb_login = () => {
         navigate("ambdashboard");
       })
       .catch(function (error) {
-        // console.log(error);
         toast(error.response.data.Message, { className: "custom-toast-error" });
       })
       .finally(() => {
@@ -151,23 +146,23 @@ const Amb_login = () => {
                     </p>
                   </div>
 
-                                    <Button onClick={ambulancesignin} type="button" className='btn btn-primary d-block w-100 theme_btn mt-4'>
-                                        Sign In
-                                    </Button>
-                                </Form>
-                                <div className='form_bottom_div text-center mt-3'>
-                                    <p>Don't have an Account? <Link to={'ambregister'} className='form-link'>Sign Up</Link> </p>
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
-                </Container>
-                <ToastContainer />
-                {loading ? <Loader /> : ''}
-            </div>
-            <FooterBar />
-        </>
-    )
+                  <Button onClick={ambulancesignin} type="button" className='btn btn-primary d-block w-100 theme_btn mt-4'>
+                    Sign In
+                  </Button>
+                </Form>
+                <div className='form_bottom_div text-center mt-3'>
+                  <p>Don't have an Account? <Link to={'ambregister'} className='form-link'>Sign Up</Link> </p>
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </Container>
+        <ToastContainer />
+        {loading ? <Loader /> : ''}
+      </div>
+      <FooterBar />
+    </>
+  )
 }
 
 export default Amb_login;

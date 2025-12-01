@@ -126,7 +126,7 @@ const Blog = () => {
             {/* blog lists */}
             <section className='py-5'>
                 <Container>
-                    <FadeIn>
+                    <FadeIn delay={0}>
                     <Row className='g-4'>
                         {bloglist && bloglist?.map((item, index) => (
                             <BlogBox key={index} item={item} />

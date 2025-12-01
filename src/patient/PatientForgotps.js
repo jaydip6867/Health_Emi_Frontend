@@ -19,7 +19,6 @@ const PatientForgotps = () => {
 
     const [email, setemail] = useState('')
     const [newps, setnewps] = useState('')
-    // const [cfmps, setcfmps] = useState('')
 
     function emailotpforgot() {
         setloading(true)
@@ -32,11 +31,9 @@ const PatientForgotps = () => {
         }).then((res) => {
 
             toast('OTP sent To your email...', { className: 'custom-toast-success' })
-            // console.log(res)
             setpatient_email(false);
             setpatient_forgt_otp(true);
         }).catch(function (error) {
-            // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         }).finally(() => {
             setloading(false)

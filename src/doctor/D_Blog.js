@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import DoctorNav from './DoctorNav';
-import { Badge, Button, Col, Container, Form, Modal, OverlayTrigger, Row, ToastContainer, Tooltip } from 'react-bootstrap';
+import { Button, Col, Container, Form, Modal, OverlayTrigger, Row, ToastContainer, Tooltip } from 'react-bootstrap';
 import DoctorSidebar from './DoctorSidebar';
 import CryptoJS from "crypto-js";
 import DatePicker from 'react-datepicker';

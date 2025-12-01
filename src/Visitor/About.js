@@ -149,7 +149,7 @@ const About = () => {
             </section>
 
             <section className='mb-5'>
-                <FadeIn>
+                <FadeIn delay={0}>
                 <Container className='border-top pt-5'>
                     {/* CTA */}
                     <Card className="border-0 rounded-4 matter_bg">

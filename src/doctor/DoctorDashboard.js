@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import DoctorNav from './DoctorNav';
 import { Col, Container, Row } from 'react-bootstrap';
 import DoctorSidebar from './DoctorSidebar';
 import CryptoJS from "crypto-js";
@@ -36,7 +35,6 @@ const DoctorDashboard = () => {
       navigate('/doctor')
     }
     else {
-      // var doctorData = {...data.doctorData,logintype: 'doctor'};
       setdoctor(data.doctorData);
       settoken(`Bearer ${data.accessToken}`)
     }
@@ -52,15 +50,12 @@ const DoctorDashboard = () => {
         Authorization: token
       }
     }).then((res) => {
-      // console.log('count = ', res.data.Data);
       setcount(res.data.Data)
     }).catch(function (error) {
-      // console.log(error);
     });
   }
 
   const [appointment, setappointment] = useState([])
-  // const [surgeryapt, setsurgeryapt] = useState([])
 
   useEffect(() => {
     setloading(true)
@@ -80,40 +75,16 @@ const DoctorDashboard = () => {
         Authorization: token
       }
     }).then((res) => {
-      // console.log(res.data.Data)
       const today = format(new Date(), 'dd-MM-yyyy')
       const all = Array.isArray(res.data?.Data) ? res.data.Data : []
       const onlyToday = all.filter(item => item?.date === today)
       setappointment(onlyToday)
     }).catch(function (error) {
-      // console.log(error);
-      // toast(error.response.data.Message,{className:'custom-toast-error'})
     }).finally(() => {
       setloading(false)
     });
   }
 
-  // const surgappointmentlist = async () => {
-  //   // setloading(true)
-  //   await axios({
-  //     method: 'post',
-  //     url: `${API_BASE_URL}/doctor/surgeryappointments/list`,
-  //     headers: {
-  //       Authorization: token
-  //     }
-  //   }).then((res) => {
-  //     console.log(res.data.Data)
-  //     const today = format(new Date(), 'dd-MM-yyyy')
-  //     const all = Array.isArray(res.data?.Data) ? res.data.Data : []
-  //     const onlyToday = all.filter(item => item?.date === today)
-  //     setsurgeryapt(onlyToday)
-  //   }).catch(function (error) {
-  //     console.log(error);
-  //     // toast(error.response.data.Message,{className:'custom-toast-error'})
-  //   }).finally(() => {
-  //     setloading(false)
-  //   });
-  // }
 
 
   // Appointment type pill
@@ -236,10 +207,6 @@ const DoctorDashboard = () => {
                     <h4 className='mt-3'>Today Appointments</h4>
                     <SmartDataTable className="appointments-table" columns={columns} data={appointment} pagination perPage={5} customStyles={customTableStyles} />
                   </Col>
-                  {/* <Col xs={12}>
-                    <h4 className=''>Today Surgery Appointments</h4>
-                    <SmartDataTable className="appointments-table" columns={columns} data={surgeryapt} pagination perPage={5} customStyles={customTableStyles} />
-                  </Col> */}
                 </Row>
               </Col>
             </div>

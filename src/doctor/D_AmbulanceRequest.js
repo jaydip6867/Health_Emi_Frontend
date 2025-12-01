@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import DoctorSidebar from "./DoctorSidebar";
-import DoctorNav from "./DoctorNav";
 import axios from "axios";
 import Swal from "sweetalert2";
 import CryptoJS from "crypto-js";
@@ -746,7 +745,6 @@ const D_AmbulanceRequest = () => {
         <Row className="g-0">
           <DoctorSidebar />
           <Col xs={12} md={9} className="p-3">
-            <DoctorNav doctorname={doctor && doctor.name} />
             <div className="bg-white rounded p-2">
               <div
                 className="p-4 rounded"
@@ -1127,7 +1125,6 @@ const D_AmbulanceRequest = () => {
                           </div>
                         )}
 
-                        {/* Vehicle type selection (after passenger details) */}
                         {showVehicle && (
                           <div className="mt-2">
                             <div className="d-flex align-items-center justify-content-between mb-2" style={{ color: "#374151" }}>
@@ -1136,7 +1133,6 @@ const D_AmbulanceRequest = () => {
                                 <h6 className="m-0">Select Vehicle</h6>
                               </div>
                               <div className="small text-muted">
-                                {/* Est. Fare: {details.price !== "" && details.price !== null ? `₹${details.price}` : "—"} */}• Dist: {details.distance || 0} km
                               </div>
                             </div>
                             <div className="bg-white">

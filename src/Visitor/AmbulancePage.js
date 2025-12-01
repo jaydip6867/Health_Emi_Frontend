@@ -57,7 +57,7 @@ const AmbulancePage = () => {
             </section>
 
             <section className="spacer-t bg-white">
-                <FadeIn>
+                <FadeIn delay={0}>
                     <Container>
                         {/* Heading */}
                         <h2 className='head_sec mb-3'><HeadTitle title="Service We Provider" /></h2>
@@ -109,7 +109,7 @@ const AmbulancePage = () => {
                 </FadeIn>
             </section>
             <section>
-                <FadeIn>
+                <FadeIn delay={0}>
                     <Container>
                         <h2 className='head_sec mb-3'><HeadTitle title="Key Features" /></h2>
 
@@ -156,7 +156,7 @@ const AmbulancePage = () => {
                 </FadeIn>
             </section>
             <section>
-                <FadeIn>
+                <FadeIn delay={0}>
                     <Container>
                         {/* CTA */}
                         <Card className="border-0 rounded-4 matter_bg">

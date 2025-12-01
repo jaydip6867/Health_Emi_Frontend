@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Col, Container, Modal, Row, Card, Badge } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
-import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Loader from '../Loader'
@@ -78,11 +77,8 @@ const D_Calender = () => {
                     start,                   // This is what FullCalendar needs
                 };
             });
-            // console.log(formattedAppointments)
             setappointment(formattedAppointments);
         }).catch(function (error) {
-            // console.log(error);
-            // toast(error.response.data.Message,{className:'custom-toast-error'})
         }).finally(() => {
             setloading(false)
         });
@@ -91,7 +87,6 @@ const D_Calender = () => {
 
 
     const [showModal, setShowModal] = useState(false);
-    // const [selectedInfo, setSelectedInfo] = useState(null);
     const [selectedAppointment, setSelectedAppointment] = useState(null);
 
     // Click on existing event

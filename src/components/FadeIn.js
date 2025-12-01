@@ -22,7 +22,7 @@ const FadeIn = ({ children, delay = 0 }) => {
   return (
     <div
       ref={ref}
-      className={`fadein ${show ? "visible" : ""}`}
+      className={`fade-in ${show ? "visible" : ""}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}

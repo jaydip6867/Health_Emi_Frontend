@@ -11,7 +11,6 @@ import './css/visitor.css'
 import { FaEnvelope } from 'react-icons/fa'
 import { BsStarFill, BsGeoAlt } from 'react-icons/bs'
 import { format, addDays } from 'date-fns';
-// import { format } from 'date-fns';
 import Swal from 'sweetalert2'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -1038,19 +1037,7 @@ const DoctorProfilePage = () => {
                         <div className="invalid-feedback">{appointmentErrors.alt_mobile}</div>
                       )}
                     </Col>
-                    {/* <Col xs={4}>
-                      <Form.Label>Surgery</Form.Label>
-                      <Form.Select name="surgeryid" onChange={appchangedata}>
-                        <option value="">Select Surgery</option>
-                        {doctor_profile.surgeriesDetails.map((v, i) => {
-                          return (
-                            <option value={v._id} key={i}>
-                              {v.name}
-                            </option>
-                          );
-                        })}
-                      </Form.Select>
-                    </Col> */}
+                    
                     <Col xs={4}>
                       <Form.Label>Reason</Form.Label>
                       <Form.Control
@@ -1260,122 +1247,7 @@ const DoctorProfilePage = () => {
                 </Col>
               </Row>
             </div>
-            {/* <Container fluid>
-              <Row className="g-4">
-                <Col md={4}>
-                  <Card className="h-100">
-                    <Card.Header>
-                      <h6 className="mb-0">Service Image</h6>
-                    </Card.Header>
-                    <Card.Body className="d-flex flex-column justify-content-around">
-                      <div className="text-center">
-                        {selectedService.surgery_photo ? (
-                          <Image
-                            src={selectedService.surgery_photo}
-                            alt={selectedService.name}
-                            fluid
-                            rounded
-                            className="mb-3"
-                            style={{ maxHeight: "200px" }}
-                          />
-                        ) : (
-                          <div
-                            className="bg-light p-4 rounded mb-3"
-                            style={{
-                              height: "200px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <span className="text-muted">No image available</span>
-                          </div>
-                        )}
-                        <p><strong>Surgery Type:</strong> {selectedService.surgery_type || "Not specified"}</p>
-                        <p><strong>Duration:</strong> {selectedService.days || "Not specified"} days</p>
-                        <p><strong>Price:</strong> ₹{selectedService.price || "Contact for pricing"}</p>
-                      </div>
-                      <div className="d-flex justify-content-center">
-                        <Button
-                          variant="primary"
-                          onClick={() => {
-                            handleAddSurgery(selectedService, doctor_profile._id)
-                            handleServiceModalClose()
-                          }}
-                        >
-                          Book Appointment for this Service
-                        </Button>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col md={8}>
-                  <Card>
-                    <Card.Header>
-                      <h6 className="mb-0">Service Information</h6>
-                    </Card.Header>
-                    <Card.Body>
-                      <Row className='gy-2'>
-                        <Col xs={2}><strong>Name:</strong></Col>
-                        <Col xs={10}>{selectedService.name}</Col>
-                        <Col xs={2}><strong>Description:</strong></Col>
-                        <Col xs={10}>{selectedService.description || "No description available"}</Col>
-                        <Col xs={2}><strong>Features:</strong></Col>
-                        <Col xs={10}>{selectedService.features || "No features listed"}</Col>
-                      </Row>
-                    </Card.Body>
-                  </Card>
-
-                  <Row className='mt-3'>
-                    <Col xs={12} md={6}>
-                      <Card className='bg-success-subtle'>
-                        <Card.Header>
-                          <h6 className="mb-0">Inclusive</h6>
-                        </Card.Header>
-                        <Card.Body>
-                          <ul>
-                            {
-                              selectedService?.inclusive?.split(',').map((v, i) => (
-                                <li key={i} className="mb-1">
-                                  <svg width="15" height="10" viewBox="0 0 15 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M1.16669 5.00016L5.33335 9.16683L13.6667 0.833496" stroke="#2E7D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-
-                                  <span className="ms-2">{v.trim()}</span>
-                                </li>
-                              ))
-                            }
-                          </ul>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                    <Col xs={12} md={6}>
-                      <Card className='bg-danger-subtle'>
-                        <Card.Header>
-                          <h6 className="mb-0">Exclusive</h6>
-                        </Card.Header>
-                        <Card.Body>
-                          <ul>
-                            {
-                              selectedService.exclusive.split(',').map((v, i) => (
-                                <li key={i} className="mb-1">
-                                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 5L5 15" stroke="#D32F2F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    <path d="M5 5L15 15" stroke="#D32F2F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-
-                                  <span className="ms-2">{v.trim()}</span>
-                                </li>
-                              ))
-                            }
-                          </ul>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </Container> */}
+            
           </Modal.Body>
           <Modal.Footer>
             <Button

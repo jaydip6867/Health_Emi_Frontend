@@ -11,7 +11,7 @@ const DoctorListComponents = ({ details }) => {
     // console.log(details)
     return (
         <>
-            <FadeIn>
+            <FadeIn delay={0}>
                 <Card text="secondary" className="my-3 rounded-4 doctor_card doctor-card-v2 overflow-hidden">
                     <div className="position-relative">
                         <img

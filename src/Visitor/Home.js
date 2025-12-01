@@ -57,21 +57,21 @@ const Home = () => {
         </section>
       </section>
       <section className='spacer-y'>
-        <FadeIn>
+        <FadeIn delay={0}>
           <FunctionalitySec />
         </FadeIn>
       </section>
       {/* speciality section */}
-      <FadeIn>
+      <FadeIn delay={0}>
         <Speciality />
       </FadeIn>
       {/* Best Doctor */}
-      <FadeIn>
+      <FadeIn delay={0}>
         <BestDoctor />
       </FadeIn>
       {/* testimonial section */}
       <section className='spacer-t position-relative'>
-        <FadeIn>
+        <FadeIn delay={0}>
           <Testimonial />
         </FadeIn>
       </section>
@@ -80,7 +80,7 @@ const Home = () => {
         <Container>
           <Row>
             <Col xs={12} lg={5} className='align-self-end order-last order-lg-first'>
-              <FadeIn>
+              <FadeIn delay={0}>
                 <img src={require('./assets/step_doctor.png')} className='mx-auto w-sm-50' alt='how it work image of health easy emi' />
               </FadeIn>
             </Col>
@@ -92,7 +92,7 @@ const Home = () => {
                 </div>
                 <Row>
                   <Col xs={12} md={6}>
-                    <FadeIn>
+                    <FadeIn delay={0}>
                       <div className='d-flex align-items-start step_box gap-3'>
                         <div><img src={require('./assets/icon/step1.png')} alt='step 1 image of health easy emi' /></div>
                         <div>
@@ -148,7 +148,7 @@ const Home = () => {
           <h2 className='head_sec'><HeadTitle title="Latest Articles" /></h2>
           <Row className='g-4 mt-4'>
             <Col xs={12} md={6}>
-              <FadeIn >
+              <FadeIn delay={0}>
                 <Row className='article_box rounded g-0 p-3'>
                   <Col xs={12} md={4}>
                     <img src={require('./assets/article1.png')} alt='article image of health easy emi' className='rounded h-100 w-100 object-fit-cover' />

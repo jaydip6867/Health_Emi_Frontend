@@ -179,29 +179,7 @@ return (
               ))}
             </Form.Select>
           </Col>
-          {/* {
-            selectedSurgery && (
-              <Col xs={12} md={6} lg={3}>
-                <Form.Label className='fw-semibold'>Choose a Category</Form.Label>
-                <Form.Select
-                  className='rounded-pill outline-secondary'
-                  value={selectedCategory}
-                  onChange={(e) => {
-                    setSelectedCategory(e.target.value)
-                    setSelectedDoctors([])
-                    setSecondDocQuery('')
-                  }}
-                >
-                  <option value=''>Select category...</option>
-                  {category_list?.length > 0 && category_list?.map((c) => (
-                    <option key={c?._id} value={c?._id}>
-                      {c?.categoryname}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Col>
-            )
-          } */}
+         
 
         </Row>
 
