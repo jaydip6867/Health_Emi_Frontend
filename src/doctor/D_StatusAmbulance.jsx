@@ -25,7 +25,7 @@ import { API_BASE_URL, SECRET_KEY } from "../config";
 const D_StatusAmbulance = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const directionsRendererRef = React.useRef(null);
   const mapElRef = React.useRef(null);
   const mapRef = React.useRef(null);
   const pickupMarkerRef = React.useRef(null);
@@ -34,11 +34,134 @@ const D_StatusAmbulance = () => {
   const [loading, setLoading] = useState(true);
   const [request, setRequest] = useState(null);
   const [error, setError] = useState(null);
+  const routePolylineRef = React.useRef(null);
+  const twoSecRef = React.useRef(null);
 
   let gmapsPromise = null;
   const GOOGLE_MAPS_API_KEY = "AIzaSyBoGhF4LGSyzplqWd4qJXmELcDrbZIIQDA"; // or from your config
   const fifteenSecRef = React.useRef(null);
   const twoMinRef = React.useRef(null);
+  // Add these state variables at the top with other state declarations
+  const [pollingDelay, setPollingDelay] = useState(2000); // Initial delay for first poll
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+
+  const coordsToLatLng = (coordinates) => {
+    if (!coordinates || coordinates.length < 2) return null;
+    return { lat: coordinates[1], lng: coordinates[0] }; // [lng, lat] -> {lat,lng}
+  };
+
+  const updateAmbulanceOnMap = async (req) => {
+    if (!req) return;
+    const gmaps = window.google?.maps;
+    if (!gmaps) return;
+
+    const pc = req?.pickuplocation?.coordinates;
+    const dc = req?.droplocation?.coordinates;
+    const ac = req?.acceptedAmbulance?.location?.coordinates;
+
+    const pickup = pc ? coordsToLatLng(pc) : null;
+    const drop = dc ? coordsToLatLng(dc) : null;
+    const amb = ac ? coordsToLatLng(ac) : null;
+
+    if (!mapRef.current || !pickup || !drop) return;
+
+    // Update ambulance marker
+    if (amb) {
+      const icon = {
+        url: "https://cdn-icons-png.flaticon.com/512/12349/12349613.png",
+        scaledSize: new gmaps.Size(36, 36),
+        anchor: new gmaps.Point(18, 18),
+      };
+
+      if (!ambulanceMarkerRef.current) {
+        ambulanceMarkerRef.current = new gmaps.Marker({
+          position: amb,
+          map: mapRef.current,
+          icon,
+          title: "Ambulance",
+          zIndex: 999,
+        });
+      } else {
+        ambulanceMarkerRef.current.setPosition(amb);
+        ambulanceMarkerRef.current.setIcon(icon);
+      }
+    }
+
+    // Fetch and draw route using OSRM
+    if (amb && pickup && drop) {
+      try {
+        // Get route from OSRM
+        const start = { lat: amb.lat, lng: amb.lng };
+        const waypoint = { lat: pickup.lat, lng: pickup.lng };
+        const end = { lat: drop.lat, lng: drop.lng };
+
+        // Get first leg: Ambulance -> Pickup
+        const toPickup = await fetchOsrmRoute(
+          new gmaps.LatLng(start.lat, start.lng),
+          new gmaps.LatLng(waypoint.lat, waypoint.lng)
+        );
+
+        // Get second leg: Pickup -> Drop
+        const toDrop = await fetchOsrmRoute(
+          new gmaps.LatLng(waypoint.lat, waypoint.lng),
+          new gmaps.LatLng(end.lat, end.lng)
+        );
+
+        // Combine both legs
+        const path = [...toPickup, ...toDrop];
+
+        // Update or create polyline
+        if (!routePolylineRef.current) {
+          routePolylineRef.current = new gmaps.Polyline({
+            path,
+            geodesic: true,
+            strokeColor: "#1E88E5",
+            strokeOpacity: 0.9,
+            strokeWeight: 4,
+            map: mapRef.current,
+          });
+        } else {
+          routePolylineRef.current.setPath(path);
+        }
+      } catch (error) {
+        console.error("Error fetching route:", error);
+        // Fallback to straight line
+        const path = [amb, pickup, drop].filter(Boolean);
+        if (routePolylineRef.current) {
+          routePolylineRef.current.setPath(path);
+        }
+      }
+    }
+
+    // Fit map to show all points
+    const bounds = new gmaps.LatLngBounds();
+    [amb, pickup, drop].forEach((p) => p && bounds.extend(p));
+    if (!bounds.isEmpty()) {
+      mapRef.current.fitBounds(bounds);
+    }
+  };
+
+  const fetchOsrmRoute = async (startLatLng, endLatLng) => {
+    const start = `${startLatLng.lng()},${startLatLng.lat()}`;
+    const end = `${endLatLng.lng()},${endLatLng.lat()}`;
+    const url = `https://router.project-osrm.org/route/v1/driving/${encodeURIComponent(
+      start
+    )};${encodeURIComponent(end)}?overview=full&geometries=geojson`;
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`OSRM request failed: ${res.status}`);
+      const data = await res.json();
+      const coords = data?.routes?.[0]?.geometry?.coordinates || [];
+      return coords.map(
+        ([lng, lat]) => new window.google.maps.LatLng(lat, lng)
+      );
+    } catch (error) {
+      console.error("OSRM Error:", error);
+      throw error; // Re-throw to be caught by the caller
+    }
+  };
+
   const loadGoogleMaps = () => {
     if (window.google && window.google.maps)
       return Promise.resolve(window.google);
@@ -132,6 +255,7 @@ const D_StatusAmbulance = () => {
 
       if (response.data && response.data.Data) {
         setRequest(response.data.Data);
+        console.log(response.data.Data);
       } else {
         throw new Error("No data received");
       }
@@ -172,7 +296,7 @@ const D_StatusAmbulance = () => {
             },
           }
         );
-
+        localStorage.removeItem("amb_req_id");
         Swal.fire(
           "Cancelled!",
           "Your ambulance request has been cancelled.",
@@ -210,55 +334,88 @@ const D_StatusAmbulance = () => {
           },
         }
       );
+
       const reqData = res?.data?.Data || null;
-      if (reqData) setRequest(reqData); // keep UI in sync
+      if (reqData) {
+        // Update polling delay based on status
+        if (reqData.status === "notified") {
+          setPollingDelay(60000); // 60 seconds for notified status
+        } else if (
+          reqData.status === "accepted" ||
+          reqData.status === "in_progress"
+        ) {
+          setPollingDelay(20000); // 20 seconds for accepted/in_progress
+        } else if (
+          reqData.status === "completed" ||
+          reqData.status === "cancelled"
+        ) {
+          localStorage.removeItem("amb_req_id");
+
+          setPollingDelay(0); // Stop polling
+          setRequest(reqData);
+          setIsFirstLoad(false);
+          navigate(-1);
+        }
+
+        setRequest(reqData);
+        setIsFirstLoad(false);
+      }
       return reqData;
     } catch (e) {
       console.error("Polling error:", e);
+      // On error, retry after 30 seconds
+      setPollingDelay(30000);
       return null;
     }
   };
 
- useEffect(() => {
-  // Initial full load
-  fetchRequestDetails();
+  // Update the polling effect
+  useEffect(() => {
+    let isMounted = true;
+    let pollTimeout;
 
-  // Start 15s polling
-  const poll15s = async () => {
-    const data = await fetchRequestStatusLight();
-    if (data?.status === "accepted") {
-      // Switch to phase 2
-      if (fifteenSecRef.current) clearInterval(fifteenSecRef.current);
+    const pollStatus = async () => {
+      if (!isMounted) return;
 
-      // Start 2-minute polling immediately and then on interval
-      const startTwoMinPhase = async () => {
-        const d = await fetchRequestStatusLight();
-        if (d?.status === "completed") {
-          try {
-            localStorage.removeItem("amb_req_id");
-          } catch (_) {}
-          // back to page (or navigate to listing)
-          navigate(-1); // or navigate("/doctor/ambulance-request");
+      try {
+        const data = await fetchRequestStatusLight();
+        if (!isMounted) return;
+
+        // Always update the map with new data if available
+        if (data) {
+          await updateAmbulanceOnMap(data);
+        }
+
+        // Handle status changes
+        if (data?.status === "completed" || data?.status === "cancelled") {
+          localStorage.removeItem("amb_req_id");
+          // Don't navigate away, just stop polling
           return;
         }
-      };
 
-      // Run once immediately
-      startTwoMinPhase();
-      // And then every 2 minutes
-      twoMinRef.current = setInterval(startTwoMinPhase, 120000);
+        // Continue polling if needed
+        if (isMounted && pollingDelay > 0) {
+          pollTimeout = setTimeout(pollStatus, pollingDelay);
+        }
+      } catch (error) {
+        console.error("Polling error:", error);
+        if (isMounted) {
+          pollTimeout = setTimeout(pollStatus, 30000); // Retry after 30s on error
+        }
+      }
+    };
+
+    // Initial poll
+    if (isFirstLoad || pollingDelay > 0) {
+      pollStatus();
     }
-  };
 
-  // Fire immediately once, then every 15s
-  poll15s();
-  fifteenSecRef.current = setInterval(poll15s, 15000);
-
-  return () => {
-    if (fifteenSecRef.current) clearInterval(fifteenSecRef.current);
-    if (twoMinRef.current) clearInterval(twoMinRef.current);
-  };
-}, [id, navigate]);
+    // Cleanup
+    return () => {
+      isMounted = false;
+      if (pollTimeout) clearTimeout(pollTimeout);
+    };
+  }, [id, navigate, pollingDelay, isFirstLoad]);
 
   useEffect(() => {
     if (!request) return;
@@ -269,23 +426,37 @@ const D_StatusAmbulance = () => {
     const pickup = { lat: pc[1], lng: pc[0] };
     const drop = { lat: dc[1], lng: dc[0] };
 
-    // If you want to delay until accepted + 20s, gate with status and setTimeout
-    if (
-      request.status === "accepted" ||
-      request.status === "in_progress" ||
-      request.status === "completed"
-    ) {
-      initMapIfNeeded(pickup, drop);
-    }
+    const init = async () => {
+      if (
+        request.status === "accepted" ||
+        request.status === "in_progress" ||
+        request.status === "completed" ||
+        request.status === "notified"
+      ) {
+        await initMapIfNeeded(pickup, drop);
+        // Draw/update ambulance and polyline if accepted/in progress/completed
+        if (request.status !== "notified") {
+          await updateAmbulanceOnMap(request);
+        }
+      }
+    };
+
+    init();
   }, [request]);
 
-  if (loading) {
+  if (loading && isFirstLoad) {
     return (
       <div
-        className="d-flex justify-content-center align-items-center"
+        className="d-flex flex-column justify-content-center align-items-center"
         style={{ minHeight: "60vh" }}
       >
-        <Spinner animation="border" variant="primary" />
+        <Spinner animation="border" variant="primary" className="mb-3" />
+        <h4 className="text-center">
+          {request?.status
+            ? `Ambulance is ${request.status.replace("_", " ")}`
+            : "Requesting ambulance..."}
+        </h4>
+        <p className="text-muted">Please wait while we process your request</p>
       </div>
     );
   }
@@ -333,7 +504,11 @@ const D_StatusAmbulance = () => {
                   <h6>Pickup Location</h6>
                   <p className="mb-1">{request.pickupaddress}</p>
                   <small className="text-muted">
-                    {request.pickuplocation?.coordinates?.reverse().join(", ")}
+                    {request.pickuplocation?.coordinates
+                      ? [...request.pickuplocation.coordinates]
+                          .reverse()
+                          .join(", ")
+                      : ""}
                   </small>
                 </div>
               </div>
@@ -346,7 +521,11 @@ const D_StatusAmbulance = () => {
                   <h6>Drop Location</h6>
                   <p className="mb-1">{request.dropaddress}</p>
                   <small className="text-muted">
-                    {request.droplocation?.coordinates?.reverse().join(", ")}
+                    {request.droplocation?.coordinates
+                      ? [...request.droplocation.coordinates]
+                          .reverse()
+                          .join(", ")
+                      : ""}
                   </small>
                 </div>
               </div>
@@ -449,7 +628,7 @@ const D_StatusAmbulance = () => {
             <Button
               variant="outline-danger"
               onClick={handleCancelRequest}
-              disabled={["completed", "cancelled"].includes(request.status)}
+              disabled={["completed", "accepted"].includes(request.status)}
             >
               <FaTimes className="me-2" />
               Cancel Request
