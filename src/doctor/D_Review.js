@@ -59,7 +59,6 @@ const D_Review = () => {
             })
             .catch(function (error) {
                 console.log(error);
-                // toast(error.response.data.Message, { className: "custom-toast-error" });
             })
             .finally(() => {
                 setloading(false);

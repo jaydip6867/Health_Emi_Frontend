@@ -1514,21 +1514,6 @@ const DoctorProfile = () => {
                 </Card>
               )}
 
-              {/* Delete Account Section */}
-              {/* <Card className="mt-4 border-danger">
-                <Card.Header className="text-bg-danger">
-                  <h6 className="mb-0 text-white">Delete Doctor</h6>
-                </Card.Header>
-                <Card.Body className="p-4 text-center">
-                  <p className="text-muted mb-3">
-                    Once you delete your account, there is no going back. Please
-                    be certain.
-                  </p>
-                  <Button variant="outline-danger" onClick={deletdoctor}>
-                    Delete Doctor Account
-                  </Button>
-                </Card.Body>
-                </Card> */}
             </div>
           </Col>
         </Row>

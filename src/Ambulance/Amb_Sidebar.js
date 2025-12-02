@@ -16,10 +16,6 @@ const Amb_dashboard = () => {
                     >
                         <MdLocalHospital className="me-2" /> Ambulance Requests
                     </NavLink>
-                    
-                    {/* <NavLink to={'/doctor/doctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}><MdDifference />Appointment</NavLink> */}
-                    {/* <NavLink to={'/doctor/doctorsurgery'} className={({ isActive }) => (isActive ? 'active' : '')} ><MdDiversity1 />Surgery</NavLink> */}
-                    {/* <NavLink to={'/doctor/doctorblog'} className={({ isActive }) => (isActive ? 'active' : '')} ><MdCardGiftcard />Blog</NavLink> */}
                 </div>
             </div>
         </Col>

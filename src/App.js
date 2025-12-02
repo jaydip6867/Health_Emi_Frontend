@@ -12,7 +12,6 @@ import PatientRegister from './patient/PatientRegister';
 import PatientLogin from './patient/PatientLogin';
 import D_Surgery from './doctor/D_Surgery';
 import PatientForgotps from './patient/PatientForgotps';
-import PatientDashboard from './patient/PatientDashboard';
 import PatientProfile from './patient/PatientProfile';
 import P_Appointment from './patient/P_Appointment';
 import D_Calender from './doctor/D_Calender';
@@ -87,7 +86,6 @@ function App() {
         <Route path='/patient'>
           <Route path='' index element={<PatientLogin />}></Route>
           <Route path='forgotpatient'  element={<PatientForgotps />}></Route>
-          <Route path='patientdahsboard' element={<PatientDashboard />}></Route>
           <Route path='appointment' element={<P_Appointment />}></Route>
           <Route path='surgeries' element={<P_Surgeries />}></Route>
           <Route path='patientprofile' element={<PatientProfile />}></Route>

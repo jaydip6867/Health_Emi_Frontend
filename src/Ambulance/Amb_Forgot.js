@@ -21,7 +21,6 @@ const Amb_Forgot = () => {
     const [email, setemail] = useState('')
     const [otp, setotp] = useState('')
     const [newps, setnewps] = useState('')
-    // const [cfmps, setcfmps] = useState('')
 
     function emailotpforgot() {
         setloading(true)
@@ -33,11 +32,9 @@ const Amb_Forgot = () => {
             }
         }).then((res) => {
             toast('OTP sent To your email...', { className: 'custom-toast-success' })
-            // console.log(res)
             setamb_email(false);
             setamb_forgt_otp(true);
         }).catch(function (error) {
-            // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         }).finally(()=>{
             setloading(false)
@@ -55,11 +52,9 @@ const Amb_Forgot = () => {
             }
         }).then((res) => {
             toast('OTP Verify Successfully...', { className: 'custom-toast-success' })
-            // console.log(res)
             setamb_forgt_otp(false);
             setamb_rest_ps(true);
         }).catch(function (error) {
-            // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         });
     }
@@ -74,10 +69,8 @@ const Amb_Forgot = () => {
             }
         }).then((res) => {
             toast('Password Reset Successfully...', { className: 'custom-toast-success' })
-            // console.log(res)
             navigate('/ambulance')
         }).catch(function (error) {
-            // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         });
     }

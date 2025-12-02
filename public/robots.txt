@@ -1,3 +1,21 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Disallow: /doctor/
+Disallow: /patient/
+Disallow: /ambulance/
+Disallow: /api/
+Disallow: /private/
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /*?*
+Allow: /sitemap
+Allow: /blog
+Allow: /doctors
+Allow: /surgeries
+Allow: /video-consult
+Allow: /ambulancepage
+Allow: /about
+Allow: /contact
+Allow: /faq
+
+Sitemap: https://healtheasyemi.com/sitemap.xml

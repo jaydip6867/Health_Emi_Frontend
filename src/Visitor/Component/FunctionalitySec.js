@@ -10,7 +10,7 @@ const FunctionalitySec = () => {
             <Container>
                 <Row className='justify-content-center g-4'>
                     <Col xs={12} sm={6} lg={3}>
-                        <FadeIn>
+                        <FadeIn delay={0}>
                             <Card className='functionality_box'>
                                 <Card.Img src={require('../assets/find-doctor-image.png')} alt='video consultant' />
                                 <Card.Body>

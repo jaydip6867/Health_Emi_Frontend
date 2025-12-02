@@ -19,9 +19,7 @@ const BestDoctor = () => {
             }
         }).then((res) => {
             setdoclist(res.data.Data)
-            // console.log('doctor ', res.data.Data)
         }).catch(function (error) {
-            // console.log(error);
         }).finally(() => {
             setloading(false)
         });

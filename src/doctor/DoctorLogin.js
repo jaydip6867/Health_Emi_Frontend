@@ -18,8 +18,7 @@ const DoctorLogin = () => {
     var navigate = useNavigate();
     const [loading, setloading] = useState(false)
 
-    // var logindata;
-
+ 
     useEffect(() => {
         var getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
         if (getlocaldata != null) {
@@ -27,8 +26,6 @@ const DoctorLogin = () => {
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
             var data = JSON.parse(decrypted);
         }
-        // var data = JSON.parse(localStorage.getItem('doctordata'));
-        // console.log('logindata = ', data)
         if (!data) {
             navigate('/doctor')
         }
@@ -50,7 +47,6 @@ const DoctorLogin = () => {
     }
 
     const logindoctor = async () => {
-        // console.log(frmdoctor)
         setloading(true)
         await axios({
             method: 'post',
@@ -59,14 +55,9 @@ const DoctorLogin = () => {
         }).then((res) => {
             const encrypted = CryptoJS.AES.encrypt(JSON.stringify(res.data.Data), SECRET_KEY).toString();
 
-            // localStorage.setItem('doctor_chanelid', res.data.Data.doctorData.channelid)
             localStorage.setItem(STORAGE_KEYS.DOCTOR, encrypted)
-            // toast('Doctor Login successfully...', { className: 'custom-toast-success' })
-            // console.log(res)
-            // localStorage.setItem('doctordata', JSON.stringify(res))
             navigate('doctordashboard')
         }).catch(function (error) {
-            // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         }).finally(() => {
             setloading(false)

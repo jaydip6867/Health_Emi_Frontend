@@ -59,7 +59,7 @@ const Blog = () => {
             }
         }).then((res) => {
             const data = res?.data?.Data;
-            console.log(data)
+            // console.log(data)
             if (data?.docs) {
                 setbloglist(data.docs)
                 if (data?.totalPages) setTotalPages(data.totalPages)
@@ -126,7 +126,7 @@ const Blog = () => {
             {/* blog lists */}
             <section className='py-5'>
                 <Container>
-                    <FadeIn>
+                    <FadeIn delay={0}>
                     <Row className='g-4'>
                         {bloglist && bloglist?.map((item, index) => (
                             <BlogBox key={index} item={item} />

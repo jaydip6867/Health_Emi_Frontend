@@ -25,7 +25,6 @@ const DoctorForgot = () => {
 
     const [email, setemail] = useState('')
     const [newps, setnewps] = useState('')
-    // const [cfmps, setcfmps] = useState('')
 
     function emailotpforgot() {
         setloading(true)
@@ -37,11 +36,9 @@ const DoctorForgot = () => {
             }
         }).then((res) => {
             toast('OTP sent To your email...', { className: 'custom-toast-success' })
-            // console.log(res)
             setdoc_email(false);
             setdoc_forgt_otp(true);
         }).catch(function (error) {
-            // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         }).finally(() => {
             setloading(false)
@@ -59,17 +56,14 @@ const DoctorForgot = () => {
             }
         }).then((res) => {
             toast('OTP Verify Successfully...', { className: 'custom-toast-success' })
-            // console.log(res)
             setdoc_forgt_otp(false);
             setdoc_rest_ps(true);
         }).catch(function (error) {
-            // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         });
     }
 
     function resetps() {
-        // setloading(true)
         axios({
             method: 'post',
             url: `${API_BASE_URL}/doctor/forgetpassword/setpassword`,
@@ -84,44 +78,34 @@ const DoctorForgot = () => {
                 confirmButtonText: 'OK',
               }).then((result) => {
                 if (result.isConfirmed) {
-                  // Redirect to another page
-                  navigate('/doctor'); // change to your desired route
+                  navigate('/doctor');
                 }
               });
-            // console.log(res)
-            // navigate('/doctor')
         }).catch(function (error) {
-            // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         });
     }
 
     const [otp, setotp] = useState("");
     const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
-    // Handle OTP input change
     const handleOtpChange = (index, value) => {
-        // Only allow single digit
         if (value.length > 1) return;
 
-        // Only allow numbers
         if (value && !/^[0-9]$/.test(value)) return;
 
         const newOtpDigits = [...otpDigits];
         newOtpDigits[index] = value;
         setOtpDigits(newOtpDigits);
 
-        // Update the main otp variable
         const otpString = newOtpDigits.join("");
         setotp(otpString);
 
-        // Auto focus to next input
         if (value && index < 5) {
             const nextInput = document.getElementById(`otp-${index + 1}`);
             if (nextInput) nextInput.focus();
         }
     };
 
-    // Handle backspace
     const handleOtpKeyDown = (index, e) => {
         if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
             const prevInput = document.getElementById(`otp-${index - 1}`);

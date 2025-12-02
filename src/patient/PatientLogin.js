@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap'
-// import '../doctor/css/doctor.css'
 import { Link, useNavigate } from 'react-router-dom'
 import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
@@ -43,14 +42,10 @@ const PatientLogin = () => {
             url: `${API_BASE_URL}/user/login`,
             data: { "email": email, "password": password }
         }).then((res) => {
-            // console.log(res)
             const encrypted = CryptoJS.AES.encrypt(JSON.stringify(res.data.Data), SECRET_KEY).toString();
             localStorage.setItem(STORAGE_KEYS.PATIENT, encrypted)
-            // console.log(encrypted)
-            // toast(res.data.Message, { className: 'custom-toast-success' });
             navigate('/')
         }).catch(function (error) {
-            // console.log(error);
             toast(error.response.data.Message, { className: 'custom-toast-error' })
         }).finally(() => {
             setloading(false)

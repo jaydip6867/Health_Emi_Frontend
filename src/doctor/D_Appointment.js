@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Badge, Button, Card, Col, Container, Form, Modal, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
-import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Loader from '../Loader'
@@ -884,10 +883,6 @@ const D_Appointment = () => {
                                     <span className='text-muted'>Time</span>
                                     <span className='fw-semibold'>{currentAppointment.time}</span>
                                 </div>
-                                {/* <div>
-                                    <span className='text-muted d-block'>Reason</span>
-                                    <span>{currentAppointment.appointment_reason || 'Not provided'}</span>
-                                </div> */}
                             </div>
                         ) : (
                             <p className='text-muted mb-0'>No appointment selected.</p>
@@ -1190,7 +1185,6 @@ const D_Appointment = () => {
             >
                 <div style={{ background: '#16A498', color: '#fff', padding: '20px 20px' }}>
                     <div style={{ fontSize: 36, fontWeight: 800, textAlign: 'center' }}>Dr. {doctor?.name || '-'}</div>
-                    {/* <div style={{ fontSize: 14, marginTop: 4 }}>({doctor?.degree || '-'}) - {doctor?.speciality || 'Doctor'}</div> */}
                     <div style={{ display: 'flex', gap: 16, fontSize: 12, marginTop: 8, justifyContent: 'center' }}>
                         {doctor?.email && <div>{doctor.email}</div>}
                         {doctor?.mobile && <div>{doctor.mobile}</div>}

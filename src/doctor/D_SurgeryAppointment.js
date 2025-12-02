@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Card, Col, Container, Modal, OverlayTrigger, Row, Tooltip, Form, Table } from 'react-bootstrap'
 import DoctorSidebar from './DoctorSidebar'
-import DoctorNav from './DoctorNav'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Loader from '../Loader'
@@ -10,7 +9,7 @@ import Swal from 'sweetalert2'
 import SmartDataTable from '../components/SmartDataTable'
 import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye } from 'react-icons/md'
 import DatePicker from 'react-datepicker'
-import { format, parse } from 'date-fns'
+import { format, parse, addDays } from 'date-fns'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
@@ -112,7 +111,7 @@ const D_SurgeryAppointment = () => {
     }
 
     // reschedule appoinetment date
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(addDays(new Date(), 2));
 
     const [showreschedule, setrescheduleShow] = useState(false);
     const [schedule_data, setschedule_data] = useState(null);
@@ -125,9 +124,8 @@ const D_SurgeryAppointment = () => {
             return v._id === id
         })
         setschedule_data(data)
-        // console.log(data)
+        setSelectedDate(addDays(new Date(), 2))
         handlerescheduleShow()
-        // console.log(data)
     }
 
     const formattedDateTime = selectedDate
@@ -720,8 +718,6 @@ const D_SurgeryAppointment = () => {
                                     <Modal.Title>Reschedule Surgery</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    {/* <p>Surgery Name :- {v?.surgerydetails.name}</p> */}
-                                    {/* <Form.Label>New Appointment Date</Form.Label><br /> */}
                                     <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                                         <h5 >Select New Appointment Date & Time</h5>
                                         <div style={{
@@ -736,7 +732,7 @@ const D_SurgeryAppointment = () => {
                                                 timeFormat="hh:mm aa"
                                                 timeIntervals={30}
                                                 dateFormat="MMMM d, yyyy h:mm aa"
-                                                minDate={new Date()}
+                                                minDate={addDays(new Date(), 2)}
                                                 inline
                                                 calendarClassName="custom-calendar"
                                                 className="custom-datepicker"

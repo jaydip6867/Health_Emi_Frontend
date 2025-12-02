@@ -180,13 +180,13 @@ h6 {
     cursor: pointer;
 }
 
-.fadein {
+.fade-in {
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.3s ease-out;
 }
 
-.fadein.visible {
+.fade-in.visible {
     opacity: 1;
     transform: translateY(0);
 }

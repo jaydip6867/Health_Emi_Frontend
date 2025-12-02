@@ -19,7 +19,7 @@ const PatientRegister = () => {
   const [pat_reg, setpatreg] = useState(true);
   const [pat_otp, setpatotp] = useState(false);
 
-  const [blood_g, setbloog_g] = useState(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']);
+  const [blood_g, setblood_g] = useState(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']);
   const [patient, setpatient] = useState({ name: '', email: '', gender: '', mobile: '', pincode: '', blood_group: '', password: '' })
   const [profilePicPreview, setProfilePicPreview] = useState('')
   const [profilePicFile, setProfilePicFile] = useState(null)

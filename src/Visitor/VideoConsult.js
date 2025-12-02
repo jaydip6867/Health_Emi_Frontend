@@ -106,7 +106,7 @@ const VideoConsult = () => {
             </section>
             <section className='spacer-y'>
                 <Container>
-                    <FadeIn>
+                    <FadeIn delay={0}>
                     <h2 className='head_sec mb-4'><HeadTitle title="Why Choose Health Easy EMI’s E-OPD?" /></h2>
 
                     <Row className="g-4 justify-content-center feature_icon_sec">
@@ -150,7 +150,7 @@ const VideoConsult = () => {
             </section>
 
             <section>
-                <FadeIn>
+                <FadeIn delay={0}>
                 <Container>
                     {/* CTA */}
                     <Card className="border-0 rounded-4 matter_bg">

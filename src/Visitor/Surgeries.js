@@ -100,15 +100,11 @@ const Surgeries = () => {
                                 surgerylist.map((item) => {
                                     const name = item?.name;
                                     const img = item?.surgery_photo;
-                                    // Surgerydoctorlist expects a surgerytypeid in the API body.
-                                    // Prefer nested id if available, fallback to string field or surgery id to avoid crashes.
-                                    // const typeId = item?.surgerytypeid?._id;
                                     return (
                                         <Link to={`/surgery/${encodeURIComponent(btoa(item?.name))}`} className='surgery_list_box' key={item?._id}>
                                             <img
                                                 src={img || defaultSurgeryIcon}
                                                 alt={name}
-                                                // onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = defaultSurgeryIcon; }}
                                             />
                                             <p className='mt-2 fw-semibold text-capitalize'>{name}</p>
                                         </Link>

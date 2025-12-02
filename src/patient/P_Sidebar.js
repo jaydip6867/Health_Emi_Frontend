@@ -14,11 +14,8 @@ const P_Sidebar = ({patient}) => {
                             <img src={patient?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} />
                         </div>
                         <div className='sidebar_nav mt-3 px-2 py-3'>
-                            {/* <NavLink to={'/patient/patientdahsboard'} className={({ isActive }) => (isActive ? 'active' : '')}><MdSpaceDashboard />Dashboard</NavLink> */}
-                            {/* <NavLink to={'/patient/patientdoctorappointment'} className={({ isActive }) => (isActive ? 'active' : '')}><MdDifference />Add Appointment</NavLink> */}
                             <NavLink to={'/patient/appointment'} className={({ isActive }) => (isActive ? 'active' : '')} ><IoCalendarOutline /><span>Consultation Appointment</span></NavLink>
                             <NavLink to={'/patient/surgeries'} className={({ isActive }) => (isActive ? 'active' : '')} ><IoCalendarOutline /><span>Surgeries Appointment</span></NavLink>
-                            {/* <NavLink to={'/patient/blog'} className={({ isActive }) => (isActive ? 'active' : '')}><BiSolidCommentAdd /><span>Blog</span></NavLink> */}
                             <NavLink to={'/patient/patientprofile'} className={({ isActive }) => (isActive ? 'active' : '')}><FiSettings /><span>Settings</span></NavLink>
                         </div>
                     </div>
