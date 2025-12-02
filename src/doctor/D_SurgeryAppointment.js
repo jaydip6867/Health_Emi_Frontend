@@ -599,7 +599,7 @@ const D_SurgeryAppointment = () => {
                                     <div className='p-2 rounded-3 border rounded' style={{ background: 'var(--white)' }}>
                                         <div className='d-flex flex-wrap align-items-center justify-content-between gap-3 p-3'>
                                             <div className='d-flex align-items-center gap-3'>
-                                                <img src={v?.doctorid?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} className='rounded-3' style={{ width: 72, height: 72, objectFit: 'cover' }} />
+                                                <img src={v?.createdByuser?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} className='rounded-3' style={{ width: 72, height: 72, objectFit: 'cover' }} />
                                                 <div>
                                                     <div className='d-flex align-items-center gap-2 flex-wrap'>
                                                         <h5 className='mb-0'>{v?.patientname}</h5>
@@ -683,7 +683,7 @@ const D_SurgeryAppointment = () => {
                                         </div>
 
                                         {
-                                            single_view.status === "Completed" ? <div>
+                                            v.status === "Completed" ? <div>
                                                 <hr />
                                                 <div className='fw-semibold mb-3'>Prescription</div>
                                                 <Row className='g-3'>
@@ -691,11 +691,11 @@ const D_SurgeryAppointment = () => {
                                                     <Col md={4} sm={6}>
                                                         <Card className='h-100'>
                                                             <div className='ratio ratio-16x9 bg-light'>
-                                                                <iframe src={appointment?.doctor_remark} title={`prescription surgery`} className='w-100 h-100 border-0'></iframe>
+                                                                <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`} title={`prescription surgery`} className='w-100 h-100 border-0'></iframe>
                                                             </div>
                                                             <Card.Body className='d-flex justify-content-between align-items-center'>
                                                                 <div className='small text-muted'>Prescription</div>
-                                                                <Button size='sm' variant='outline-primary' onClick={() => window.open(appointment?.doctor_remark, '_blank')}>View</Button>
+                                                                <Button size='sm' variant='outline-primary' onClick={() => window.open(`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`, '_blank')}>View</Button>
                                                             </Card.Body>
                                                         </Card>
                                                     </Col>

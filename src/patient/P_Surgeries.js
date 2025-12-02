@@ -87,7 +87,7 @@ const P_Surgeries = () => {
         var datasingle = appoint_data.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        // console.log(datasingle)
+        console.log(datasingle)
     }
 
     function openReviewModal(appointmentId) {

@@ -89,7 +89,7 @@ const P_Appointment = () => {
     var datasingle = appoint_data.filter((v, i) => { return v._id === id })
     setsingleview(datasingle);
     handleShow()
-    // console.log(datasingle)
+    console.log(datasingle)
   }
 
   function openReviewModal(appointmentId) {
@@ -348,7 +348,7 @@ const P_Appointment = () => {
             const hospital = (v?.doctorid?.hospitals && v?.doctorid?.hospitals[0]) || {};
             const clinicName = hospital?.name || v?.surgerydetails?.surgerytype || '-';
             const clinicLocation = [hospital?.address, hospital?.city, hospital?.state].filter(Boolean).join(', ');
-            const fee = Number(v?.totalamount || 0);
+            const fee = Number(v?.status === "Pending" || v?.status === "Accept" || v?.status === "Cancel" ? v?.price : v?.totalamount);
             return (
               <Modal show={show} onHide={handleClose} centered size="lg" key={i}>
                 <Modal.Header closeButton>

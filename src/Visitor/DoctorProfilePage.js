@@ -154,6 +154,7 @@ const DoctorProfilePage = () => {
   const [show, setShow] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const [showAllSurgeries, setShowAllSurgeries] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => {
@@ -541,7 +542,7 @@ const DoctorProfilePage = () => {
                       <p className="text-dark mb-2">{doctor_profile.specialty} ({doctor_profile.qualification})</p>
                       <div className="d-flex align-items-center mb-2">
                         <FaLocationDot className="me-2 text-muted" />
-                        <small className="text-muted">{doctor_profile.address || 'Address Not Available'}</small>
+                        <small className="text-muted">{doctor_profile.state} , {doctor_profile.city}</small>
                       </div>
                       <div className="d-flex align-items-center mb-2">
                         <FaEnvelope className="me-2 text-muted" />
@@ -556,7 +557,8 @@ const DoctorProfilePage = () => {
                               <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#d5E1EA', fontSize: '14px' }} >
                                 <svg width="21" height="21" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M8.96001 0C5.62546 0 2.91455 2.71091 2.91455 6.04545C2.91455 9.31636 5.47273 11.9636 8.80728 12.0782C8.9091 12.0655 9.01091 12.0655 9.08728 12.0782C9.11273 12.0782 9.12546 12.0782 9.15091 12.0782C9.16364 12.0782 9.16364 12.0782 9.17637 12.0782C12.4346 11.9636 14.9927 9.31636 15.0055 6.04545C15.0055 2.71091 12.2946 0 8.96001 0ZM5.72727 15.2726C5.01455 15.2726 4.45455 14.6999 4.45455 13.9999C4.45455 13.2999 5.02727 12.7272 5.72727 12.7272C6.42727 12.7272 7 13.2999 7 13.9999C7 14.6999 6.42727 15.2726 5.72727 15.2726ZM10.1691 15.2726C9.45636 15.2726 8.89636 14.6999 8.89636 13.9999C8.89636 13.2999 9.46909 12.7272 10.1691 12.7272C10.8691 12.7272 11.4418 13.2999 11.4418 13.9999C11.4418 14.6999 10.8818 15.2726 10.1691 15.2726ZM14.6236 15.2726C13.9109 15.2726 13.3509 14.6999 13.3509 13.9999C13.3509 13.2999 13.9236 12.7272 14.6236 12.7272C15.3236 12.7272 15.8964 13.2999 15.8964 13.9999C15.8964 14.6999 15.3236 15.2726 14.6236 15.2726Z" fill="#1C2A3A" />
-                                  <path d="M15.4255 15.4639C11.8745 13.0967 6.08364 13.0967 2.50727 15.4639C0.890909 16.5457 0 18.0094 0 19.5748C0 21.1403 0.890909 22.5912 2.49455 23.6603C4.27636 24.8567 6.61818 25.4548 8.96 25.4548C11.3018 25.4548 13.6436 24.8567 15.4255 23.6603C17.0291 22.5785 17.92 21.1276 17.92 19.5494C17.9073 17.9839 17.0291 16.533 15.4255 15.4639Z" fill="#1C2A3A" />
+                                  <path d="M15.4255 15.4639C11.8745 13.0967 6.08364 13.0967 2.50727 15.4639C0.890909 16.5457 0 18.0094 0 19.5748C0 21.1403 0.890909 22.5912 2.49455 23.6603C4.27636 24.8567 6.61818 25.4548 8.96 25.4548C11.3018 25.4548 13.6436 24.8567 15.4255 23.6603C17.0291 22.5785 17.92 21.1276 17.92 19.5494C17.9073 17.9839 17.0291 16.533 15.4255 15.4639ZM5.72727 15.2726C5.01455 15.2726 4.45455 14.6999 4.45455 13.9999C4.45455 13.2999 5.02727 12.7272 5.72727 12.7272C6.42727 12.7272 7 13.2999 7 13.9999C7 14.6999 6.42727 15.2726 5.72727 15.2726ZM10.1691 15.2726C9.45636 15.2726 8.89636 14.6999 8.89636 13.9999C8.89636 13.2999 9.46909 12.7272 10.1691 12.7272C10.8691 12.7272 11.4418 13.2999 11.4418 13.9999C11.4418 14.6999 10.8818 15.2726 10.1691 15.2726ZM14.6236 15.2726C13.9109 15.2726 13.3509 14.6999 13.3509 13.9999C13.3509 13.2999 13.9236 12.7272 14.6236 12.7272C15.3236 12.7272 15.8964 13.2999 15.8964 13.9999C15.8964 14.6999 15.3236 15.2726 14.6236 15.2726Z" fill="#1C2A3A" />
+                                  <path d="M25.4292 6.09636V11.1873C25.4292 13.7327 24.6401 15.4636 23.0619 16.4182C22.6801 16.6473 22.2346 16.3418 22.2346 15.8964L22.2474 11.1873C22.2474 6.09636 19.3328 3.18182 14.2419 3.18182L6.491 3.19455C6.04555 3.19455 5.74009 2.74909 5.96918 2.36727C6.92373 0.789091 8.65464 0 11.1874 0H19.3328C23.3928 0 25.4292 2.03636 25.4292 6.09636Z" fill="#1C2A3A" />
                                   <path d="M22.947 6.79614C23.1507 9.26523 21.3943 11.4289 18.9634 11.7216C22.6801 16.6473 22.2346 16.3418 22.2346 15.8964L22.2474 11.1873C22.2474 6.09636 19.3328 3.18182 14.2419 3.18182L6.491 3.19455C6.04555 3.19455 5.74009 2.74909 5.96918 2.36727C6.92373 0.789091 8.65464 0 11.1874 0H19.3328C23.3928 0 25.4292 2.03636 25.4292 6.09636Z" fill="#1C2A3A" />
                                 </svg>
 
@@ -578,8 +580,6 @@ const DoctorProfilePage = () => {
                                   <path d="M14.2418 5.09082H6.09636C5.76545 5.09082 5.44727 5.10355 5.14182 5.14173C1.71818 5.43446 0 7.45809 0 11.1872V16.2781C0 21.369 2.03636 22.3745 6.09636 22.3745H6.60545C6.88545 22.3745 7.25455 22.5654 7.42 22.7817L8.94727 24.8181C9.62182 25.7217 10.7164 25.7217 11.3909 24.8181L12.9182 22.7817C13.1091 22.5272 13.4145 22.3745 13.7327 22.3745H14.2418C17.9709 22.3745 19.9945 20.669 20.2873 17.2326C20.3255 16.9272 20.3382 16.609 20.3382 16.2781V11.1872C20.3382 7.12718 18.3018 5.09082 14.2418 5.09082ZM5.72727 15.2726C5.01455 15.2726 4.45455 14.6999 4.45455 13.9999C4.45455 13.2999 5.02727 12.7272 5.72727 12.7272C6.42727 12.7272 7 13.2999 7 13.9999C7 14.6999 6.42727 15.2726 5.72727 15.2726ZM10.1691 15.2726C9.45636 15.2726 8.89636 14.6999 8.89636 13.9999C8.89636 13.2999 9.46909 12.7272 10.1691 12.7272C10.8691 12.7272 11.4418 13.2999 11.4418 13.9999C11.4418 14.6999 10.8818 15.2726 10.1691 15.2726ZM14.6236 15.2726C13.9109 15.2726 13.3509 14.6999 13.3509 13.9999C13.3509 13.2999 13.9236 12.7272 14.6236 12.7272C15.3236 12.7272 15.8964 13.2999 15.8964 13.9999C15.8964 14.6999 15.3236 15.2726 14.6236 15.2726Z" fill="#3F5FAB" />
                                   <path d="M25.4292 6.09636V11.1873C25.4292 13.7327 24.6401 15.4636 23.0619 16.4182C22.6801 16.6473 22.2346 16.3418 22.2346 15.8964L22.2474 11.1873C22.2474 6.09636 19.3328 3.18182 14.2419 3.18182L6.491 3.19455C6.04555 3.19455 5.74009 2.74909 5.96918 2.36727C6.92373 0.789091 8.65464 0 11.1874 0H19.3328C23.3928 0 25.4292 2.03636 25.4292 6.09636Z" fill="#3F5FAB" />
                                 </svg>
-
-
                               </div>
                               <div className="d-flex flex-column mt-1">
                                 <span className="fw-bold">{!doctor_profile?.surgeriesDetails || doctor_profile?.surgeriesDetails?.length === 0 ? "0" : doctor_profile?.surgeriesDetails?.length}</span>
@@ -641,32 +641,43 @@ const DoctorProfilePage = () => {
                 <Card.Body className="p-4">
                   <h5 className="fw-bold mb-4">Surgeries</h5>
                   <Row className="g-4">
-                    {doctor_profile.surgeriesDetails.length === 0 ? <p className='text-muted'>Surgery not added...</p> : doctor_profile.surgeriesDetails.map((surgery, index) => (
-                      <Col md={6} key={index}>
-                        <Card className="border-1 pointer shadow-sm border-opacity-25 h-100" style={{ borderRadius: '12px' }} onClick={() => handleServiceModalShow(surgery)}>
-                          <Card.Body className="p-3">
-                            <Row >
-                              <Col xs={5}>
-                                <Image
-                                  src={surgery.surgery_photo || require("../assets/image/doctor_img.jpg")}
-                                  style={{ minHeight: 100, maxHeight: 100, objectFit: 'cover' }}
-                                  className="border border-2 border-light rounded-3 w-100 h-100"
-                                  onError={(e) => {
-                                    e.target.src = require("../assets/image/doctor_img.jpg");
-                                  }}
-                                />
-                              </Col>
-                              <Col xs={7}>
-                                <h6 className="fw-bold mb-1 border-bottom pb-2">{surgery?.name}</h6>
-                                <p className="text-muted small mb-1">{surgery?.surgerytypeid?.surgerytypename || 'Surgery Type'}</p>
-                                <p className="text-muted small mb-0">{surgery?.days + ' Days of Surgery'}</p>
-                              </Col>
-                            </Row>
-                          </Card.Body>
-                        </Card>
-                      </Col>
-                    ))}
+                    {(!doctor_profile?.surgeriesDetails || doctor_profile?.surgeriesDetails.length === 0) ? (
+                      <p className='text-muted'>Surgery not added...</p>
+                    ) : (
+                      (showAllSurgeries ? doctor_profile.surgeriesDetails : doctor_profile.surgeriesDetails.slice(0, 4)).map((surgery, index) => (
+                        <Col md={6} key={index}>
+                          <Card className="border-1 pointer shadow-sm border-opacity-25 h-100" style={{ borderRadius: '12px' }} onClick={() => handleServiceModalShow(surgery)}>
+                            <Card.Body className="p-3">
+                              <Row >
+                                <Col xs={5}>
+                                  <Image
+                                    src={surgery.surgery_photo || require("../assets/image/doctor_img.jpg")}
+                                    style={{ minHeight: 100, maxHeight: 100, objectFit: 'cover' }}
+                                    className="border border-2 border-light rounded-3 w-100 h-100"
+                                    onError={(e) => {
+                                      e.target.src = require("../assets/image/doctor_img.jpg");
+                                    }}
+                                  />
+                                </Col>
+                                <Col xs={7}>
+                                  <h6 className="fw-bold mb-1 border-bottom pb-2">{surgery?.name}</h6>
+                                  <p className="text-muted small m-0">{surgery?.surgerytypeid?.surgerytypename || 'Surgery Type'}</p>
+                                  {/* <p className="text-muted small mb-0">{surgery?.days + ' Days of Surgery'}</p> */}
+                                </Col>
+                              </Row>
+                            </Card.Body>
+                          </Card>
+                        </Col>
+                      ))
+                    )}
                   </Row>
+                  {doctor_profile?.surgeriesDetails?.length > 4 && (
+                    <div className="text-center mt-3">
+                      <Button className='login-signup-btn' size="sm" onClick={() => setShowAllSurgeries(prev => !prev)}>
+                        {showAllSurgeries ? 'Show less' : 'Read more'}
+                      </Button>
+                    </div>
+                  )}
                 </Card.Body>
               </Card>
 

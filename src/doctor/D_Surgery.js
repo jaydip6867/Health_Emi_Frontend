@@ -1264,7 +1264,7 @@ const D_Surgery = () => {
                 show={show}
                 onHide={handleClose}
                 centered
-                size="xl"
+                size="lg"
                 key={i}
               >
                 <Modal.Header closeButton>

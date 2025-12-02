@@ -22,7 +22,7 @@ const BlogBox = ({ item, index }) => {
                         <div className='d-flex justify-content-between blog_box'>
                             <div className='d-flex align-items-center gap-1'>
                                 <img src={item?.createdBy?.profile_pic}></img>
-                                <span>{item?.createdBy?.name}</span>
+                                <span>Dr. {item?.createdBy?.name}</span>
                             </div>
                             <div className='d-flex align-items-center gap-1'>
                                 <IoCalendarOutline />
