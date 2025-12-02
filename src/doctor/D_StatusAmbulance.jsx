@@ -25,7 +25,7 @@ import { API_BASE_URL, SECRET_KEY } from "../config";
 const D_StatusAmbulance = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const directionsRendererRef = React.useRef(null);
+  
   const mapElRef = React.useRef(null);
   const mapRef = React.useRef(null);
   const pickupMarkerRef = React.useRef(null);
@@ -35,12 +35,11 @@ const D_StatusAmbulance = () => {
   const [request, setRequest] = useState(null);
   const [error, setError] = useState(null);
   const routePolylineRef = React.useRef(null);
-  const twoSecRef = React.useRef(null);
+
 
   let gmapsPromise = null;
   const GOOGLE_MAPS_API_KEY = "AIzaSyBoGhF4LGSyzplqWd4qJXmELcDrbZIIQDA"; // or from your config
-  const fifteenSecRef = React.useRef(null);
-  const twoMinRef = React.useRef(null);
+
   // Add these state variables at the top with other state declarations
   const [pollingDelay, setPollingDelay] = useState(2000); // Initial delay for first poll
   const [isFirstLoad, setIsFirstLoad] = useState(true);
@@ -230,44 +229,6 @@ const D_StatusAmbulance = () => {
     mapRef.current.fitBounds(bounds);
   };
 
-  const fetchRequestDetails = async () => {
-    try {
-      setLoading(true);
-      const getlocaldata = localStorage.getItem("healthdoctor");
-      if (!getlocaldata) {
-        navigate("/doctor");
-        return;
-      }
-
-      const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
-      const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-
-      const response = await axios.post(
-        `${API_BASE_URL}/doctor/ambulancerequests/getone`,
-        { ambulancerequestid: id },
-        {
-          headers: {
-            Authorization: `Bearer ${data.accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.data && response.data.Data) {
-        setRequest(response.data.Data);
-        console.log(response.data.Data);
-      } else {
-        throw new Error("No data received");
-      }
-    } catch (error) {
-      console.error("Error fetching request details:", error);
-      setError(
-        error.response?.data?.message || "Failed to load request details"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCancelRequest = async () => {
     try {
