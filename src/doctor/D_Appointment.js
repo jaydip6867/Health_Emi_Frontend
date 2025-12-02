@@ -62,7 +62,9 @@ const D_Appointment = () => {
                 Authorization: token
             }
         }).then((res) => {
-            // console.log(res.data.Data)
+            // var len = res.data.Data;
+            // console.log(len.length)
+            console.log(res.data.Data)
             setappointment(res.data.Data)
         }).catch(function (error) {
             // console.log(error);
@@ -369,7 +371,8 @@ const D_Appointment = () => {
 
             Swal.fire('Success', 'Prescription saved and appointment completed!', 'success');
             handleClosePrescriptionModal();
-
+            //get all appointment data
+            appointmentlist();
             // Reset form
             setPrescriptionData({ diagnosis: '', instructions: '', bp: '', complain: '', pasHistory: '', followUpDate: '', followUpTime: '', prescriptionItems: [] });
             setFollowUpDate(null);
@@ -378,7 +381,6 @@ const D_Appointment = () => {
             console.log('Error completing appointment:', error);
             Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to complete appointment.', 'error');
         } finally {
-            appointmentlist();
             setloading(false);
         }
     };
@@ -1222,6 +1224,43 @@ const D_Appointment = () => {
                             <div style={{ marginTop: 4, fontSize: 14, lineHeight: '20px' }}>{prescriptionData.diagnosis}</div>
                         </div>
                     ) : null}
+
+                    {(prescriptionData?.prescriptionItems || []).length > 0 ? (
+                        <div style={{ background: '#FFFFFF', borderRadius: 8, padding: '10px 14px', marginTop: 12, border: '1px solid #E5E7EB' }}>
+                            <div style={{ color: '#111827', fontWeight: 700, fontSize: 14, marginBottom: 8 }}>Prescription</div>
+                            <div style={{ width: '100%' }}>
+                                <div style={{ display: 'flex', fontSize: 12, fontWeight: 700, color: '#374151', borderBottom: '1px solid #E5E7EB', paddingBottom: 6 }}>
+                                    <div style={{ flex: 2 }}>Medicine</div>
+                                    <div style={{ flex: 1 }}>Type</div>
+                                    <div style={{ flex: 2 }}>Dosage</div>
+                                    <div style={{ width: 60, textAlign: 'center' }}>Days</div>
+                                    <div style={{ width: 70, textAlign: 'center' }}>Qty</div>
+                                </div>
+                                {(prescriptionData.prescriptionItems || []).map((item, idx) => {
+                                    const times = [];
+                                    if (item.mo) times.push(`MO(${item.moDose})`);
+                                    if (item.an) times.push(`AN(${item.anDose})`);
+                                    if (item.ev) times.push(`EV(${item.evDose})`);
+                                    if (item.nt) times.push(`NT(${item.ntDose})`);
+                                    return (
+                                        <div key={idx} style={{ display: 'flex', fontSize: 12, color: '#111827', padding: '8px 0', borderBottom: '1px solid #F3F4F6' }}>
+                                            <div style={{ flex: 2 }}>
+                                                <div style={{ fontWeight: 600 }}>{item.medicine}</div>
+                                                {item.instruction && item.instruction !== '-SELECT-' ? (
+                                                    <div style={{ color: '#6B7280', fontSize: 11, marginTop: 2 }}>Instr: {item.instruction}</div>
+                                                ) : null}
+                                            </div>
+                                            <div style={{ flex: 1 }}>{item.type}</div>
+                                            <div style={{ flex: 2 }}>{times.join(', ')}</div>
+                                            <div style={{ width: 60, textAlign: 'center' }}>{item.days}</div>
+                                            <div style={{ width: 70, textAlign: 'center' }}>{item.quantity}</div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ) : null}
+
                     {(followUpDate || followUpTime) ? (
                         <div style={{ background: '#FEF3C7', borderRadius: 8, padding: '10px 14px', marginTop: 12 }}>
                             <div style={{ color: '#92400E', fontWeight: 700, fontSize: 13, lineHeight: '18px' }}>Follow-up :</div>

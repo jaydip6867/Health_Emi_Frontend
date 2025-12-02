@@ -199,6 +199,13 @@ select.frm_input {
     overflow: hidden;
     color: #757575;
 }
+.truncaate_description_3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: #757575;
+}
  .icon_doctor{
     font-size: 50px;
  }

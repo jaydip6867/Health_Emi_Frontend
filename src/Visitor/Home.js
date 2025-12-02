@@ -14,8 +14,10 @@ import FunctionalitySec from './Component/FunctionalitySec'
 import BestDoctor from './Component/BestDoctor'
 import HeadTitle from './Component/HeadTitle'
 import HomeSlider from './Component/HomeSlider'
-import { SECRET_KEY, STORAGE_KEYS } from '../config'
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 import FadeIn from "../components/FadeIn";
+import axios from 'axios'
+import BlogBox from './Component/BlogBox'
 
 const Home = () => {
 
@@ -43,8 +45,32 @@ const Home = () => {
     if (data) {
       settoken(`Bearer ${data.accessToken}`)
     }
+    getblog()
   }, [navigate])
 
+  const [bloglist, setbloglist] = useState(null)
+
+  function getblog() {
+    setloading(true)
+    axios({
+      method: 'post',
+      url: `${API_BASE_URL}/user/blogs`,
+      headers: {
+        Authorization: token,
+      },
+      data: {
+        "page": 1,
+        "limit": 4,
+        "search": "",
+      }
+    }).then((res) => {
+      setbloglist(res.data.Data.docs)
+    }).catch(function (error) {
+      // console.log(error);
+    }).finally(() => {
+      setloading(false)
+    });
+  }
 
   return (
     <>
@@ -142,8 +168,18 @@ const Home = () => {
         </Container>
       </section>
 
-      {/* Article section */}
+      {/* Blog section */}
       <section className='spacer-y'>
+        <Container>
+          <h2 className='head_sec mb-5'><HeadTitle title="Latest Articles" /></h2>
+          <Row>
+            {bloglist?.map((item, index) => (
+              <BlogBox item={item} index={index} key={index} />
+            ))}
+          </Row>
+        </Container>
+      </section>
+      {/* <section className='spacer-y'>
         <Container>
           <h2 className='head_sec'><HeadTitle title="Latest Articles" /></h2>
           <Row className='g-4 mt-4'>
@@ -217,7 +253,7 @@ const Home = () => {
             </Col>
           </Row>
         </Container>
-      </section>
+      </section> */}
 
       {/* App Download Section  */}
       <FadeIn delay={200}>

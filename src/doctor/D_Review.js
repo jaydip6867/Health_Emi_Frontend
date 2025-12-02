@@ -92,7 +92,7 @@ const D_Review = () => {
                                 {
                                     reviewdata?.map((item, index) => (
                                         <Col xs={12} md={4} key={index}>
-                                            <Card>
+                                            <Card className="h-100">
                                                 <Card.Body>
                                                     <div className="d-flex align-items-center flex-wrap gap-2 review_profile">
                                                         <img src={item?.createdBy?.profile_pic} alt="" />
@@ -102,7 +102,7 @@ const D_Review = () => {
                                                         </div>
                                                     </div>
                                                     <hr />
-                                                    <p className="m-0">{item?.description}</p>
+                                                    <p className="m-0 truncaate_description_3">{item?.description}</p>
                                                     <div>
                                                         {[...Array(5)].map((_, i) => (
                                                             <span key={i}>{i < item?.rating ? <FaStar fill="#F6B900" /> : <FaRegStar fill="#F6B900" />}</span>

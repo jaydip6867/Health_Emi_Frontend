@@ -5,7 +5,7 @@ import NavBar from "./Component/NavBar"
 import { Link, useNavigate, useParams } from "react-router-dom";
 import CryptoJS from "crypto-js";
 import axios from "axios";
-import { Container, Row, Col} from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { IoCalendarOutline } from "react-icons/io5";
 import { BsClock } from "react-icons/bs";
 import BlogBox from "./Component/BlogBox";
@@ -126,7 +126,7 @@ const BlogDetail = () => {
                 setloading(false)
             });
         }
-        else{
+        else {
             Swal.fire({
                 icon: 'info',
                 title: 'Patient Login',
@@ -215,13 +215,16 @@ const BlogDetail = () => {
                                     <FormattedDate isoString={blog?.createdAt} />
                                 </div>
                             </div>
-                            <div className="blog_expired">
-                                <span className="d-flex align-items-center gap-2"><BsClock />Expired On</span>
-                                <div className="fw-bold">{blog?.expirydate}</div>
-                            </div>
+                            {
+                                blog?.expirydate !== "" ? <div className="blog_expired">
+                                    <span className="d-flex align-items-center gap-2"><BsClock />Expired On</span>
+                                    <div className="fw-bold">{blog?.expirydate}</div>
+                                </div> : null
+                            }
+
                             <p className="mt-2">{blog?.description}</p>
                             <div className="d-flex align-items-center gap-4">
-                                <span className="d-flex align-items-center gap-2">{blog?.is_like ? <MdThumbUpAlt fill="#00233D"/> : <MdThumbUpOffAlt onClick={() => likeblog(blog?._id)} />} {blog?.totalLike}</span>
+                                <span className="d-flex align-items-center gap-2">{blog?.is_like ? <MdThumbUpAlt fill="#00233D" /> : <MdThumbUpOffAlt onClick={() => likeblog(blog?._id)} />} {blog?.totalLike}</span>
                                 <span className="d-flex align-items-center gap-2"><MdOutlineModeComment /> {blog?.totalComment}</span>
                             </div>
 
@@ -232,7 +235,7 @@ const BlogDetail = () => {
                                     value={comment}
                                     className="form-control"
                                     onChange={(e) => setcomment(e.target.value)}
-                                    // disabled={!logdata || logdata?.logintype !== 'patient' || blog?.allcomments?.some((c) => c?.userid?._id === logdata?._id)}
+                                // disabled={!logdata || logdata?.logintype !== 'patient' || blog?.allcomments?.some((c) => c?.userid?._id === logdata?._id)}
                                 />
                                 <button
                                     className="btn btn_gradient btn-primary"
@@ -260,7 +263,7 @@ const BlogDetail = () => {
                                     ))
                                 }
                             </div>
-                            
+
                         </Col>
                     </Row>
                 </Container>
