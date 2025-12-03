@@ -63,21 +63,23 @@ const P_AmbulanceRequest = () => {
   const [token, setToken] = useState(null);
 
   useEffect(() => {
-    let data;
-    const getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+    var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
     if (getlocaldata != null) {
       const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-      data = JSON.parse(decrypted);
+      var data = JSON.parse(decrypted);
     }
     if (!data) {
-      navigate("/patient");
-    } else {
-      setPatient(data.patientData);
-      setToken(`Bearer ${data.accessToken}`);
+      navigate('/patient')
     }
-  }, [navigate]);
+    else {
+      setPatient(data.userData);
+      setToken(`Bearer ${data.accessToken}`)
+    }
+  }, [navigate])
 
+ 
+  console.log(patient);
   const [form, setForm] = useState({
     pickupaddress: "",
     pickup_longitude: "",
