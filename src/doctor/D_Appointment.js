@@ -64,7 +64,7 @@ const D_Appointment = () => {
         }).then((res) => {
             // var len = res.data.Data;
             // console.log(len.length)
-            console.log(res.data.Data)
+            // console.log(res.data.Data)
             setappointment(res.data.Data)
         }).catch(function (error) {
             // console.log(error);
@@ -112,11 +112,26 @@ const D_Appointment = () => {
         var datasingle = appointment.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        console.log(datasingle)
     }
 
-    // reschedule appoinetment date
     const [selectedDate, setSelectedDate] = useState(null);
+
+    const isSameCalendarDay = (d1, d2) => {
+        if (!d1 || !d2) return false;
+        return format(d1, 'yyyy-MM-dd') === format(d2, 'yyyy-MM-dd');
+    };
+
+    const filterRescheduleTime = (dt) => {
+        if (!dt) return false;
+        const minutes = dt.getHours() * 60 + dt.getMinutes();
+        const withinClinicWindow = minutes >= 9 * 60 && minutes <= (20 * 60 + 30);
+        if (!withinClinicWindow) return false;
+        const base = selectedDate || dt;
+        if (isSameCalendarDay(base, new Date())) {
+            return dt.getTime() > Date.now();
+        }
+        return true;
+    };
 
     const [showreschedule, setrescheduleShow] = useState(false);
     const [schedule_data, setschedule_data] = useState(null);
@@ -129,9 +144,9 @@ const D_Appointment = () => {
             return v._id === id
         })
         setschedule_data(data)
-        // console.log(data)
         handlerescheduleShow()
     }
+
     const handleOpenStartAppointment = (appointmentRow) => {
         const scheduledStr = `${appointmentRow?.date || ''} ${appointmentRow?.time || ''}`;
         try {
@@ -167,13 +182,18 @@ const D_Appointment = () => {
 
     const confirmStartAppointment = () => {
         setShowStartAppointment(false);
-        setShowPrescriptionModal(true);
+        setShowChoosePrescription(true);
     };
 
     const [showStartAppointment, setShowStartAppointment] = useState(false);
     const [currentAppointment, setCurrentAppointment] = useState(null);
 
     const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
+    const [showChoosePrescription, setShowChoosePrescription] = useState(false);
+    const [prescriptionOption, setPrescriptionOption] = useState('write');
+    const [prescriptionUploadFiles, setPrescriptionUploadFiles] = useState([]);
+    const [uploadingPrescription, setUploadingPrescription] = useState(false);
+
     const [prescriptionData, setPrescriptionData] = useState({
         diagnosis: '',
         instructions: '',
@@ -187,6 +207,97 @@ const D_Appointment = () => {
 
     const handleClosePrescriptionModal = () => {
         setShowPrescriptionModal(false);
+    };
+
+    const handleCloseChoosePrescription = () => {
+        setShowChoosePrescription(false);
+        setPrescriptionOption('write');
+        setPrescriptionUploadFiles([]);
+    };
+
+    const handleContinueChoosePrescription = async () => {
+        if (!currentAppointment) return;
+        if (prescriptionOption === 'write') {
+            setShowChoosePrescription(false);
+            setShowPrescriptionModal(true);
+            return;
+        }
+        setloading(true);
+        if (prescriptionOption === 'none') {
+            try {
+                setloading(true);
+                await axios({
+                    method: 'post',
+                    url: `${API_BASE_URL}/doctor/appointments/complete`,
+                    headers: { Authorization: token },
+                    data: {
+                        appointmentid: currentAppointment?._id,
+                        payment_mode: 'Cash',
+                        totalamount: currentAppointment?.price,
+                        doctor_remark: ''
+                    }
+                });
+                Swal.fire('Success', 'Appointment completed without prescription.', 'success');
+                setShowChoosePrescription(false);
+                appointmentlist();
+            } catch (error) {
+                Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to complete appointment.', 'error');
+            } finally {
+                setloading(false);
+            }
+            return;
+        }
+        if (prescriptionOption === 'upload') {
+            if (!prescriptionUploadFiles || prescriptionUploadFiles.length === 0) {
+                Swal.fire('Select file', 'Please select at least one image to upload.', 'warning');
+                return;
+            }
+            try {
+                setUploadingPrescription(true);
+                const formData = new FormData();
+                prescriptionUploadFiles.forEach(f => formData.append('file', f));
+                const uploadResponse = await axios({
+                    method: 'post',
+                    url: `${API_BASE_URL}/user/upload/multiple`,
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    data: formData,
+                });
+                const uploadedUrl = Array.isArray(uploadResponse.data?.Data)
+                    ? uploadResponse.data?.Data?.[0]?.path || uploadResponse.data?.Data?.[0]?.url
+                    : uploadResponse.data?.Data?.url || uploadResponse.data?.Data;
+                if (!uploadedUrl) throw new Error('Failed to get uploaded file URL');
+
+                setUploadingPrescription(false);
+
+                // console.log({
+                //         appointmentid: currentAppointment?._id,
+                //         payment_mode: 'Cash',
+                //         totalamount: currentAppointment?.price,
+                //         doctor_remark: uploadedUrl
+                //     })
+                setloading(true);
+                await axios({
+                    method: 'post',
+                    url: `${API_BASE_URL}/doctor/appointments/complete`,
+                    headers: { Authorization: token },
+                    data: {
+                        appointmentid: currentAppointment?._id,
+                        payment_mode: 'Cash',
+                        totalamount: currentAppointment?.price,
+                        doctor_remark: uploadedUrl
+                    }
+                });
+                Swal.fire('Success', 'Prescription image uploaded and appointment completed.', 'success');
+                setShowChoosePrescription(false);
+                setPrescriptionUploadFiles([]);
+                appointmentlist();
+            } catch (error) {
+                setUploadingPrescription(false);
+                Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to upload/complete appointment.', 'error');
+            } finally {
+                setloading(false);
+            }
+        }
     };
 
     const [newPrescriptionItem, setNewPrescriptionItem] = useState({
@@ -249,7 +360,6 @@ const D_Appointment = () => {
                 [field]: value
             };
 
-            // Calculate quantity when relevant fields change
             if (['mo', 'an', 'ev', 'nt', 'moDose', 'anDose', 'evDose', 'ntDose', 'days'].includes(field)) {
                 let total = 0;
                 if (updatedItem.mo) total += parseInt(updatedItem.moDose || 0);
@@ -271,7 +381,6 @@ const D_Appointment = () => {
             prescriptionItems: [...prev.prescriptionItems, { ...newPrescriptionItem }]
         }));
 
-        // Reset the form
         setNewPrescriptionItem({
             medicine: '',
             type: 'tablet',
@@ -297,7 +406,6 @@ const D_Appointment = () => {
     };
 
     const submitPrescription = async () => {
-        // Validate: require diagnosis AND (at least one item OR medications text)
         const hasItems = prescriptionData.prescriptionItems && prescriptionData.prescriptionItems.length > 0;
         if (!prescriptionData.diagnosis.trim() || !hasItems) {
             Swal.fire({
@@ -311,7 +419,6 @@ const D_Appointment = () => {
         try {
             setloading(true);
 
-            // Build medications text from items
             const itemsText = (prescriptionData.prescriptionItems || []).map(item => {
                 const times = [];
                 if (item.mo) times.push(`MO(${item.moDose})`);
@@ -322,20 +429,16 @@ const D_Appointment = () => {
                 return `${item.medicine} (${item.type}) - ${times.join(', ')} - ${item.days} days - Qty: ${item.quantity}${instr}`;
             }).join('\n');
 
-            // Generate PDF from hidden template and return blob for upload
             const { pdfBlob, fileName } = await generatePrescriptionPDF();
 
-            // Create a proper File object with correct MIME type
             const pdfFile = new File([pdfBlob], fileName, {
                 type: 'application/pdf',
                 lastModified: Date.now()
             });
 
-            // Create FormData and append the PDF file
             const formData = new FormData();
             formData.append('file', pdfFile);
 
-            // Upload PDF to API
             const uploadResponse = await axios({
                 method: 'post',
                 url: `${API_BASE_URL}/user/upload/multiple`,
@@ -349,9 +452,6 @@ const D_Appointment = () => {
 
             if (!uploadedFileUrl) throw new Error('Failed to get uploaded file URL');
 
-            // console.log(currentAppointment)
-
-            // Mark appointment complete with prescription URL
             const followup_date = followUpDate ? format(followUpDate, 'dd-MM-yyyy') : '';
             const followup_time = followUpTime ? format(followUpTime, 'hh:mm a') : '';
             await axios({
@@ -371,14 +471,12 @@ const D_Appointment = () => {
 
             Swal.fire('Success', 'Prescription saved and appointment completed!', 'success');
             handleClosePrescriptionModal();
-            //get all appointment data
             appointmentlist();
-            // Reset form
             setPrescriptionData({ diagnosis: '', instructions: '', bp: '', complain: '', pasHistory: '', followUpDate: '', followUpTime: '', prescriptionItems: [] });
             setFollowUpDate(null);
             setFollowUpTime(null);
         } catch (error) {
-            console.log('Error completing appointment:', error);
+            // console.log('Error completing appointment:', error);
             Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to complete appointment.', 'error');
         } finally {
             setloading(false);
@@ -419,12 +517,28 @@ const D_Appointment = () => {
         });
     };
 
-    // Reschedule helpers (restored)
     const formattedDateTime = selectedDate
         ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
         : '';
 
     const reschedule_appointment = () => {
+        if (!selectedDate) {
+            Swal.fire({
+                title: 'Select Date & Time',
+                text: 'Please pick a valid future date and time.',
+                icon: 'warning',
+            });
+            return;
+        }
+        if (selectedDate.getTime() <= Date.now()) {
+            Swal.fire({
+                title: 'Invalid time',
+                text: 'Please select a time in the future.',
+                icon: 'warning',
+            });
+            return;
+        }
+
         const [datePart, timePart, meridiem] = formattedDateTime.split(' ');
         const timeWithMeridiem = `${timePart} ${meridiem}`;
 
@@ -791,7 +905,7 @@ const D_Appointment = () => {
                         return (
                             <Modal show={showreschedule} onHide={handlerescheduleClose} centered size="lg" key={i}>
                                 <Modal.Header closeButton>
-                                    <Modal.Title>Reschedule Surgery</Modal.Title>
+                                    <Modal.Title>Reschedule Appointment</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body style={{ padding: '24px' }}>
                                     <div style={{ textAlign: 'center', marginBottom: '20px' }}>
@@ -807,8 +921,9 @@ const D_Appointment = () => {
                                                 showTimeSelect
                                                 timeFormat="hh:mm aa"
                                                 timeIntervals={30}
-                                                dateFormat="MMMM d, yyyy h:mm aa"
+                                                dateFormat="dd-MM-yyyy hh:mm aa"
                                                 minDate={new Date()}
+                                                filterTime={filterRescheduleTime}
                                                 inline
                                                 calendarClassName="custom-calendar"
                                                 className="custom-datepicker"
@@ -1182,6 +1297,32 @@ const D_Appointment = () => {
                         </Button>
                     </Modal.Footer>
                 </Modal>
+            <Modal show={showChoosePrescription} onHide={handleCloseChoosePrescription} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Choose Prescription Option</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group>
+                        <Form.Label>Select an option</Form.Label>
+                        <Form.Select value={prescriptionOption} onChange={(e) => setPrescriptionOption(e.target.value)}>
+                            <option value='write'>Write prescription</option>
+                            <option value='upload'>Upload prescription image</option>
+                            <option value='none'>not add prescription</option>
+                        </Form.Select>
+                    </Form.Group>
+                    {prescriptionOption === 'upload' && (
+                        <Form.Group className='mt-3'>
+                            <Form.Label>Upload prescription image</Form.Label>
+                            <Form.Control type='file' accept='image/*' multiple onChange={(e) => setPrescriptionUploadFiles(Array.from(e.target.files || []))} />
+                        </Form.Group>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant='secondary' onClick={handleCloseChoosePrescription}>Cancel</Button>
+                    <Button variant='primary' onClick={handleContinueChoosePrescription} disabled={uploadingPrescription}>Continue</Button>
+                </Modal.Footer>
+            </Modal>
+
             </Container >
             <div
                 ref={printRef}

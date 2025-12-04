@@ -58,7 +58,7 @@ const DoctorLogin = () => {
             localStorage.setItem(STORAGE_KEYS.DOCTOR, encrypted)
             navigate('doctordashboard')
         }).catch(function (error) {
-            toast(error.response.data.Message, { className: 'custom-toast-error' })
+            toast(error?.response?.data?.Message, { className: 'custom-toast-error' })
         }).finally(() => {
             setloading(false)
         });
