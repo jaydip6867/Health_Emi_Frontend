@@ -688,17 +688,28 @@ const D_SurgeryAppointment = () => {
                                                 <div className='fw-semibold mb-3'>Prescription</div>
                                                 <Row className='g-3'>
 
-                                                    <Col md={4} sm={6}>
-                                                        <Card className='h-100'>
-                                                            <div className='ratio ratio-16x9 bg-light'>
-                                                                <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`} title={`prescription surgery`} className='w-100 h-100 border-0'></iframe>
-                                                            </div>
-                                                            <Card.Body className='d-flex justify-content-between align-items-center'>
-                                                                <div className='small text-muted'>Prescription</div>
-                                                                <Button size='sm' variant='outline-primary' onClick={() => window.open(`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`, '_blank')}>View</Button>
-                                                            </Card.Body>
-                                                        </Card>
-                                                    </Col>
+                                                    {(() => {
+                                                        const remark = (v?.doctor_remark || '');
+                                                        const base = remark.toLowerCase().split('?')[0];
+                                                        const isImage = base.endsWith('.jpg') || base.endsWith('.jpeg') || base.endsWith('.png');
+                                                        const link = isImage
+                                                            ? remark
+                                                            : `https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(remark)}`;
+
+                                                        return (
+                                                            <Col md={4} sm={6}>
+                                                                <Card className='h-100'>
+                                                                    <div className='ratio ratio-16x9 bg-light'>
+                                                                        <iframe src={link} title={`prescription consultant`} className='border-0'></iframe>
+                                                                    </div>
+                                                                    <Card.Body className='d-flex justify-content-between align-items-center'>
+                                                                        <div className='small text-muted'>Prescription</div>
+                                                                        <Button size='sm' variant='outline-primary' onClick={() => window.open(link, '_blank')}>View</Button>
+                                                                    </Card.Body>
+                                                                </Card>
+                                                            </Col>
+                                                        );
+                                                    })()}
                                                 </Row>
                                             </div> : null
                                         }

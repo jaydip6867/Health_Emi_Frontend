@@ -876,18 +876,28 @@ const D_Appointment = () => {
                                                     <hr />
                                                     <div className='fw-semibold mb-3'>Prescription</div>
                                                     <Row className='g-3'>
+                                                        {(() => {
+                                                            const remark = (v?.doctor_remark || '');
+                                                            const base = remark.toLowerCase().split('?')[0];
+                                                            const isImage = base.endsWith('.jpg') || base.endsWith('.jpeg') || base.endsWith('.png');
+                                                            const link = isImage
+                                                                ? remark
+                                                                : `https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(remark)}`;
 
-                                                        <Col md={4} sm={6}>
-                                                            <Card className='h-100'>
-                                                                <div className='ratio ratio-16x9 bg-light'>
-                                                                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`} title={`prescription consultant`} className='border-0'></iframe>
-                                                                </div>
-                                                                <Card.Body className='d-flex justify-content-between align-items-center'>
-                                                                    <div className='small text-muted'>Prescription</div>
-                                                                    <Button size='sm' variant='outline-primary' onClick={() => window.open(`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(v.doctor_remark)}`, '_blank')}>View</Button>
-                                                                </Card.Body>
-                                                            </Card>
-                                                        </Col>
+                                                            return (
+                                                                <Col md={4} sm={6}>
+                                                                    <Card className='h-100'>
+                                                                        <div className='ratio ratio-16x9 bg-light'>
+                                                                            <iframe src={link} title={`prescription consultant`} className='border-0'></iframe>
+                                                                        </div>
+                                                                        <Card.Body className='d-flex justify-content-between align-items-center'>
+                                                                            <div className='small text-muted'>Prescription</div>
+                                                                            <Button size='sm' variant='outline-primary' onClick={() => window.open(link, '_blank')}>View</Button>
+                                                                        </Card.Body>
+                                                                    </Card>
+                                                                </Col>
+                                                            );
+                                                        })()}
                                                     </Row>
                                                 </div> : null
                                             }
@@ -1297,31 +1307,31 @@ const D_Appointment = () => {
                         </Button>
                     </Modal.Footer>
                 </Modal>
-            <Modal show={showChoosePrescription} onHide={handleCloseChoosePrescription} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Choose Prescription Option</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form.Group>
-                        <Form.Label>Select an option</Form.Label>
-                        <Form.Select value={prescriptionOption} onChange={(e) => setPrescriptionOption(e.target.value)}>
-                            <option value='write'>Write prescription</option>
-                            <option value='upload'>Upload prescription image</option>
-                            <option value='none'>not add prescription</option>
-                        </Form.Select>
-                    </Form.Group>
-                    {prescriptionOption === 'upload' && (
-                        <Form.Group className='mt-3'>
-                            <Form.Label>Upload prescription image</Form.Label>
-                            <Form.Control type='file' accept='image/*' multiple onChange={(e) => setPrescriptionUploadFiles(Array.from(e.target.files || []))} />
+                <Modal show={showChoosePrescription} onHide={handleCloseChoosePrescription} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Choose Prescription Option</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form.Group>
+                            <Form.Label>Select an option</Form.Label>
+                            <Form.Select value={prescriptionOption} onChange={(e) => setPrescriptionOption(e.target.value)}>
+                                <option value='write'>Write prescription</option>
+                                <option value='upload'>Upload prescription image</option>
+                                <option value='none'>not add prescription</option>
+                            </Form.Select>
                         </Form.Group>
-                    )}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant='secondary' onClick={handleCloseChoosePrescription}>Cancel</Button>
-                    <Button variant='primary' onClick={handleContinueChoosePrescription} disabled={uploadingPrescription}>Continue</Button>
-                </Modal.Footer>
-            </Modal>
+                        {prescriptionOption === 'upload' && (
+                            <Form.Group className='mt-3'>
+                                <Form.Label>Upload prescription image</Form.Label>
+                                <Form.Control type='file' accept='image/*' multiple onChange={(e) => setPrescriptionUploadFiles(Array.from(e.target.files || []))} />
+                            </Form.Group>
+                        )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant='secondary' onClick={handleCloseChoosePrescription}>Cancel</Button>
+                        <Button variant='primary' onClick={handleContinueChoosePrescription} disabled={uploadingPrescription}>Continue</Button>
+                    </Modal.Footer>
+                </Modal>
 
             </Container >
             <div
