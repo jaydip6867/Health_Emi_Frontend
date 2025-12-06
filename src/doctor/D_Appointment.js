@@ -10,7 +10,7 @@ import Swal from 'sweetalert2'
 import SmartDataTable from '../components/SmartDataTable'
 import { MdClose, MdDone, MdOutlineAutorenew, MdOutlineRemoveRedEye } from 'react-icons/md'
 import DatePicker from 'react-datepicker'
-import { format, parse } from 'date-fns'
+import { format, parse, addDays } from 'date-fns'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
@@ -473,8 +473,10 @@ const D_Appointment = () => {
             handleClosePrescriptionModal();
             appointmentlist();
             setPrescriptionData({ diagnosis: '', instructions: '', bp: '', complain: '', pasHistory: '', followUpDate: '', followUpTime: '', prescriptionItems: [] });
-            setFollowUpDate(null);
-            setFollowUpTime(null);
+            setFollowUpDate(addDays(new Date(), 2));
+            const resetTime = new Date();
+            resetTime.setHours(9, 0, 0, 0);
+            setFollowUpTime(resetTime);
         } catch (error) {
             // console.log('Error completing appointment:', error);
             Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to complete appointment.', 'error');
@@ -850,15 +852,15 @@ const D_Appointment = () => {
                                             <div className='fw-semibold mb-3'>Reports</div>
                                             <Row className='g-3'>
                                                 {(v?.report || []).length > 0 ? (
-                                                    v.report.map((url, idx) => (
+                                                    v.report.map((item, idx) => (
                                                         <Col md={4} sm={6} xs={12} key={idx}>
                                                             <Card className='h-100'>
                                                                 <div className='ratio ratio-16x9 bg-light'>
-                                                                    <iframe src={url} title={`report_${idx}`} className='w-100 h-100 border-0'></iframe>
+                                                                    <iframe src={item?.path} title={`report_${idx}`} className='w-100 h-100 border-0'></iframe>
                                                                 </div>
                                                                 <Card.Body className='d-flex justify-content-between align-items-center'>
                                                                     <div className='small text-muted'>Report {idx + 1}</div>
-                                                                    <Button size='sm' variant='outline-primary' onClick={() => window.open(url, '_blank')}>View</Button>
+                                                                    <Button size='sm' variant='outline-primary' onClick={() => window.open(item?.path, '_blank')}>View</Button>
                                                                 </Card.Body>
                                                             </Card>
                                                         </Col>

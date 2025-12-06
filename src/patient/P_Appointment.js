@@ -425,16 +425,16 @@ const P_Appointment = () => {
                       <div className='fw-semibold mb-3'>Reports</div>
                       <Row className='g-3'>
                         {(v?.report || []).length > 0 ? (
-                          v.report.map((url, idx) => (
+                          v.report.map((item, idx) => (
                             <Col md={4} sm={6} xs={12} key={idx}>
                               <Card className='h-100'>
                                 <div className='ratio ratio-16x9 bg-light'>
                                   {/* Fallback thumbnail - attempting to render image/embed */}
-                                  <iframe src={url} title={`report_${idx}`} className='w-100 h-100 border-0'></iframe>
+                                  <iframe src={item?.path} title={`report_${idx}`} className='w-100 h-100 border-0'></iframe>
                                 </div>
                                 <Card.Body className='d-flex justify-content-between align-items-center'>
                                   <div className='small text-muted'>Report {idx + 1}</div>
-                                  <Button size='sm' variant='outline-primary' onClick={() => window.open(url, '_blank')}>View</Button>
+                                  <Button size='sm' variant='outline-primary' onClick={() => window.open(item?.path, '_blank')}>View</Button>
                                 </Card.Body>
                               </Card>
                             </Col>
