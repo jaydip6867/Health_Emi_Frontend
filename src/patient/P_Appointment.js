@@ -406,14 +406,14 @@ const P_Appointment = () => {
                             <span>{clinicName}</span>
                           </div>
                         </Col>
-                        <Col md={6} xs={12}>
+                        <Col xs={12}>
                           <div className='text-muted small mb-1'>Clinic Location</div>
                           <div className='d-flex align-items-center gap-2'>
                             <FiMapPin />
                             <span className='text-truncate'>{clinicLocation || '-'}</span>
                           </div>
                         </Col>
-                        <Col md={6} xs={12}>
+                        <Col xs={12}>
                           <div className='text-muted small mb-1'>Consultation Reason</div>
                           <div className='text-truncate'>{v?.appointment_reason || '-'}</div>
                         </Col>
@@ -440,8 +440,8 @@ const P_Appointment = () => {
                             </Col>
                           ))
                         ) : (
-                          <Col xs={12}>
-                            <div className='text-muted small'>No reports uploaded.</div>
+                          <Col xs={12} md={5}>
+                            <div className='text-muted small border rounded p-3'>No reports uploaded.</div>
                           </Col>
                         )}
                       </Row>

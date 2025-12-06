@@ -1333,7 +1333,7 @@ const D_Surgery = () => {
                                 </div>
                                 <div className="d-flex flex-column mt-1">
                                   <span className="fw-bold">{v?.days}</span>
-                                  <small className="text-muted">Stays Days</small>
+                                  <small className="text-muted">Stays</small>
                                 </div>
                               </div>
                             </div>

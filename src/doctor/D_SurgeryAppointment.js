@@ -217,8 +217,12 @@ const D_SurgeryAppointment = () => {
         'SOS For Fever',
         'SOS For Abdominal Pain'
     ]
-    const [followUpDate, setFollowUpDate] = useState(null)
-    const [followUpTime, setFollowUpTime] = useState(null)
+    const [followUpDate, setFollowUpDate] = useState(addDays(new Date(), 2))
+    const [followUpTime, setFollowUpTime] = useState(() => {
+        const time = new Date();
+        time.setHours(9, 0, 0, 0);
+        return time;
+    })
     const [totalAmount, setTotalAmount] = useState(0)
 
     const handleOpenStartAppointment = (appointmentRow) => {
@@ -384,8 +388,10 @@ const D_SurgeryAppointment = () => {
             appointmentlist()
             setShowPrescriptionModal(false)
             setPrescriptionData({ diagnosis: '', instructions: '', bp: '', complain: '', pasHistory: '', prescriptionItems: [] })
-            setFollowUpDate(null)
-            setFollowUpTime(null)
+            setFollowUpDate(addDays(new Date(), 2))
+            const resetTime = new Date();
+            resetTime.setHours(9, 0, 0, 0);
+            setFollowUpTime(resetTime)
             setTotalAmount(0)
         } catch (error) {
             console.error('Error completing surgery appointment:', error)
@@ -675,8 +681,8 @@ const D_SurgeryAppointment = () => {
                                                         </Col>
                                                     ))
                                                 ) : (
-                                                    <Col xs={12}>
-                                                        <div className='text-muted small'>No reports uploaded.</div>
+                                                    <Col xs={12} md={5}>
+                                                        <div className='text-muted small border rounded'>No reports uploaded.</div>
                                                     </Col>
                                                 )}
                                             </Row>
@@ -972,13 +978,13 @@ const D_SurgeryAppointment = () => {
                                         <Col md={4}>
                                             <Form.Group>
                                                 <Form.Label><strong>Follow-up Date</strong></Form.Label>
-                                                <DatePicker selected={followUpDate} onChange={setFollowUpDate} dateFormat='dd-MM-yyyy' className='form-control' minDate={new Date()} placeholderText='Select follow-up date' />
+                                                <DatePicker selected={followUpDate} onChange={setFollowUpDate} dateFormat='dd-MM-yyyy' className='form-control' minDate={addDays(new Date(), 2)} placeholderText='Select follow-up date' />
                                             </Form.Group>
                                         </Col>
                                         <Col md={4}>
                                             <Form.Group>
                                                 <Form.Label><strong>Follow-up Time</strong></Form.Label>
-                                                <DatePicker selected={followUpTime} onChange={setFollowUpTime} showTimeSelect showTimeSelectOnly timeIntervals={30} timeCaption='Time' dateFormat='hh:mm aa' className='form-control' placeholderText='Select time' />
+                                                <DatePicker selected={followUpTime} onChange={setFollowUpTime} showTimeSelect showTimeSelectOnly timeIntervals={30} timeCaption='Time' dateFormat='hh:mm aa' className='form-control' placeholderText='Select time' minTime={new Date(0, 0, 0, 9, 0)} maxTime={new Date(0, 0, 0, 20, 30)} />
                                             </Form.Group>
                                         </Col>
                                     </Row>

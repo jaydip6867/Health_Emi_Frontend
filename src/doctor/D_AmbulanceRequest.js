@@ -49,7 +49,7 @@ const D_AmbulanceRequest = () => {
   const [loading, setLoading] = useState(false);
   const [doctor, setDoctor] = useState(null);
   const [token, setToken] = useState(null);
-  
+
   useEffect(() => {
     let data;
     const getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
@@ -62,11 +62,11 @@ const D_AmbulanceRequest = () => {
       navigate("/doctor");
     } else {
       setDoctor(data.doctorData);
-      
+
       setToken(`Bearer ${data.accessToken}`);
     }
   }, [navigate]);
-   console.log(doctor,'rewuesyt')
+  console.log(doctor, 'rewuesyt')
   const [form, setForm] = useState({
     pickupaddress: "",
     pickup_longitude: "",
@@ -277,7 +277,7 @@ const D_AmbulanceRequest = () => {
             }
             autoLocatedRef.current = true;
           },
-          () => {},
+          () => { },
           { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
         );
       };
@@ -676,7 +676,7 @@ const D_AmbulanceRequest = () => {
           distance: 0,
         });
         setPlatformFee(0);
-        localStorage.setItem('amb_req_id',res.data.Data.requestId)
+        localStorage.setItem('amb_req_id', res.data.Data.requestId)
         navigate(`/doctor/ambulance-request/status/${res.data.Data.requestId}`);
       })
       .catch((error) => {
@@ -740,7 +740,7 @@ const D_AmbulanceRequest = () => {
 
   return (
     <>
-      <NavBar logindata={doctor}/>
+      <NavBar logindata={doctor} />
       <Container className="my-4">
         <Row className="g-0">
           <DoctorSidebar />
@@ -778,428 +778,429 @@ const D_AmbulanceRequest = () => {
               </div>
               {
                 localStorage.getItem('amb_req_id') != null ?
-                 <div className="d-flex justify-content-end mt-2">
-                          <Button
-                            type="submit"
-                            className="px-4"
-                            style={{ backgroundColor: "#4F46E5" }}
-                            onClick={()=>{navigate(`/doctor/ambulance-request/status/${localStorage.getItem('amb_req_id')}`)}}
-                            
-                          >
-                            {loading ? (
-                              <span
-                                className="spinner-border spinner-border-sm me-2"
-                                role="status"
-                                aria-hidden="true"
-                              ></span>
-                            ) : null}
-                            ambulace ride pogress
-                          </Button>
-                        </div>
-                :<Row>
-                <Col xs={12} md={5}>
-                  {/* Map + Geocoder */}
-                  <Card className="mt-3 shadow-sm border-0">
-                    <Card.Header className="bg-light d-flex flex-wrap gap-2 align-items-center">
-                      <div className="me-3 fw-semibold">Select Target:</div>
-                      <Form.Check
-                        inline
-                        type="radio"
-                        id="active-pickup"
-                        label="Pickup"
-                        name="activeType"
-                        checked={activeType === "pickup"}
-                        onChange={() => setActiveType("pickup")}
-                      />
-                      <Form.Check
-                        inline
-                        type="radio"
-                        id="active-drop"
-                        label="Drop"
-                        name="activeType"
-                        checked={activeType === "drop"}
-                        onChange={() => setActiveType("drop")}
-                      />
-                    </Card.Header>
-                    <Card.Body className="p-0" style={{ height: 380 }}>
-                      <div
-                        id="ambulanceMap"
-                        style={{ width: "100%", height: "100%" }}
-                      />
-                    </Card.Body>
-                  </Card>
-                  <div className="text-muted small mt-2 px-1">
-                    Tip: You can click "Use Current Location" to auto-fill latitude
-                    and longitude fields.
+                  <div className="d-flex justify-content-end mt-2">
+                    <Button
+                      type="submit"
+                      className="px-4"
+                      style={{ backgroundColor: "#4F46E5" }}
+                      onClick={() => { navigate(`/doctor/ambulance-request/status/${localStorage.getItem('amb_req_id')}`) }}
+
+                    >
+                      {loading ? (
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                      ) : null}
+                      ambulace ride pogress
+                    </Button>
                   </div>
-                </Col>
-                <Col xs={12} md={7}>
-                {/* Form of ambulace */}
-                  <Card className="mt-3 shadow-sm border-0">
-                    <Card.Body className="p-4">
-                      <Form onSubmit={handleSubmit}>
-                        <Row>
-                          <Col md={6} className="mb-4">
-                            <div
-                              className="d-flex align-items-center mb-2"
-                              style={{ color: "#374151" }}
-                            >
-                              <FaMapMarkerAlt className="me-2" />
-                              <h6 className="m-0">Pickup Location</h6>
-                            </div>
-                            <Form.Group className="mb-3 position-relative">
-                              <Form.Label>Pickup Address</Form.Label>
-                              <Form.Control
-                                type="text"
-                                placeholder="Search pickup address"
-                                name="pickupaddress"
-                                value={form.pickupaddress}
-                                onChange={onChange}
-                                onFocus={() => {
-                                  setActiveType("pickup");
-                                  if (
-                                    form.pickupaddress &&
-                                    form.pickupaddress.length >= 3
-                                  ) {
-                                    setShowPickupSuggestions(true);
-                                    if (
-                                      !pickupSuggestions ||
-                                      pickupSuggestions.length === 0
-                                    ) {
-                                      fetchAddressSuggestions(
-                                        "pickup",
-                                        form.pickupaddress
-                                      );
-                                    }
-                                  }
-                                }}
-                                onBlur={() =>
-                                  setTimeout(
-                                    () => setShowPickupSuggestions(false),
-                                    150
-                                  )
-                                }
-                                onKeyDown={(e) => {
-                                  if (e.key === "Escape")
-                                    setShowPickupSuggestions(false);
-                                }}
-                                autoComplete="off"
-                              />
-                              {showPickupSuggestions &&
-                                pickupSuggestions.length > 0 && (
-                                  <div
-                                    className="bg-white border rounded shadow position-absolute w-100"
-                                    style={{
-                                      zIndex: 1050,
-                                      maxHeight: 260,
-                                      overflowY: "auto",
+                  : <Row>
+                    <Col xs={12} md={5}>
+                      {/* Map + Geocoder */}
+                      <Card className="mt-3 shadow-sm border-0">
+                        <Card.Header className="bg-light d-flex flex-wrap gap-2 align-items-center">
+                          <div className="me-3 fw-semibold">Select Target:</div>
+                          <Form.Check
+                            inline
+                            type="radio"
+                            id="active-pickup"
+                            label="Pickup"
+                            name="activeType"
+                            checked={activeType === "pickup"}
+                            onChange={() => setActiveType("pickup")}
+                          />
+                          <Form.Check
+                            inline
+                            type="radio"
+                            id="active-drop"
+                            label="Drop"
+                            name="activeType"
+                            checked={activeType === "drop"}
+                            onChange={() => setActiveType("drop")}
+                          />
+                        </Card.Header>
+                        <Card.Body className="p-0" style={{ height: 380 }}>
+                          <div
+                            id="ambulanceMap"
+                            style={{ width: "100%", height: "100%" }}
+                          />
+                        </Card.Body>
+                      </Card>
+                      <div className="text-muted small mt-2 px-1">
+                        Tip: You can click "Use Current Location" to auto-fill latitude
+                        and longitude fields.
+                      </div>
+                    </Col>
+                    <Col xs={12} md={7}>
+                      {/* Form of ambulace */}
+                      <Card className="mt-3 shadow-sm border-0">
+                        <Card.Body className="p-4">
+                          <Form onSubmit={handleSubmit}>
+                            <Row>
+                              <Col md={6} className="mb-4">
+                                <div
+                                  className="d-flex align-items-center mb-2"
+                                  style={{ color: "#374151" }}
+                                >
+                                  <FaMapMarkerAlt className="me-2" />
+                                  <h6 className="m-0">Pickup Location</h6>
+                                </div>
+                                <Form.Group className="mb-3 position-relative">
+                                  <Form.Label>Pickup Address</Form.Label>
+                                  <Form.Control
+                                    type="text"
+                                    placeholder="Search pickup address"
+                                    name="pickupaddress"
+                                    value={form.pickupaddress}
+                                    onChange={onChange}
+                                    onFocus={() => {
+                                      setActiveType("pickup");
+                                      if (
+                                        form.pickupaddress &&
+                                        form.pickupaddress.length >= 3
+                                      ) {
+                                        setShowPickupSuggestions(true);
+                                        if (
+                                          !pickupSuggestions ||
+                                          pickupSuggestions.length === 0
+                                        ) {
+                                          fetchAddressSuggestions(
+                                            "pickup",
+                                            form.pickupaddress
+                                          );
+                                        }
+                                      }
                                     }}
-                                  >
-                                    {pickupSuggestions.map((group, gIdx) => (
-                                      <div key={`p-group-${gIdx}`}>
-                                        <div className="px-2 py-1 small text-muted bg-light">
-                                          {group.group}
-                                        </div>
-                                        {group.items.map((sug, idx) => (
-                                          <div
-                                            key={`p-${sug.osm_id}-${idx}`}
-                                            className="p-2 suggestion-item"
-                                            style={{ cursor: "pointer" }}
-                                            onMouseDown={(e) => {
-                                              e.preventDefault();
-                                              selectSuggestion("pickup", sug);
-                                            }}
-                                          >
-                                            <div
-                                              className="fw-semibold"
-                                              style={{ fontSize: "0.9rem" }}
-                                            >
-                                              {sug.display_name}
+                                    onBlur={() =>
+                                      setTimeout(
+                                        () => setShowPickupSuggestions(false),
+                                        150
+                                      )
+                                    }
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Escape")
+                                        setShowPickupSuggestions(false);
+                                    }}
+                                    autoComplete="off"
+                                  />
+                                  {showPickupSuggestions &&
+                                    pickupSuggestions.length > 0 && (
+                                      <div
+                                        className="bg-white border rounded shadow position-absolute w-100"
+                                        style={{
+                                          zIndex: 1050,
+                                          maxHeight: 260,
+                                          overflowY: "auto",
+                                        }}
+                                      >
+                                        {pickupSuggestions.map((group, gIdx) => (
+                                          <div key={`p-group-${gIdx}`}>
+                                            <div className="px-2 py-1 small text-muted bg-light">
+                                              {group.group}
                                             </div>
+                                            {group.items.map((sug, idx) => (
+                                              <div
+                                                key={`p-${sug.osm_id}-${idx}`}
+                                                className="p-2 suggestion-item"
+                                                style={{ cursor: "pointer" }}
+                                                onMouseDown={(e) => {
+                                                  e.preventDefault();
+                                                  selectSuggestion("pickup", sug);
+                                                }}
+                                              >
+                                                <div
+                                                  className="fw-semibold"
+                                                  style={{ fontSize: "0.9rem" }}
+                                                >
+                                                  {sug.display_name}
+                                                </div>
+                                              </div>
+                                            ))}
                                           </div>
                                         ))}
                                       </div>
-                                    ))}
-                                  </div>
-                                )}
-                            </Form.Group>
-                            {/* Hidden fields for pickup coordinates (not shown to user) */}
-                            <Form.Control
-                              type="hidden"
-                              name="pickup_latitude"
-                              value={form.pickup_latitude}
-                              readOnly
-                            />
-                            <Form.Control
-                              type="hidden"
-                              name="pickup_longitude"
-                              value={form.pickup_longitude}
-                              readOnly
-                            />
-                            <Button
-                              variant="outline-primary"
-                              size="sm"
-                              type="button"
-                              onClick={() => getCurrentLocation("pickup")}
-                            >
-                              <FaLocationArrow className="me-2" /> Use Current
-                              Location
-                            </Button>
-                          </Col>
+                                    )}
+                                </Form.Group>
+                                {/* Hidden fields for pickup coordinates (not shown to user) */}
+                                <Form.Control
+                                  type="hidden"
+                                  name="pickup_latitude"
+                                  value={form.pickup_latitude}
+                                  readOnly
+                                />
+                                <Form.Control
+                                  type="hidden"
+                                  name="pickup_longitude"
+                                  value={form.pickup_longitude}
+                                  readOnly
+                                />
+                                <Button
+                                  variant="outline-primary"
+                                  size="sm"
+                                  type="button"
+                                  onClick={() => getCurrentLocation("pickup")}
+                                >
+                                  <FaLocationArrow className="me-2" /> Use Current
+                                  Location
+                                </Button>
+                              </Col>
 
-                          <Col md={6} className="mb-4">
-                            <div
-                              className="d-flex align-items-center mb-2"
-                              style={{ color: "#374151" }}
-                            >
-                              <FaRoute className="me-2" />
-                              <h6 className="m-0">Drop Location</h6>
-                            </div>
-                            <Form.Group className="mb-3 position-relative">
-                              <Form.Label>Drop Address</Form.Label>
-                              <Form.Control
-                                type="text"
-                                placeholder="Search drop address"
-                                name="dropaddress"
-                                value={form.dropaddress}
-                                onChange={onChange}
-                                onFocus={() => {
-                                  setActiveType("drop");
-                                  if (
-                                    form.dropaddress &&
-                                    form.dropaddress.length >= 3
-                                  ) {
-                                    setShowDropSuggestions(true);
-                                    if (
-                                      !dropSuggestions ||
-                                      dropSuggestions.length === 0
-                                    ) {
-                                      fetchAddressSuggestions(
-                                        "drop",
-                                        form.dropaddress
-                                      );
-                                    }
-                                  }
-                                }}
-                                onBlur={() =>
-                                  setTimeout(
-                                    () => setShowDropSuggestions(false),
-                                    150
-                                  )
-                                }
-                                onKeyDown={(e) => {
-                                  if (e.key === "Escape")
-                                    setShowDropSuggestions(false);
-                                }}
-                                autoComplete="off"
-                              />
-                              {showDropSuggestions &&
-                                dropSuggestions.length > 0 && (
-                                  <div
-                                    className="bg-white border rounded shadow position-absolute w-100"
-                                    style={{
-                                      zIndex: 1050,
-                                      maxHeight: 260,
-                                      overflowY: "auto",
+                              <Col md={6} className="mb-4">
+                                <div
+                                  className="d-flex align-items-center mb-2"
+                                  style={{ color: "#374151" }}
+                                >
+                                  <FaRoute className="me-2" />
+                                  <h6 className="m-0">Drop Location</h6>
+                                </div>
+                                <Form.Group className="mb-3 position-relative">
+                                  <Form.Label>Drop Address</Form.Label>
+                                  <Form.Control
+                                    type="text"
+                                    placeholder="Search drop address"
+                                    name="dropaddress"
+                                    value={form.dropaddress}
+                                    onChange={onChange}
+                                    onFocus={() => {
+                                      setActiveType("drop");
+                                      if (
+                                        form.dropaddress &&
+                                        form.dropaddress.length >= 3
+                                      ) {
+                                        setShowDropSuggestions(true);
+                                        if (
+                                          !dropSuggestions ||
+                                          dropSuggestions.length === 0
+                                        ) {
+                                          fetchAddressSuggestions(
+                                            "drop",
+                                            form.dropaddress
+                                          );
+                                        }
+                                      }
                                     }}
-                                  >
-                                    {dropSuggestions.map((group, gIdx) => (
-                                      <div key={`d-group-${gIdx}`}>
-                                        <div className="px-2 py-1 small text-muted bg-light">
-                                          {group.group}
-                                        </div>
-                                        {group.items.map((sug, idx) => (
-                                          <div
-                                            key={`d-${sug.osm_id}-${idx}`}
-                                            className="p-2 suggestion-item"
-                                            style={{ cursor: "pointer" }}
-                                            onMouseDown={(e) => {
-                                              e.preventDefault();
-                                              selectSuggestion("drop", sug);
-                                            }}
-                                          >
-                                            <div
-                                              className="fw-semibold"
-                                              style={{ fontSize: "0.9rem" }}
-                                            >
-                                              {sug.display_name}
+                                    onBlur={() =>
+                                      setTimeout(
+                                        () => setShowDropSuggestions(false),
+                                        150
+                                      )
+                                    }
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Escape")
+                                        setShowDropSuggestions(false);
+                                    }}
+                                    autoComplete="off"
+                                  />
+                                  {showDropSuggestions &&
+                                    dropSuggestions.length > 0 && (
+                                      <div
+                                        className="bg-white border rounded shadow position-absolute w-100"
+                                        style={{
+                                          zIndex: 1050,
+                                          maxHeight: 260,
+                                          overflowY: "auto",
+                                        }}
+                                      >
+                                        {dropSuggestions.map((group, gIdx) => (
+                                          <div key={`d-group-${gIdx}`}>
+                                            <div className="px-2 py-1 small text-muted bg-light">
+                                              {group.group}
                                             </div>
+                                            {group.items.map((sug, idx) => (
+                                              <div
+                                                key={`d-${sug.osm_id}-${idx}`}
+                                                className="p-2 suggestion-item"
+                                                style={{ cursor: "pointer" }}
+                                                onMouseDown={(e) => {
+                                                  e.preventDefault();
+                                                  selectSuggestion("drop", sug);
+                                                }}
+                                              >
+                                                <div
+                                                  className="fw-semibold"
+                                                  style={{ fontSize: "0.9rem" }}
+                                                >
+                                                  {sug.display_name}
+                                                </div>
+                                              </div>
+                                            ))}
                                           </div>
                                         ))}
                                       </div>
-                                    ))}
-                                  </div>
-                                )}
-                            </Form.Group>
-                            {/* Hidden fields for drop coordinates (not shown to user) */}
-                            <Form.Control
-                              type="hidden"
-                              name="drop_latitude"
-                              value={form.drop_latitude}
-                              readOnly
-                            />
-                            <Form.Control
-                              type="hidden"
-                              name="drop_longitude"
-                              value={form.drop_longitude}
-                              readOnly
-                            />
-                            <Button
-                              variant="outline-primary"
-                              size="sm"
-                              type="button"
-                              onClick={() => getCurrentLocation("drop")}
-                            >
-                              <FaLocationArrow className="me-2" /> Use Current
-                              Location
-                            </Button>
-                          </Col>
-                        </Row>
-
-                        {/* Passenger details (after locations, before vehicle) */}
-                        {hasBothLocations && (
-                          <div className="mt-3">
-                            <div className="d-flex align-items-center mb-2" style={{ color: "#374151" }}>
-                              <h6 className="m-0">Passenger Details</h6>
-                            </div>
-                            <Row className="g-3">
-                              <Col md={6}>
-                                <Form.Group>
-                                  <Form.Label>Name</Form.Label>
-                                  <Form.Control
-                                    value={details.name}
-                                    onChange={(e) => setDetails((p) => ({ ...p, name: e.target.value }))}
-                                    placeholder="Full name"
-                                  />
+                                    )}
                                 </Form.Group>
-                              </Col>
-                              <Col md={6}>
-                                <Form.Group>
-                                  <Form.Label>Mobile</Form.Label>
-                                  <Form.Control
-                                    value={details.mobile}
-                                    onChange={(e) => setDetails((p) => ({ ...p, mobile: e.target.value }))}
-                                    placeholder="e.g. +911234567890"
-                                  />
-                                </Form.Group>
-                              </Col>
-                              <Col md={6}>
-                                <Form.Group>
-                                  <Form.Label>Pickup House No.</Form.Label>
-                                  <Form.Control
-                                    value={details.pickup_house_number}
-                                    onChange={(e) => setDetails((p) => ({ ...p, pickup_house_number: e.target.value }))}
-                                    placeholder="House/Flat no."
-                                  />
-                                </Form.Group>
-                              </Col>
-                              <Col md={6}>
-                                <Form.Group>
-                                  <Form.Label>Drop House No.</Form.Label>
-                                  <Form.Control
-                                    value={details.drop_house_number}
-                                    onChange={(e) => setDetails((p) => ({ ...p, drop_house_number: e.target.value }))}
-                                    placeholder="House/Flat no."
-                                  />
-                                </Form.Group>
-                              </Col>
-                              <Col md={12}>
-                                <Form.Group>
-                                  <Form.Label>Book For</Form.Label>
-                                  <div>
-                                    {["myself", "other"].map((opt) => (
-                                      <Form.Check
-                                        inline
-                                        key={opt}
-                                        type="radio"
-                                        label={opt}
-                                        name="book_for"
-                                        checked={details.book_for === opt}
-                                        onChange={() => setDetails((p) => ({ ...p, book_for: opt }))}
-                                      />
-                                    ))}
-                                  </div>
-                                </Form.Group>
+                                {/* Hidden fields for drop coordinates (not shown to user) */}
+                                <Form.Control
+                                  type="hidden"
+                                  name="drop_latitude"
+                                  value={form.drop_latitude}
+                                  readOnly
+                                />
+                                <Form.Control
+                                  type="hidden"
+                                  name="drop_longitude"
+                                  value={form.drop_longitude}
+                                  readOnly
+                                />
+                                <Button
+                                  variant="outline-primary"
+                                  size="sm"
+                                  type="button"
+                                  onClick={() => getCurrentLocation("drop")}
+                                >
+                                  <FaLocationArrow className="me-2" /> Use Current
+                                  Location
+                                </Button>
                               </Col>
                             </Row>
-                          </div>
-                        )}
 
-                        {showVehicle && (
-                          <div className="mt-2">
-                            <div className="d-flex align-items-center justify-content-between mb-2" style={{ color: "#374151" }}>
-                              <div className="d-flex align-items-center">
-                                <FaAmbulance className="me-2" />
-                                <h6 className="m-0">Select Vehicle</h6>
-                              </div>
-                              <div className="small text-muted">
-                              </div>
-                            </div>
-                            <div className="bg-white">
-                              {[
-                                { key: "Ambulance", label: "Ambulance", icon: <FaAmbulance size={28} className="me-3" />, sub: "Emergency medical van" },
-                                { key: "Bike", label: "Bike", icon: <FaMotorcycle size={28} className="me-3" />, sub: "Beat the traffic on a bike" },
-                                { key: "Rickshaw", label: "Rickshaw", icon: <FaCar size={28} className="me-3" />, sub: "Quick auto ride in town" },
-                                { key: "Cab", label: "Cab", icon: <FaCar size={28} className="me-3" />, sub: "Comfy, economical cars" },
-                              ].map((opt, idx) => {
-                                const price = vehiclePrices ? vehiclePrices[opt.key] : null;
-                                const selected = details.ambulance_type === opt.key;
-                                return (
-                                  <div
-                                    key={opt.key}
-                                    className={`d-flex align-items-center justify-content-between p-3 border rounded ${selected ? "shadow-sm" : ""} mt-2`}
-                                    style={{ cursor: "pointer", backgroundColor: selected ? "#EEF2FF" : "#fff" }}
-                                    onClick={() =>
-                                      setDetails((p) => ({
-                                        ...p,
-                                        ambulance_type: opt.key,
-                                        price: price !== undefined && price !== null ? Number(price) : p.price,
-                                      }))
-                                    }
-                                  >
-                                    <div className="d-flex align-items-center">
-                                      {opt.icon}
+                            {/* Passenger details (after locations, before vehicle) */}
+                            {hasBothLocations && (
+                              <div className="mt-3">
+                                <div className="d-flex align-items-center mb-2" style={{ color: "#374151" }}>
+                                  <h6 className="m-0">Passenger Details</h6>
+                                </div>
+                                <Row className="g-3">
+                                  <Col md={6}>
+                                    <Form.Group>
+                                      <Form.Label>Name</Form.Label>
+                                      <Form.Control
+                                        value={details.name}
+                                        onChange={(e) => setDetails((p) => ({ ...p, name: e.target.value }))}
+                                        placeholder="Full name"
+                                      />
+                                    </Form.Group>
+                                  </Col>
+                                  <Col md={6}>
+                                    <Form.Group>
+                                      <Form.Label>Mobile</Form.Label>
+                                      <Form.Control
+                                        value={details.mobile}
+                                        onChange={(e) => setDetails((p) => ({ ...p, mobile: e.target.value }))}
+                                        placeholder="e.g. +911234567890"
+                                      />
+                                    </Form.Group>
+                                  </Col>
+                                  <Col md={6}>
+                                    <Form.Group>
+                                      <Form.Label>Pickup House No.</Form.Label>
+                                      <Form.Control
+                                        value={details.pickup_house_number}
+                                        onChange={(e) => setDetails((p) => ({ ...p, pickup_house_number: e.target.value }))}
+                                        placeholder="House/Flat no."
+                                      />
+                                    </Form.Group>
+                                  </Col>
+                                  <Col md={6}>
+                                    <Form.Group>
+                                      <Form.Label>Drop House No.</Form.Label>
+                                      <Form.Control
+                                        value={details.drop_house_number}
+                                        onChange={(e) => setDetails((p) => ({ ...p, drop_house_number: e.target.value }))}
+                                        placeholder="House/Flat no."
+                                      />
+                                    </Form.Group>
+                                  </Col>
+                                  <Col md={12}>
+                                    <Form.Group>
+                                      <Form.Label>Book For</Form.Label>
                                       <div>
-                                        <div className="fw-semibold">{opt.label}</div>
-                                        <div className="text-muted" style={{ fontSize: "0.8rem" }}>{opt.sub}</div>
+                                        {["myself", "other"].map((opt) => (
+                                          <Form.Check
+                                            inline
+                                            key={opt}
+                                            type="radio"
+                                            label={opt}
+                                            name="book_for"
+                                            checked={details.book_for === opt}
+                                            onChange={() => setDetails((p) => ({ ...p, book_for: opt }))}
+                                          />
+                                        ))}
                                       </div>
-                                    </div>
-                                    <div className="text-end">
-                                      <div className="fw-semibold">{price !== undefined && price !== null ? `₹${price}` : "—"} </div>
-                                      <div className="text-muted" style={{ fontSize: "0.8rem" }}>GST + {platformFee ? `(₹${platformFee}) platform fee incl.` : ""}</div>
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        )}
+                                    </Form.Group>
+                                  </Col>
+                                </Row>
+                              </div>
+                            )}
 
-                        <div className="d-flex justify-content-end mt-2">
-                          <Button
-                            type="submit"
-                            className="px-4"
-                            style={{ backgroundColor: "#4F46E5" }}
-                            disabled={loading || !token || !canSubmit }
-                          
-                          >
-                            {loading ? (
-                              <span
-                                className="spinner-border spinner-border-sm me-2"
-                                role="status"
-                                aria-hidden="true"
-                              ></span>
-                            ) : null}
-                           Request Ambulance
-                          </Button>
-                        </div>
-                      </Form>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              </Row>
+                            {showVehicle && (
+                              <div className="mt-3">
+                                <div className="d-flex align-items-center justify-content-between mb-2" style={{ color: "#374151" }}>
+                                  <div className="d-flex align-items-center">
+                                    <FaAmbulance className="me-2" />
+                                    <h6 className="m-0">Select Vehicle</h6>
+                                  </div>
+                                  <div className="small text-muted">
+                                  </div>
+                                </div>
+                                <Row className="bg-white g-3">
+                                  {[
+                                    { key: "Ambulance", label: "Ambulance", icon: <FaAmbulance size={28} className="me-3" />, sub: "Emergency medical van" },
+                                    { key: "Bike", label: "Bike", icon: <FaMotorcycle size={28} className="me-3" />, sub: "Beat the traffic on a bike" },
+                                    { key: "Rickshaw", label: "Rickshaw", icon: <FaCar size={28} className="me-3" />, sub: "Quick auto ride in town" },
+                                    { key: "Cab", label: "Cab", icon: <FaCar size={28} className="me-3" />, sub: "Comfy, economical cars" },
+                                  ].map((opt, idx) => {
+                                    const price = vehiclePrices ? vehiclePrices[opt.key] : null;
+                                    const selected = details.ambulance_type === opt.key;
+                                    return (
+                                      <Col xs={6} key={opt.key} className={`text-center`}>
+                                        <div
+                                          className={`p-2 border rounded ${selected ? "shadow-sm" : ""}`}
+                                          style={{ cursor: "pointer", backgroundColor: selected ? "#EEF2FF" : "#fff" }}
+                                          onClick={() =>
+                                            setDetails((p) => ({
+                                              ...p,
+                                              ambulance_type: opt.key,
+                                              price: price !== undefined && price !== null ? Number(price) : p.price,
+                                            }))
+                                          }
+                                        >
+                                          <div >
+                                            {opt.icon}
+                                            <div>
+                                              <div className="fw-semibold">{price !== undefined && price !== null ? `₹${price}` : "—"} </div>
+                                              <div className="fw-semibold badge text-bg-dark">{opt.label}</div>
+                                              {/* <div className="text-muted" style={{ fontSize: "0.8rem" }}>{opt.sub}</div> */}
+                                            </div>
+                                          </div>
+                                          {/* <div className="text-end">
+                                            <div className="text-muted" style={{ fontSize: "0.8rem" }}>GST + {platformFee ? `(₹${platformFee}) platform fee incl.` : ""}</div>
+                                          </div> */}
+                                        </div>
+                                      </Col>
+                                    );
+                                  })}
+                                </Row>
+                              </div>
+                            )}
+
+                            <div className="d-flex justify-content-end mt-2">
+                              <Button
+                                type="submit"
+                                className="px-4"
+                                style={{ backgroundColor: "#4F46E5" }}
+                                disabled={loading || !token || !canSubmit}
+
+                              >
+                                {loading ? (
+                                  <span
+                                    className="spinner-border spinner-border-sm me-2"
+                                    role="status"
+                                    aria-hidden="true"
+                                  ></span>
+                                ) : null}
+                                Request Ambulance
+                              </Button>
+                            </div>
+                          </Form>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </Row>
               }
-              
+
 
             </div>
           </Col>

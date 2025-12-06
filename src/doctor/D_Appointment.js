@@ -840,7 +840,7 @@ const D_Appointment = () => {
                                                     <span className='text-truncate'>{v?.hospitalname || '-'}</span>
                                                 </div>
                                             </Col>
-                                            <Col md={6} xs={12}>
+                                            <Col xs={12}>
                                                 <div className='text-muted small mb-1'>Reason</div>
                                                 <div className='d-flex align-items-center gap-2'>
                                                     <span className='text-truncate'>{v?.appointment_reason || '-'}</span>
@@ -866,8 +866,8 @@ const D_Appointment = () => {
                                                         </Col>
                                                     ))
                                                 ) : (
-                                                    <Col xs={12}>
-                                                        <div className='text-muted small'>No reports uploaded.</div>
+                                                    <Col xs={12} md={5}>
+                                                        <div className='text-muted small p-2 border rounded'>No reports uploaded.</div>
                                                     </Col>
                                                 )}
                                             </Row>

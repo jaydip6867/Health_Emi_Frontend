@@ -35,6 +35,14 @@ const NavBar = ({ logindata }) => {
     setActiveDropdown(!activeDropdown);
   };
 
+  const getDisplayName = () => {
+    if (!logindata) return "Login/Signup";
+
+    if (logindata.logintype === "doctor") return `Dr. ${logindata.name}`;
+    if (logindata.logintype === "patient") return logindata.name;
+
+    return "Login/Signup";
+  };
 
   return (
     <header className="header_bg">
@@ -91,7 +99,7 @@ const NavBar = ({ logindata }) => {
             <NavDropdown
               title={
                 <span className="login-signup-btn" onClick={toggleDropdown}>
-                  {logindata ? logindata.name : "Login/Signup"}
+                  {getDisplayName()}
                   {/* Login/Signup */}
                 </span>
               }

@@ -314,12 +314,6 @@ const P_Surgeries = () => {
                                         <div className='border rounded p-3 mt-3'>
                                             <Row className='g-3'>
                                                 <Col md={6} xs={12}>
-                                                    <div className='text-muted small mb-1'>Clinic Name</div>
-                                                    <div className='d-flex align-items-center gap-2'>
-                                                        <span>{v?.surgerydetails?.name}</span>
-                                                    </div>
-                                                </Col>
-                                                <Col md={6} xs={12}>
                                                     <div className='text-muted small mb-1'>Appointment Date & Time</div>
                                                     <div className='d-flex align-items-center gap-2'>
                                                         <FiClock />
@@ -361,8 +355,8 @@ const P_Surgeries = () => {
                                                         </Col>
                                                     ))
                                                 ) : (
-                                                    <Col xs={12}>
-                                                        <div className='text-muted small'>No reports uploaded.</div>
+                                                    <Col xs={12} md={5}>
+                                                        <div className='text-muted small border rounded p-3'>No reports uploaded.</div>
                                                     </Col>
                                                 )}
                                             </Row>

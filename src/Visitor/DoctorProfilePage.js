@@ -555,12 +555,13 @@ const DoctorProfilePage = () => {
                           <div className="text-center p-3 bg-white rounded-3 h-100 shadow-sm">
                             <div>
                               <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#d5E1EA', fontSize: '14px' }} >
-                                <svg width="21" height="21" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M8.96001 0C5.62546 0 2.91455 2.71091 2.91455 6.04545C2.91455 9.31636 5.47273 11.9636 8.80728 12.0782C8.9091 12.0655 9.01091 12.0655 9.08728 12.0782C9.11273 12.0782 9.12546 12.0782 9.15091 12.0782C9.16364 12.0782 9.16364 12.0782 9.17637 12.0782C12.4346 11.9636 14.9927 9.31636 15.0055 6.04545C15.0055 2.71091 12.2946 0 8.96001 0ZM5.72727 15.2726C5.01455 15.2726 4.45455 14.6999 4.45455 13.9999C4.45455 13.2999 5.02727 12.7272 5.72727 12.7272C6.42727 12.7272 7 13.2999 7 13.9999C7 14.6999 6.42727 15.2726 5.72727 15.2726ZM10.1691 15.2726C9.45636 15.2726 8.89636 14.6999 8.89636 13.9999C8.89636 13.2999 9.46909 12.7272 10.1691 12.7272C10.8691 12.7272 11.4418 13.2999 11.4418 13.9999C11.4418 14.6999 10.8818 15.2726 10.1691 15.2726ZM14.6236 15.2726C13.9109 15.2726 13.3509 14.6999 13.3509 13.9999C13.3509 13.2999 13.9236 12.7272 14.6236 12.7272C15.3236 12.7272 15.8964 13.2999 15.8964 13.9999C15.8964 14.6999 15.3236 15.2726 14.6236 15.2726Z" fill="#1C2A3A" />
-                                  <path d="M15.4255 15.4639C11.8745 13.0967 6.08364 13.0967 2.50727 15.4639C0.890909 16.5457 0 18.0094 0 19.5748C0 21.1403 0.890909 22.5912 2.49455 23.6603C4.27636 24.8567 6.61818 25.4548 8.96 25.4548C11.3018 25.4548 13.6436 24.8567 15.4255 23.6603C17.0291 22.5785 17.92 21.1276 17.92 19.5494C17.9073 17.9839 17.0291 16.533 15.4255 15.4639ZM5.72727 15.2726C5.01455 15.2726 4.45455 14.6999 4.45455 13.9999C4.45455 13.2999 5.02727 12.7272 5.72727 12.7272C6.42727 12.7272 7 13.2999 7 13.9999C7 14.6999 6.42727 15.2726 5.72727 15.2726ZM10.1691 15.2726C9.45636 15.2726 8.89636 14.6999 8.89636 13.9999C8.89636 13.2999 9.46909 12.7272 10.1691 12.7272C10.8691 12.7272 11.4418 13.2999 11.4418 13.9999C11.4418 14.6999 10.8818 15.2726 10.1691 15.2726ZM14.6236 15.2726C13.9109 15.2726 13.3509 14.6999 13.3509 13.9999C13.3509 13.2999 13.9236 12.7272 14.6236 12.7272C15.3236 12.7272 15.8964 13.2999 15.8964 13.9999C15.8964 14.6999 15.3236 15.2726 14.6236 15.2726Z" fill="#1C2A3A" />
-                                  <path d="M25.4292 6.09636V11.1873C25.4292 13.7327 24.6401 15.4636 23.0619 16.4182C22.6801 16.6473 22.2346 16.3418 22.2346 15.8964L22.2474 11.1873C22.2474 6.09636 19.3328 3.18182 14.2419 3.18182L6.491 3.19455C6.04555 3.19455 5.74009 2.74909 5.96918 2.36727C6.92373 0.789091 8.65464 0 11.1874 0H19.3328C23.3928 0 25.4292 2.03636 25.4292 6.09636Z" fill="#1C2A3A" />
-                                  <path d="M22.947 6.79614C23.1507 9.26523 21.3943 11.4289 18.9634 11.7216C22.6801 16.6473 22.2346 16.3418 22.2346 15.8964L22.2474 11.1873C22.2474 6.09636 19.3328 3.18182 14.2419 3.18182L6.491 3.19455C6.04555 3.19455 5.74009 2.74909 5.96918 2.36727C6.92373 0.789091 8.65464 0 11.1874 0H19.3328C23.3928 0 25.4292 2.03636 25.4292 6.09636Z" fill="#1C2A3A" />
+                                <svg width="21" height="21" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M11.4546 2.54492C8.12009 2.54492 5.40918 5.25583 5.40918 8.59038C5.40918 11.8613 7.96736 14.5086 11.3019 14.6231C11.4037 14.6104 11.5055 14.6104 11.5819 14.6231C11.6074 14.6231 11.6201 14.6231 11.6455 14.6231C11.6583 14.6231 11.6583 14.6231 11.671 14.6231C14.9292 14.5086 17.4874 11.8613 17.5001 8.59038C17.5001 5.25583 14.7892 2.54492 11.4546 2.54492Z" fill="#1C2A3A" />
+                                  <path d="M17.9201 18.0089C14.3692 15.6416 8.57827 15.6416 5.0019 18.0089C3.38554 19.0907 2.49463 20.5543 2.49463 22.1198C2.49463 23.6852 3.38554 25.1361 4.98917 26.2052C6.77099 27.4016 9.11281 27.9998 11.4546 27.9998C13.7964 27.9998 16.1383 27.4016 17.9201 26.2052C19.5237 25.1234 20.4146 23.6725 20.4146 22.0943C20.4019 20.5289 19.5237 19.0779 17.9201 18.0089Z" fill="#1C2A3A" />
+                                  <path d="M25.4416 9.34106C25.6453 11.8101 23.8889 13.9738 21.458 14.2665C21.4453 14.2665 21.4453 14.2665 21.4326 14.2665H21.3944C21.318 14.2665 21.2416 14.2665 21.178 14.292C19.9435 14.3556 18.8107 13.9611 17.958 13.2356C19.2689 12.0647 20.0198 10.3083 19.8671 8.39924C19.778 7.36833 19.4216 6.42651 18.8871 5.62469C19.3707 5.38288 19.9307 5.23015 20.5035 5.17924C22.998 4.96288 25.2253 6.82106 25.4416 9.34106Z" fill="#1C2A3A" />
+                                  <path d="M27.9875 21.1142C27.8857 22.3487 27.0966 23.4178 25.7729 24.1433C24.5002 24.8433 22.8966 25.1742 21.3057 25.136C22.222 24.3087 22.7566 23.2778 22.8584 22.1833C22.9857 20.6051 22.2348 19.0905 20.7329 17.8814C19.8802 17.2069 18.8875 16.6723 17.8057 16.2778C20.6184 15.4633 24.1566 16.0105 26.3329 17.7669C27.5038 18.7087 28.102 19.8923 27.9875 21.1142Z" fill="#1C2A3A" />
                                 </svg>
+
 
 
                               </div>
@@ -636,6 +637,33 @@ const DoctorProfilePage = () => {
                 </Card.Body>
               </Card>
 
+              {/* Hospitals Section */}
+              <Card className="mb-4 border-0 shadow-sm" style={{ borderRadius: '15px' }}>
+                <Card.Body className="p-4">
+                  <h5 className="fw-bold mb-4">Hospitals</h5>
+                  <Row className="g-3">
+                    {
+                      doctor_profile.hospitals.map((v, i) => {
+                        return (
+                          <Col md={6} key={i}>
+                            <Card className="border-1 border-opacity-25 shadow-sm h-100" style={{ borderRadius: '12px' }}>
+                              <Card.Body className="p-3">
+                                <div>
+                                  <h6 className="fw-bold mb-1 pb-2 border-bottom">{v.name}</h6>
+                                  <p className="text-muted small m-0">
+                                    <BsGeoAlt className="text-dark me-2" /> {v.address}
+                                  </p>
+                                </div>
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                        )
+                      })
+                    }
+                  </Row>
+                </Card.Body>
+              </Card>
+
               {/* Surgeries Section */}
               <Card className="mb-4 border-0 shadow-sm" style={{ borderRadius: '15px' }}>
                 <Card.Body className="p-4">
@@ -681,33 +709,6 @@ const DoctorProfilePage = () => {
                 </Card.Body>
               </Card>
 
-              {/* Hospitals Section */}
-              <Card className="mb-4 border-0 shadow-sm" style={{ borderRadius: '15px' }}>
-                <Card.Body className="p-4">
-                  <h5 className="fw-bold mb-4">Hospitals</h5>
-                  <Row className="g-3">
-                    {
-                      doctor_profile.hospitals.map((v, i) => {
-                        return (
-                          <Col md={6} key={i}>
-                            <Card className="border-1 border-opacity-25 shadow-sm h-100" style={{ borderRadius: '12px' }}>
-                              <Card.Body className="p-3">
-                                <div>
-                                  <h6 className="fw-bold mb-1 pb-2 border-bottom">{v.name}</h6>
-                                  <p className="text-muted small m-0">
-                                    <BsGeoAlt className="text-dark me-2" /> {v.address}
-                                  </p>
-                                </div>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                        )
-                      })
-                    }
-                  </Row>
-                </Card.Body>
-              </Card>
-
               {/* Reviews Section */}
               <Card className="mb-4 border-0 shadow-sm" style={{ borderRadius: '15px' }}>
                 <Card.Body className="p-4">
@@ -748,7 +749,7 @@ const DoctorProfilePage = () => {
                                 </div>
                               </div>
                             </div>
-                            <p className="mt-3 mb-0">
+                            <p className="mt-3 mb-0 truncaate_description_3">
                               {v?.description}
                             </p>
                           </div>
@@ -1048,7 +1049,7 @@ const DoctorProfilePage = () => {
                         <div className="invalid-feedback">{appointmentErrors.alt_mobile}</div>
                       )}
                     </Col>
-                    
+
                     <Col xs={4}>
                       <Form.Label>Reason</Form.Label>
                       <Form.Control
@@ -1154,7 +1155,7 @@ const DoctorProfilePage = () => {
                           </div>
                           <div className="d-flex flex-column mt-1">
                             <span className="fw-bold">{selectedService?.days}</span>
-                            <small className="text-muted">Stays Days</small>
+                            <small className="text-muted">Stays</small>
                           </div>
                         </div>
                       </div>
@@ -1235,7 +1236,7 @@ const DoctorProfilePage = () => {
                   ) : (
                     <p className="text-muted mb-0">No inclusive items specified</p>
                   )
-                }
+                  }
                 </Col>
                 <Col xs={12} md={6}>
                   <h6>Excluded</h6>
@@ -1258,7 +1259,7 @@ const DoctorProfilePage = () => {
                 </Col>
               </Row>
             </div>
-            
+
           </Modal.Body>
           <Modal.Footer>
             <Button
