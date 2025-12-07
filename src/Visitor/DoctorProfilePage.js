@@ -24,7 +24,7 @@ const DoctorProfilePage = () => {
   const [endDate, setEndDate] = useState(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [selectedConsultationType, setSelectedConsultationType] = useState('');
-  const [selectedHospital, setSelectedHospital] = useState('');
+  const [selectedHospital, setSelectedHospital] = useState(null);
   const [consultError, setConsultError] = useState(false);
   const [hospitalError, setHospitalError] = useState(false);
 
@@ -280,9 +280,8 @@ const DoctorProfilePage = () => {
             hospital_name: selectedHospital || ''
           }
         });
-
         Swal.fire({
-          title: "Appointment Add Successfully...",
+          title: "Appointment Add Successfully",
           icon: "success",
           confirmButtonText: 'Ok.'
         }).then((result) => {
@@ -309,7 +308,7 @@ const DoctorProfilePage = () => {
       ? format(selectedDate, 'dd-MM-yyyy hh:mm a')
       : '';
 
-  var surg_obj = { patientname: '', mobile: '', alt_name: '', alt_mobile: '', surgeryid: '', date: '', time: '', appointment_reason: '', report: [], doctorid: '', roomtype: '', hospital_name: '' }
+  var surg_obj = { patientname: '', mobile: '', alt_name: '', alt_mobile: '', surgeryid: '', date: '', time: '', appointment_reason: '', report: [], doctorid: '', roomtype: '', hospital_name: null }
   const [addsurgery, setaddsurgery] = useState(surg_obj)
   const [reportFiles, setReportFiles] = useState([])
   const [reportPreviews, setReportPreviews] = useState([])
@@ -322,7 +321,7 @@ const DoctorProfilePage = () => {
 
   const handleAddSurgeryClose = () => setaddshow(false)
   function handleAddSurgery(surgdata, d_id) {
-    var surg_apt_data = { ...addsurgery, surgeryid: surgdata._id, doctorid: d_id, patientname: patient?.name, mobile: patient?.mobile, hospital_name: '' }
+    var surg_apt_data = { ...addsurgery, surgeryid: surgdata._id, doctorid: d_id, patientname: patient?.name, mobile: patient?.mobile, hospital_name: null }
     setaddsurgery(surg_apt_data)
     setsingle_surg(surgdata)
     if (!patient) {
@@ -473,7 +472,7 @@ const DoctorProfilePage = () => {
         });
 
         Swal.fire({
-          title: "Surgery Appointment Add Successfully...",
+          title: "Surgery Appointment Add Successfully",
           icon: "success",
           confirmButtonText: 'Ok.'
         }).then((result) => {
@@ -559,18 +558,13 @@ const DoctorProfilePage = () => {
                                   <path d="M11.4546 2.54492C8.12009 2.54492 5.40918 5.25583 5.40918 8.59038C5.40918 11.8613 7.96736 14.5086 11.3019 14.6231C11.4037 14.6104 11.5055 14.6104 11.5819 14.6231C11.6074 14.6231 11.6201 14.6231 11.6455 14.6231C11.6583 14.6231 11.6583 14.6231 11.671 14.6231C14.9292 14.5086 17.4874 11.8613 17.5001 8.59038C17.5001 5.25583 14.7892 2.54492 11.4546 2.54492Z" fill="#1C2A3A" />
                                   <path d="M17.9201 18.0089C14.3692 15.6416 8.57827 15.6416 5.0019 18.0089C3.38554 19.0907 2.49463 20.5543 2.49463 22.1198C2.49463 23.6852 3.38554 25.1361 4.98917 26.2052C6.77099 27.4016 9.11281 27.9998 11.4546 27.9998C13.7964 27.9998 16.1383 27.4016 17.9201 26.2052C19.5237 25.1234 20.4146 23.6725 20.4146 22.0943C20.4019 20.5289 19.5237 19.0779 17.9201 18.0089Z" fill="#1C2A3A" />
                                   <path d="M25.4416 9.34106C25.6453 11.8101 23.8889 13.9738 21.458 14.2665C21.4453 14.2665 21.4453 14.2665 21.4326 14.2665H21.3944C21.318 14.2665 21.2416 14.2665 21.178 14.292C19.9435 14.3556 18.8107 13.9611 17.958 13.2356C19.2689 12.0647 20.0198 10.3083 19.8671 8.39924C19.778 7.36833 19.4216 6.42651 18.8871 5.62469C19.3707 5.38288 19.9307 5.23015 20.5035 5.17924C22.998 4.96288 25.2253 6.82106 25.4416 9.34106Z" fill="#1C2A3A" />
-                                  <path d="M27.9875 21.1142C27.8857 22.3487 27.0966 23.4178 25.7729 24.1433C24.5002 24.8433 22.8966 25.1742 21.3057 25.136C22.222 24.3087 22.7566 23.2778 22.8584 22.1833C22.9857 20.6051 22.2348 19.0905 20.7329 17.8814C19.8802 17.2069 18.8875 16.6723 17.8057 16.2778C20.6184 15.4633 24.1566 16.0105 26.3329 17.7669C27.5038 18.7087 28.102 19.8923 27.9875 21.1142Z" fill="#1C2A3A" />
                                 </svg>
-
-
-
                               </div>
                               <div className="d-flex flex-column mt-1">
                                 <span className="fw-bold">{!doctor_profile?.completedappointment ? 0 : doctor_profile?.completedappointment}+</span>
                                 <small className="text-muted">Consultant</small>
                               </div>
                             </div>
-
                           </div>
                         </Col>
                         <Col xs={6}>
@@ -881,15 +875,19 @@ const DoctorProfilePage = () => {
                           <Col xs={12} key={index}>
                             <label
                               htmlFor={`hospital_${index}`}
-                              className={`hospital-option w-100 ${selectedHospital === hospital.name ? 'selected' : ''}`}
+                              className={`hospital-option w-100 ${selectedHospital?.name === hospital.name ? 'selected' : ''}`}
                             >
                               <input
                                 type="radio"
                                 id={`hospital_${index}`}
                                 name="hospital"
-                                value={hospital.name}
-                                checked={selectedHospital === hospital.name}
-                                onChange={(e) => { setSelectedHospital(e.target.value); setHospitalError(false); }}
+                                value={JSON.stringify(hospital)}
+                                checked={selectedHospital?.name === hospital.name}
+                                onChange={(e) => {
+                                  const hospitalObj = JSON.parse(e.target.value);
+                                  setSelectedHospital(hospitalObj);
+                                  setHospitalError(false);
+                                }}
                                 className="visually-hidden"
                               />
 
@@ -901,8 +899,8 @@ const DoctorProfilePage = () => {
                                   </div>
                                 </div>
                                 <div className="ms-2 align-self-start">
-                                  <span className={`badge ${selectedHospital === hospital.name ? 'bg-primary' : 'bg-light text-dark border'}`}>
-                                    {selectedHospital === hospital.name ? 'Selected' : 'Choose'}
+                                  <span className={`badge ${selectedHospital?.name === hospital.name ? 'bg-primary' : 'bg-light text-dark border'}`}>
+                                    {selectedHospital?.name === hospital.name ? 'Selected' : 'Choose'}
                                   </span>
                                 </div>
                               </div>
@@ -1115,9 +1113,8 @@ const DoctorProfilePage = () => {
                           <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#d5E1EA', fontSize: '14px' }} >
                             <svg width="21" height="21" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M8.96001 0C5.62546 0 2.91455 2.71091 2.91455 6.04545C2.91455 9.31636 5.47273 11.9636 8.80728 12.0782C8.9091 12.0655 9.01091 12.0655 9.08728 12.0782C9.11273 12.0782 9.12546 12.0782 9.15091 12.0782C9.16364 12.0782 9.16364 12.0782 9.17637 12.0782C12.4346 11.9636 14.9927 9.31636 15.0055 6.04545C15.0055 2.71091 12.2946 0 8.96001 0Z" fill="#1C2A3A" />
-                              <path d="M15.4255 15.4639C11.8745 13.0967 6.08364 13.0967 2.50727 15.4639C0.890909 16.5457 0 18.0094 0 19.5748C0 21.1403 0.890909 22.5912 2.49455 23.6603C4.27636 24.8567 6.61818 25.4548 8.96 25.4548C11.3018 25.4548 13.6436 24.8567 15.4255 23.6603C17.0291 22.5785 17.92 21.1276 17.92 19.5494C17.9073 17.9839 17.0291 16.533 15.4255 15.4639Z" fill="#1C2A3A" />
-                              <path d="M22.947 6.79614C23.1507 9.26523 21.3943 11.4289 18.9634 11.7216C18.9507 11.7216 18.9507 11.7216 18.9379 11.7216H18.8997C18.8234 11.7216 18.747 11.7216 18.6834 11.747C17.4488 11.8107 16.3161 11.4161 15.4634 10.6907C16.7743 9.51977 17.5252 7.76341 17.3725 5.85432C17.2834 4.82341 16.927 3.88159 16.3925 3.07977C16.8761 2.83795 17.4361 2.68523 18.0088 2.63432C20.5034 2.41795 22.7307 4.27614 22.947 6.79614Z" fill="#1C2A3A" />
-                              <path d="M25.4929 18.5692C25.391 19.8038 24.6019 20.8729 23.2783 21.5983C22.0056 22.2983 20.4019 22.6292 18.811 22.5911C19.7274 21.7638 20.2619 20.7329 20.3638 19.6383C20.491 18.0602 19.7401 16.5456 18.2383 15.3365C17.3856 14.662 16.3929 14.1274 15.311 13.7329C18.1238 12.9183 21.6619 13.4656 23.8383 15.222C25.0092 16.1638 25.6074 17.3474 25.4929 18.5692Z" fill="#1C2A3A" />
+                              <path d="M15.4255 15.4639C11.8745 13.0967 6.08364 13.0967 2.50727 15.4639C3.38554 16.5457 2.49463 17.5543 2.49463 19.1198C2.49463 20.6852 3.38554 22.1361 4.98917 23.2052C6.77099 24.4016 9.11281 25.0008 11.4546 25.0008C13.7964 25.0008 16.1383 24.4016 17.9201 23.2052C19.5237 22.1234 20.4146 20.6725 20.4146 19.0943C20.4019 17.9839 19.5237 16.533 17.9201 15.4639Z" fill="#1C2A3A" />
+                              <path d="M22.947 6.79614C23.1507 9.26523 21.3943 11.4289 18.9634 11.7216C18.9507 11.7216 18.9507 11.7216 18.9379 11.7216H18.8997C18.8234 11.7216 18.747 11.7216 18.6834 11.747C17.4488 11.8107 16.3107 11.4161 15.4634 10.6907C16.7743 9.51977 17.5252 7.76341 17.3725 5.85432C17.2834 4.82341 16.927 3.88159 16.3925 3.07977C16.8761 2.83795 17.4361 2.68523 18.0088 2.63432C20.5034 2.41795 22.7307 4.27614 22.947 6.79614Z" fill="#1C2A3A" />
                             </svg>
                           </div>
                           <div className="d-flex flex-column mt-1">
@@ -1332,12 +1329,16 @@ const DoctorProfilePage = () => {
               <Form.Label>Hospital</Form.Label>
               <Form.Select
                 name='hospital_name'
-                value={addsurgery?.hospital_name || ''}
-                onChange={(e) => { surghandlechange(e); setSurgeryHospitalError(false); }}
+                value={addsurgery?.hospital_name ? JSON.stringify(addsurgery.hospital_name) : ''}
+                onChange={(e) => {
+                  const hospitalObj = e.target.value ? JSON.parse(e.target.value) : null;
+                  setaddsurgery(prev => ({ ...prev, hospital_name: hospitalObj }));
+                  setSurgeryHospitalError(false);
+                }}
               >
                 <option value=''>Select Hospital</option>
                 {doctor_profile?.hospitals?.map((v, i) => (
-                  <option key={i} value={v?.name}>{v?.name}</option>
+                  <option key={i} value={JSON.stringify(v)}>{v?.name}</option>
                 ))}
               </Form.Select>
               {surgeryHospitalError && <div className="text-danger small mt-1">Please select hospital</div>}

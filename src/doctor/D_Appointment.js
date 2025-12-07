@@ -14,7 +14,7 @@ import { format, parse, addDays } from 'date-fns'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
-import { FiClock, FiMail, FiPhone } from 'react-icons/fi'
+import { FiClock, FiMail, FiMapPin, FiPhone } from 'react-icons/fi'
 import { PiHospital } from 'react-icons/pi'
 import { HiOutlineHome } from 'react-icons/hi'
 import { BsCameraVideo } from 'react-icons/bs'
@@ -827,19 +827,23 @@ const D_Appointment = () => {
                                                     <span>{v?.date}, {v?.time}</span>
                                                 </div>
                                             </Col>
-                                            <Col md={6} xs={12}>
-                                                <div className='text-muted small mb-1'>Clinic Name</div>
-                                                <div className='d-flex align-items-center gap-2'>
-                                                    <span>{v?.hospital_name || '-'}</span>
-                                                </div>
-                                            </Col>
-
-                                            <Col md={6} xs={12}>
-                                                <div className='text-muted small mb-1'>Clinic Location</div>
-                                                <div className='d-flex align-items-center gap-2'>
-                                                    <span className='text-truncate'>{v?.hospitalname || '-'}</span>
-                                                </div>
-                                            </Col>
+                                            {
+                                                v?.visit_types === "clinic_visit" ? <>
+                                                    <Col md={6} xs={12}>
+                                                        <div className='text-muted small mb-1'>Clinic Name</div>
+                                                        <div className='d-flex align-items-center gap-2'>
+                                                            <PiHospital size={18} />
+                                                            <span>{v?.hospital_name?.name || ''}</span>
+                                                        </div>
+                                                    </Col>
+                                                    <Col xs={12}>
+                                                        <div className='text-muted small mb-1'>Clinic Location</div>
+                                                        <div className='d-flex align-items-center gap-2'>
+                                                            <FiMapPin />
+                                                            <span className='text-truncate'>{v?.hospital_name?.address || ''} , {v?.hospital_name?.city || ''} , {v?.hospital_name?.state || ''}</span>
+                                                        </div>
+                                                    </Col> </> : null
+                                            }
                                             <Col xs={12}>
                                                 <div className='text-muted small mb-1'>Reason</div>
                                                 <div className='d-flex align-items-center gap-2'>

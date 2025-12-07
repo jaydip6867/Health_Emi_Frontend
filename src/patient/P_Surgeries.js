@@ -11,9 +11,10 @@ import SmartDataTable from '../components/SmartDataTable'
 import { MdOutlineRemoveRedEye, MdVerified } from 'react-icons/md'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
 import { BsClipboard } from 'react-icons/bs'
-import { FiClock, FiMail, FiPhone } from "react-icons/fi";
+import { FiClock, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 import Swal from 'sweetalert2'
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai'
+import { PiHospital } from 'react-icons/pi'
 
 const P_Surgeries = () => {
 
@@ -324,13 +325,15 @@ const P_Surgeries = () => {
                                                 <Col md={6} xs={12}>
                                                     <div className='text-muted small mb-1'>Clinic Name</div>
                                                     <div className='d-flex align-items-center gap-2'>
-                                                        <span className='text-truncate'>{v?.hospitalname || '-'}</span>
+                                                        <PiHospital size={18} />
+                                                        <span>{v?.hospital_name?.name || ''}</span>
                                                     </div>
                                                 </Col>
-                                                <Col md={6} xs={12}>
-                                                    <div className='text-muted small mb-1'>Clinic Address</div>
+                                                <Col xs={12}>
+                                                    <div className='text-muted small mb-1'>Clinic Location</div>
                                                     <div className='d-flex align-items-center gap-2'>
-                                                        <span className='text-truncate'>{v?.clinicLocation || '-'}</span>
+                                                        <FiMapPin />
+                                                        <span className='text-truncate'>{v?.hospital_name?.address || ''} , {v?.hospital_name?.city || ''} , {v?.hospital_name?.state || ''}</span>
                                                     </div>
                                                 </Col>
                                             </Row>
@@ -389,7 +392,7 @@ const P_Surgeries = () => {
                                     </div>
 
                                 </Modal.Body>
-                                
+
                             </Modal>
                         )
                     })

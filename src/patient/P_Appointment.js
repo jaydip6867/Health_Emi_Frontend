@@ -399,20 +399,23 @@ const P_Appointment = () => {
                             <span>{v?.date}, {v?.time}</span>
                           </div>
                         </Col>
-                        <Col md={6} xs={12}>
-                          <div className='text-muted small mb-1'>Clinic Name</div>
-                          <div className='d-flex align-items-center gap-2'>
-                            <PiHospital size={18} />
-                            <span>{clinicName}</span>
-                          </div>
-                        </Col>
-                        <Col xs={12}>
-                          <div className='text-muted small mb-1'>Clinic Location</div>
-                          <div className='d-flex align-items-center gap-2'>
-                            <FiMapPin />
-                            <span className='text-truncate'>{clinicLocation || '-'}</span>
-                          </div>
-                        </Col>
+                        {
+                          v?.visit_types === "clinic_visit" ? <>
+                            <Col md={6} xs={12}>
+                              <div className='text-muted small mb-1'>Clinic Name</div>
+                              <div className='d-flex align-items-center gap-2'>
+                                <PiHospital size={18} />
+                                <span>{v?.hospital_name?.name || ''}</span>
+                              </div>
+                            </Col>
+                            <Col xs={12}>
+                              <div className='text-muted small mb-1'>Clinic Location</div>
+                              <div className='d-flex align-items-center gap-2'>
+                                <FiMapPin />
+                                <span className='text-truncate'>{v?.hospital_name?.address || ''} , {v?.hospital_name?.city || ''} , {v?.hospital_name?.state || ''}</span>
+                              </div>
+                            </Col> </> : null
+                        }
                         <Col xs={12}>
                           <div className='text-muted small mb-1'>Consultation Reason</div>
                           <div className='text-truncate'>{v?.appointment_reason || '-'}</div>

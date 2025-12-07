@@ -195,7 +195,7 @@ const PatientProfile = () => {
             getprofiledata()
             setdisabled(true)
             Swal.fire({
-                title: "Profile Update Successfully...",
+                title: "Profile Update Successfully",
                 icon: "success",
             });
         }).catch(function (error) {

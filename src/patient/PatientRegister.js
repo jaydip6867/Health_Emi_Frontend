@@ -215,7 +215,7 @@ const PatientRegister = () => {
         "otp": otp
       }
     }).then((res) => {
-      // toast('Patient Register successfully...', { className: 'custom-toast-success' })
+      // toast('Patient Register successfully', { className: 'custom-toast-success' })
       // console.log(res);
       Swal.fire({
         title: 'Patient Register successfully.',

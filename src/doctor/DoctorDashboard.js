@@ -9,7 +9,7 @@ import FooterBar from '../Visitor/Component/FooterBar';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import { format } from 'date-fns';
-import { FiBarChart, FiClipboard, FiClock, FiMail, FiPhone, FiScissors, FiVideo } from 'react-icons/fi';
+import { FiBarChart, FiClipboard, FiClock, FiMail, FiMapPin, FiPhone, FiScissors, FiVideo } from 'react-icons/fi';
 import SmartDataTable from '../components/SmartDataTable';
 import Loader from '../Loader';
 import { PiHospital } from 'react-icons/pi';
@@ -286,19 +286,23 @@ const DoctorDashboard = () => {
                           <span>{v?.date}, {v?.time}</span>
                         </div>
                       </Col>
-                      <Col md={6} xs={12}>
-                        <div className='text-muted small mb-1'>Clinic Name</div>
-                        <div className='d-flex align-items-center gap-2'>
-                          <span>{v?.hospital_name || '-'}</span>
-                        </div>
-                      </Col>
-
-                      <Col md={6} xs={12}>
-                        <div className='text-muted small mb-1'>Clinic Location</div>
-                        <div className='d-flex align-items-center gap-2'>
-                          <span className='text-truncate'>{v?.hospitalname || '-'}</span>
-                        </div>
-                      </Col>
+                      {
+                        v?.visit_types === "clinic_visit" ? <>
+                          <Col md={6} xs={12}>
+                            <div className='text-muted small mb-1'>Clinic Name</div>
+                            <div className='d-flex align-items-center gap-2'>
+                              <PiHospital size={18} />
+                              <span>{v?.hospital_name?.name || ''}</span>
+                            </div>
+                          </Col>
+                          <Col xs={12}>
+                            <div className='text-muted small mb-1'>Clinic Location</div>
+                            <div className='d-flex align-items-center gap-2'>
+                              <FiMapPin />
+                              <span className='text-truncate'>{v?.hospital_name?.address || '-'}</span>
+                            </div>
+                          </Col> </> : null
+                      }
                       <Col xs={12}>
                         <div className='text-muted small mb-1'>Reason</div>
                         <div className='d-flex align-items-center gap-2'>

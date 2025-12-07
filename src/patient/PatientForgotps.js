@@ -51,7 +51,7 @@ const PatientForgotps = () => {
             }
         }).then((res) => {
 
-            toast('OTP Verify Successfully...', { className: 'custom-toast-success' })
+            toast('OTP Verify Successfully', { className: 'custom-toast-success' })
             // console.log(res)
             setpatient_forgt_otp(false);
             setdoc_rest_ps(true);

@@ -51,7 +51,7 @@ const Amb_Forgot = () => {
                 "otp": otp
             }
         }).then((res) => {
-            toast('OTP Verify Successfully...', { className: 'custom-toast-success' })
+            toast('OTP Verify Successfully', { className: 'custom-toast-success' })
             setamb_forgt_otp(false);
             setamb_rest_ps(true);
         }).catch(function (error) {
@@ -68,7 +68,7 @@ const Amb_Forgot = () => {
                 "password": newps
             }
         }).then((res) => {
-            toast('Password Reset Successfully...', { className: 'custom-toast-success' })
+            toast('Password Reset Successfully', { className: 'custom-toast-success' })
             navigate('/ambulance')
         }).catch(function (error) {
             toast(error.response.data.Message, { className: 'custom-toast-error' })

@@ -499,7 +499,7 @@ const DoctorProfile = () => {
   //         // data: profile
   //       })
   //         .then((res) => {
-  //           // toast('Doctor Account Delete successfully...', { className: 'custom-toast-success' })
+  //           // toast('Doctor Account Delete successfully', { className: 'custom-toast-success' })
   //           // console.log(res)
   //           localStorage.removeItem("healthdoctor");
   //         })
@@ -715,7 +715,7 @@ const DoctorProfile = () => {
       }
 
       Swal.fire({
-        title: "Profile Update Successfully...",
+        title: "Profile Update Successfully",
         icon: "success",
       });
       setnewpassword("");

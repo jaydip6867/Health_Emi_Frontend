@@ -625,7 +625,7 @@ const DoctorRegister = () => {
       },
     })
       .then((res) => {
-        toast("OTP verify successfully...", {
+        toast("OTP verify successfully", {
           className: "custom-toast-success",
         });
         setdocotp(false);

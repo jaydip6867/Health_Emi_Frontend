@@ -55,7 +55,7 @@ const DoctorForgot = () => {
                 "otp": otp
             }
         }).then((res) => {
-            toast('OTP Verify Successfully...', { className: 'custom-toast-success' })
+            toast('OTP Verify Successfully', { className: 'custom-toast-success' })
             setdoc_forgt_otp(false);
             setdoc_rest_ps(true);
         }).catch(function (error) {
@@ -73,7 +73,7 @@ const DoctorForgot = () => {
             }
         }).then((res) => {
             Swal.fire({
-                title: 'Password Reset Successfully...',
+                title: 'Password Reset Successfully',
                 icon: 'success',
                 confirmButtonText: 'OK',
               }).then((result) => {

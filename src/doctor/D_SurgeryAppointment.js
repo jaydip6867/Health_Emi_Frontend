@@ -13,9 +13,10 @@ import { format, parse, addDays } from 'date-fns'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
-import { FiClipboard, FiClock, FiMail, FiPhone } from 'react-icons/fi'
+import { FiClipboard, FiClock, FiMail, FiMapPin, FiPhone } from 'react-icons/fi'
 import NavBar from '../Visitor/Component/NavBar'
 import FooterBar from '../Visitor/Component/FooterBar'
+import { PiHospital } from 'react-icons/pi'
 
 const D_SurgeryAppointment = () => {
     var navigate = useNavigate();
@@ -651,13 +652,15 @@ const D_SurgeryAppointment = () => {
                                                 <Col md={6} xs={12}>
                                                     <div className='text-muted small mb-1'>Clinic Name</div>
                                                     <div className='d-flex align-items-center gap-2'>
-                                                        <span className='text-truncate'>{v?.hospital_name || '-'}</span>
+                                                        <PiHospital size={18} />
+                                                        <span>{v?.hospital_name?.name || ''}</span>
                                                     </div>
                                                 </Col>
                                                 <Col md={6} xs={12}>
-                                                    <div className='text-muted small mb-1'>Clinic Address</div>
+                                                    <div className='text-muted small mb-1'>Clinic Location</div>
                                                     <div className='d-flex align-items-center gap-2'>
-                                                        <span className='text-truncate'>{v?.clinicLocation || '-'}</span>
+                                                        <FiMapPin />
+                                                        <span className='text-truncate'>{v?.hospital_name?.address || ''} , {v?.hospital_name?.city || ''} , {v?.hospital_name?.state || ''}</span>
                                                     </div>
                                                 </Col>
                                             </Row>
@@ -682,7 +685,7 @@ const D_SurgeryAppointment = () => {
                                                     ))
                                                 ) : (
                                                     <Col xs={12} md={5}>
-                                                        <div className='text-muted small border rounded'>No reports uploaded.</div>
+                                                        <div className='text-muted small border p-2 rounded'>No reports uploaded.</div>
                                                     </Col>
                                                 )}
                                             </Row>
