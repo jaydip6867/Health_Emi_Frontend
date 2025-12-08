@@ -715,7 +715,7 @@ const DoctorProfile = () => {
       }
 
       Swal.fire({
-        title: "Profile Update Successfully",
+        title: "Profile updated successfully.",
         icon: "success",
       });
       setnewpassword("");

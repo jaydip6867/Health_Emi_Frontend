@@ -74,8 +74,8 @@ const DoctorLogin = () => {
                         <Col md={8} lg={5}>
                             <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
                                 <div className='text-center'>
-                                    <h3>Doctor - Sign In</h3>
-                                    <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
+                                    <h3 className='w-75 mx-auto'>Doctor - Sign In</h3>
+                                    <p className='mx-auto'>Access your secure dashboard to manage patient consultations, update medical records, review treatment plans, and support EMI-based healthcare with ease.</p>
                                 </div>
                                 <Form>
 
@@ -89,7 +89,7 @@ const DoctorLogin = () => {
                                         <Form.Control type='password' placeholder="Enter Password" name='password' value={frmdoctor.password} className='frm_input' onChange={selfrmdata} />
                                     </Form.Group>
                                     <div className='form_bottom_div text-end'>
-                                        <p><Link to={'forgotdoctor'} className='form-link'>Forgotten Password ?</Link> </p>
+                                        <p><Link to={'forgotdoctor'} className='form-link'>Forgot Password ?</Link> </p>
                                     </div>
 
                                     <Button onClick={logindoctor} type="button" className='btn btn-primary d-block w-100 theme_btn mt-4'>

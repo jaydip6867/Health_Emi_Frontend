@@ -109,11 +109,12 @@ select.frm_input {
 .register_doctor h3 {
     color: #223F99;
     font-weight: 700;
-    font-size: 36px;
+    font-size: 24px;
 }
 
 .register_doctor p {
-    color: #757575;
+    color: var(--grayscale-color-400);
+    font-size: 13px;
 }
 
 .slider_doctor .slick-dots {

@@ -89,7 +89,7 @@ const D_Appointment = () => {
         }).then((res) => {
             // console.log(res)
             Swal.fire({
-                title: `Appointment ${s}...`,
+                title: `Appointment ${s} Successfully.`,
                 icon: "success",
             });
             appointmentlist()
@@ -158,7 +158,7 @@ const D_Appointment = () => {
             if (now < scheduledAt) {
                 Swal.fire({
                     title: 'Too Early',
-                    text: 'You can start the appointment at the scheduled time or later.',
+                    text: 'You can start the appointment only at the scheduled time.',
                     icon: 'warning',
                 });
                 return;
@@ -558,7 +558,7 @@ const D_Appointment = () => {
             }
         }).then((res) => {
             Swal.fire({
-                title: 'Appointment Rescheduled Successfully!',
+                title: 'Appointment rescheduled successfully.',
                 text: `New appointment time: ${datePart} at ${timeWithMeridiem}`,
                 icon: 'success',
             });

@@ -141,7 +141,7 @@ const D_Blog = () => {
             });
 
             Swal.fire({
-                title: "Blog Added...",
+                title: "Blog Added Successfully.",
                 icon: "success",
             });
             getblog()
@@ -181,8 +181,8 @@ const D_Blog = () => {
                     }
                 }).then((res) => {
                     Swal.fire({
-                        title: "Deleted!",
-                        text: "Your Blog has been deleted.",
+                        title: "Blog Deleted",
+                        text: "The blog has been removed successfully.",
                         icon: "success"
                     });
                     getblog();
@@ -306,7 +306,7 @@ const D_Blog = () => {
             });
 
             Swal.fire({
-                title: "Blog Updated...",
+                title: "Your blog has been updated successfully.",
                 icon: "success",
             });
             getblog()

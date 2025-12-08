@@ -85,7 +85,7 @@ const D_SurgeryAppointment = () => {
         }).then((res) => {
             // console.log(res)
             Swal.fire({
-                title: `Surgery Appointment ${s}...`,
+                title: `Surgery Appointment ${s} successfully.`,
                 icon: "success",
             });
             appointmentlist()
@@ -154,7 +154,7 @@ const D_SurgeryAppointment = () => {
         }).then((res) => {
             // console.log('doctor ', res.data.Data)
             Swal.fire({
-                title: "Surgery Appointment Rescheduled Done...",
+                title: "Surgery appointment rescheduled successfully.",
                 icon: "success",
             });
             appointmentlist()
@@ -237,7 +237,7 @@ const D_SurgeryAppointment = () => {
             if (now < scheduledAt) {
                 Swal.fire({
                     title: 'Too Early',
-                    text: 'You can start the appointment at the scheduled time or later.',
+                    text: 'You can start the appointment only at the scheduled time.',
                     icon: 'warning',
                 });
                 return;
@@ -245,7 +245,7 @@ const D_SurgeryAppointment = () => {
         } catch (e) {
             Swal.fire({
                 title: 'Invalid schedule',
-                text: 'Appointment date/time is invalid. Please reschedule or try again.',
+                text: 'Appointment date/time is invalid.',
                 icon: 'warning',
             });
             return;
@@ -455,7 +455,7 @@ const D_SurgeryAppointment = () => {
         selector: row => row.surgerydetails?.name || '',
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
-                <FiClipboard size={16} />
+                <FiClipboard style={{fontSize: '14px'}} />
                 <span>{row.surgerydetails?.name}</span>
             </div>
         )
@@ -465,7 +465,7 @@ const D_SurgeryAppointment = () => {
         selector: row => `${row.date || ''} ${row.time || ''}`,
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
-                <FiClock size={16} className="text-muted" />
+                <FiClock style={{fontSize: '14px'}} className="text-muted" />
                 <span>{`${row.date} , ${row.time}`}</span>
             </div>
         ),

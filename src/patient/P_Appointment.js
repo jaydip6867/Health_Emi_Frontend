@@ -261,7 +261,7 @@ const P_Appointment = () => {
   const appointmentbtn = async (id, s) => {
     await Swal.fire({
       title: "Are you sure?",
-      text: "You Want to Cancel this Appointment?",
+      text: "Are you sure you want to cancel this appointment?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "var(--primary-color-600)",
@@ -286,7 +286,7 @@ const P_Appointment = () => {
         }).finally(() => {
           Swal.fire({
             title: "Deleted!",
-            text: "Your file has been deleted.",
+            text: "Appointment deleted successfully.",
             icon: "success"
           });
         });

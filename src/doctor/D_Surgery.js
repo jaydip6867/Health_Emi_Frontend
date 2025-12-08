@@ -335,8 +335,8 @@ const D_Surgery = () => {
 
   function deletesurgery(sid) {
     Swal.fire({
-      title: "Are you sure?",
-      text: "You Want Delete This Surgery.",
+      title: "Are you sure you want to delete this surgery?",
+      // text: "You Want Delete This Surgery.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -356,8 +356,8 @@ const D_Surgery = () => {
         })
           .then((res) => {
             Swal.fire({
-              title: "Deleted!",
-              text: "Your Account has been deleted.",
+              title: "Surgery Deleted",
+              text: "Your Surygery has been removed successfully.",
               icon: "success",
             });
             getsurgery();
@@ -519,7 +519,7 @@ const D_Surgery = () => {
       });
       if (response.data?.Status) {
         Swal.fire({
-          title: "Surgery Updated Successfully",
+          title: "Surgery Updated Successfully.",
           icon: "success",
         });
         getsurgery();

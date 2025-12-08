@@ -1134,7 +1134,7 @@ const D_AmbulanceRequest = () => {
                                   </div>
                                   <div className="small text-muted">
                                   </div>
-                                </div>
+                                </div>  
                                 <Row className="bg-white g-3">
                                   {[
                                     { key: "Ambulance", label: "Ambulance", icon: <FaAmbulance size={28} className="me-3" />, sub: "Emergency medical van" },

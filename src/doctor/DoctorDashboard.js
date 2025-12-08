@@ -87,6 +87,16 @@ const DoctorDashboard = () => {
   }
 
 
+  // Get status badge styling
+    const getStatusBadge = (status) => {
+        const statusConfig = {
+            'Accept': { bg: 'var(--primary-color-500)', text: 'Accepted', dot: 'var(--primary-color-600)' },
+            'Pending': { bg: 'var(--secondary-color-600)', text: 'Pending', dot: 'var(--secondary-color-600)' },
+            'Cancel': { bg: '#ff5d5d', text: 'Cancelled', dot: 'var(--grayscale-color-700)' },
+            'Completed': { bg: '#019454ff', text: 'Completed', dot: 'var(--tertary-color-600)' },
+        };
+        return statusConfig[status] || { bg: 'var(--grayscale-color-500)', text: status, dot: 'var(--grayscale-color-500)' };
+    };
 
   // Appointment type pill
   const getTypePill = (type) => {
@@ -152,6 +162,27 @@ const DoctorDashboard = () => {
         </span>
       )
     },
+  },
+  {
+    name: 'Status',
+    cell: row => {
+      const statusConfig = getStatusBadge(row.status);
+      return (
+        <span 
+          className="badge text-center"
+          style={{ 
+            backgroundColor: statusConfig.bg,
+            color: 'white',
+            fontSize: '12px',
+            padding: '4px 8px'
+          }}
+        >
+          {statusConfig.text}
+        </span>
+      );
+    },
+    width: '120px',
+    center: true
   },
   {
     name: 'View',
