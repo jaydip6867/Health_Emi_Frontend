@@ -1322,22 +1322,6 @@ const D_Surgery = () => {
                               </div>
                             </div>
                           </Col>
-                          <Col xs={6}>
-                            <div className="text-center p-1  h-100">
-                              <div>
-                                <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#D8F3F1', fontSize: '14px' }} >
-                                  <svg width="24" height="24" viewBox="0 0 18 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M8.59091 16.5455C13.3355 16.5455 17.1818 12.8416 17.1818 8.27273C17.1818 3.70383 13.3355 0 8.59091 0C3.84628 0 0 3.70383 0 8.27273C0 12.8416 3.84628 16.5455 8.59091 16.5455Z" fill="#12A79D" />
-                                    <path d="M13.4147 17.3212C13.8347 17.1048 14.3183 17.423 14.3183 17.8939V24.0667C14.3183 25.2121 13.5165 25.7721 12.5238 25.3012L9.11286 23.6848C8.82013 23.5576 8.36195 23.5576 8.06922 23.6848L4.65831 25.3012C3.66559 25.7594 2.86377 25.1994 2.86377 24.0539L2.88922 17.8939C2.88922 17.423 3.38559 17.1176 3.79286 17.3212C5.23104 18.0467 6.86013 18.4539 8.59104 18.4539C10.322 18.4539 11.9638 18.0467 13.4147 17.3212Z" fill="#12A79D" />
-                                  </svg>
-                                </div>
-                                <div className="d-flex flex-column mt-1">
-                                  <span className="fw-bold">{v?.days}</span>
-                                  <small className="text-muted">Stays</small>
-                                </div>
-                              </div>
-                            </div>
-                          </Col>
                         </Row>
                       </Col>
                     </Row>

@@ -155,6 +155,8 @@ const DoctorProfilePage = () => {
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [showAllSurgeries, setShowAllSurgeries] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedReview, setSelectedReview] = useState(null);
 
   const handleClose = () => setShow(false);
   const handleShow = () => {
@@ -193,6 +195,16 @@ const DoctorProfilePage = () => {
   const handleServiceModalShow = (service) => {
     setSelectedService(service);
     setShowServiceModal(true);
+  };
+
+  const handleReviewModalShow = (review) => {
+    setSelectedReview(review);
+    setShowReviewModal(true);
+  };
+
+  const handleReviewModalClose = () => {
+    setShowReviewModal(false);
+    setSelectedReview(null);
   };
 
   var app_obj = { alt_mobile: '', surgeryid: '', appointment_reason: '', report: [], visit_types: '' }
@@ -673,8 +685,8 @@ const DoctorProfilePage = () => {
                               <Row >
                                 <Col xs={5}>
                                   <Image
-                                    src={surgery.surgery_photo || require("../assets/image/doctor_img.jpg")}
-                                    style={{ minHeight: 100, maxHeight: 100, objectFit: 'cover' }}
+                                    src={surgery.surgery_photo || require("./assets/surgery.jpg")}
+                                    style={{ minHeight: 100, maxHeight: 100, objectFit: 'contain' }}
                                     className="border border-2 border-light rounded-3 w-100 h-100"
                                     onError={(e) => {
                                       e.target.src = require("../assets/image/doctor_img.jpg");
@@ -711,7 +723,7 @@ const DoctorProfilePage = () => {
                     doctor_profile?.allReviewData?.length > 0 ? (
                       doctor_profile?.allReviewData?.map((v, i) => {
                         return (
-                          <div className='card p-3 shadow mb-3' key={i}>
+                          <div className='card p-3 shadow mb-3 cursor-pointer' key={i} onClick={() => handleReviewModalShow(v)}>
                             <div className="d-flex align-items-center pb-2 border-bottom">
                               <Image
                                 src={v?.createdBy?.profile_pic || require("../assets/image/doctor_img.jpg")}
@@ -1096,7 +1108,7 @@ const DoctorProfilePage = () => {
                 <Col xs={12} md={8}>
                   <div className="d-flex align-items-start gap-4">
                     <div>
-                      <img src={selectedService?.surgery_photo} alt={`surgery photo of ${selectedService?.name}`} />
+                      <img src={selectedService?.surgery_photo || require('./assets/surgery.jpg')} style={{ maxWidth: '120px', maxHeight: '120px' }} alt={`surgery photo of ${selectedService?.name}`} />
                     </div>
                     <div>
                       <h5>{selectedService?.name}</h5>
@@ -1141,7 +1153,7 @@ const DoctorProfilePage = () => {
                         </div>
                       </div>
                     </Col>
-                    <Col xs={6}>
+                    {/* <Col xs={6}>
                       <div className="text-center p-1  h-100">
                         <div>
                           <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#D8F3F1', fontSize: '14px' }} >
@@ -1156,7 +1168,7 @@ const DoctorProfilePage = () => {
                           </div>
                         </div>
                       </div>
-                    </Col>
+                    </Col> */}
                   </Row>
                 </Col>
               </Row>
@@ -1452,6 +1464,53 @@ const DoctorProfilePage = () => {
             {isUploadingReports ? 'Uploading Reports...' : 'Book Surgery Appointment'}
           </Button>
         </Modal.Footer>
+      </Modal>
+
+      {/* Review Details Modal */}
+      <Modal show={showReviewModal} onHide={handleReviewModalClose} centered size='lg'>
+        <Modal.Header closeButton>
+          <Modal.Title>Review Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedReview && (
+            <div className="text-center">
+              <div className="mb-4 d-flex justify-content-center align-items-center gap-3">
+                <Image
+                  src={selectedReview?.createdBy?.profile_pic || require("../assets/image/doctor_img.jpg")}
+                  roundedCircle
+                  style={{width:'60px' , height:'60px' , objectFit:'cover'}}
+                  className="mb-3"
+                />
+                <div>
+                  <h5 className="fw-bold mb-2">{selectedReview?.appointmentid?.patientname}</h5>
+                  <div className="d-flex justify-content-center align-items-center mb-3">
+                    {[...Array(5)].map((_, idx) => {
+                      const num = Number(selectedReview?.rating);
+                      const clamped = Number.isFinite(num) ? Math.max(0, Math.min(5, num)) : 0;
+                      const filled = Math.round(clamped);
+                      return (
+                        <BsStarFill
+                          key={idx}
+                          className={(idx < filled ? 'text-warning' : 'text-secondary') + ' me-1'}
+                          size={18}
+                        />
+                      );
+                    })}
+                    <span className="ms-2 fw-bold">
+                      {Number.isFinite(Number(selectedReview?.rating)) ? selectedReview?.rating.toFixed(1) : '0.0'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="text-start">
+                <h6 className="fw-bold mb-3">Review Description:</h6>
+                <p className="text-muted mb-0" style={{ lineHeight: '1.6' }}>
+                  {selectedReview?.description}
+                </p>
+              </div>
+            </div>
+          )}
+        </Modal.Body>
       </Modal>
     </>
   )
