@@ -304,7 +304,7 @@ const DoctorProfilePage = () => {
         // console.error('Error:', error);
         Swal.fire({
           title: "Something Went Wrong.",
-          text: error.response?.data?.Message || "Something Is Missing. Please Check Details...",
+          text: error.response?.data?.Message || "This time slot is already booked with the selected doctor. Please choose a different time and try again.",
           icon: "error",
         });
       } finally {
@@ -484,7 +484,7 @@ const DoctorProfilePage = () => {
         });
 
         Swal.fire({
-          title: "Surgery Appointment Add Successfully",
+          title: "Surgery Appointment Added Successfully.",
           icon: "success",
           confirmButtonText: 'Ok.'
         }).then((result) => {
@@ -907,7 +907,10 @@ const DoctorProfilePage = () => {
                                 <div className="flex-grow-1">
                                   <div className="d-flex align-items-center mb-1">
                                     <div className="hospital-dot me-2"></div>
-                                    <h6 className="mb-0">{hospital.name}</h6>
+                                    <div>
+                                      <h6 className="mb-0">{hospital.name}</h6>
+                                      <small>{hospital.address}</small>
+                                    </div>
                                   </div>
                                 </div>
                                 <div className="ms-2 align-self-start">
@@ -1478,7 +1481,7 @@ const DoctorProfilePage = () => {
                 <Image
                   src={selectedReview?.createdBy?.profile_pic || require("../assets/image/doctor_img.jpg")}
                   roundedCircle
-                  style={{width:'60px' , height:'60px' , objectFit:'cover'}}
+                  style={{ width: '60px', height: '60px', objectFit: 'cover' }}
                   className="mb-3"
                 />
                 <div>

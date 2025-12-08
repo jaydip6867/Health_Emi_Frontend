@@ -63,7 +63,6 @@ const PatientLogin = () => {
                             <div className='register_doctor bg-white p-3 py-3 px-4 rounded-4 shadow'>
                                 <div className='text-center'>
                                     <h3>Patient - Sign In</h3>
-                                    <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
                                 </div>
                                 <Form>
 
@@ -77,7 +76,7 @@ const PatientLogin = () => {
                                         <Form.Control type='password' placeholder="Enter Password" name='password' value={password} className='frm_input' onChange={(e) => setps(e.target.value)} />
                                     </Form.Group>
                                     <div className='form_bottom_div text-end'>
-                                        <p><Link to={'forgotpatient'} className='form-link'>Forgotten Password ?</Link> </p>
+                                        <p><Link to={'forgotpatient'} className='form-link'>Forgot Password ?</Link> </p>
                                     </div>
 
                                     <Button onClick={patientsignin} type="button" className='btn btn-primary d-block w-100 theme_btn mt-4'>

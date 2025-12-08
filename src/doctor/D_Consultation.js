@@ -104,7 +104,7 @@ const D_Consultation = () => {
       .then((res) => {
         // toast('Surgery added...', { className: 'custom-toast-success' })
         Swal.fire({
-          title: "Consultant Added...",
+          title: "Consultation fees added successfully.",
           icon: "success",
         });
         // getsurgery()

@@ -141,7 +141,7 @@ const D_Blog = () => {
             });
 
             Swal.fire({
-                title: "Blog Added...",
+                title: "Blog Added Successfully.",
                 icon: "success",
             });
             getblog()
@@ -181,8 +181,8 @@ const D_Blog = () => {
                     }
                 }).then((res) => {
                     Swal.fire({
-                        title: "Deleted!",
-                        text: "Your Blog has been deleted.",
+                        title: "Blog Deleted",
+                        text: "The blog has been removed successfully.",
                         icon: "success"
                     });
                     getblog();
@@ -306,7 +306,7 @@ const D_Blog = () => {
             });
 
             Swal.fire({
-                title: "Blog Updated...",
+                title: "Your blog has been updated successfully.",
                 icon: "success",
             });
             getblog()
@@ -350,7 +350,7 @@ const D_Blog = () => {
         selector: (row) => row?.title || '',
         cell: row => (
             <div className="d-flex align-items-center flex-wrap gap-3">
-                <img src={row?.image} className="appt-avatar rounded-circle" alt="blog_photo" />
+                <img src={row?.image || require('../Visitor/assets/blog.png')} className="appt-avatar rounded-circle" alt="blog_photo" />
                 <span className="fw-semibold appt-doctor-name text-truncate" style={{ maxWidth: '150px' }}>{row.title}</span>
             </div>
         ),
@@ -361,7 +361,7 @@ const D_Blog = () => {
         selector: (row) => row.description || '',
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
-                <FiClipboard size={16} />
+                <FiClipboard style={{ minWidth: '16px', minHeight: '16px' }} />
                 <span className="truncaate_description" style={{ maxWidth: '200px' }}>{row.description}</span>
             </div>
         ),
@@ -371,7 +371,7 @@ const D_Blog = () => {
         selector: row => row.expirydate || 'Not Defined',
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
-                <FiClock size={16} className="text-muted" />
+                <FiClock style={{ minWidth: '16px', minHeight: '16px' }} className="text-muted" />
                 <span>{row.expirydate === '' ? 'Not Defined' : row.expirydate}</span>
             </div>
         ),

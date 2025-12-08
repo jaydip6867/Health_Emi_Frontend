@@ -138,7 +138,7 @@ const PatientForgotps = () => {
                                     <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
                                         <div className='text-center'>
                                             <h3>Forgot Password</h3>
-                                            <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
+                                            <p className='w-75 mx-auto'>Enter your registered email to receive a secure OTP and reset your password.</p>
                                         </div>
                                         <Form>
 
@@ -162,10 +162,6 @@ const PatientForgotps = () => {
                                     <div className="register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100">
                                         <div className="text-center">
                                             <h3>OTP Verification</h3>
-                                            <p className="w-75 mx-auto">
-                                                Lorem Ipsum is simply dummy text of the printing and
-                                                typesetting industry
-                                            </p>
                                             <Form>
                                                 <div className="my-4">
                                                     <Form.Label className="d-block text-center mb-3 fw-bold">
@@ -219,8 +215,7 @@ const PatientForgotps = () => {
                                     <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
                                         <div className='text-center'>
                                             <h3>New Password</h3>
-                                            <p className='w-75 mx-auto'>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
-                                        </div>
+                                            </div>
                                         <Form>
 
                                             <Form.Group controlId="password" className='position-relative mb-3'>

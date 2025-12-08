@@ -74,7 +74,7 @@ const D_Appointment = () => {
         });
     }
 
-    const appointmentbtn = async (id, s) => {
+    const appointmentbtn = async (id, s, v_type) => {
         setloading(true)
         await axios({
             method: 'post',
@@ -89,7 +89,7 @@ const D_Appointment = () => {
         }).then((res) => {
             // console.log(res)
             Swal.fire({
-                title: `Appointment ${s}...`,
+                title: `${v_type} Appointment ${s} Successfully.`,
                 icon: "success",
             });
             appointmentlist()
@@ -158,7 +158,7 @@ const D_Appointment = () => {
             if (now < scheduledAt) {
                 Swal.fire({
                     title: 'Too Early',
-                    text: 'You can start the appointment at the scheduled time or later.',
+                    text: 'You can start the appointment only at the scheduled time.',
                     icon: 'warning',
                 });
                 return;
@@ -558,7 +558,7 @@ const D_Appointment = () => {
             }
         }).then((res) => {
             Swal.fire({
-                title: 'Appointment Rescheduled Successfully!',
+                title: 'Appointment rescheduled successfully.',
                 text: `New appointment time: ${datePart} at ${timeWithMeridiem}`,
                 icon: 'success',
             });
@@ -634,7 +634,7 @@ const D_Appointment = () => {
         selector: row => row.date,
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
-                <FiClock size={16} className="text-muted" />
+                <FiClock style={{ minWidth: '16px', minHeight: '16px' }} className="text-muted" />
                 <span>{`${row.date} , ${row.time}`}</span>
             </div>
         ),
@@ -685,7 +685,7 @@ const D_Appointment = () => {
                         <OverlayTrigger placement="top" overlay={renderTooltip('Accept')}>
                             <button
                                 className="btn btn-sm p-1 apt_status_btn success"
-                                onClick={() => appointmentbtn(row._id, 'Accept')}
+                                onClick={() => appointmentbtn(row._id, 'Accept', row.visit_types)}
                             >
                                 <MdDone size={18} />
                             </button>
@@ -694,7 +694,7 @@ const D_Appointment = () => {
                         <OverlayTrigger placement="top" overlay={renderTooltip('Cancel')}>
                             <button
                                 className="btn btn-sm p-1 apt_status_btn danger"
-                                onClick={() => appointmentbtn(row._id, 'Cancel')}
+                                onClick={() => appointmentbtn(row._id, 'Cancel' , row.visit_types)}
                             >
                                 <MdClose size={18} />
                             </button>
@@ -703,7 +703,7 @@ const D_Appointment = () => {
                         <OverlayTrigger placement="top" overlay={renderTooltip('Reschedule')}>
                             <button
                                 className="btn btn-sm p-1 apt_status_btn dark"
-                                onClick={() => reschedule_modal(row._id)}
+                                onClick={() => reschedule_modal(row._id , row.visit_types)}
                             >
                                 <MdOutlineAutorenew size={18} />
                             </button>
@@ -769,11 +769,11 @@ const D_Appointment = () => {
                             <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
                                 <h4 className='mb-0'>Consultation Appointments</h4>
                             </div>
-                            <div className='appt-tabs d-flex gap-2 mb-3 flex-wrap'>
-                                <button type='button' className={`appt-tab ${activeTab === 'Pending' ? 'active' : ''}`} onClick={() => setActiveTab('Pending')}>Pending <span className='count'>{counts.Pending}</span></button>
-                                <button type='button' className={`appt-tab ${activeTab === 'Accepted' ? 'active' : ''}`} onClick={() => setActiveTab('Accepted')}>Accepted <span className='count'>{counts.Accepted}</span></button>
-                                <button type='button' className={`appt-tab ${activeTab === 'Completed' ? 'active' : ''}`} onClick={() => setActiveTab('Completed')}>Completed <span className='count'>{counts.Completed}</span></button>
-                                <button type='button' className={`appt-tab ${activeTab === 'Cancelled' ? 'active' : ''}`} onClick={() => setActiveTab('Cancelled')}>Cancelled <span className='count'>{counts.Cancelled}</span></button>
+                            <div className='appt-tabs d-flex gap-2 mb-3 overflow-x-auto pb-2'>
+                                <button type='button' className={`appt-tab d-flex align-items-center ${activeTab === 'Pending' ? 'active' : ''}`} onClick={() => setActiveTab('Pending')}><span>Pending</span> <span className='count'>{counts.Pending}</span></button>
+                                <button type='button' className={`appt-tab d-flex align-items-center ${activeTab === 'Accepted' ? 'active' : ''}`} onClick={() => setActiveTab('Accepted')}><span>Accepted</span> <span className='count'>{counts.Accepted}</span></button>
+                                <button type='button' className={`appt-tab d-flex align-items-center ${activeTab === 'Completed' ? 'active' : ''}`} onClick={() => setActiveTab('Completed')}><span>Completed</span> <span className='count'>{counts.Completed}</span></button>
+                                <button type='button' className={`appt-tab d-flex align-items-center ${activeTab === 'Cancelled' ? 'active' : ''}`} onClick={() => setActiveTab('Cancelled')}><span>Cancelled</span> <span className='count'>{counts.Cancelled}</span></button>
                             </div>
                             <SmartDataTable className="appointments-table" columns={columns} data={filteredData} pagination customStyles={customTableStyles} />
                         </div>

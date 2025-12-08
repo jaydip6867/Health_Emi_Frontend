@@ -85,7 +85,7 @@ const D_SurgeryAppointment = () => {
         }).then((res) => {
             // console.log(res)
             Swal.fire({
-                title: `Surgery Appointment ${s}...`,
+                title: `Surgery Appointment ${s} successfully.`,
                 icon: "success",
             });
             appointmentlist()
@@ -154,7 +154,7 @@ const D_SurgeryAppointment = () => {
         }).then((res) => {
             // console.log('doctor ', res.data.Data)
             Swal.fire({
-                title: "Surgery Appointment Rescheduled Done...",
+                title: "Surgery appointment rescheduled successfully.",
                 icon: "success",
             });
             appointmentlist()
@@ -237,7 +237,7 @@ const D_SurgeryAppointment = () => {
             if (now < scheduledAt) {
                 Swal.fire({
                     title: 'Too Early',
-                    text: 'You can start the appointment at the scheduled time or later.',
+                    text: 'You can start the appointment only at the scheduled time.',
                     icon: 'warning',
                 });
                 return;
@@ -245,7 +245,7 @@ const D_SurgeryAppointment = () => {
         } catch (e) {
             Swal.fire({
                 title: 'Invalid schedule',
-                text: 'Appointment date/time is invalid. Please reschedule or try again.',
+                text: 'Appointment date/time is invalid.',
                 icon: 'warning',
             });
             return;
@@ -438,6 +438,7 @@ const D_SurgeryAppointment = () => {
     }, {
         name: 'Patient Name',
         selector: row => row.patientname,
+        width: '200px',
         cell: row => (
             <div className="d-flex align-items-center text-truncate gap-3">
                 <img
@@ -453,20 +454,22 @@ const D_SurgeryAppointment = () => {
     {
         name: 'Surgery Name',
         selector: row => row.surgerydetails?.name || '',
+        width: '250px',
         cell: row => (
-            <div className="d-flex align-items-center gap-2 text-muted small">
-                <FiClipboard size={16} />
-                <span>{row.surgerydetails?.name}</span>
+            <div className="d-flex align-items-center text-muted small gap-2">
+                <FiClipboard style={{ minWidth: '16px', minHeight: '16px' }} />
+                <span >{row.surgerydetails?.name}</span>
             </div>
         )
     },
     {
         name: 'Date & Time',
         selector: row => `${row.date || ''} ${row.time || ''}`,
+        width: '180px',
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
-                <FiClock size={16} className="text-muted" />
-                <span>{`${row.date} , ${row.time}`}</span>
+                <FiClock style={{fontSize: '14px', minWidth: '14px', minHeight: '14px' }} className="text-muted" />
+                <span className="text-truncate">{`${row.date} , ${row.time}`}</span>
             </div>
         ),
     },
@@ -584,11 +587,11 @@ const D_SurgeryAppointment = () => {
                             <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
                                 <h4 className='mb-0'>Surgery Appointments</h4>
                             </div>
-                            <div className='appt-tabs d-flex gap-2 mb-3 flex-wrap'>
-                                <button type='button' className={`appt-tab ${activeTab === 'Pending' ? 'active' : ''}`} onClick={() => setActiveTab('Pending')}>Pending <span className='count'>{counts.Pending}</span></button>
-                                <button type='button' className={`appt-tab ${activeTab === 'Accepted' ? 'active' : ''}`} onClick={() => setActiveTab('Accepted')}>Accepted <span className='count'>{counts.Accepted}</span></button>
-                                <button type='button' className={`appt-tab ${activeTab === 'Completed' ? 'active' : ''}`} onClick={() => setActiveTab('Completed')}>Completed <span className='count'>{counts.Completed}</span></button>
-                                <button type='button' className={`appt-tab ${activeTab === 'Cancelled' ? 'active' : ''}`} onClick={() => setActiveTab('Cancelled')}>Cancelled <span className='count'>{counts.Cancelled}</span></button>
+                            <div className='appt-tabs d-flex gap-2 mb-3 overflow-x-auto pb-2'>
+                                <button type='button' className={`appt-tab d-flex align-items-center ${activeTab === 'Pending' ? 'active' : ''}`} onClick={() => setActiveTab('Pending')}><span>Pending</span> <span className='count'>{counts.Pending}</span></button>
+                                <button type='button' className={`appt-tab d-flex align-items-center ${activeTab === 'Accepted' ? 'active' : ''}`} onClick={() => setActiveTab('Accepted')}><span>Accepted</span> <span className='count'>{counts.Accepted}</span></button>
+                                <button type='button' className={`appt-tab d-flex align-items-center ${activeTab === 'Completed' ? 'active' : ''}`} onClick={() => setActiveTab('Completed')}><span>Completed</span> <span className='count'>{counts.Completed}</span></button>
+                                <button type='button' className={`appt-tab d-flex align-items-center ${activeTab === 'Cancelled' ? 'active' : ''}`} onClick={() => setActiveTab('Cancelled')}><span>Cancelled</span> <span className='count'>{counts.Cancelled}</span></button>
                             </div>
                             <SmartDataTable className="appointments-table" columns={columns} data={filteredData} pagination customStyles={customTableStyles} />
                         </div>

@@ -940,8 +940,7 @@ const DoctorRegister = () => {
                 <div className="text-center">
                   <h3>Doctor - Sign up</h3>
                   <p className="w-75 mx-auto">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry
+                    Create your doctor profile to manage patients, appointments, and EMI-supported treatments on a secure platform.
                   </p>
                 </div>
                 <Form autoComplete="off">
@@ -1108,10 +1107,6 @@ const DoctorRegister = () => {
               <div className="register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100">
                 <div className="text-center">
                   <h3>OTP Verification</h3>
-                  <p className="w-75 mx-auto">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry
-                  </p>
                   <Form>
                     <div className="my-4">
                       <Form.Label className="d-block text-center mb-3 fw-bold">
@@ -1172,10 +1167,6 @@ const DoctorRegister = () => {
               <div className="register_doctor bg-white p-3 py-3 px-4 rounded">
                 <div className="text-center">
                   <h3>Doctor Profile Details</h3>
-                  <p className="w-75 mx-auto">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry
-                  </p>
                 </div>
                 <Form as={Row}>
                   <Form.Group

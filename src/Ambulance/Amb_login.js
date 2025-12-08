@@ -105,8 +105,7 @@ const Amb_login = () => {
                 <div className="text-center">
                   <h3>Ambulance - Sign In</h3>
                   <p className="w-75 mx-auto">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry
+                    Manage bookings and rides seamlessly from your single app dashboard.
                   </p>
                 </div>
                 <Form>
@@ -141,7 +140,7 @@ const Amb_login = () => {
                   <div className="form_bottom_div text-end">
                     <p>
                       <Link to={"forgotambulance"} className="form-link">
-                        Forgotten Password ?
+                        Forgot Password ?
                       </Link>{" "}
                     </p>
                   </div>

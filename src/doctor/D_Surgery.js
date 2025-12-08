@@ -335,8 +335,8 @@ const D_Surgery = () => {
 
   function deletesurgery(sid) {
     Swal.fire({
-      title: "Are you sure?",
-      text: "You Want Delete This Surgery.",
+      title: "Are you sure you want to delete this surgery?",
+      // text: "You Want Delete This Surgery.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -356,8 +356,8 @@ const D_Surgery = () => {
         })
           .then((res) => {
             Swal.fire({
-              title: "Deleted!",
-              text: "Your Account has been deleted.",
+              title: "Surgery Deleted",
+              text: "Your Surygery has been removed successfully.",
               icon: "success",
             });
             getsurgery();
@@ -519,7 +519,7 @@ const D_Surgery = () => {
       });
       if (response.data?.Status) {
         Swal.fire({
-          title: "Surgery Updated Successfully",
+          title: "Surgery Updated Successfully.",
           icon: "success",
         });
         getsurgery();
@@ -611,8 +611,8 @@ const D_Surgery = () => {
       name: "Surgery Name",
       selector: (row) => row.name,
       cell: (row) => (
-        <div className="d-flex align-items-center flex-wrap gap-3">
-          <img src={row.surgery_photo} className="appt-avatar rounded-circle" alt="surgery_photo" />
+        <div className="d-flex align-items-center gap-3">
+          <img src={row.surgery_photo || require('../Visitor/assets/surgery.jpg')} className="appt-avatar rounded-circle" alt="surgery_photo" />
           <span className="fw-semibold appt-doctor-name">{row.name}</span>
         </div>
       ),
@@ -622,7 +622,7 @@ const D_Surgery = () => {
       selector: (row) => row?.surgerytypeid?.surgerytypename || '',
       cell: (row) => (
         <div className="d-flex align-items-center gap-2 text-muted small">
-          <FiClipboard size={16} />
+          <FiClipboard style={{ minWidth: '16px', minHeight: '16px' }} />
           <span style={{ color: '#6B7280', fontSize: '14px' }}>{row?.surgerytypeid?.surgerytypename}</span>
         </div>
       ),
@@ -632,7 +632,7 @@ const D_Surgery = () => {
       selector: (row) => `${row?.days || ''}`,
       cell: (row) => (
         <div className="d-flex align-items-center gap-2 text-muted small">
-          <FiClock size={16} className="text-muted" />
+          <FiClock style={{ minWidth: '16px', minHeight: '16px' }} className="text-muted" />
           <span>{row?.days + ' Days'}</span>
         </div>
       ),
@@ -642,7 +642,7 @@ const D_Surgery = () => {
       selector: (row) => `${row?.yearsof_experience || ''}`,
       cell: (row) => (
         <div className="d-flex align-items-center gap-2 text-muted small">
-          <FiAward size={16} className="text-muted" />
+          <FiAward style={{ minWidth: '16px', minHeight: '16px' }} className="text-muted" />
           <span>{row?.yearsof_experience + ' Years'}</span>
         </div>
       ),
