@@ -38,7 +38,7 @@ const Amb_Request = () => {
       {
         header: 'Request Details',
         accessorFn: (row) => ({
-          name: row.doctorid?.name || 'N/A',
+          name: row.doctorid?.name ||row.patientid?.name ,
           type: row.requestertype,
         }),
         cell: ({ getValue }) => {

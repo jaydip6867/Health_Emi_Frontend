@@ -30,7 +30,7 @@ const PatientLogin = () => {
             navigate('/patient')
         }
         else {
-            navigate('patientdahsboard')
+            navigate('patientprofile')
         }
 
     }, [navigate])
