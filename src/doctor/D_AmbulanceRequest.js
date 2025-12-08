@@ -1137,17 +1137,21 @@ const D_AmbulanceRequest = () => {
                                 </div>  
                                 <Row className="bg-white g-3">
                                   {[
-                                    { key: "Ambulance", label: "Ambulance", icon: <FaAmbulance size={28} className="me-3" />, sub: "Emergency medical van" },
-                                    { key: "Bike", label: "Bike", icon: <FaMotorcycle size={28} className="me-3" />, sub: "Beat the traffic on a bike" },
-                                    { key: "Rickshaw", label: "Rickshaw", icon: <FaCar size={28} className="me-3" />, sub: "Quick auto ride in town" },
-                                    { key: "Cab", label: "Cab", icon: <FaCar size={28} className="me-3" />, sub: "Comfy, economical cars" },
+                                    // { key: "Ambulance", label: "Ambulance", icon: <FaAmbulance size={28} className="me-3" />, sub: "Emergency medical van" },
+                                    // { key: "Bike", label: "Bike", icon: <FaMotorcycle size={28} className="me-3" />, sub: "Beat the traffic on a bike" },
+                                    // { key: "Rickshaw", label: "Rickshaw", icon: <FaCar size={28} className="me-3" />, sub: "Quick auto ride in town" },
+                                    // { key: "Cab", label: "Cab", icon: <FaCar size={28} className="me-3" />, sub: "Comfy, economical cars" },
+                                    { key: "Ambulance", label: "Ambulance", icon: require('../Visitor/assets/icon/ambulance_icon.png'), sub: "Emergency medical van" },
+                                    { key: "Bike", label: "Bike", icon: require('../Visitor/assets/icon/bike_icon.png'), sub: "Beat the traffic on a bike" },
+                                    { key: "Rickshaw", label: "Rickshaw", icon: require('../Visitor/assets/icon/rikshaw_icon.png'), sub: "Quick auto ride in town" },
+                                    { key: "Cab", label: "Cab", icon: require('../Visitor/assets/icon/car_icon.png'), sub: "Comfy, economical cars" },
                                   ].map((opt, idx) => {
                                     const price = vehiclePrices ? vehiclePrices[opt.key] : null;
                                     const selected = details.ambulance_type === opt.key;
                                     return (
                                       <Col xs={6} key={opt.key} className={`text-center`}>
                                         <div
-                                          className={`p-2 border rounded ${selected ? "shadow-sm" : ""}`}
+                                          className={`p-2 border rounded h-100 d-flex flex-column justify-content-center ${selected ? "shadow-sm" : ""}`}
                                           style={{ cursor: "pointer", backgroundColor: selected ? "#EEF2FF" : "#fff" }}
                                           onClick={() =>
                                             setDetails((p) => ({
@@ -1157,8 +1161,8 @@ const D_AmbulanceRequest = () => {
                                             }))
                                           }
                                         >
-                                          <div >
-                                            {opt.icon}
+                                          <div className="text-center">
+                                            <img src={opt.icon} alt="ambulance image" className="mx-auto mb-2" style={{maxHeight: '35px'}} />
                                             <div>
                                               <div className="fw-semibold">{price !== undefined && price !== null ? `₹${price}` : "—"} </div>
                                               <div className="fw-semibold badge text-bg-dark">{opt.label}</div>

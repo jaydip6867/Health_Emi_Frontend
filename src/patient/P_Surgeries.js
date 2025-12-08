@@ -255,11 +255,11 @@ const P_Surgeries = () => {
                             <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3'>
                                 <h4 className='mb-0'>Surgery Appointments</h4>
                             </div>
-                            <div className='appt-tabs d-flex gap-2 mb-3 flex-wrap'>
-                                <button type='button' className={`appt-tab ${activeTab === 'Pending' ? 'active' : ''}`} onClick={() => setActiveTab('Pending')}>Pending <span className='count'>{counts.Pending}</span></button>
-                                <button type='button' className={`appt-tab ${activeTab === 'Accepted' ? 'active' : ''}`} onClick={() => setActiveTab('Accepted')}>Accepted <span className='count'>{counts.Accepted}</span></button>
-                                <button type='button' className={`appt-tab ${activeTab === 'Completed' ? 'active' : ''}`} onClick={() => setActiveTab('Completed')}>Completed <span className='count'>{counts.Completed}</span></button>
-                                <button type='button' className={`appt-tab ${activeTab === 'Cancelled' ? 'active' : ''}`} onClick={() => setActiveTab('Cancelled')}>Cancelled <span className='count'>{counts.Cancelled}</span></button>
+                            <div className='appt-tabs d-flex gap-2 mb-3 overflow-x-auto pb-2'>
+                                <button type='button' className={`appt-tab d-flex align-items-center ${activeTab === 'Pending' ? 'active' : ''}`} onClick={() => setActiveTab('Pending')}><span>Pending</span> <span className='count'>{counts.Pending}</span></button>
+                                <button type='button' className={`appt-tab d-flex align-items-center ${activeTab === 'Accepted' ? 'active' : ''}`} onClick={() => setActiveTab('Accepted')}><span>Accepted</span> <span className='count'>{counts.Accepted}</span></button>
+                                <button type='button' className={`appt-tab d-flex align-items-center ${activeTab === 'Completed' ? 'active' : ''}`} onClick={() => setActiveTab('Completed')}><span>Completed</span> <span className='count'>{counts.Completed}</span></button>
+                                <button type='button' className={`appt-tab d-flex align-items-center ${activeTab === 'Cancelled' ? 'active' : ''}`} onClick={() => setActiveTab('Cancelled')}><span>Cancelled</span> <span className='count'>{counts.Cancelled}</span></button>
                             </div>
                             <SmartDataTable className="appointments-table" columns={columns} data={filteredData} pagination customStyles={customTableStyles} />
 
