@@ -47,6 +47,7 @@ import DoctorTC from "./Visitor/T&CPage/DoctorTC";
 import DoctorTelemedicineTC from "./Visitor/T&CPage/DoctorTelemedicineTC";
 import D_Review from "./doctor/D_Review";
 import P_AmbulanceRequest from "./patient/P_AmbulanceRequest";
+import P_RideSatus from "./patient/P_RideSatus";
 function App() {
   return (
     <div className="App">
@@ -104,7 +105,14 @@ function App() {
           <Route path="forgotpatient" element={<PatientForgotps />}></Route>
           <Route path="appointment" element={<P_Appointment />}></Route>
           <Route path="surgeries" element={<P_Surgeries />}></Route>
-          <Route path="ambulancerequest" element={<P_AmbulanceRequest />}></Route>
+          <Route
+            path="ambulancerequest"
+            element={<P_AmbulanceRequest />}
+          ></Route>
+          <Route
+            path="ambulance-request/status/:id"
+            element={<P_RideSatus/>}
+          />
           <Route path="patientprofile" element={<PatientProfile />}></Route>
         </Route>
         <Route path="/ambulance">
