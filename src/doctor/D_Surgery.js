@@ -611,8 +611,8 @@ const D_Surgery = () => {
       name: "Surgery Name",
       selector: (row) => row.name,
       cell: (row) => (
-        <div className="d-flex align-items-center flex-wrap gap-3">
-          <img src={row.surgery_photo} className="appt-avatar rounded-circle" alt="surgery_photo" />
+        <div className="d-flex align-items-center gap-3">
+          <img src={row.surgery_photo || require('../Visitor/assets/surgery.jpg')} className="appt-avatar rounded-circle" alt="surgery_photo" />
           <span className="fw-semibold appt-doctor-name">{row.name}</span>
         </div>
       ),
@@ -622,7 +622,7 @@ const D_Surgery = () => {
       selector: (row) => row?.surgerytypeid?.surgerytypename || '',
       cell: (row) => (
         <div className="d-flex align-items-center gap-2 text-muted small">
-          <FiClipboard size={16} />
+          <FiClipboard style={{ minWidth: '16px', minHeight: '16px' }} />
           <span style={{ color: '#6B7280', fontSize: '14px' }}>{row?.surgerytypeid?.surgerytypename}</span>
         </div>
       ),
@@ -632,7 +632,7 @@ const D_Surgery = () => {
       selector: (row) => `${row?.days || ''}`,
       cell: (row) => (
         <div className="d-flex align-items-center gap-2 text-muted small">
-          <FiClock size={16} className="text-muted" />
+          <FiClock style={{ minWidth: '16px', minHeight: '16px' }} className="text-muted" />
           <span>{row?.days + ' Days'}</span>
         </div>
       ),
@@ -642,7 +642,7 @@ const D_Surgery = () => {
       selector: (row) => `${row?.yearsof_experience || ''}`,
       cell: (row) => (
         <div className="d-flex align-items-center gap-2 text-muted small">
-          <FiAward size={16} className="text-muted" />
+          <FiAward style={{ minWidth: '16px', minHeight: '16px' }} className="text-muted" />
           <span>{row?.yearsof_experience + ' Years'}</span>
         </div>
       ),

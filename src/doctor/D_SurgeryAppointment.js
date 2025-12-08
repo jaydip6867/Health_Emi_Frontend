@@ -438,6 +438,7 @@ const D_SurgeryAppointment = () => {
     }, {
         name: 'Patient Name',
         selector: row => row.patientname,
+        width: '200px',
         cell: row => (
             <div className="d-flex align-items-center text-truncate gap-3">
                 <img
@@ -453,20 +454,22 @@ const D_SurgeryAppointment = () => {
     {
         name: 'Surgery Name',
         selector: row => row.surgerydetails?.name || '',
+        width: '250px',
         cell: row => (
-            <div className="d-flex align-items-center gap-2 text-muted small">
-                <FiClipboard style={{fontSize: '14px'}} />
-                <span>{row.surgerydetails?.name}</span>
+            <div className="d-flex align-items-center text-muted small gap-2">
+                <FiClipboard style={{ minWidth: '16px', minHeight: '16px' }} />
+                <span >{row.surgerydetails?.name}</span>
             </div>
         )
     },
     {
         name: 'Date & Time',
         selector: row => `${row.date || ''} ${row.time || ''}`,
+        width: '180px',
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
-                <FiClock style={{fontSize: '14px'}} className="text-muted" />
-                <span>{`${row.date} , ${row.time}`}</span>
+                <FiClock style={{fontSize: '14px', minWidth: '14px', minHeight: '14px' }} className="text-muted" />
+                <span className="text-truncate">{`${row.date} , ${row.time}`}</span>
             </div>
         ),
     },

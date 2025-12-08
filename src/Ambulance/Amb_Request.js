@@ -49,7 +49,7 @@ const Amb_Request = () => {
               <div>
                 <div className="fw-medium">{name}</div>
                 <div className="small text-muted">
-                  <FaUserMd className="me-1" size={12} />
+                  <FaUserMd className="me-1" style={{ minWidth: '16px', minHeight: '16px' }} />
                   {type === 'doctor' ? 'Doctor' : 'Patient'}
                 </div>
               </div>

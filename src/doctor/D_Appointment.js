@@ -74,7 +74,7 @@ const D_Appointment = () => {
         });
     }
 
-    const appointmentbtn = async (id, s) => {
+    const appointmentbtn = async (id, s, v_type) => {
         setloading(true)
         await axios({
             method: 'post',
@@ -89,7 +89,7 @@ const D_Appointment = () => {
         }).then((res) => {
             // console.log(res)
             Swal.fire({
-                title: `Appointment ${s} Successfully.`,
+                title: `${v_type} Appointment ${s} Successfully.`,
                 icon: "success",
             });
             appointmentlist()
@@ -634,7 +634,7 @@ const D_Appointment = () => {
         selector: row => row.date,
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
-                <FiClock size={16} className="text-muted" />
+                <FiClock style={{ minWidth: '16px', minHeight: '16px' }} className="text-muted" />
                 <span>{`${row.date} , ${row.time}`}</span>
             </div>
         ),
@@ -685,7 +685,7 @@ const D_Appointment = () => {
                         <OverlayTrigger placement="top" overlay={renderTooltip('Accept')}>
                             <button
                                 className="btn btn-sm p-1 apt_status_btn success"
-                                onClick={() => appointmentbtn(row._id, 'Accept')}
+                                onClick={() => appointmentbtn(row._id, 'Accept', row.visit_types)}
                             >
                                 <MdDone size={18} />
                             </button>
@@ -694,7 +694,7 @@ const D_Appointment = () => {
                         <OverlayTrigger placement="top" overlay={renderTooltip('Cancel')}>
                             <button
                                 className="btn btn-sm p-1 apt_status_btn danger"
-                                onClick={() => appointmentbtn(row._id, 'Cancel')}
+                                onClick={() => appointmentbtn(row._id, 'Cancel' , row.visit_types)}
                             >
                                 <MdClose size={18} />
                             </button>
@@ -703,7 +703,7 @@ const D_Appointment = () => {
                         <OverlayTrigger placement="top" overlay={renderTooltip('Reschedule')}>
                             <button
                                 className="btn btn-sm p-1 apt_status_btn dark"
-                                onClick={() => reschedule_modal(row._id)}
+                                onClick={() => reschedule_modal(row._id , row.visit_types)}
                             >
                                 <MdOutlineAutorenew size={18} />
                             </button>

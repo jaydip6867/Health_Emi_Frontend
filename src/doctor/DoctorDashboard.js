@@ -88,15 +88,15 @@ const DoctorDashboard = () => {
 
 
   // Get status badge styling
-    const getStatusBadge = (status) => {
-        const statusConfig = {
-            'Accept': { bg: 'var(--primary-color-500)', text: 'Accepted', dot: 'var(--primary-color-600)' },
-            'Pending': { bg: 'var(--secondary-color-600)', text: 'Pending', dot: 'var(--secondary-color-600)' },
-            'Cancel': { bg: '#ff5d5d', text: 'Cancelled', dot: 'var(--grayscale-color-700)' },
-            'Completed': { bg: '#019454ff', text: 'Completed', dot: 'var(--tertary-color-600)' },
-        };
-        return statusConfig[status] || { bg: 'var(--grayscale-color-500)', text: status, dot: 'var(--grayscale-color-500)' };
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      'Accept': { bg: 'var(--primary-color-500)', text: 'Accepted', dot: 'var(--primary-color-600)' },
+      'Pending': { bg: 'var(--secondary-color-600)', text: 'Pending', dot: 'var(--secondary-color-600)' },
+      'Cancel': { bg: '#ff5d5d', text: 'Cancelled', dot: 'var(--grayscale-color-700)' },
+      'Completed': { bg: '#019454ff', text: 'Completed', dot: 'var(--tertary-color-600)' },
     };
+    return statusConfig[status] || { bg: 'var(--grayscale-color-500)', text: status, dot: 'var(--grayscale-color-500)' };
+  };
 
   // Appointment type pill
   const getTypePill = (type) => {
@@ -168,9 +168,9 @@ const DoctorDashboard = () => {
     cell: row => {
       const statusConfig = getStatusBadge(row.status);
       return (
-        <span 
+        <span
           className="badge text-center"
-          style={{ 
+          style={{
             backgroundColor: statusConfig.bg,
             color: 'white',
             fontSize: '12px',
@@ -279,8 +279,8 @@ const DoctorDashboard = () => {
                 </Modal.Header>
                 <Modal.Body>
                   <div className='p-2 rounded-3 border rounded' style={{ background: 'var(--white)' }}>
-                    <div className='d-flex flex-wrap align-items-center justify-content-between gap-3 p-3'>
-                      <div className='d-flex align-items-center gap-3'>
+                    <div className='row align-items-center justify-content-between py-3 px-2'>
+                      <div className='col-5 d-flex align-items-center gap-3'>
                         <img src={v?.createdByuser?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} className='rounded-3' style={{ width: 72, height: 72, objectFit: 'cover' }} />
                         <div>
                           <div className='d-flex align-items-center gap-2 flex-wrap'>
@@ -290,21 +290,23 @@ const DoctorDashboard = () => {
                           <div className='text-muted small'><FiPhone className='me-1' /> +91 {v?.createdByuser?.mobile}</div>
                         </div>
                       </div>
-                      <div className='d-flex align-items-center gap-4 flex-wrap appointment_model text-center'>
-                        <div>
-                          <p className='mb-0'>Consultation Type</p>
-                          <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{v?.visit_types}</span>
-                        </div>
-                        <div>
-                          <p className='mb-0'>Consultation Status</p>
-                          <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#E8F7EE', color: '#1F9254' }}>
-                            {v?.status}
-                          </span>
-                        </div>
-                        <div>
-                          <p className='mb-0'>Consultation Fee</p>
-                          {/* <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.status === "Cancel" || v?.status === "Pending" || v?.status === "Accept" ? v?.price === "" ? "0" : v?.price : v?.totalamount}</span> */}
-                          <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.price}</span>
+                      <div className='col-7 d-flex align-items-center gap-4 flex-wrap appointment_model text-center'>
+                        <div className='row'>
+                          <div className='col'>
+                            <p className='mb-0'>Consultation Type</p>
+                            <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{v?.visit_types}</span>
+                          </div>
+                          <div className='col'>
+                            <p className='mb-0'>Consultation Status</p>
+                            <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#E8F7EE', color: '#1F9254' }}>
+                              {v?.status}
+                            </span>
+                          </div>
+                          <div className='col'>
+                            <p className='mb-0'>Consultation Fee</p>
+                            {/* <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.status === "Cancel" || v?.status === "Pending" || v?.status === "Accept" ? v?.price === "" ? "0" : v?.price : v?.totalamount}</span> */}
+                            <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.price}</span>
+                          </div>
                         </div>
                       </div>
                     </div>

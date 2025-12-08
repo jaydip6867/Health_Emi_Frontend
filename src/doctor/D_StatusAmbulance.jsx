@@ -233,8 +233,8 @@ const D_StatusAmbulance = () => {
   const handleCancelRequest = async () => {
     try {
       const result = await Swal.fire({
-        title: "Are you sure?",
-        text: "You want to cancel this ambulance request?",
+        // title: "Are you sure?",
+        text: "Are you sure you want to cancel this ambulance request?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -260,7 +260,7 @@ const D_StatusAmbulance = () => {
         localStorage.removeItem("amb_req_id");
         Swal.fire(
           "Cancelled!",
-          "Your ambulance request has been cancelled.",
+          "Your ambulance request has been successfully cancelled.",
           "success"
         );
         navigate("/doctor/ambulance-request");
