@@ -216,12 +216,12 @@ const DoctorDashboard = () => {
       <Navbar logindata={doctor} />
 
       <Container className='my-4'>
-        <Row className="align-items-start">
+        <Row className="align-items-start position-relative">
           <DoctorSidebar doctor={doctor} />
-          <Col xs={12} md={9}>
-            <div className='bg-white rounded dashboard-card p-2'>
+          <Col xs={12} lg={9}>
+            <div className='bg-white rounded dashboard-card p-2 mt-2'>
               <Col xs={12}>
-                <Row>
+                <Row className='g-4'>
                   <Col xs={6} md={3}>
                     <div className='bg-light rounded h-100 p-3 d-flex align-items-center gap-3 shadow'>
                       <FiClipboard />

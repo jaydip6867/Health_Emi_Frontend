@@ -86,13 +86,13 @@
 }
 
 @media screen and (max-width: 767.98px) {
-  .sidebar_nav {
+  /* .sidebar_nav {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     gap: 10px;
-  }
+  } */
 
   .sidebar_nav a {
     padding: 5px 12px;

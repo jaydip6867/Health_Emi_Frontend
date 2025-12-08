@@ -118,7 +118,7 @@ const P_AmbulanceRequest = () => {
       setToken(`Bearer ${data.accessToken}`);
     }
   }, [navigate]);
-  console.log(patient, 'patient data')
+  // console.log(patient, 'patient data')
  
    // Reverse geocode via Nominatim (returns display name string)
    const reverseGeocode = async (lng, lat) => {
@@ -553,7 +553,7 @@ const P_AmbulanceRequest = () => {
          data: { distance: distanceKm },
        });
        const payload = res.data.Data;
-       console.log(res.data.Data)
+      //  console.log(res.data.Data)
        const typeKeyMap = {
          Ambulance: "ambulance_price",
          Bike: "bike_price",
@@ -746,13 +746,13 @@ const P_AmbulanceRequest = () => {
    const showVehicle = hasBothLocations && !!details.name && mobileValid;
    const canSubmit = hasBothLocations && !!details.ambulance_type && !!details.name && mobileValid && priceValid;
   return (
-    <div className="bg-light min-vh-100">
+    <div className="bg-light">
       <NavBar logindata={patient} />
       <Container>
-        <Row className="align-items-start">
+        <Row className="align-items-start position-relative">
           <P_Sidebar patient={patient} />
           {/* ... rest of the code remains the same ... */}
-          <Col xs={12} md={9} className="p-4">
+          <Col xs={12} lg={9} className="p-4">
             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3">
               <h4 className="mb-0">Book Ambulance</h4>
             </div>

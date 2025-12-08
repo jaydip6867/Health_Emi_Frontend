@@ -62,7 +62,7 @@ const D_Blog = () => {
                 "search": "",
             }
         }).then((res) => {
-            console.log(res.data.Data)
+            // console.log(res.data.Data)
             setbloglist(res.data.Data)
             setdisplist(res.data.Data)
         }).catch(function (error) {
@@ -425,9 +425,9 @@ const D_Blog = () => {
         <>
             <NavBar logindata={doctor}/>
             <Container className='my-4'>
-                <Row className="align-items-start">
+                <Row className="align-items-start position-relative">
                     <DoctorSidebar doctor={doctor} />
-                    <Col xs={12} md={9}>
+                    <Col xs={12} lg={9}>
                         <div className='appointments-card mb-3'>
                             <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
                                 <h4 className='mb-0'>My Blogs</h4>
