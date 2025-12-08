@@ -798,7 +798,24 @@ const P_AmbulanceRequest = () => {
                 {/* Form of ambulace */}
                 <Card className="mt-3 shadow-sm border-0">
                   <Card.Body className="p-4">
-                    <Form onSubmit={handleSubmit}>
+                  {   localStorage.getItem('p_amb_req_id') != null ?   <div className="d-flex justify-content-end mt-2">
+                                      <Button
+                                        type="submit"
+                                        className="px-4"
+                                        style={{ backgroundColor: "#4F46E5" }}
+                                        onClick={() => { navigate(`/patient/ambulance-request/status/${localStorage.getItem('p_amb_req_id')}`) }}
+                  
+                                      >
+                                        {loading ? (
+                                          <span
+                                            className="spinner-border spinner-border-sm me-2"
+                                            role="status"
+                                            aria-hidden="true"
+                                          ></span>
+                                        ) : null}
+                                        ambulace ride pogress
+                                      </Button>
+                                    </div>:<Form onSubmit={handleSubmit}>
                       <Row>
                         <Col md={6} className="mb-4">
                           <div
@@ -1231,7 +1248,7 @@ const P_AmbulanceRequest = () => {
                           Request Ambulance
                         </Button>
                       </div>
-                    </Form>
+                    </Form>}
                   </Card.Body>
                 </Card>
               </Col>
