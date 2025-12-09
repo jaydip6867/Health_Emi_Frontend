@@ -93,6 +93,7 @@ const PatientProfile = () => {
         }).finally(() => {
             setloading(false)
         });
+        console.log(token)
     }
 
     function validatePasswords(nextProfile) {
