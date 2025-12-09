@@ -263,7 +263,7 @@ const P_RideSatus = () => {
           "Your ambulance request has been cancelled.",
           "success"
         );
-        navigate("/patient/patientprofile");
+        navigate("/patient/ambulancerequest");
       }
     } catch (error) {
       console.error("Error cancelling request:", error);

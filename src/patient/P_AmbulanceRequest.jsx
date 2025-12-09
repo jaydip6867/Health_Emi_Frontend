@@ -91,7 +91,7 @@ const P_AmbulanceRequest = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
@@ -866,18 +866,21 @@ const P_AmbulanceRequest = () => {
           "Content-Type": "application/json",
         },
         data: {
-          page: page,
-          limit: itemsPerPage,
+          
           search: "",
-          patientid: patient._id, // Filter by logged-in patient
         },
       });
 
       if (response.data && response.data.Data) {
-        setAmbulanceHistory(response.data.Data);
+
+        let patienData = response.data.Data.filter((item)=>{
+           return item.patientid == patient._id
+        })
+     
+
+        setAmbulanceHistory(patienData);
         // Calculate total pages based on total count or fallback to 1
-        const totalItems =
-          response.data.totalCount || response.data.Data.length;
+        const totalItems = patienData.length;
         setTotalPages(Math.ceil(totalItems / itemsPerPage));
       }
     } catch (error) {
@@ -886,6 +889,13 @@ const P_AmbulanceRequest = () => {
     } finally {
       setHistoryLoading(false);
     }
+  };
+
+  // Add this function to get paginated data
+  const getPaginatedData = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return ambulanceHistory.slice(startIndex, endIndex);
   };
 
   // Add this useEffect to fetch history when component mounts or page changes
@@ -1435,7 +1445,7 @@ const P_AmbulanceRequest = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {ambulanceHistory.map((request, index) => (
+                      {getPaginatedData().map((request, index) => (
                         <tr key={request._id}>
                           <td>
                             {(currentPage - 1) * itemsPerPage + index + 1}
@@ -1587,31 +1597,64 @@ const P_AmbulanceRequest = () => {
                 {totalPages > 1 && (
                   <div className="d-flex justify-content-between align-items-center p-3 border-top">
                     <div className="text-muted small">
-                      Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+                      Showing{" "}
+                      {Math.min(
+                        (currentPage - 1) * itemsPerPage + 1,
+                        ambulanceHistory.length
+                      )}{" "}
+                      to{" "}
                       {Math.min(
                         currentPage * itemsPerPage,
                         ambulanceHistory.length
                       )}{" "}
                       of {ambulanceHistory.length} requests
                     </div>
-                    <div className="btn-group" role="group">
+                    <div className="d-flex gap-1">
                       <button
-                        className="btn btn-outline-primary btn-sm"
+                        className="btn btn-sm btn-outline-primary"
                         onClick={() =>
-                          setCurrentPage((prev) => Math.max(1, prev - 1))
+                          setCurrentPage((prev) => Math.max(prev - 1, 1))
                         }
                         disabled={currentPage === 1}
                       >
                         Previous
                       </button>
-                      <span className="btn btn-outline-primary btn-sm disabled">
-                        Page {currentPage} of {totalPages}
-                      </span>
+                      
+                      {/* Page numbers */}
+                      {(() => {
+                        const pages = [];
+                        const maxVisiblePages = 5;
+                        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                        
+                        if (endPage - startPage + 1 < maxVisiblePages) {
+                          startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                        }
+                        
+                        for (let i = startPage; i <= endPage; i++) {
+                          pages.push(
+                            <button
+                              key={i}
+                              className={`btn btn-sm ${
+                                currentPage === i
+                                  ? "btn-primary"
+                                  : "btn-outline-primary"
+                              }`}
+                              onClick={() => setCurrentPage(i)}
+                            >
+                              {i}
+                            </button>
+                          );
+                        }
+                        
+                        return pages;
+                      })()}
+                      
                       <button
-                        className="btn btn-outline-primary btn-sm"
+                        className="btn btn-sm btn-outline-primary"
                         onClick={() =>
                           setCurrentPage((prev) =>
-                            Math.min(totalPages, prev + 1)
+                            Math.min(prev + 1, totalPages)
                           )
                         }
                         disabled={currentPage === totalPages}
