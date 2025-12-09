@@ -49,9 +49,6 @@ const AmbulancePage = () => {
                                 <button className="btn btn-primary px-4 py-2">Book Appointment</button>
                             </div>
                         </Col>
-                        {/* <Col md={5} className="ambulance_gradient text-end">
-                            <img src={require('./assets/book-ambulance-banner.png')} alt="Ambulance" className='d-inline-block' style={{ height: '90vh' }} />
-                        </Col> */}
                     </Row>
                 </Container>
             </section>
@@ -117,7 +114,7 @@ const AmbulancePage = () => {
                             <Col xs={6} md={4} lg className="text-center">
                                 <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
                                     {/* <FaMapMarkerAlt /> */}
-                                    <img src={require('./assets/icon/location.png')} alt="" />
+                                    <img src={require('./assets/icon/location.png')} alt="location image" />
 
                                 </div>
                                 <div className="fw-semibold">Real-Time GPS Tracking</div>
@@ -125,28 +122,28 @@ const AmbulancePage = () => {
                             </Col>
                             <Col xs={6} md={4} lg className="text-center">
                                 <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                    <img src={require('./assets/icon/delivery.png')} alt="" />
+                                    <img src={require('./assets/icon/delivery.png')} alt="delivery image" />
                                 </div>
                                 <div className="fw-semibold">Instant Dispatch</div>
                                 <div className="text-muted small">Nearest ambulance within minutes</div>
                             </Col>
                             <Col xs={6} md={4} lg className="text-center">
                                 <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                    <img src={require('./assets/icon/pricing.png')} alt="" />
+                                    <img src={require('./assets/icon/pricing.png')} alt="pricing image" />
                                 </div>
                                 <div className="fw-semibold">Transparent Pricing</div>
                                 <div className="text-muted small">No hidden or surge charges</div>
                             </Col>
                             <Col xs={6} md={4} lg className="text-center">
                                 <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                    <img src={require('./assets/icon/support.png')} alt="" />
+                                    <img src={require('./assets/icon/support.png')} alt="support image" />
                                 </div>
                                 <div className="fw-semibold">24x7 Call Support</div>
                                 <div className="text-muted small">Emergency response assistance</div>
                             </Col>
                             <Col xs={6} md={4} lg className="text-center">
                                 <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                    <img src={require('./assets/icon/transfer.png')} alt="" />
+                                    <img src={require('./assets/icon/transfer.png')} alt="transfer image" />
                                 </div>
                                 <div className="fw-semibold">Intercity Transfers</div>
                                 <div className="text-muted small">Safe long-distance transfers</div>

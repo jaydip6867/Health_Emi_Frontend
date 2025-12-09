@@ -91,7 +91,7 @@ const D_Review = () => {
         <>
             <NavBar logindata={doctor} />
             <Container className="my-4">
-                <Row className="align-items-start position-relative">
+                <Row className="align-items-start">
                     <DoctorSidebar doctor={doctor} />
                     <Col xs={12} lg={9}>
                         <div className="bg-white">
@@ -107,7 +107,7 @@ const D_Review = () => {
                                             <Card className="h-100 cursor-pointer" onClick={() => handleReviewModalShow(item)}>
                                                 <Card.Body>
                                                     <div className="d-flex align-items-center flex-wrap gap-2 review_profile">
-                                                        <img src={item?.createdBy?.profile_pic} alt="" />
+                                                        <img src={item?.createdBy?.profile_pic} alt={`${item?.createdBy?.name}`} />
                                                         <div className="ps-2">
                                                             <h5>{item?.createdBy?.name}</h5>
                                                             <small className="text-muted ms-auto badge bg-secondary-subtle"><FormattedDate isoString={item?.createdAt} /></small>

@@ -213,7 +213,7 @@ const PatientProfile = () => {
     return (
         <>
             <NavBar logindata={patient} />
-            <Container className='position-relative'>
+            <Container className='align-items-start'>
                 <Row>
                     <P_Sidebar patient={patient} />
                     <Col xs={12} lg={9} className='p-3'>

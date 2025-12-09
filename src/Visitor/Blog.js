@@ -113,7 +113,7 @@ const Blog = () => {
             <section className='py-5'>
                 <Container>
                     <Row className='justify-content-center'>
-                        <Col xs={6}>
+                        <Col md={6}>
                             <div className='blog_search_bar position-relative'>
                                 <input type="text" placeholder='Search blog details' onChange={searchblog} />
                                 <FiSearch className='position-absolute' style={{ left: 14, top: 12 }} />

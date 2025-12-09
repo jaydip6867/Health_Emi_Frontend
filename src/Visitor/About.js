@@ -60,15 +60,15 @@ const About = () => {
                             </p>
                         </Col>
                         <Col xs={12} md={6}>
-                            <img src={require('./assets/about_sec_img.png')} className='img-fluid w-100' />
+                            <img src={require('./assets/about_sec_img.png')} alt='about section image' className='img-fluid w-100' />
                         </Col>
                     </Row>
                 </Container>
             </section>
 
-            <section className='spacer-y'>
+            <section className='spacer-y' style={{backgroundColor: 'var(--primary-color-50)'}}>
                 <Container>
-                    <h2 className='head_sec mb-3'><HeadTitle title="Why Health Easy EMI offers:" /></h2>
+                    <h2 className='head_sec mb-4 '><HeadTitle title="Why Health Easy EMI offers:" /></h2>
                     <Row className="g-3 g-md-4 justify-content-center service_amb">
                         <Col xs={12} md={6} lg={4}>
                             <Card className="border rounded-4 shadow-sm h-100 overflow-hidden">
@@ -118,12 +118,14 @@ const About = () => {
                 <Container>
                     <Row className='align-items-center'>
                         <Col xs={12} md={6}>
+                        {/* Bridging India’s Healthcare Gap */}
+                        <h2 className='head_sec mb-4 d-flex'><HeadTitle title="Bridging India’s Healthcare Gap" /></h2>
                             <p>
                                 Our platform serves both <b>individual patients and corporate partners,</b> helping families access timely care while enabling hospitals, clinics, and insurers to expand their reach. With growing partnerships across India’s healthcare network, we aim to serve over <b>500 million potential beneficiaries,</b> especially in Tier-2 and Tier-3 cities.
                                 </p>
                         </Col>
                         <Col xs={12} md={6}>
-                            <img src={require('./assets/about_sec_img.png')} className='img-fluid w-100' />
+                            <img src={require('./assets/about_us.png')} alt='about section image' className='img-fluid w-100' />
                         </Col>
                     </Row>
                 </Container>
@@ -136,10 +138,10 @@ const About = () => {
                             <p>
                                 Our mission is simple yet powerful: to make affordable healthcare a reality for all.
                             </p>
-                            <img src={require('./assets/target.png')} className='img-fluid mx-auto' />
+                            <img src={require('./assets/target.png')} alt='target image' className='img-fluid mx-auto' />
                         </Col>
                         <Col xs={12} md={6}>
-                            <img src={require('./assets/about_sec_img.png')} className='img-fluid w-100' />
+                            <img src={require('./assets/about_sec_img.png')} alt='about section image' className='img-fluid w-100' />
                             <p>
                                 Our platform serves both <b>individual patients and corporate partners,</b> helping families access timely care while enabling hospitals, clinics, and insurers to expand their reach. With growing partnerships across India’s healthcare network, we aim to serve over <b>500 million potential beneficiaries,</b> especially in Tier-2 and Tier-3 cities.
                             </p>

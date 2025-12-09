@@ -239,7 +239,7 @@ return (
                           <MdClear size={20} />
                         </Button>
                         <div className='d-flex gap-3 align-items-center'>
-                          <img src={d1?.profile_pic} alt={`Dr. ${d1?.name}`} className='rounded-3' style={{ width: 56, height: 56, objectFit: 'cover' }} />
+                          <img src={d1?.profile_pic} alt={`${d1?.name} profile pic`} className='rounded-3' style={{ width: 56, height: 56, objectFit: 'cover' }} />
                           <div>
                             <div className='fw-bold'>Dr. {d1?.name}</div>
                             <div className='small text-muted d-flex align-items-center gap-1'><MdVerified className='text-primary' /> {d1?.specialty || '—'}</div>
@@ -253,7 +253,7 @@ return (
                               <MdClear size={20} />
                             </Button>
                             <div className='d-flex gap-3 align-items-center'>
-                              <img src={d2?.profile_pic} alt={`Dr. ${d2?.name}`} className='rounded-3' style={{ width: 56, height: 56, objectFit: 'cover' }} />
+                              <img src={d2?.profile_pic} alt={`Dr. ${d2?.name} profile pic`} className='rounded-3' style={{ width: 56, height: 56, objectFit: 'cover' }} />
                               <div>
                                 <div className='fw-bold'>Dr. {d2?.name}</div>
                                 <div className='small text-muted d-flex align-items-center gap-1'><MdVerified className='text-primary' /> {d2?.specialty || '—'}</div>
@@ -268,7 +268,7 @@ return (
                               <div className='border rounded-3 mt-2' style={{ maxHeight: '300px', overflowY: 'auto' }}>
                                 {secondDoctorMatches.map((doc) => (
                                   <div key={doc._id} className='p-2 border-bottom cursor-pointer hover-bg-light d-flex gap-2 align-items-center' style={{ cursor: 'pointer' }} onClick={() => { handleSelectDoctor(doc); setSecondDocQuery(''); setSecondDocOpen(false); }}>
-                                    <img src={doc?.profile_pic} alt={`Dr. ${doc?.name}`} className='rounded-circle border' style={{ width: 40, height: 40, objectFit: 'cover' }} />
+                                    <img src={doc?.profile_pic} alt={`Dr. ${doc?.name} profile pic`} className='rounded-circle border' style={{ width: 40, height: 40, objectFit: 'cover' }} />
                                     <div className='flex-grow-1'>
                                       <div className='fw-semibold small'>Dr. {doc?.name}</div>
                                       <div className='text-muted' style={{ fontSize: '0.75rem' }}>{doc?.specialty || '—'}</div>
@@ -388,7 +388,7 @@ return (
                         <div className='d-flex gap-3'>
                           <img
                             src={doc?.profile_pic}
-                            alt={`Dr. ${doc?.name}`}
+                            alt={`Dr. ${doc?.name} profile`}
                             className='rounded-circle border'
                             style={{ width: 72, height: 72, objectFit: 'cover' }}
                           />

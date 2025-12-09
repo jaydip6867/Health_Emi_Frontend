@@ -17,19 +17,19 @@ const BlogBox = ({ item, index }) => {
         <>
             <Col key={index} xl={3} lg={4} sm={6} xs={12}>
                 <Card className='rounded-4 overflow-hidden blog h-100'>
-                    <Card.Img variant="top" src={item.image} />
+                    <Card.Img variant="top" src={item.image || require('../assets/blog_thumb.jpg')} alt={`blog thumbnail of ${item.title}`} />
                     <Card.Body>
                         <div className='d-flex justify-content-between blog_box'>
                             <div className='d-flex align-items-center gap-1'>
-                                <img src={item?.createdBy?.profile_pic}></img>
+                                <img src={item?.createdBy?.profile_pic || require('../assets/profile_icon_img.png')} alt={`Dr. ${item?.createdBy?.name}`}></img>
                                 <span>Dr. {item?.createdBy?.name}</span>
                             </div>
-                            <div className='d-flex align-items-center gap-1'>
-                                <IoCalendarOutline />
+                            <div className='d-flex align-items-start gap-1'>
+                                <IoCalendarOutline className='mt-1'/>
                                 <FormattedDate isoString={item.createdAt} />
                             </div>
                         </div>
-                        <Link to={`/blog/${item._id}`} className='stretched-link'></Link>
+                        <Link to={`/blog/${item._id}`} title={`${item.title}`} className='stretched-link d-inline'></Link>
                         <Card.Title>{item.title}</Card.Title>
                         <Card.Text>{item.description}</Card.Text>
                     </Card.Body>

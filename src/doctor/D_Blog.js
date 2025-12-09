@@ -350,7 +350,7 @@ const D_Blog = () => {
         selector: (row) => row?.title || '',
         cell: row => (
             <div className="d-flex align-items-center flex-wrap gap-3">
-                <img src={row?.image || require('../Visitor/assets/blog.png')} className="appt-avatar rounded-circle" alt="blog_photo" />
+                <img src={row?.image || require('../Visitor/assets/blog.png')} className="appt-avatar rounded-circle" alt={`blog of ${row.title}`} />
                 <span className="fw-semibold appt-doctor-name text-truncate" style={{ maxWidth: '150px' }}>{row.title}</span>
             </div>
         ),
@@ -425,7 +425,7 @@ const D_Blog = () => {
         <>
             <NavBar logindata={doctor}/>
             <Container className='my-4'>
-                <Row className="align-items-start position-relative">
+                <Row className="align-items-start">
                     <DoctorSidebar doctor={doctor} />
                     <Col xs={12} lg={9}>
                         <div className='appointments-card mb-3'>
@@ -495,7 +495,7 @@ const D_Blog = () => {
                                             <Form.Control as="textarea" placeholder="The ‘new’ virus, tomato flu, is a variant of already existing hand, " name="description" value={blog.description} rows={4} onChange={(e) => setblog({ ...blog, description: e.target.value })} />
                                         </div>
                                     </Form.Group>
-                                    <Form.Group controlId="expirydate" className='col-4'>
+                                    <Form.Group controlId="expirydate" className='col-12'>
                                         <Form.Label>Expiry Date</Form.Label>
                                         <div>
                                             <DatePicker selected={blog.expirydate}
@@ -535,7 +535,7 @@ const D_Blog = () => {
                                             <Col xs={4}>
                                                 <div className="label_box">
                                                     <span className="label_title">Image:</span>
-                                                    {!v?.image || v?.image === '' ? <p>No Image Specified.</p> : <img src={v?.image} alt={`${v?.title} blog...`} className="rounded" />}
+                                                    {!v?.image || v?.image === '' ? <p>No Image Specified.</p> : <img src={v?.image} alt={`${v?.title} blog`} className="rounded" />}
                                                 </div>
                                             </Col>
                                             <Col xs={12}>

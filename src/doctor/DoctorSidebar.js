@@ -32,7 +32,7 @@ const DoctorSidebar = ({ doctor }) => {
                     <div className={`${isOpen ? 'd-block position-absolute top-0 end-0 z-3 p-2' : 'd-none'}`}><FiXCircle style={{color:'white'}} onClick={toggleSidebar}/></div>
                     <div>
                         <div className='patient_profile'>
-                            <img src={doctor?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} />
+                            <img src={doctor?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} alt={`${doctor?.name} profile`} />
                         </div>
                         <div className='text-center py-3 align-items-center d-flex flex-column gap-2'>
                             {doctor?.is_available === true ? <span className='apt_complete_btn small'>Available</span> : <span className='apt_dark_btn small'>Not Available</span>}

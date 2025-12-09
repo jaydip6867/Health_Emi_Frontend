@@ -636,15 +636,25 @@ const D_AmbulanceRequest = () => {
     return Number((R * c).toFixed(2));
   };
 
+  // Helper function to handle mobile number input (10-digit Indian numbers only)
+  const handleMobileChange = (e) => {
+    const value = e.target.value;
+    // Remove all non-digit characters
+    const numericValue = value.replace(/\D/g, '');
+    // Limit to 10 digits
+    const limitedValue = numericValue.slice(0, 10);
+    
+    setDetails((p) => ({
+      ...p,
+      mobile: limitedValue,
+    }));
+  };
+
   const validateDetails = () => {
     if (!details.name || !details.mobile) return false;
-    if (!/^\+?\d{7,15}$/.test(String(details.mobile))) return false;
-    if (
-      details.price === "" ||
-      details.price === null ||
-      details.price === undefined
-    )
-      return false;
+    // Validate 10-digit Indian mobile number
+    if (!/^\d{10}$/.test(String(details.mobile))) return false;
+    if (details.price === "" || details.price === null || details.price === undefined) return false;
     if (isNaN(Number(details.price))) return false;
     return true;
   };
@@ -873,8 +883,8 @@ const D_AmbulanceRequest = () => {
       Swal.fire({ title: "Enter passenger name and mobile", icon: "warning" });
       return;
     }
-    if (!/^\+?\d{7,15}$/.test(String(nextDetails.mobile))) {
-      Swal.fire({ title: "Enter valid mobile number", icon: "warning" });
+    if (!/^\d{10}$/.test(String(nextDetails.mobile))) {
+      Swal.fire({ title: "Enter valid 10-digit mobile number", icon: "warning" });
       return;
     }
     if (!nextDetails.ambulance_type) {
@@ -901,13 +911,8 @@ const D_AmbulanceRequest = () => {
     !!form.drop_latitude &&
     !!form.drop_longitude;
 
-  const mobileValid = /^\+?\d{7,15}$/.test(String(details.mobile || ""));
-  const priceValid = !(
-    details.price === "" ||
-    details.price === null ||
-    details.price === undefined ||
-    isNaN(Number(details.price))
-  );
+  const mobileValid = /^\d{10}$/.test(String(details.mobile || ""));
+  const priceValid = !(details.price === "" || details.price === null || details.price === undefined || isNaN(Number(details.price)));
   const showVehicle = hasBothLocations && !!details.name && mobileValid;
   const canSubmit =
     hasBothLocations &&
@@ -1239,102 +1244,74 @@ const D_AmbulanceRequest = () => {
                             </Col>
                           </Row>
 
-                          {/* Passenger details (after locations, before vehicle) */}
-                          {hasBothLocations && (
-                            <div className="mt-3">
-                              <div
-                                className="d-flex align-items-center mb-2"
-                                style={{ color: "#374151" }}
-                              >
-                                <h6 className="m-0">Passenger Details</h6>
+                            {/* Passenger details (after locations, before vehicle) */}
+                            {hasBothLocations && (
+                              <div className="mt-3">
+                                <div className="d-flex align-items-center mb-2" style={{ color: "#374151" }}>
+                                  <h6 className="m-0">Passenger Details</h6>
+                                </div>
+                                <Row className="g-3">
+                                  <Col md={6}>
+                                    <Form.Group>
+                                      <Form.Label>Name</Form.Label>
+                                      <Form.Control
+                                        value={details.name}
+                                        onChange={(e) => setDetails((p) => ({ ...p, name: e.target.value }))}
+                                        placeholder="Full name"
+                                      />
+                                    </Form.Group>
+                                  </Col>
+                                  <Col md={6}>
+                                    <Form.Group>
+                                      <Form.Label>Mobile</Form.Label>
+                                      <Form.Control
+                                        value={details.mobile}
+                                        onChange={handleMobileChange}
+                                        placeholder="e.g. 9876543210"
+                                      />
+                                    </Form.Group>
+                                  </Col>
+                                  <Col md={6}>
+                                    <Form.Group>
+                                      <Form.Label>Pickup House No.</Form.Label>
+                                      <Form.Control
+                                        value={details.pickup_house_number}
+                                        onChange={(e) => setDetails((p) => ({ ...p, pickup_house_number: e.target.value }))}
+                                        placeholder="House/Flat no."
+                                      />
+                                    </Form.Group>
+                                  </Col>
+                                  <Col md={6}>
+                                    <Form.Group>
+                                      <Form.Label>Drop House No.</Form.Label>
+                                      <Form.Control
+                                        value={details.drop_house_number}
+                                        onChange={(e) => setDetails((p) => ({ ...p, drop_house_number: e.target.value }))}
+                                        placeholder="House/Flat no."
+                                      />
+                                    </Form.Group>
+                                  </Col>
+                                  <Col md={12}>
+                                    <Form.Group>
+                                      <Form.Label>Book For</Form.Label>
+                                      <div>
+                                        {["myself", "other"].map((opt) => (
+                                          <Form.Check
+                                            inline
+                                            key={opt}
+                                            type="radio"
+                                            label={opt}
+                                            name="book_for"
+                                            checked={details.book_for === opt}
+                                            onChange={() => setDetails((p) => ({ ...p, book_for: opt }))}
+                                          />
+                                        ))}
+                                      </div>
+                                    </Form.Group>
+                                  </Col>
+                                </Row>
                               </div>
-                              <Row className="g-3">
-                                <Col md={6}>
-                                  <Form.Group>
-                                    <Form.Label>Name</Form.Label>
-                                    <Form.Control
-                                      value={details.name}
-                                      onChange={(e) =>
-                                        setDetails((p) => ({
-                                          ...p,
-                                          name: e.target.value,
-                                        }))
-                                      }
-                                      placeholder="Full name"
-                                    />
-                                  </Form.Group>
-                                </Col>
-                                <Col md={6}>
-                                  <Form.Group>
-                                    <Form.Label>Mobile</Form.Label>
-                                    <Form.Control
-                                      value={details.mobile}
-                                      onChange={(e) =>
-                                        setDetails((p) => ({
-                                          ...p,
-                                          mobile: e.target.value,
-                                        }))
-                                      }
-                                      placeholder="e.g. +911234567890"
-                                    />
-                                  </Form.Group>
-                                </Col>
-                                <Col md={6}>
-                                  <Form.Group>
-                                    <Form.Label>Pickup House No.</Form.Label>
-                                    <Form.Control
-                                      value={details.pickup_house_number}
-                                      onChange={(e) =>
-                                        setDetails((p) => ({
-                                          ...p,
-                                          pickup_house_number: e.target.value,
-                                        }))
-                                      }
-                                      placeholder="House/Flat no."
-                                    />
-                                  </Form.Group>
-                                </Col>
-                                <Col md={6}>
-                                  <Form.Group>
-                                    <Form.Label>Drop House No.</Form.Label>
-                                    <Form.Control
-                                      value={details.drop_house_number}
-                                      onChange={(e) =>
-                                        setDetails((p) => ({
-                                          ...p,
-                                          drop_house_number: e.target.value,
-                                        }))
-                                      }
-                                      placeholder="House/Flat no."
-                                    />
-                                  </Form.Group>
-                                </Col>
-                                <Col md={12}>
-                                  <Form.Group>
-                                    <Form.Label>Book For</Form.Label>
-                                    <div>
-                                      {["myself", "other"].map((opt) => (
-                                        <Form.Check
-                                          inline
-                                          key={opt}
-                                          type="radio"
-                                          label={opt}
-                                          name="book_for"
-                                          checked={details.book_for === opt}
-                                          onChange={() =>
-                                            setDetails((p) => ({
-                                              ...p,
-                                              book_for: opt,
-                                            }))
-                                          }
-                                        />
-                                      ))}
-                                    </div>
-                                  </Form.Group>
-                                </Col>
-                              </Row>
-                            </div>
-                          )}
+                            )}
 
                           {showVehicle && (
                             <div className="mt-3">
