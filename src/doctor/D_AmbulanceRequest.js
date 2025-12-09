@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Form, Row, Badge, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import DoctorSidebar from "./DoctorSidebar";
 import axios from "axios";
 import Swal from "sweetalert2";
 import CryptoJS from "crypto-js";
 import Loader from "../Loader";
+import SmartDataTable from '../components/SmartDataTable';
 import {
   API_BASE_URL,
   SECRET_KEY,
@@ -17,10 +18,11 @@ import {
   FaLocationArrow,
   FaMapMarkerAlt,
   FaRoute,
-  FaMotorcycle,
-  FaCar,
   FaRegEye,
 } from "react-icons/fa";
+import { FiClock, FiMail, FiPhone, FiMapPin } from "react-icons/fi";
+import { MdOutlineRemoveRedEye, MdVerified } from "react-icons/md";
+import { PiHospital } from "react-icons/pi";
 import NavBar from "../Visitor/Component/NavBar";
 
 let gmapsPromise = null;
@@ -63,7 +65,7 @@ const D_AmbulanceRequest = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState(null);
+  // const [selectedRequest, setSelectedRequest] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const itemsPerPage = 5;
 
@@ -89,7 +91,7 @@ const D_AmbulanceRequest = () => {
         let doctorData = response.data.Data.filter((item) => {
           return item.doctorid == doctor._id;
         });
-
+        console.log(doctorData, "doctorData");
         setAmbulanceHistory(doctorData);
         const totalItems = doctorData.length;
         setTotalPages(Math.ceil(totalItems / itemsPerPage));
@@ -379,7 +381,7 @@ const D_AmbulanceRequest = () => {
             }
             autoLocatedRef.current = true;
           },
-          () => {},
+          () => { },
           { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
         );
       };
@@ -629,9 +631,9 @@ const D_AmbulanceRequest = () => {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return Number((R * c).toFixed(2));
   };
@@ -643,7 +645,7 @@ const D_AmbulanceRequest = () => {
     const numericValue = value.replace(/\D/g, '');
     // Limit to 10 digits
     const limitedValue = numericValue.slice(0, 10);
-    
+
     setDetails((p) => ({
       ...p,
       mobile: limitedValue,
@@ -715,8 +717,8 @@ const D_AmbulanceRequest = () => {
         ...p,
         price:
           nextPrice !== undefined &&
-          nextPrice !== null &&
-          !isNaN(Number(nextPrice))
+            nextPrice !== null &&
+            !isNaN(Number(nextPrice))
             ? Number(nextPrice)
             : p.price,
         gst_per:
@@ -724,7 +726,7 @@ const D_AmbulanceRequest = () => {
             ? Number(nextGst)
             : p.gst_per,
       }));
-    } catch (e) {}
+    } catch (e) { }
   };
 
   const fetchAllPrices = async (distanceKm) => {
@@ -749,7 +751,7 @@ const D_AmbulanceRequest = () => {
         ...prev,
         price:
           prices[prev.ambulance_type] !== undefined &&
-          prices[prev.ambulance_type] !== null
+            prices[prev.ambulance_type] !== null
             ? Number(prices[prev.ambulance_type])
             : prev.price,
         gst_per:
@@ -762,7 +764,7 @@ const D_AmbulanceRequest = () => {
       } else {
         setPlatformFee(0);
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   useEffect(() => {
@@ -920,6 +922,71 @@ const D_AmbulanceRequest = () => {
     !!details.name &&
     mobileValid &&
     priceValid;
+
+  // Table columns configuration for SmartDataTable
+  const customTableStyles = {
+    table: { backgroundColor: 'transparent', borderRadius: 0, boxShadow: 'none' }
+  };
+
+  const columns = [{
+    name: 'No',
+    cell: (row, index) => index + 1,
+    width: '50px'
+  }, {
+    name: 'Name',
+    selector: row => row.name,
+    cell: row => (
+      <div className="">
+        <span className="fw-semibold">{row?.name || "N/A"}</span>
+      </div>
+    ),
+  }, {
+    name: 'Pickup',
+    selector: row => row.pickupaddress,
+    cell: row => (
+      <div className="text-truncate" style={{ maxWidth: "150px" }} title={row.pickupaddress}>
+        <span>{row.pickupaddress || "N/A"}</span>
+      </div>
+    ),
+  }, {
+    name: 'Drop',
+    selector: row => row.dropaddress,
+    cell: row => (
+      <div className="text-truncate" style={{ maxWidth: "150px" }} title={row.dropaddress}>
+        <span>{row.dropaddress || "N/A"}</span>
+      </div>
+    ),
+  }, {
+    name: 'Type',
+    selector: row => row.ambulance_type,
+    cell: row => (
+      <span className="badge bg-primary">
+        {row.ambulance_type || "N/A"}
+      </span>
+    ),
+  }, {
+    name: 'Status',
+    selector: row => row.status,
+    cell: row => renderStatusBadge(row.status),
+  }, 
+  // {
+  //   name: 'Actions',
+  //   cell: row => (
+  //     <button
+  //       className="btn btn-sm btn-outline-primary"
+  //       onClick={() => {
+  //         setSelectedRequest(row);
+  //         setIsViewModalOpen(true);
+  //       }}
+  //       title="View Details"
+  //     >
+  //       <FaRegEye />
+  //     </button>
+  //   ),
+  //   width: '100px',
+  //   center: true
+  // }
+];
 
   return (
     <>
@@ -1244,74 +1311,74 @@ const D_AmbulanceRequest = () => {
                             </Col>
                           </Row>
 
-                            {/* Passenger details (after locations, before vehicle) */}
-                            {hasBothLocations && (
-                              <div className="mt-3">
-                                <div className="d-flex align-items-center mb-2" style={{ color: "#374151" }}>
-                                  <h6 className="m-0">Passenger Details</h6>
-                                </div>
-                                <Row className="g-3">
-                                  <Col md={6}>
-                                    <Form.Group>
-                                      <Form.Label>Name</Form.Label>
-                                      <Form.Control
-                                        value={details.name}
-                                        onChange={(e) => setDetails((p) => ({ ...p, name: e.target.value }))}
-                                        placeholder="Full name"
-                                      />
-                                    </Form.Group>
-                                  </Col>
-                                  <Col md={6}>
-                                    <Form.Group>
-                                      <Form.Label>Mobile</Form.Label>
-                                      <Form.Control
-                                        value={details.mobile}
-                                        onChange={handleMobileChange}
-                                        placeholder="e.g. 9876543210"
-                                      />
-                                    </Form.Group>
-                                  </Col>
-                                  <Col md={6}>
-                                    <Form.Group>
-                                      <Form.Label>Pickup House No.</Form.Label>
-                                      <Form.Control
-                                        value={details.pickup_house_number}
-                                        onChange={(e) => setDetails((p) => ({ ...p, pickup_house_number: e.target.value }))}
-                                        placeholder="House/Flat no."
-                                      />
-                                    </Form.Group>
-                                  </Col>
-                                  <Col md={6}>
-                                    <Form.Group>
-                                      <Form.Label>Drop House No.</Form.Label>
-                                      <Form.Control
-                                        value={details.drop_house_number}
-                                        onChange={(e) => setDetails((p) => ({ ...p, drop_house_number: e.target.value }))}
-                                        placeholder="House/Flat no."
-                                      />
-                                    </Form.Group>
-                                  </Col>
-                                  <Col md={12}>
-                                    <Form.Group>
-                                      <Form.Label>Book For</Form.Label>
-                                      <div>
-                                        {["myself", "other"].map((opt) => (
-                                          <Form.Check
-                                            inline
-                                            key={opt}
-                                            type="radio"
-                                            label={opt}
-                                            name="book_for"
-                                            checked={details.book_for === opt}
-                                            onChange={() => setDetails((p) => ({ ...p, book_for: opt }))}
-                                          />
-                                        ))}
-                                      </div>
-                                    </Form.Group>
-                                  </Col>
-                                </Row>
+                          {/* Passenger details (after locations, before vehicle) */}
+                          {hasBothLocations && (
+                            <div className="mt-3">
+                              <div className="d-flex align-items-center mb-2" style={{ color: "#374151" }}>
+                                <h6 className="m-0">Passenger Details</h6>
                               </div>
-                            )}
+                              <Row className="g-3">
+                                <Col md={6}>
+                                  <Form.Group>
+                                    <Form.Label>Name</Form.Label>
+                                    <Form.Control
+                                      value={details.name}
+                                      onChange={(e) => setDetails((p) => ({ ...p, name: e.target.value }))}
+                                      placeholder="Full name"
+                                    />
+                                  </Form.Group>
+                                </Col>
+                                <Col md={6}>
+                                  <Form.Group>
+                                    <Form.Label>Mobile</Form.Label>
+                                    <Form.Control
+                                      value={details.mobile}
+                                      onChange={handleMobileChange}
+                                      placeholder="e.g. 9876543210"
+                                    />
+                                  </Form.Group>
+                                </Col>
+                                <Col md={6}>
+                                  <Form.Group>
+                                    <Form.Label>Pickup House No.</Form.Label>
+                                    <Form.Control
+                                      value={details.pickup_house_number}
+                                      onChange={(e) => setDetails((p) => ({ ...p, pickup_house_number: e.target.value }))}
+                                      placeholder="House/Flat no."
+                                    />
+                                  </Form.Group>
+                                </Col>
+                                <Col md={6}>
+                                  <Form.Group>
+                                    <Form.Label>Drop House No.</Form.Label>
+                                    <Form.Control
+                                      value={details.drop_house_number}
+                                      onChange={(e) => setDetails((p) => ({ ...p, drop_house_number: e.target.value }))}
+                                      placeholder="House/Flat no."
+                                    />
+                                  </Form.Group>
+                                </Col>
+                                <Col md={12}>
+                                  <Form.Group>
+                                    <Form.Label>Book For</Form.Label>
+                                    <div>
+                                      {["myself", "other"].map((opt) => (
+                                        <Form.Check
+                                          inline
+                                          key={opt}
+                                          type="radio"
+                                          label={opt}
+                                          name="book_for"
+                                          checked={details.book_for === opt}
+                                          onChange={() => setDetails((p) => ({ ...p, book_for: opt }))}
+                                        />
+                                      ))}
+                                    </div>
+                                  </Form.Group>
+                                </Col>
+                              </Row>
+                            </div>
+                          )}
 
                           {showVehicle && (
                             <div className="mt-3">
@@ -1368,9 +1435,8 @@ const D_AmbulanceRequest = () => {
                                       className={`text-center`}
                                     >
                                       <div
-                                        className={`p-2 border rounded h-100 d-flex flex-column justify-content-center ${
-                                          selected ? "shadow-sm" : ""
-                                        }`}
+                                        className={`p-2 border rounded h-100 d-flex flex-column justify-content-center ${selected ? "shadow-sm" : ""
+                                          }`}
                                         style={{
                                           cursor: "pointer",
                                           backgroundColor: selected
@@ -1383,7 +1449,7 @@ const D_AmbulanceRequest = () => {
                                             ambulance_type: opt.key,
                                             price:
                                               price !== undefined &&
-                                              price !== null
+                                                price !== null
                                                 ? Number(price)
                                                 : p.price,
                                           }))
@@ -1399,7 +1465,7 @@ const D_AmbulanceRequest = () => {
                                           <div>
                                             <div className="fw-semibold">
                                               {price !== undefined &&
-                                              price !== null
+                                                price !== null
                                                 ? `₹${price}`
                                                 : "—"}{" "}
                                             </div>
@@ -1441,283 +1507,165 @@ const D_AmbulanceRequest = () => {
                       </Card.Body>
                     </Card>
                   </Col>
-
-                  <div className="card shadow-sm border-0 mt-4">
-                    <div className="card-header bg-white border-0">
-                      <h5 className="mb-0">Ambulance Book History </h5>
-                    </div>
-                    <div className="card-body p-0">
-                      <div className="table-responsive">
-                        <table className="table table-hover mb-0">
-                          <thead className="table-light">
-                            <tr>
-                              <th>#</th>
-                              <th>Patient Name</th>
-                              <th>Mobile</th>
-                              <th>Pickup</th>
-                              <th>Drop</th>
-                              <th>Type</th>
-                              <th>Status</th>
-                              <th>Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {historyLoading ? (
-                              <tr>
-                                <td colSpan="8" className="text-center py-4">
-                                  <div
-                                    className="spinner-border spinner-border-sm me-2"
-                                    role="status"
-                                  ></div>
-                                  Loading...
-                                </td>
-                              </tr>
-                            ) : ambulanceHistory.length === 0 ? (
-                              <tr>
-                                <td
-                                  colSpan="8"
-                                  className="text-center py-4 text-muted"
-                                >
-                                  No ambulance requests found
-                                </td>
-                              </tr>
-                            ) : (
-                              getPaginatedData().map((request, index) => (
-                                <tr key={request._id}>
-                                  <td>
-                                    {(currentPage - 1) * itemsPerPage +
-                                      index +
-                                      1}
-                                  </td>
-                                  <td>{request.name || "N/A"}</td>
-                                  <td>{request.mobile || "N/A"}</td>
-                                  <td>
-                                    <div
-                                      className="text-truncate"
-                                      style={{ maxWidth: "150px" }}
-                                      title={request.pickupaddress}
-                                    >
-                                      {request.pickupaddress}
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div
-                                      className="text-truncate"
-                                      style={{ maxWidth: "150px" }}
-                                      title={request.dropaddress}
-                                    >
-                                      {request.dropaddress}
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <span className="badge bg-primary">
-                                      {request.ambulance_type || "N/A"}
-                                    </span>
-                                  </td>
-                                  <td>{renderStatusBadge(request.status)}</td>
-                                  <td>
-                                    <div className="d-flex gap-2">
-                                      <button
-                                        className="btn btn-sm btn-outline-primary d-flex align-items-center"
-                                        onClick={() => {
-                                          setSelectedRequest(request);
-                                          setIsViewModalOpen(true);
-                                        }}
-                                        title="View Details"
-                                      >
-                                        <i className="bi bi-eye-fill me-1"></i>
-                                        <span className="d-none d-sm-inline">
-                                          View
-                                        </span>
-                                      </button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-
-                      {/* View Details Modal */}
-                      {selectedRequest && (
-                        <div
-                          className={`modal fade ${
-                            isViewModalOpen ? "show d-block" : ""
-                          }`}
-                          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-                          tabIndex="-1"
-                        >
-                          <div className="modal-dialog modal-dialog-centered">
-                            <div className="modal-content">
-                              <div className="modal-header bg-primary text-white">
-                                <h5 className="modal-title">Request Details</h5>
-                                <button
-                                  type="button"
-                                  className="btn-close btn-close-white"
-                                  onClick={() => setIsViewModalOpen(false)}
-                                ></button>
-                              </div>
-                              <div className="modal-body">
-                                <div className="row mb-3">
-                                  <div className="col-md-6 mb-2">
-                                    <h6 className="text-muted mb-1">
-                                      Patient Name
-                                    </h6>
-                                    <p className="mb-0">
-                                      {selectedRequest.name || "N/A"}
-                                    </p>
-                                  </div>
-                                  <div className="col-md-6 mb-2">
-                                    <h6 className="text-muted mb-1">Mobile</h6>
-                                    <p className="mb-0">
-                                      {selectedRequest.mobile || "N/A"}
-                                    </p>
-                                  </div>
-                                  <div className="col-md-6 mb-2">
-                                    <h6 className="text-muted mb-1">Status</h6>
-                                    <p className="mb-0">
-                                      {renderStatusBadge(
-                                        selectedRequest.status
-                                      )}
-                                    </p>
-                                  </div>
-                                  <div className="col-md-6 mb-2">
-                                    <h6 className="text-muted mb-1">
-                                      Ambulance Type
-                                    </h6>
-                                    <p className="mb-0">
-                                      {selectedRequest.ambulance_type || "N/A"}
-                                    </p>
-                                  </div>
-                                  <div className="col-md-6 mb-2">
-                                    <h6 className="text-muted mb-1">Price</h6>
-                                    <p className="mb-0">
-                                      ₹{selectedRequest.price || "0"}
-                                    </p>
-                                  </div>
-                                  <div className="col-12 mb-2">
-                                    <h6 className="text-muted mb-1">
-                                      Pickup Address
-                                    </h6>
-                                    <p className="mb-0">
-                                      {selectedRequest.pickupaddress || "N/A"}
-                                    </p>
-                                    {selectedRequest.pickup_house_number && (
-                                      <small className="text-muted">
-                                        House No:{" "}
-                                        {selectedRequest.pickup_house_number}
-                                      </small>
-                                    )}
-                                  </div>
-                                  <div className="col-12 mb-2">
-                                    <h6 className="text-muted mb-1">
-                                      Drop Address
-                                    </h6>
-                                    <p className="mb-0">
-                                      {selectedRequest.dropaddress || "N/A"}
-                                    </p>
-                                    {selectedRequest.drop_house_number && (
-                                      <small className="text-muted">
-                                        House No:{" "}
-                                        {selectedRequest.drop_house_number}
-                                      </small>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="modal-footer">
-                                <button
-                                  type="button"
-                                  className="btn btn-secondary"
-                                  onClick={() => setIsViewModalOpen(false)}
-                                >
-                                  Close
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Pagination */}
-                      {totalPages > 1 && (
-                        <div className="d-flex justify-content-between align-items-center p-3 border-top">
-                          <div className="text-muted small">
-                            Showing{" "}
-                            {Math.min(
-                              (currentPage - 1) * itemsPerPage + 1,
-                              ambulanceHistory.length
-                            )}{" "}
-                            to{" "}
-                            {Math.min(
-                              currentPage * itemsPerPage,
-                              ambulanceHistory.length
-                            )}{" "}
-                            of {ambulanceHistory.length} entries
-                          </div>
-                          <div className="d-flex gap-1">
-                            <button
-                              className="btn btn-sm btn-outline-primary"
-                              onClick={() =>
-                                setCurrentPage((prev) => Math.max(prev - 1, 1))
-                              }
-                              disabled={currentPage === 1}
-                            >
-                              Previous
-                            </button>
-                            
-                            {/* Page numbers */}
-                            {(() => {
-                              const pages = [];
-                              const maxVisiblePages = 5;
-                              let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-                              let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-                              
-                              if (endPage - startPage + 1 < maxVisiblePages) {
-                                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-                              }
-                              
-                              for (let i = startPage; i <= endPage; i++) {
-                                pages.push(
-                                  <button
-                                    key={i}
-                                    className={`btn btn-sm ${
-                                      currentPage === i
-                                        ? "btn-primary"
-                                        : "btn-outline-primary"
-                                    }`}
-                                    onClick={() => setCurrentPage(i)}
-                                  >
-                                    {i}
-                                  </button>
-                                );
-                              }
-                              
-                              return pages;
-                            })()}
-                            
-                            <button
-                              className="btn btn-sm btn-outline-primary"
-                              onClick={() =>
-                                setCurrentPage((prev) =>
-                                  Math.min(prev + 1, totalPages)
-                                )
-                              }
-                              disabled={currentPage === totalPages}
-                            >
-                              Next
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
                 </Row>
               )}
             </div>
+
+            <div className='appointments-card mb-3 mt-4'>
+              <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
+                <h4 className='mb-0'>Book Ambulance History</h4>
+                <Badge text='white' className='apt_accept_btn'>
+                  {ambulanceHistory ? ambulanceHistory.length : 0} Requests
+                </Badge>
+              </div>
+              <SmartDataTable
+                className="appointments-table"
+                columns={columns}
+                data={ambulanceHistory || []}
+                pagination
+                customStyles={customTableStyles}
+              />
+            </div>
           </Col>
         </Row>
+        {/* <Modal show={isViewModalOpen} onHide={() => setIsViewModalOpen(false)} size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>Ambulance Details</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {selectedRequest && (
+              <div className="row mb-3">
+                <div className="col-md-6 mb-2">
+                  <h6 className="text-muted mb-1">Patient Name</h6>
+                  <p className="mb-0">
+                    {selectedRequest.name || "N/A"}
+                  </p>
+                </div>
+                <div className="col-md-6 mb-2">
+                  <h6 className="text-muted mb-1">Mobile</h6>
+                  <p className="mb-0">
+                    {selectedRequest.mobile || "N/A"}
+                  </p>
+                </div>
+                <div className="col-md-6 mb-2">
+                  <h6 className="text-muted mb-1">Status</h6>
+                  <p className="mb-0">
+                    {renderStatusBadge(selectedRequest.status)}
+                  </p>
+                </div>
+                <div className="col-md-6 mb-2">
+                  <h6 className="text-muted mb-1">
+                    Ambulance Type
+                  </h6>
+                  <p className="mb-0">
+                    {selectedRequest.ambulance_type || "N/A"}
+                  </p>
+                </div>
+                <div className="col-md-6 mb-2">
+                  <h6 className="text-muted mb-1">Price</h6>
+                  <p className="mb-0">
+                    ₹{selectedRequest.price || "0"}
+                  </p>
+                </div>
+                <div className="col-md-6 mb-2">
+                  <h6 className="text-muted mb-1">Distance</h6>
+                  <p className="mb-0">
+                    {selectedRequest.distance || "0"} km
+                  </p>
+                </div>
+                <div className="col-md-6 mb-2">
+                  <h6 className="text-muted mb-1">Booked For</h6>
+                  <p className="mb-0 text-capitalize">
+                    {selectedRequest.book_for || "N/A"}
+                  </p>
+                </div>
+                <div className="col-md-6 mb-2">
+                  <h6 className="text-muted mb-1">GST</h6>
+                  <p className="mb-0">
+                    {selectedRequest.gst_per || "0"}%
+                  </p>
+                </div>
+                <div className="col-md-6 mb-2">
+                  <h6 className="text-muted mb-1">Platform Fee</h6>
+                  <p className="mb-0">
+                    ₹{selectedRequest.platform_fee || "0"}
+                  </p>
+                </div>
+                <div className="col-12 mb-2">
+                  <h6 className="text-muted mb-1">
+                    Pickup Address
+                  </h6>
+                  <p className="mb-0">
+                    {selectedRequest.pickupaddress || "N/A"}
+                  </p>
+                  {selectedRequest.pickup_house_number && (
+                    <small className="text-muted">
+                      House No:{" "}
+                      {selectedRequest.pickup_house_number}
+                    </small>
+                  )}
+                </div>
+                <div className="col-12 mb-2">
+                  <h6 className="text-muted mb-1">Drop Address</h6>
+                  <p className="mb-0">
+                    {selectedRequest.dropaddress || "N/A"}
+                  </p>
+                  {selectedRequest.drop_house_number && (
+                    <small className="text-muted">
+                      House No: {selectedRequest.drop_house_number}
+                    </small>
+                  )}
+                </div>
+                {selectedRequest.acceptedAmbulance && (
+                  <>
+                    <div className="col-md-6 mb-2">
+                      <h6 className="text-muted mb-1">Ambulance Driver</h6>
+                      <p className="mb-0">
+                        {selectedRequest.acceptedAmbulance.fullname || "N/A"}
+                      </p>
+                    </div>
+                    <div className="col-md-6 mb-2">
+                      <h6 className="text-muted mb-1">Driver Mobile</h6>
+                      <p className="mb-0">
+                        {selectedRequest.acceptedAmbulance.mobile || "N/A"}
+                      </p>
+                    </div>
+                    <div className="col-md-6 mb-2">
+                      <h6 className="text-muted mb-1">Ambulance Category</h6>
+                      <p className="mb-0">
+                        {selectedRequest.acceptedAmbulance.ambulance_category || "N/A"}
+                      </p>
+                    </div>
+                    <div className="col-md-6 mb-2">
+                      <h6 className="text-muted mb-1">Vehicle No</h6>
+                      <p className="mb-0">
+                        {selectedRequest.acceptedAmbulance.vehicle_no || "N/A"}
+                      </p>
+                    </div>
+                    <div className="col-12 mb-2">
+                      <h6 className="text-muted mb-1">Ambulance Facilities</h6>
+                      <p className="mb-0">
+                        {selectedRequest.acceptedAmbulance.ambulance_facilities || "N/A"}
+                      </p>
+                    </div>
+                  </>
+                )}
+                <div className="col-md-6 mb-2">
+                  <h6 className="text-muted mb-1">Request ID</h6>
+                  <p className="mb-0">
+                    {selectedRequest._id || "N/A"}
+                  </p>
+                </div>
+                <div className="col-md-6 mb-2">
+                  <h6 className="text-muted mb-1">Created Date</h6>
+                  <p className="mb-0">
+                    {selectedRequest.createdAt ? new Date(selectedRequest.createdAt).toLocaleDateString() : "N/A"}
+                  </p>
+                </div>
+              </div>
+            )}
+          </Modal.Body>
+        </Modal> */}
       </Container>
       {loading ? <Loader /> : ""}
     </>
