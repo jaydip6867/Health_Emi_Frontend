@@ -191,6 +191,7 @@ const P_Appointment = () => {
         <img
           src={row.doctorid?.profile_pic}
           className="rounded-circle appt-avatar"
+          alt={`${row.doctorid?.name} profile`}
         />
         <span className="fw-semibold appt-doctor-name">{row.doctorid?.name} <span className="verified"><MdVerified size={16} /></span></span>
       </div>
@@ -322,7 +323,7 @@ const P_Appointment = () => {
     <>
       <NavBar logindata={patient} />
       <Container>
-        <Row className='align-items-start position-relative'>
+        <Row className='align-items-start'>
           <P_Sidebar patient={patient} />
           <Col xs={12} lg={9} className='p-3'>
             {/* <P_nav patientname={patient && patient.name} /> */}
@@ -359,7 +360,7 @@ const P_Appointment = () => {
                     {/* Header: Doctor block and badges */}
                     <div className='d-flex flex-wrap align-items-center justify-content-between gap-3 border rounded p-3'>
                       <div className='d-flex align-items-center gap-3'>
-                        <img src={v?.doctorid?.profile_pic} className='rounded-3' style={{ width: 72, height: 72, objectFit: 'cover' }} />
+                        <img src={v?.doctorid?.profile_pic} className='rounded-3' alt={`${v?.doctorid?.name} profile`} style={{ width: 72, height: 72, objectFit: 'cover' }} />
                         <div>
                           <div className='d-flex align-items-center gap-2 flex-wrap'>
                             <h5 className='mb-0'>{v?.doctorid?.name}</h5>

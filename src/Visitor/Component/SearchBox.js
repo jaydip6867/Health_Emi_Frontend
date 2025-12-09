@@ -3,7 +3,7 @@ import axios from 'axios'
 import { useEffect, useState } from 'react';
 import { Col, Container, Form, Row } from 'react-bootstrap';
 
-import { FiMapPin, FiSearch } from 'react-icons/fi';
+import { FiMapPin, FiSearch, FiLoader } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import Loader from '../../Loader';
 import { API_BASE_URL } from '../../config';
@@ -14,7 +14,69 @@ const SearchBox = () => {
     const [cities, setCities] = useState([]);
     const [selectedState, setSelectedState] = useState('');
     const [selectedCity, setSelectedCity] = useState('');
+    const [locationLoading, setLocationLoading] = useState(false);
     const selectedStateName = states.find(st => st.isoCode === selectedState)?.name || '';
+
+    // Auto-detect user location
+    const detectUserLocation = async () => {
+        if (!navigator.geolocation) {
+            console.log('Geolocation is not supported by this browser');
+            return;
+        }
+
+        setLocationLoading(true);
+        try {
+            const position = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    timeout: 10000,
+                    enableHighAccuracy: true
+                });
+            });
+
+            const { latitude, longitude } = position.coords;
+            
+            // Use reverse geocoding API to get address from coordinates
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`);
+            const data = await response.json();
+
+            if (data && data.address) {
+                const { state, city, town, village } = data.address;
+                const detectedCity = city || town || village;
+                
+                if (state && states.length > 0) {
+                    // Find matching state in our states list
+                    const matchedState = states.find(st => 
+                        st.name.toLowerCase() === state.toLowerCase()
+                    );
+                    
+                    if (matchedState) {
+                        // First, set the state
+                        setSelectedState(matchedState.isoCode);
+                        
+                        // Then load cities for that state
+                        const india = Country.getCountryByCode("IN");
+                        const cityList = City.getCitiesOfState(india.isoCode, matchedState.isoCode) || [];
+                        setCities(cityList);
+                        
+                        // Finally, set the city after cities are loaded
+                        if (detectedCity && cityList.length > 0) {
+                            const matchedCity = cityList.find(c => 
+                                c.name.toLowerCase() === detectedCity.toLowerCase()
+                            );
+                            if (matchedCity) {
+                                setSelectedCity(matchedCity.name);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.log('Error getting location:', error);
+        } finally {
+            setLocationLoading(false);
+        }
+    };
+
     useEffect(() => {
         document.title = "Health Easy EMI - Keep Life Healthy"
         // load states of India initially
@@ -23,7 +85,20 @@ const SearchBox = () => {
         setStates(s);
         setloading(true)
         getsuggestion();
+        
+        // Auto-detect location after states are loaded
+        setTimeout(() => {
+            detectUserLocation();
+        }, 1000);
     }, []);
+
+    // Update cities when state changes and location is detected
+    useEffect(() => {
+        if (selectedState && cities.length > 0 && locationLoading) {
+            // This will trigger when cities are loaded after location detection
+            setLocationLoading(false);
+        }
+    }, [cities, selectedState, locationLoading]);
 
     // when state changes, load its cities
     const loadCitiesForState = (stateIso) => {
@@ -90,7 +165,7 @@ const SearchBox = () => {
                                         name='state'
                                         style={{ background: 'transparent'}}
                                     >
-                                        <option value=''>Choose State</option>
+                                        <option value=''>{locationLoading ? 'Detecting location...' : 'Choose State'}</option>
                                         {states && states.map((st) => (
                                             <option key={st.isoCode} value={st.isoCode}>{st.name}</option>
                                         ))}

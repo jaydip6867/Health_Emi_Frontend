@@ -113,7 +113,7 @@ const D_Calender = () => {
         <>
         <NavBar logindata={doctor}/>
             <Container className='my-4'>
-                <Row className='align-items-start position-relative'>
+                <Row className='align-items-start'>
                     <DoctorSidebar doctor={doctor} />
                     <Col xs={12} lg={9}>
                         {/* Calendar Header */}
@@ -137,103 +137,129 @@ const D_Calender = () => {
                                         .fc-header-toolbar {
                                             margin-bottom: 1.5rem !important;
                                             padding: 1rem;
-                                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                                            border-radius: 10px;
-                                            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                                            background: var(--white) !important;
+                                            border: 1px solid #e5e7eb !important;
+                                            border-radius: 12px !important;
+                                            box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
                                         }
                                         .fc-toolbar-title {
-                                            color: white !important;
-                                            font-size: 1.5rem !important;
+                                            color: #253948 !important;
+                                            font-size: 1.25rem !important;
                                             font-weight: 600 !important;
                                         }
-                                            .fc-toolbar{
-                                                flex-wrap: wrap;
-                                            }
+                                        .fc-toolbar {
+                                            flex-wrap: wrap;
+                                            gap: 0.5rem;
+                                        }
                                         .fc-button {
-                                            background: rgba(255,255,255,0.2) !important;
-                                            border: 1px solid rgba(255,255,255,0.3) !important;
-                                            color: white !important;
+                                            background: var(--white) !important;
+                                            border: 1px solid #e5e7eb !important;
+                                            color: #6b7280 !important;
                                             border-radius: 8px !important;
-                                            padding: 0.25rem 1rem !important;
+                                            padding: 0.375rem 0.75rem !important;
                                             margin: 0 0.25rem !important;
                                             font-weight: 500 !important;
-                                            transition: all 0.3s ease !important;
+                                            font-size: 0.875rem !important;
+                                            transition: all 0.2s ease !important;
+                                            box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
                                         }
                                         .fc-button:hover {
-                                            background: rgba(255,255,255,0.3) !important;
-                                            transform: translateY(-2px);
-                                            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+                                            background: #f8fafc !important;
+                                            border-color: var(--primary-color-500) !important;
+                                            color: var(--primary-color-600) !important;
+                                            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
                                         }
                                         .fc-button-active {
-                                            background: rgba(255,255,255,0.4) !important;
-                                            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
+                                            background: var(--primary-color-600) !important;
+                                            border-color: var(--primary-color-600) !important;
+                                            color: var(--white) !important;
+                                            box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
                                         }
                                         .fc-daygrid-day {
-                                            transition: all 0.3s ease !important;
+                                            transition: all 0.2s ease !important;
                                             cursor: pointer !important;
+                                            border: 1px solid #f3f4f6 !important;
                                         }
                                         .fc-daygrid-day:hover {
-                                            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
-                                            transform: translateY(-2px) !important;
-                                            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2) !important;
-                                            border-radius: 8px !important;
+                                            background: #f8fafc !important;
+                                            border-color: var(--primary-color-200) !important;
+                                            box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
                                         }
                                         .fc-daygrid-day-number {
-                                            transition: all 0.3s ease !important;
+                                            transition: all 0.2s ease !important;
+                                            color: #374151 !important;
+                                            font-weight: 500 !important;
                                         }
                                         .fc-daygrid-day:hover .fc-daygrid-day-number {
-                                            color: #1976d2 !important;
+                                            color: var(--primary-color-600) !important;
                                             font-weight: 600 !important;
-                                            transform: scale(1.1) !important;
                                         }
                                         .fc-day-today {
-                                            background-color: #e3f2fd !important;
-                                            border: 2px solid #2196f3 !important;
+                                            background-color: #f0f9ff !important;
+                                            border: 2px solid var(--primary-color-500) !important;
+                                        }
+                                        .fc-day-today .fc-daygrid-day-number {
+                                            color: var(--primary-color-600) !important;
+                                            font-weight: 700 !important;
                                         }
                                         .fc-col-header-cell {
-                                            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+                                            background: #f8fafc !important;
                                             font-weight: 600 !important;
-                                            color: #333 !important;
-                                            padding: 1rem 0 !important;
+                                            color: #374151 !important;
+                                            padding: 0.75rem 0 !important;
+                                            border-bottom: 2px solid #e5e7eb !important;
+                                            text-transform: uppercase !important;
+                                            font-size: 0.75rem !important;
+                                            letter-spacing: 0.05em !important;
                                         }
                                         .fc-scrollgrid {
                                             border-radius: 12px !important;
                                             overflow: hidden;
-                                            box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+                                            box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+                                            border: 1px solid #e5e7eb !important;
                                         }
                                         .fc-event {
-                                            border-radius: 8px !important;
+                                            border-radius: 6px !important;
                                             border: none !important;
-                                            padding: 4px 8px !important;
+                                            padding: 2px 6px !important;
                                             font-weight: 500 !important;
-                                            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+                                            font-size: 0.75rem !important;
+                                            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
                                             transition: all 0.2s ease !important;
+                                            cursor: pointer !important;
                                         }
                                         .fc-event:hover {
-                                            transform: translateY(-2px) !important;
-                                            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+                                            transform: translateY(-1px) !important;
+                                            box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
                                         }
                                         .modal-header .btn-close {
                                             filter: invert(1) grayscale(100%) brightness(200%) !important;
+                                        }
+                                        .fc-theme-standard .fc-scrollgrid {
+                                            border: 1px solid #e5e7eb !important;
+                                        }
+                                        .fc-theme-standard td, .fc-theme-standard th {
+                                            border: 1px solid #f3f4f6 !important;
                                         }
                                     `}
                                 </style>
                                 <FullCalendar
                                     eventDidMount={(info) => {
-                                        // Dynamic colors based on appointment status
+                                        // Dynamic colors based on appointment status - matching D_Appointment page
                                         const status = info.event.extendedProps.status;
                                         let backgroundColor, textColor;
 
                                         switch (status?.toLowerCase()) {
-                                            case 'confirmed':
-                                                backgroundColor = '#28a745';
+                                            case 'accepted':
+                                            case 'accept':
+                                                backgroundColor = '#04BD6C';
                                                 textColor = '#fff';
                                                 break;
                                             case 'pending':
                                                 backgroundColor = '#ffc107';
                                                 textColor = '#000';
                                                 break;
-                                            case 'cancelled':
+                                            case 'cancel':
                                                 backgroundColor = '#dc3545';
                                                 textColor = '#fff';
                                                 break;
@@ -248,11 +274,13 @@ const D_Calender = () => {
 
                                         info.el.style.backgroundColor = backgroundColor;
                                         info.el.style.color = textColor;
-                                        info.el.style.borderRadius = '8px';
-                                        info.el.style.padding = '4px 8px';
-                                        info.el.style.fontSize = '0.85rem';
+                                        info.el.style.borderRadius = '6px';
+                                        info.el.style.padding = '2px 6px';
+                                        info.el.style.fontSize = '0.75rem';
                                         info.el.style.fontWeight = '500';
                                         info.el.style.cursor = 'pointer';
+                                        info.el.style.border = 'none';
+                                        info.el.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
                                     }}
                                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                                     initialView="dayGridMonth"
@@ -323,9 +351,9 @@ const D_Calender = () => {
                                         <div>
                                             <Badge
                                                 bg={
-                                                    selectedAppointment?.status?.toLowerCase() === 'confirmed' ? 'success' :
+                                                    selectedAppointment?.status?.toLowerCase() === 'accept' ? 'success' :
                                                         selectedAppointment?.status?.toLowerCase() === 'pending' ? 'warning' :
-                                                            selectedAppointment?.status?.toLowerCase() === 'cancelled' ? 'danger' :
+                                                            selectedAppointment?.status?.toLowerCase() === 'cancel' ? 'danger' :
                                                                 selectedAppointment?.status?.toLowerCase() === 'completed' ? 'info' : 'secondary'
                                                 }
                                                 className='px-3 py-2'

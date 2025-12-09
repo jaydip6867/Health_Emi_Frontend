@@ -31,6 +31,8 @@
 .modal-header .btn-close{
     height: 36px;
     width: 36px;
+    min-width: 36px;
+    min-height: 36px;
     border-radius: 50%;
     padding: 0;
     box-sizing: border-box;
@@ -508,11 +510,13 @@ select.frm_input {
         left: -100vw;
         width: 100%;
         height: auto;
+        /* max-height: 100vh; */
         background-color: white;
         transform: translateX(-100%);
         display: block !important; /* override d-none */
         border-radius: 8px;
         transition: ease-in-out;
+        /* overflow-y: auto; */
     }
     .sidebar-wrapper.blackarea::before{
         height: 400vh;

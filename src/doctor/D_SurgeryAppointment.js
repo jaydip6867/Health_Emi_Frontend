@@ -444,7 +444,7 @@ const D_SurgeryAppointment = () => {
                 <img
                     // src={row.doctorid?.profile_pic}
                     src={row.createdByuser?.profile_pic || require('../Visitor/assets/profile_icon_img.png')}
-                    alt="Patient"
+                    alt={`${row?.patientname} profile`}
                     className="rounded-circle appt-avatar"
                 />
                 <span className="fw-semibold appt-doctor-name">{row?.patientname}</span>
@@ -580,7 +580,7 @@ const D_SurgeryAppointment = () => {
         <>
             <NavBar logindata={doctor} />
             <Container className='my-4'>
-                <Row className="align-items-start position-relative">
+                <Row className="align-items-start">
                     <DoctorSidebar doctor={doctor} />
                     <Col xs={12} lg={9}>
                         <div className='appointments-card mb-3'>
@@ -609,7 +609,7 @@ const D_SurgeryAppointment = () => {
                                     <div className='p-2 rounded-3 border rounded' style={{ background: 'var(--white)' }}>
                                         <div className='d-flex flex-wrap align-items-center justify-content-between gap-3 p-3'>
                                             <div className='d-flex align-items-center gap-3'>
-                                                <img src={v?.createdByuser?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} className='rounded-3' style={{ width: 72, height: 72, objectFit: 'cover' }} />
+                                                <img src={v?.createdByuser?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} alt={`${v?.patientname} profile`} className='rounded-3' style={{ width: 72, height: 72, objectFit: 'cover' }} />
                                                 <div>
                                                     <div className='d-flex align-items-center gap-2 flex-wrap'>
                                                         <h5 className='mb-0'>{v?.patientname}</h5>

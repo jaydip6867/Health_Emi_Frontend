@@ -1358,7 +1358,7 @@ const DoctorProfilePage = () => {
               </Form.Select>
               {surgeryHospitalError && <div className="text-danger small mt-1">Please select hospital</div>}
             </Form.Group>
-            <Form.Group className='col-4'>
+            <Form.Group className='col-md-4'>
               <Form.Label>Room Type</Form.Label>
               <div>
                 <Form.Check
@@ -1396,7 +1396,7 @@ const DoctorProfilePage = () => {
                 />
               </div>
             </Form.Group>
-            <Form.Group className='col-8'>
+            <Form.Group className='col-lg-7'>
               <Form.Label>Appointment Date & Time</Form.Label>
               <DatePicker
                 selected={surgeryDate}
@@ -1412,7 +1412,7 @@ const DoctorProfilePage = () => {
               />
             </Form.Group>
 
-            <Form.Group className='col-4'>
+            <Form.Group className='col-lg-4'>
               <Form.Label>Reports</Form.Label>
               <input
                 type="file"
@@ -1452,7 +1452,7 @@ const DoctorProfilePage = () => {
               )}
             </Form.Group>
 
-            <Form.Group className='col-8'>
+            <Form.Group className='col-12'>
               <Form.Label>Appointment Reason</Form.Label>
               <Form.Control as="textarea" name='appointment_reason' value={addsurgery?.appointment_reason} onChange={surghandlechange} />
             </Form.Group>

@@ -503,9 +503,24 @@ const D_AmbulanceRequest = () => {
     return Number((R * c).toFixed(2));
   };
 
+  // Helper function to handle mobile number input (10-digit Indian numbers only)
+  const handleMobileChange = (e) => {
+    const value = e.target.value;
+    // Remove all non-digit characters
+    const numericValue = value.replace(/\D/g, '');
+    // Limit to 10 digits
+    const limitedValue = numericValue.slice(0, 10);
+    
+    setDetails((p) => ({
+      ...p,
+      mobile: limitedValue,
+    }));
+  };
+
   const validateDetails = () => {
     if (!details.name || !details.mobile) return false;
-    if (!/^\+?\d{7,15}$/.test(String(details.mobile))) return false;
+    // Validate 10-digit Indian mobile number
+    if (!/^\d{10}$/.test(String(details.mobile))) return false;
     if (details.price === "" || details.price === null || details.price === undefined) return false;
     if (isNaN(Number(details.price))) return false;
     return true;
@@ -710,8 +725,8 @@ const D_AmbulanceRequest = () => {
       Swal.fire({ title: "Enter passenger name and mobile", icon: "warning" });
       return;
     }
-    if (!/^\+?\d{7,15}$/.test(String(nextDetails.mobile))) {
-      Swal.fire({ title: "Enter valid mobile number", icon: "warning" });
+    if (!/^\d{10}$/.test(String(nextDetails.mobile))) {
+      Swal.fire({ title: "Enter valid 10-digit mobile number", icon: "warning" });
       return;
     }
     if (!nextDetails.ambulance_type) {
@@ -733,7 +748,7 @@ const D_AmbulanceRequest = () => {
     !!form.drop_latitude &&
     !!form.drop_longitude;
 
-  const mobileValid = /^\+?\d{7,15}$/.test(String(details.mobile || ""));
+  const mobileValid = /^\d{10}$/.test(String(details.mobile || ""));
   const priceValid = !(details.price === "" || details.price === null || details.price === undefined || isNaN(Number(details.price)));
   const showVehicle = hasBothLocations && !!details.name && mobileValid;
   const canSubmit = hasBothLocations && !!details.ambulance_type && !!details.name && mobileValid && priceValid;
@@ -1078,8 +1093,8 @@ const D_AmbulanceRequest = () => {
                                       <Form.Label>Mobile</Form.Label>
                                       <Form.Control
                                         value={details.mobile}
-                                        onChange={(e) => setDetails((p) => ({ ...p, mobile: e.target.value }))}
-                                        placeholder="e.g. +911234567890"
+                                        onChange={handleMobileChange}
+                                        placeholder="e.g. 9876543210"
                                       />
                                     </Form.Group>
                                   </Col>

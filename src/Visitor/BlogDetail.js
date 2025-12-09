@@ -207,7 +207,7 @@ const BlogDetail = () => {
                             <h2>{blog?.title}</h2>
                             <div className='d-flex justify-content-between blog_box mb-2'>
                                 <Link to={`/doctorprofile/${encodeURIComponent(btoa(blog?.createdBy?._id))}`} className='d-flex align-items-center gap-1'>
-                                    <img src={blog?.createdBy?.profile_pic}></img>
+                                    <img src={blog?.createdBy?.profile_pic || require('./assets/profile_icon_img.png')} alt={`${blog?.createdBy?.name} profile image`}></img>
                                     <span>Dr. {blog?.createdBy?.name}</span>
                                 </Link>
                                 <div className='d-flex align-items-center gap-1'>
@@ -272,7 +272,7 @@ const BlogDetail = () => {
             {/* blog list */}
             <section className='py-5'>
                 <Container>
-                    <Row>
+                    <Row className="g-4">
                         {bloglist?.map((item, index) => (
                             <BlogBox item={item} index={index} key={index} />
                         ))}

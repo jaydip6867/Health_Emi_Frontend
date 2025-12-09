@@ -114,7 +114,7 @@ const VideoConsult = () => {
                             <div className='border rounded p-3 h-100'>
                                 <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
                                     {/* <FaMapMarkerAlt /> */}
-                                    <img src={require('./assets/icon/24-7.png')} alt="" />
+                                    <img src={require('./assets/icon/24-7.png')} alt={'market icon'} />
 
                                 </div>
                                 <div className="text-muted small">Trusted, verified doctors available 24×7</div>
@@ -123,7 +123,7 @@ const VideoConsult = () => {
                         <Col xs={6} md={4} lg className="text-center">
                             <div className="border rounded p-3 h-100">
                                 <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                    <img src={require('./assets/icon/user-private.png')} alt="" />
+                                    <img src={require('./assets/icon/user-private.png')} alt="user private icon" />
                                 </div>
                                 <div className="text-muted small">Private, encrypted, and confidential video sessions</div>
                             </div>
@@ -131,7 +131,7 @@ const VideoConsult = () => {
                         <Col xs={6} md={4} lg className="text-center">
                             <div className="border rounded p-3 h-100">
                                 <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                    <img src={require('./assets/icon/calendar.png')} alt="" />
+                                    <img src={require('./assets/icon/calendar.png')} alt="calendar icon" />
                                 </div>
                                 <div className="text-muted small">Suitable for second opinions, chronic care, and follow-ups</div>
                             </div>
@@ -139,7 +139,7 @@ const VideoConsult = () => {
                         <Col xs={6} md={4} lg className="text-center">
                             <div className="border rounded p-3 h-100">
                                 <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                    <img src={require('./assets/icon/bed.png')} alt="" />
+                                    <img src={require('./assets/icon/bed.png')} alt="bed icon" />
                                 </div>
                                 <div className="text-muted small">Option to switch to physical visit or surgery with same doctor</div>
                             </div>

@@ -609,11 +609,11 @@ const D_Surgery = () => {
     },
     {
       name: "Surgery Name",
-      selector: (row) => row.name,
+      selector: (row) => row?.name,
       cell: (row) => (
         <div className="d-flex align-items-center gap-3">
-          <img src={row.surgery_photo || require('../Visitor/assets/surgery.jpg')} className="appt-avatar rounded-circle" alt="surgery_photo" />
-          <span className="fw-semibold appt-doctor-name">{row.name}</span>
+          <img src={row?.surgery_photo || require('../Visitor/assets/surgery.jpg')} className="appt-avatar rounded-circle" alt={`${row?.name} surgery_photo`} />
+          <span className="fw-semibold appt-doctor-name">{row?.name}</span>
         </div>
       ),
     },
@@ -688,7 +688,7 @@ const D_Surgery = () => {
     <>
       <NavBar logindata={doctor} />
       <Container className="my-4">
-        <Row className="align-items-start position-relative">
+        <Row className="align-items-start">
           <DoctorSidebar doctor={doctor} />
           <Col xs={12} lg={9}>
             <div className='appointments-card mb-3'>

@@ -35,6 +35,7 @@ const P_Sidebar = ({ patient }) => {
                   patient?.profile_pic ||
                   require("../Visitor/assets/profile_icon_img.png")
                 }
+                alt={`${patient?.name} profile`}
               />
             </div>
             <div className="text-center py-3 align-items-center d-flex flex-column gap-2">
