@@ -91,7 +91,7 @@ const D_AmbulanceRequest = () => {
         let doctorData = response.data.Data.filter((item) => {
           return item.doctorid == doctor._id;
         });
-        console.log(doctorData, "doctorData");
+        // console.log(doctorData, "doctorData");
         setAmbulanceHistory(doctorData);
         const totalItems = doctorData.length;
         setTotalPages(Math.ceil(totalItems / itemsPerPage));

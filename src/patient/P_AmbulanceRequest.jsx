@@ -641,7 +641,7 @@ const P_AmbulanceRequest = () => {
         data: { distance: distanceKm },
       });
       const payload = res.data.Data;
-      console.log(res.data.Data);
+      // console.log(res.data.Data);
       const typeKeyMap = {
         Ambulance: "ambulance_price",
         Bike: "bike_price",
