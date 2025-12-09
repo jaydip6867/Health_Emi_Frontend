@@ -963,11 +963,11 @@ const Amb_Ridedetails = () => {
           speed: latestPosition.speed,
           at: latestPosition.timestamp,
         });
-        console.log(
-          "Sent live location:",
-          latestPosition.lat,
-          latestPosition.lng
-        );
+        // console.log(
+        //   "Sent live location:",
+        //   latestPosition.lat,
+        //   latestPosition.lng
+        // );
       }, 5000);
 
       return true;

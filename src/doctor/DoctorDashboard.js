@@ -216,12 +216,12 @@ const DoctorDashboard = () => {
       <Navbar logindata={doctor} />
 
       <Container className='my-4'>
-        <Row className="align-items-start">
+        <Row className="align-items-start position-relative">
           <DoctorSidebar doctor={doctor} />
-          <Col xs={12} md={9}>
-            <div className='bg-white rounded dashboard-card p-2'>
+          <Col xs={12} lg={9}>
+            <div className='bg-white rounded dashboard-card p-2 mt-2'>
               <Col xs={12}>
-                <Row>
+                <Row className='g-4'>
                   <Col xs={6} md={3}>
                     <div className='bg-light rounded h-100 p-3 d-flex align-items-center gap-3 shadow'>
                       <FiClipboard />
@@ -279,8 +279,8 @@ const DoctorDashboard = () => {
                 </Modal.Header>
                 <Modal.Body>
                   <div className='p-2 rounded-3 border rounded' style={{ background: 'var(--white)' }}>
-                    <div className='row align-items-center justify-content-between py-3 px-2'>
-                      <div className='col-5 d-flex align-items-center gap-3'>
+                    <div className='d-flex flex-wrap align-items-center justify-content-between gap-3 p-3'>
+                      <div className='d-flex align-items-center gap-3'>
                         <img src={v?.createdByuser?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} className='rounded-3' style={{ width: 72, height: 72, objectFit: 'cover' }} />
                         <div>
                           <div className='d-flex align-items-center gap-2 flex-wrap'>
@@ -290,23 +290,21 @@ const DoctorDashboard = () => {
                           <div className='text-muted small'><FiPhone className='me-1' /> +91 {v?.createdByuser?.mobile}</div>
                         </div>
                       </div>
-                      <div className='col-7 d-flex align-items-center gap-4 flex-wrap appointment_model text-center'>
-                        <div className='row'>
-                          <div className='col'>
-                            <p className='mb-0'>Consultation Type</p>
-                            <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{v?.visit_types}</span>
-                          </div>
-                          <div className='col'>
-                            <p className='mb-0'>Consultation Status</p>
-                            <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#E8F7EE', color: '#1F9254' }}>
-                              {v?.status}
-                            </span>
-                          </div>
-                          <div className='col'>
-                            <p className='mb-0'>Consultation Fee</p>
-                            {/* <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.status === "Cancel" || v?.status === "Pending" || v?.status === "Accept" ? v?.price === "" ? "0" : v?.price : v?.totalamount}</span> */}
-                            <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.price}</span>
-                          </div>
+                      <div className='d-flex align-items-center gap-4 flex-wrap appointment_model text-center'>
+                        <div>
+                          <p className='mb-0'>Consultation Type</p>
+                          <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{v?.visit_types}</span>
+                        </div>
+                        <div>
+                          <p className='mb-0'>Consultation Status</p>
+                          <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#E8F7EE', color: '#1F9254' }}>
+                            {v?.status}
+                          </span>
+                        </div>
+                        <div>
+                          <p className='mb-0'>Consultation Fee</p>
+                          {/* <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.status === "Cancel" || v?.status === "Pending" || v?.status === "Accept" ? v?.price === "" ? "0" : v?.price : v?.totalamount}</span> */}
+                          <span className='badge' style={{ background: '#E04F16', color: '#fff' }}>₹ {v?.price}</span>
                         </div>
                       </div>
                     </div>

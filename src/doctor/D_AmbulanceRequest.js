@@ -66,7 +66,7 @@ const D_AmbulanceRequest = () => {
       setToken(`Bearer ${data.accessToken}`);
     }
   }, [navigate]);
-  console.log(doctor, 'rewuesyt')
+  // console.log(doctor, 'rewuesyt')
   const [form, setForm] = useState({
     pickupaddress: "",
     pickup_longitude: "",
@@ -744,7 +744,7 @@ const D_AmbulanceRequest = () => {
       <Container className="my-4">
         <Row className="g-0">
           <DoctorSidebar />
-          <Col xs={12} md={9} className="p-3">
+          <Col xs={12} lg={9} className="p-3">
             <div className="bg-white rounded p-2">
               <div
                 className="p-4 rounded"

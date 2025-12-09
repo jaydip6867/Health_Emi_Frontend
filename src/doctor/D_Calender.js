@@ -113,9 +113,9 @@ const D_Calender = () => {
         <>
         <NavBar logindata={doctor}/>
             <Container className='my-4'>
-                <Row className='align-items-start'>
+                <Row className='align-items-start position-relative'>
                     <DoctorSidebar doctor={doctor} />
-                    <Col xs={12} md={9}>
+                    <Col xs={12} lg={9}>
                         {/* Calendar Header */}
                         <div className='appointments-card mb-3'>
                             <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>

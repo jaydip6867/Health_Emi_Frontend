@@ -60,7 +60,7 @@ const BlogDetail = () => {
                 "blogid": id,
             }
         }).then((res) => {
-            console.log(res.data.Data)
+            // console.log(res.data.Data)
             setblog(res.data.Data)
         }).catch(function (error) {
             // console.log(error);
@@ -114,7 +114,7 @@ const BlogDetail = () => {
                     "blogid": blogid,
                 }
             }).then((res) => {
-                console.log(res.data.Data)
+                // console.log(res.data.Data)
                 getblogdetail()
                 Swal.fire({
                     icon: 'success',

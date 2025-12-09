@@ -213,10 +213,10 @@ const PatientProfile = () => {
     return (
         <>
             <NavBar logindata={patient} />
-            <Container>
+            <Container className='position-relative'>
                 <Row>
                     <P_Sidebar patient={patient} />
-                    <Col xs={12} md={9} className='p-3'>
+                    <Col xs={12} lg={9} className='p-3'>
                         {/* <P_nav patientname={patient && patient.name} /> */}
                         <div className='p-3 py-4 mb-3 position-sticky top-0'>
                             <h4>Settings</h4>
@@ -254,7 +254,7 @@ const PatientProfile = () => {
                                                             </div>
                                                         </div>
                                                     </Col>
-                                                    <Col xs={12} md={9}>
+                                                    <Col xs={12} lg={9}>
                                                         <Form className='register_doctor row g-4'>
                                                             <Form.Group as={Col} controlId="name" className='col-12 col-sm-6 col-md-4'>
                                                                 <div className='position-relative'>

@@ -88,7 +88,7 @@ const P_Surgeries = () => {
         var datasingle = appoint_data.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        console.log(datasingle)
+        // console.log(datasingle)
     }
 
     function openReviewModal(appointmentId) {
@@ -247,9 +247,9 @@ const P_Surgeries = () => {
         <>
             <NavBar logindata={patient} />
             <Container>
-                <Row>
+                <Row className='position-relative'>
                     <P_Sidebar patient={patient} />
-                    <Col xs={12} md={9} className='p-3'>
+                    <Col xs={12} lg={9} className='p-3'>
                         {/* <P_nav patientname={patient && patient.name} /> */}
                         <div className='appointments-card p-3 mb-3 position-sticky top-0'>
                             <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3'>

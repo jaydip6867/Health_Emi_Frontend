@@ -3,9 +3,10 @@ import { Col } from 'react-bootstrap';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { Button } from 'react-bootstrap';
-import { FiActivity, FiCalendar, FiDollarSign, FiFilePlus, FiLayout, FiLogOut, FiMessageSquare, FiSettings, FiTruck } from "react-icons/fi";
+import { FiActivity, FiCalendar, FiDollarSign, FiFilePlus, FiLayout, FiLogOut, FiMessageSquare, FiSettings, FiTruck, FiXCircle } from "react-icons/fi";
 import { IoCalendarOutline } from "react-icons/io5";
 import { TbRosetteDiscountCheckFilled } from "react-icons/tb";
+import { isPast } from 'date-fns';
 
 
 const DoctorSidebar = ({ doctor }) => {
@@ -19,16 +20,17 @@ const DoctorSidebar = ({ doctor }) => {
     return (
         <>
             {/* Toggle Button */}
-            <div className="d-md-none p-2 bg-light shadow-sm">
+            <div className="d-lg-none p-2 bg-light shadow-sm">
                 <button className="btn btn-outline-secondary" onClick={toggleSidebar}>
                     <GiHamburgerMenu />
                 </button>
             </div>
 
             {/* Sidebar */}
-            <Col xs={12} sm={4} md={3} className={`sidebar-wrapper ${isOpen ? 'open' : ''} d-none d-md-block d-sm-block position-sticky min-vh-100 top-0`} >
-                <div className="bg-white patient_side_height sidebar-inner">
-                    <div className="">
+            <Col xs={12} sm={4} md={3} className={`sidebar-wrapper ${isOpen ? 'open blackarea' : 'min-vh-100'} d-none d-md-block d-sm-block position-sticky top-0 mt-3`} >
+                <div className="bg-white rounded sidebar-inner position-relative">
+                    <div className={`${isOpen ? 'd-block position-absolute top-0 end-0 z-3 p-2' : 'd-none'}`}><FiXCircle style={{color:'white'}} onClick={toggleSidebar}/></div>
+                    <div>
                         <div className='patient_profile'>
                             <img src={doctor?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} />
                         </div>
