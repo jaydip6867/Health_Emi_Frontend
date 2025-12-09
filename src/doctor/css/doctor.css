@@ -506,12 +506,13 @@ select.frm_input {
         position: absolute !important;
         top: 0 !important;
         left: -100vw;
-        width: auto;
-        height: 100%;
+        width: 100%;
+        height: auto;
         background-color: white;
         transform: translateX(-100%);
         display: block !important; /* override d-none */
         border-radius: 8px;
+        transition: ease-in-out;
     }
     .sidebar-wrapper.blackarea::before{
         height: 400vh;
@@ -523,6 +524,7 @@ select.frm_input {
         content: '';
     }
 
+
     .sidebar-wrapper.open {
         transform: translateX(0);
         left: 0;
@@ -531,6 +533,7 @@ select.frm_input {
     .sidebar-inner {
         height: 100%;
         overflow-y: auto;
+        padding-bottom: 20px;
     }
 }
 
