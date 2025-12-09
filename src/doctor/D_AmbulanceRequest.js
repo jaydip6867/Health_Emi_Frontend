@@ -1444,7 +1444,7 @@ const D_AmbulanceRequest = () => {
 
                   <div className="card shadow-sm border-0 mt-4">
                     <div className="card-header bg-white border-0">
-                      <h5 className="mb-0">Ambulance Requests</h5>
+                      <h5 className="mb-0">Ambulance Book History </h5>
                     </div>
                     <div className="card-body p-0">
                       <div className="table-responsive">
