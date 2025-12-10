@@ -287,8 +287,8 @@ return (
 
                     <Row className='align-items-center py-3 border-bottom'>
                       <Col xs={12} md={3} className='mb-2 mb-md-0 fw-semibold'>Experience</Col>
-                      <Col xs={12} md={4}>{d1?.experience ? `${d1.experience} yrs` : '—'}</Col>
-                      <Col xs={12} md={5}>{d2?.experience ? `${d2.experience} yrs` : (d2 ? '—' : '')}</Col>
+                      <Col xs={12} md={4}>{d1?.experience ? `${d1.experience}` : '—'}</Col>
+                      <Col xs={12} md={5}>{d2?.experience ? `${d2.experience}` : (d2 ? '—' : '')}</Col>
                     </Row>
 
                     <Row className='align-items-center py-3 border-bottom'>
