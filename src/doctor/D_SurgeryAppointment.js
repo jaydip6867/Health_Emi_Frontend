@@ -108,7 +108,7 @@ const D_SurgeryAppointment = () => {
         var datasingle = appointment.filter((v, i) => { return v._id === id })
         setsingleview(datasingle);
         handleShow()
-        // console.log(datasingle)
+        console.log(datasingle)
     }
 
     // reschedule appoinetment date
@@ -170,6 +170,10 @@ const D_SurgeryAppointment = () => {
     const [showStartAppointment, setShowStartAppointment] = useState(false)
     const [currentAppointment, setCurrentAppointment] = useState(null)
     const [showPrescriptionModal, setShowPrescriptionModal] = useState(false)
+    const [showChoosePrescription, setShowChoosePrescription] = useState(false)
+    const [prescriptionOption, setPrescriptionOption] = useState('write')
+    const [prescriptionUploadFiles, setPrescriptionUploadFiles] = useState([])
+    const [uploadingPrescription, setUploadingPrescription] = useState(false)
     const [prescriptionData, setPrescriptionData] = useState({
         diagnosis: '',
         instructions: '',
@@ -260,9 +264,94 @@ const D_SurgeryAppointment = () => {
     }
     const confirmStartAppointment = () => {
         setShowStartAppointment(false)
-        setShowPrescriptionModal(true)
+        setShowChoosePrescription(true)
     }
     const handleClosePrescriptionModal = () => setShowPrescriptionModal(false)
+
+    const handleCloseChoosePrescription = () => {
+        setShowChoosePrescription(false)
+        setPrescriptionOption('write')
+        setPrescriptionUploadFiles([])
+    }
+
+    const handleContinueChoosePrescription = async () => {
+        if (!currentAppointment) return;
+        if (prescriptionOption === 'write') {
+            setShowChoosePrescription(false);
+            setShowPrescriptionModal(true);
+            return;
+        }
+        setloading(true);
+        if (prescriptionOption === 'none') {
+            try {
+                setloading(true);
+                await axios({
+                    method: 'post',
+                    url: `${API_BASE_URL}/doctor/surgeryappointments/complete`,
+                    headers: { Authorization: token },
+                    data: {
+                        appointmentid: currentAppointment?._id,
+                        payment_mode: 'Cash',
+                        totalamount: currentAppointment?.price || 0,
+                        doctor_remark: ''
+                    }
+                });
+                Swal.fire('Success', 'Surgery appointment completed without prescription.', 'success');
+                setShowChoosePrescription(false);
+                appointmentlist();
+            } catch (error) {
+                Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to complete appointment.', 'error');
+            } finally {
+                setloading(false);
+            }
+            return;
+        }
+        if (prescriptionOption === 'upload') {
+            if (!prescriptionUploadFiles || prescriptionUploadFiles.length === 0) {
+                Swal.fire('Select file', 'Please select at least one image to upload.', 'warning');
+                return;
+            }
+            try {
+                setUploadingPrescription(true);
+                const formData = new FormData();
+                prescriptionUploadFiles.forEach(f => formData.append('file', f));
+                const uploadResponse = await axios({
+                    method: 'post',
+                    url: `${API_BASE_URL}/user/upload/multiple`,
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    data: formData,
+                });
+                const uploadedUrl = Array.isArray(uploadResponse.data?.Data)
+                    ? uploadResponse.data?.Data?.[0]?.path || uploadResponse.data?.Data?.[0]?.url
+                    : uploadResponse.data?.Data?.url || uploadResponse.data?.Data;
+                if (!uploadedUrl) throw new Error('Failed to get uploaded file URL');
+
+                setUploadingPrescription(false);
+
+                setloading(true);
+                await axios({
+                    method: 'post',
+                    url: `${API_BASE_URL}/doctor/surgeryappointments/complete`,
+                    headers: { Authorization: token },
+                    data: {
+                        appointmentid: currentAppointment?._id,
+                        payment_mode: 'Cash',
+                        totalamount: currentAppointment?.price || 0,
+                        doctor_remark: uploadedUrl
+                    }
+                });
+                Swal.fire('Success', 'Prescription image uploaded and surgery appointment completed.', 'success');
+                setShowChoosePrescription(false);
+                setPrescriptionUploadFiles([]);
+                appointmentlist();
+            } catch (error) {
+                setUploadingPrescription(false);
+                Swal.fire('Failed', error.response?.data?.Message || error.message || 'Failed to upload/complete appointment.', 'error');
+            } finally {
+                setloading(false);
+            }
+        }
+    };
 
     const handlePrescriptionChange = (field, value) => {
         setPrescriptionData(prev => ({ ...prev, [field]: value }))
@@ -468,7 +557,7 @@ const D_SurgeryAppointment = () => {
         width: '180px',
         cell: row => (
             <div className="d-flex align-items-center gap-2 text-muted small">
-                <FiClock style={{fontSize: '14px', minWidth: '14px', minHeight: '14px' }} className="text-muted" />
+                <FiClock style={{ fontSize: '14px', minWidth: '14px', minHeight: '14px' }} className="text-muted" />
                 <span className="text-truncate">{`${row.date} , ${row.time}`}</span>
             </div>
         ),
@@ -652,20 +741,30 @@ const D_SurgeryAppointment = () => {
                                                     </div>
                                                 </Col>
 
-                                                <Col md={6} xs={12}>
-                                                    <div className='text-muted small mb-1'>Clinic Name</div>
-                                                    <div className='d-flex align-items-center gap-2'>
-                                                        <PiHospital size={18} />
-                                                        <span>{v?.hospital_name?.name || ''}</span>
-                                                    </div>
-                                                </Col>
-                                                <Col md={6} xs={12}>
-                                                    <div className='text-muted small mb-1'>Clinic Location</div>
-                                                    <div className='d-flex align-items-center gap-2'>
-                                                        <FiMapPin />
-                                                        <span className='text-truncate'>{v?.hospital_name?.address || ''} , {v?.hospital_name?.city || ''} , {v?.hospital_name?.state || ''}</span>
-                                                    </div>
-                                                </Col>
+                                                {typeof v?.hospital_name === "object" && v?.hospital_name !== null ? (
+                                                    <>
+                                                        <Col md={6} xs={12}>
+                                                            <div className='text-muted small mb-1'>Clinic Name</div>
+                                                            <div className='d-flex align-items-center gap-2'>
+                                                                <PiHospital size={18} />
+                                                                <span>{v?.hospital_name?.name || ''}</span>
+                                                            </div>
+                                                        </Col>
+
+                                                        <Col md={6} xs={12}>
+                                                            <div className='text-muted small mb-1'>Clinic Location</div>
+                                                            <div className='d-flex align-items-center gap-2'>
+                                                                <FiMapPin />
+                                                                <span className='text-truncate'>
+                                                                    {v?.hospital_name?.address || ''} ,
+                                                                    {v?.hospital_name?.city || ''} ,
+                                                                    {v?.hospital_name?.state || ''}
+                                                                </span>
+                                                            </div>
+                                                        </Col>
+                                                    </>
+                                                ) : null}
+
                                             </Row>
                                         </div>
                                         <hr />
@@ -1003,6 +1102,33 @@ const D_SurgeryAppointment = () => {
                     <Modal.Footer>
                         <Button variant='secondary' onClick={handleClosePrescriptionModal}>Cancel</Button>
                         <Button variant='primary' onClick={submitPrescription} disabled={!prescriptionData.diagnosis.trim() || (prescriptionData.prescriptionItems?.length || 0) === 0}>Save & Complete</Button>
+                    </Modal.Footer>
+                </Modal>
+
+                {/* Choose Prescription Option Modal */}
+                <Modal show={showChoosePrescription} onHide={handleCloseChoosePrescription} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Choose Prescription Option</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form.Group>
+                            <Form.Label>Select an option</Form.Label>
+                            <Form.Select value={prescriptionOption} onChange={(e) => setPrescriptionOption(e.target.value)}>
+                                <option value='write'>Write prescription</option>
+                                <option value='upload'>Upload prescription image</option>
+                                <option value='none'>not add prescription</option>
+                            </Form.Select>
+                        </Form.Group>
+                        {prescriptionOption === 'upload' && (
+                            <Form.Group className='mt-3'>
+                                <Form.Label>Upload prescription image</Form.Label>
+                                <Form.Control type='file' accept='image/*' multiple onChange={(e) => setPrescriptionUploadFiles(Array.from(e.target.files || []))} />
+                            </Form.Group>
+                        )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant='secondary' onClick={handleCloseChoosePrescription}>Cancel</Button>
+                        <Button variant='primary' onClick={handleContinueChoosePrescription} disabled={uploadingPrescription}>Continue</Button>
                     </Modal.Footer>
                 </Modal>
             </Container>

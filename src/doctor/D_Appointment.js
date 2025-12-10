@@ -828,7 +828,7 @@ const D_Appointment = () => {
                                                 </div>
                                             </Col>
                                             {
-                                                v?.visit_types === "clinic_visit" ? <>
+                                                v?.visit_types === "clinic_visit" && typeof v?.hospital_name === "object" && v?.hospital_name !== null ? <>
                                                     <Col md={6} xs={12}>
                                                         <div className='text-muted small mb-1'>Clinic Name</div>
                                                         <div className='d-flex align-items-center gap-2'>
