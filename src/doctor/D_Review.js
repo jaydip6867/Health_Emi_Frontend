@@ -114,7 +114,7 @@ const D_Review = () => {
                                                         </div>
                                                     </div>
                                                     <hr />
-                                                    <p className="m-0 truncaate_description_3">{item?.description}</p>
+                                                    <p className="m-0 truncaate_description_3 text-wrap">{item?.description}</p>
                                                     <div>
                                                         {[...Array(5)].map((_, i) => (
                                                             <span key={i}>{i < item?.rating ? <FaStar fill="#F6B900" /> : <FaRegStar fill="#F6B900" />}</span>
@@ -171,7 +171,7 @@ const D_Review = () => {
                             </div>
                             <div className="text-start">
                                 <h6 className="fw-bold mb-3">Review Description:</h6>
-                                <p className="text-muted mb-0" style={{ lineHeight: '1.6' }}>
+                                <p className="text-muted mb-0 text-wrap" style={{ lineHeight: '1.6' }}>
                                     {selectedReview?.description}
                                 </p>
                             </div>

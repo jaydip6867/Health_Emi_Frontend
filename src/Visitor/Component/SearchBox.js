@@ -20,7 +20,7 @@ const SearchBox = () => {
     // Auto-detect user location
     const detectUserLocation = async () => {
         if (!navigator.geolocation) {
-            console.log('Geolocation is not supported by this browser');
+            // console.log('Geolocation is not supported by this browser');
             return;
         }
 
@@ -71,7 +71,7 @@ const SearchBox = () => {
                 }
             }
         } catch (error) {
-            console.log('Error getting location:', error);
+            // console.log('Error getting location:', error);
         } finally {
             setLocationLoading(false);
         }

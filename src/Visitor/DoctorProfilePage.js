@@ -755,7 +755,7 @@ const DoctorProfilePage = () => {
                                 </div>
                               </div>
                             </div>
-                            <p className="mt-3 mb-0 truncaate_description_3">
+                            <p className="mt-3 mb-0 truncaate_description_3 text-wrap">
                               {v?.description}
                             </p>
                           </div>
@@ -1507,7 +1507,7 @@ const DoctorProfilePage = () => {
               </div>
               <div className="text-start">
                 <h6 className="fw-bold mb-3">Review Description:</h6>
-                <p className="text-muted mb-0" style={{ lineHeight: '1.6' }}>
+                <p className="text-muted mb-0 text-wrap" style={{ lineHeight: '1.6' }}>
                   {selectedReview?.description}
                 </p>
               </div>
