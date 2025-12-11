@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { SECRET_KEY, STORAGE_KEYS } from '../config'
 import HeadTitle from './Component/HeadTitle';
 import FadeIn from '../components/FadeIn';
+import AppDownload from './Component/AppDownload';
 
 const About = () => {
 
@@ -52,21 +53,24 @@ const About = () => {
                 <Container>
                     <Row className='align-items-center'>
                         <Col xs={12} md={6}>
+                            <img src={require('./assets/about_sec_img.png')} alt='about section image' className='img-fluid' />
+                        </Col>
+                        <Col xs={12} md={6}>
                             <p>
                                 <b>Health Easy EMI</b> is a next-generation healthcare platform dedicated to making <b>quality medical care affordable and accessible for everyone.</b> We bridge the gap between patients, hospitals, and financial institutions through a transparent, tech-enabled system that simplifies treatment, financing & emergency response — all in one place
                             </p>
                             <p>
                                 We understand that medical emergencies & surgeries often come with financial stress & confusion.
                             </p>
-                        </Col>
-                        <Col xs={12} md={6}>
-                            <img src={require('./assets/about_sec_img.png')} alt='about section image' className='img-fluid w-100' />
+                            <p>
+                                Our platform serves both <b>individual patients and corporate partners</b>, helping families access timely care while enabling hospitals, clinics, and insurers to expand their reach. With growing partnerships across India’s healthcare network, we aim to serve over <b>500 million potential beneficiaries</b>, especially in Tier-2 and Tier-3 cities.
+                            </p>
                         </Col>
                     </Row>
                 </Container>
             </section>
 
-            <section className='spacer-y' style={{backgroundColor: 'var(--primary-color-50)'}}>
+            <section className='spacer-y'>
                 <Container>
                     <h2 className='head_sec mb-4 '><HeadTitle title="Why Health Easy EMI offers:" /></h2>
                     <Row className="g-3 g-md-4 justify-content-center service_amb">
@@ -94,7 +98,7 @@ const About = () => {
                                 </Card.Body>
                             </Card>
                         </Col>
-                        <Col xs={12} md={6} lg={4} className="">
+                        <Col xs={12} md={6} lg={4}>
                             <Card className="border rounded-4 shadow-sm h-100 overflow-hidden">
                                 <Card.Body className="text-center py-4" style={{ backgroundColor: '#F9FAFB' }}>
                                     <div className="fw-bold">Transparent pricing & 24/7 accessibility.</div>
@@ -114,55 +118,42 @@ const About = () => {
                 </Container>
             </section>
 
-            <section className='py-5'>
+            <section className='py-5' style={{backgroundColor: "#EBF6FF"}}>
                 <Container>
                     <Row className='align-items-center'>
                         <Col xs={12} md={6}>
-                        {/* Bridging India’s Healthcare Gap */}
-                        <h2 className='head_sec mb-4 d-flex'><HeadTitle title="Bridging India’s Healthcare Gap" /></h2>
                             <p>
-                                Our platform serves both <b>individual patients and corporate partners,</b> helping families access timely care while enabling hospitals, clinics, and insurers to expand their reach. With growing partnerships across India’s healthcare network, we aim to serve over <b>500 million potential beneficiaries,</b> especially in Tier-2 and Tier-3 cities.
-                                </p>
+                               Our mission is simple yet powerful: to make affordable healthcare a reality for all.
+                            </p>
+                            <img src={require('./assets/target.png')} alt='target image' className='img-fluid mx-auto' style={{maxHeight: '140px'}}/>
                         </Col>
                         <Col xs={12} md={6}>
-                            <img src={require('./assets/about_us.png')} alt='about section image' className='img-fluid w-100' />
+                            <img src={require('./assets/about_sec_eye.png')} alt='about section image' className='img-fluid w-100 mx-auto pb-3' style={{maxWidth: '200px'}} />
+                            <p>
+                                Our vision is to build an integrated, cloud-based healthcare ecosystem that connects patients, doctors, hospitals, and service providers, ensuring a seamless experience from hospital admission to discharge.
+                            </p>
                         </Col>
                     </Row>
                 </Container>
             </section>
 
-            <section className='py-5'>
-                <Container>
-                    <Row className='align-items-center'>
-                        <Col xs={12} md={6}>
-                            <p>
-                                Our mission is simple yet powerful: to make affordable healthcare a reality for all.
-                            </p>
-                            <img src={require('./assets/target.png')} alt='target image' className='img-fluid mx-auto' />
-                        </Col>
-                        <Col xs={12} md={6}>
-                            <img src={require('./assets/about_sec_img.png')} alt='about section image' className='img-fluid w-100' />
-                            <p>
-                                Our platform serves both <b>individual patients and corporate partners,</b> helping families access timely care while enabling hospitals, clinics, and insurers to expand their reach. With growing partnerships across India’s healthcare network, we aim to serve over <b>500 million potential beneficiaries,</b> especially in Tier-2 and Tier-3 cities.
-                            </p>
-                        </Col>
-                    </Row>
-                </Container>
+            <section className='pt-4'>
+                <AppDownload />
             </section>
 
             <section className='mb-5'>
                 <FadeIn delay={0}>
-                <Container className='border-top pt-5'>
-                    {/* CTA */}
-                    <Card className="border-0 rounded-4 matter_bg">
-                        <Card.Body className="p-4 text-center">
-                            <h2 className='display-5 fw-bold' style={{ color: 'var(--primary-color-500)' }}>Fast, Reliable, Transparent & Affordable.</h2>
-                            <div className="text-muted fs-5">
-                                Together, we’re redefining how India experiences healthcare
-                            </div>
-                        </Card.Body>
-                    </Card>
-                </Container>
+                    <Container className='pt-5 border-top'>
+                        {/* CTA */}
+                        <Card className="border-0 rounded-4 matter_bg">
+                            <Card.Body className="p-4 text-center">
+                                <h2 className='display-6 fw-bold' style={{ color: 'var(--primary-color-500)' }}>Fast, Reliable, Transparent & Affordable.</h2>
+                                <div className="text-muted fs-6">
+                                    Together, we’re redefining how India experiences healthcare
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Container>
                 </FadeIn>
             </section>
 

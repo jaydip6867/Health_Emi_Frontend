@@ -18,11 +18,10 @@ import {
   FaLocationArrow,
   FaMapMarkerAlt,
   FaRoute,
-  FaRegEye,
+  FaArrowRight,
+  FaMapPin,
 } from "react-icons/fa";
-import { FiClock, FiMail, FiPhone, FiMapPin } from "react-icons/fi";
-import { MdOutlineRemoveRedEye, MdVerified } from "react-icons/md";
-import { PiHospital } from "react-icons/pi";
+import { MdOutlineRemoveRedEye } from "react-icons/md";
 import NavBar from "../Visitor/Component/NavBar";
 
 let gmapsPromise = null;
@@ -65,8 +64,9 @@ const D_AmbulanceRequest = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [historyLoading, setHistoryLoading] = useState(false);
-  // const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const itemsPerPage = 5;
 
   // Add this function to fetch ambulance history for the doctor
@@ -968,25 +968,25 @@ const D_AmbulanceRequest = () => {
     name: 'Status',
     selector: row => row.status,
     cell: row => renderStatusBadge(row.status),
-  }, 
-  // {
-  //   name: 'Actions',
-  //   cell: row => (
-  //     <button
-  //       className="btn btn-sm btn-outline-primary"
-  //       onClick={() => {
-  //         setSelectedRequest(row);
-  //         setIsViewModalOpen(true);
-  //       }}
-  //       title="View Details"
-  //     >
-  //       <FaRegEye />
-  //     </button>
-  //   ),
-  //   width: '100px',
-  //   center: true
-  // }
-];
+  },
+  {
+    name: 'View',
+    cell: row => (
+      <button
+        className="btn btn-sm p-1 appt-view-btn"
+        onClick={() => {
+          setSelectedRequest(row);
+          setIsViewModalOpen(true);
+        }}
+        title="View Details"
+      >
+        <MdOutlineRemoveRedEye size={18} />
+      </button>
+    ),
+    width: '100px',
+    center: true
+  }
+  ];
 
   return (
     <>
@@ -996,35 +996,11 @@ const D_AmbulanceRequest = () => {
           <DoctorSidebar />
           <Col xs={12} lg={9} className="p-3">
             <div className="bg-white rounded p-2">
-              <div
-                className="p-4 rounded"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 50%, #DBEAFE 100%)",
-                }}
-              >
-                <div className="d-flex align-items-center gap-3">
-                  <div
-                    className="rounded-circle d-flex align-items-center justify-content-center"
-                    style={{
-                      width: 48,
-                      height: 48,
-                      background: "#4F46E5",
-                      color: "white",
-                    }}
-                  >
-                    <FaAmbulance size={22} />
-                  </div>
-                  <div>
-                    <h4 className="m-0" style={{ color: "#111827" }}>
-                      Book Ambulance
-                    </h4>
-                    <div className="text-muted">
-                      Request an ambulance for your patient with precise pickup
-                      and drop details.
-                    </div>
-                  </div>
-                </div>
+              <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3">
+                <h4 className="mb-0">Book Ambulance</h4>
+                <Button variant="primary" className="apt_accept_btn" onClick={() => setShowHistory(!showHistory)}>
+                  {showHistory ? 'Hide' : 'Show'} Ambulance History
+                </Button>
               </div>
               {localStorage.getItem("amb_req_id") != null ? (
                 <div className="d-flex justify-content-end mt-2">
@@ -1511,7 +1487,8 @@ const D_AmbulanceRequest = () => {
               )}
             </div>
 
-            <div className='appointments-card mb-3 mt-4'>
+            {showHistory && (
+              <div className='appointments-card mb-3 mt-4'>
               <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
                 <h4 className='mb-0'>Book Ambulance History</h4>
                 <Badge text='white' className='apt_accept_btn'>
@@ -1526,148 +1503,118 @@ const D_AmbulanceRequest = () => {
                 customStyles={customTableStyles}
               />
             </div>
+            )}
           </Col>
         </Row>
-        {/* <Modal show={isViewModalOpen} onHide={() => setIsViewModalOpen(false)} size="lg">
+        <Modal show={isViewModalOpen} onHide={() => setIsViewModalOpen(false)} size="lg">
           <Modal.Header closeButton>
             <Modal.Title>Ambulance Details</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
+          <Modal.Body className="p-0">
             {selectedRequest && (
-              <div className="row mb-3">
-                <div className="col-md-6 mb-2">
-                  <h6 className="text-muted mb-1">Patient Name</h6>
-                  <p className="mb-0">
-                    {selectedRequest.name || "N/A"}
-                  </p>
+              <div className="ambulance-details-card">
+                {/* Header */}
+                <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
+                  <div className="text-muted">
+                    {selectedRequest.createdAt ? new Date(selectedRequest.createdAt).toLocaleString('en-US', { 
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true
+                    }) : "Today, 4:42PM"}
+                  </div>
+                  <Badge bg={selectedRequest?.status === "completed" ? "success" : selectedRequest?.status === "cancelled" ? "danger" : "warning"}>{selectedRequest?.status}</Badge>
+                  <div className="fw-bold text-success">
+                    ₹ {selectedRequest.price || "80"}
+                  </div>
                 </div>
-                <div className="col-md-6 mb-2">
-                  <h6 className="text-muted mb-1">Mobile</h6>
-                  <p className="mb-0">
-                    {selectedRequest.mobile || "N/A"}
-                  </p>
-                </div>
-                <div className="col-md-6 mb-2">
-                  <h6 className="text-muted mb-1">Status</h6>
-                  <p className="mb-0">
-                    {renderStatusBadge(selectedRequest.status)}
-                  </p>
-                </div>
-                <div className="col-md-6 mb-2">
-                  <h6 className="text-muted mb-1">
-                    Ambulance Type
-                  </h6>
-                  <p className="mb-0">
-                    {selectedRequest.ambulance_type || "N/A"}
-                  </p>
-                </div>
-                <div className="col-md-6 mb-2">
-                  <h6 className="text-muted mb-1">Price</h6>
-                  <p className="mb-0">
-                    ₹{selectedRequest.price || "0"}
-                  </p>
-                </div>
-                <div className="col-md-6 mb-2">
-                  <h6 className="text-muted mb-1">Distance</h6>
-                  <p className="mb-0">
-                    {selectedRequest.distance || "0"} km
-                  </p>
-                </div>
-                <div className="col-md-6 mb-2">
-                  <h6 className="text-muted mb-1">Booked For</h6>
-                  <p className="mb-0 text-capitalize">
-                    {selectedRequest.book_for || "N/A"}
-                  </p>
-                </div>
-                <div className="col-md-6 mb-2">
-                  <h6 className="text-muted mb-1">GST</h6>
-                  <p className="mb-0">
-                    {selectedRequest.gst_per || "0"}%
-                  </p>
-                </div>
-                <div className="col-md-6 mb-2">
-                  <h6 className="text-muted mb-1">Platform Fee</h6>
-                  <p className="mb-0">
-                    ₹{selectedRequest.platform_fee || "0"}
-                  </p>
-                </div>
-                <div className="col-12 mb-2">
-                  <h6 className="text-muted mb-1">
-                    Pickup Address
-                  </h6>
-                  <p className="mb-0">
-                    {selectedRequest.pickupaddress || "N/A"}
-                  </p>
-                  {selectedRequest.pickup_house_number && (
-                    <small className="text-muted">
-                      House No:{" "}
-                      {selectedRequest.pickup_house_number}
-                    </small>
-                  )}
-                </div>
-                <div className="col-12 mb-2">
-                  <h6 className="text-muted mb-1">Drop Address</h6>
-                  <p className="mb-0">
-                    {selectedRequest.dropaddress || "N/A"}
-                  </p>
-                  {selectedRequest.drop_house_number && (
-                    <small className="text-muted">
-                      House No: {selectedRequest.drop_house_number}
-                    </small>
-                  )}
-                </div>
+
+                {/* Ambulance Driver/Vehicle Info */}
                 {selectedRequest.acceptedAmbulance && (
-                  <>
-                    <div className="col-md-6 mb-2">
-                      <h6 className="text-muted mb-1">Ambulance Driver</h6>
-                      <p className="mb-0">
-                        {selectedRequest.acceptedAmbulance.fullname || "N/A"}
-                      </p>
+                  <div className="d-flex align-items-center p-3 border-bottom">
+                    <FaAmbulance className="text-primary me-3" size={24} />
+                    <div className="flex-grow-1">
+                      <div className="fw-semibold">
+                        {selectedRequest.acceptedAmbulance.fullname || "NandKumar Yadav"}
+                      </div>
+                      <div className="text-muted small">
+                        Ambulance | {selectedRequest.acceptedAmbulance.vehicle_no || "GJ-05-TR-2859"}
+                      </div>
                     </div>
-                    <div className="col-md-6 mb-2">
-                      <h6 className="text-muted mb-1">Driver Mobile</h6>
-                      <p className="mb-0">
-                        {selectedRequest.acceptedAmbulance.mobile || "N/A"}
-                      </p>
-                    </div>
-                    <div className="col-md-6 mb-2">
-                      <h6 className="text-muted mb-1">Ambulance Category</h6>
-                      <p className="mb-0">
-                        {selectedRequest.acceptedAmbulance.ambulance_category || "N/A"}
-                      </p>
-                    </div>
-                    <div className="col-md-6 mb-2">
-                      <h6 className="text-muted mb-1">Vehicle No</h6>
-                      <p className="mb-0">
-                        {selectedRequest.acceptedAmbulance.vehicle_no || "N/A"}
-                      </p>
-                    </div>
-                    <div className="col-12 mb-2">
-                      <h6 className="text-muted mb-1">Ambulance Facilities</h6>
-                      <p className="mb-0">
-                        {selectedRequest.acceptedAmbulance.ambulance_facilities || "N/A"}
-                      </p>
-                    </div>
-                  </>
+                    {/* <FaArrowRight className="text-muted" /> */}
+                  </div>
                 )}
-                <div className="col-md-6 mb-2">
-                  <h6 className="text-muted mb-1">Request ID</h6>
-                  <p className="mb-0">
-                    {selectedRequest._id || "N/A"}
-                  </p>
+
+                {/* Pickup Location */}
+                <div className="p-3 border-bottom">
+                  <div className="d-flex">
+                    <div className="me-3">
+                      <div className="position-relative">
+                        <FaMapPin className="text-success" size={20} />
+                        <div className="vertical-dashed-line"></div>
+                      </div>
+                    </div>
+                    <div className="flex-grow-1">
+                      <div className="text-muted small mb-1">Pickup Location</div>
+                      <div className="fw-medium">
+                        {selectedRequest.pickupaddress || "Sahajanand Business Hub, Yogi Cho..."}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="col-md-6 mb-2">
-                  <h6 className="text-muted mb-1">Created Date</h6>
-                  <p className="mb-0">
-                    {selectedRequest.createdAt ? new Date(selectedRequest.createdAt).toLocaleDateString() : "N/A"}
-                  </p>
+
+                {/* Drop Location */}
+                <div className="p-3 border-bottom">
+                  <div className="d-flex">
+                    <div className="me-3">
+                      <FaMapPin className="text-danger" size={20} />
+                    </div>
+                    <div className="flex-grow-1">
+                      <div className="text-muted small mb-1">Drop Location</div>
+                      <div className="fw-medium">
+                        {selectedRequest.dropaddress || "Savan Plaza, Savaliya Circle"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="d-flex justify-content-between align-items-center p-3 bg-light">
+                  <div className="text-muted small">
+                    Total Distance {selectedRequest.distance || "5.2"} Km
+                  </div>
+                  <div className="text-muted small">
+                    Total Duration {Math.round((selectedRequest.distance || 5.2) * 5)} Min
+                  </div>
                 </div>
               </div>
             )}
           </Modal.Body>
-        </Modal> */}
+        </Modal>
       </Container>
       {loading ? <Loader /> : ""}
+      
+      <style jsx>{`
+        .ambulance-details-card {
+          background: white;
+          border-radius: 8px;
+          overflow: hidden;
+        }
+        
+        .vertical-dashed-line {
+          position: absolute;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 2px;
+          height: 40px;
+          background-image: linear-gradient(to bottom, #ccc 50%, transparent 50%);
+          background-size: 2px 8px;
+          background-repeat: repeat-y;
+        }
+      `}</style>
     </>
   );
 };
