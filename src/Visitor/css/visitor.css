@@ -369,15 +369,15 @@ h6 {
 
 /* -------------------------- Functionality section ---------------------------- */
 .functionality_box {
-    border-radius: 32px;
+    border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 0 30px #26307726;
 }
 
 .functionality_box img {
     object-fit: cover;
-    min-height: 400px;
-    max-height: 400px;
+    min-height: 200px;
+    max-height: 300px;
 }
 
 .functionality_box .card-body {

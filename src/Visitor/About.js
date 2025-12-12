@@ -120,7 +120,7 @@ const About = () => {
 
             <section className='py-5' style={{backgroundColor: "#EBF6FF"}}>
                 <Container>
-                    <Row className='align-items-center'>
+                    <Row className='align-items-center g-4'>
                         <Col xs={12} md={6}>
                             <p>
                                Our mission is simple yet powerful: to make affordable healthcare a reality for all.
