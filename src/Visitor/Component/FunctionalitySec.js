@@ -9,7 +9,7 @@ const FunctionalitySec = () => {
         <>
             <Container>
                 <Row className='justify-content-center g-4'>
-                    <Col xs={12} sm={6} lg={3}>
+                    <Col xs={6} md={6} lg={3}>
                         <FadeIn delay={0}>
                             <Card className='functionality_box border-0'>
                                 <Card.Img src={require('../assets/find-doctor-image.png')} alt='video consultant' />
@@ -20,7 +20,7 @@ const FunctionalitySec = () => {
                             </Card>
                         </FadeIn>
                     </Col>
-                    <Col xs={12} sm={6} lg={3}>
+                    <Col xs={6} md={6} lg={3}>
                         <FadeIn delay={200}>
                             <Card className='functionality_box border-0'>
                                 <Card.Img src={require('../assets/video-consultant-image.png')} alt='video consultant' />
@@ -31,7 +31,7 @@ const FunctionalitySec = () => {
                             </Card>
                         </FadeIn>
                     </Col>
-                    <Col xs={12} sm={6} lg={3}>
+                    <Col xs={6} md={6} lg={3}>
                         <FadeIn delay={400}>
                             <Card className='functionality_box border-0'>
                                 <Card.Img variant="top" src={require('../assets/surgeries-image.png')} alt='video consultant' />
@@ -42,7 +42,7 @@ const FunctionalitySec = () => {
                             </Card>
                         </FadeIn>
                     </Col>
-                    <Col xs={12} sm={6} lg={3}>
+                    <Col xs={6} md={6} lg={3}>
                         <fadeIn delay={400}>
                         <Card className='functionality_box border-0'>
                             <Card.Img src={require('../assets/book-ambulance-image.png')} alt='video consultant' />

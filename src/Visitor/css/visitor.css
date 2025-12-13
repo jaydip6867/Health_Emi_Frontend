@@ -370,7 +370,7 @@ h6 {
 /* -------------------------- Functionality section ---------------------------- */
 .functionality_box {
     border-radius: 16px;
-    overflow: hidden;
+    /* overflow: hidden; */
     /* box-shadow: 0 0 30px #26307726; */
     background: transparent;
 }
@@ -380,9 +380,9 @@ h6 {
 }
 
 .functionality_box img {
-    object-fit: cover;
-    min-height: 200px;
-    max-height: 300px;
+    /* object-fit: cover; */
+    /* min-height: 200px; */
+    /* max-height: 300px; */
 }
 
 .functionality_box .card-body {
