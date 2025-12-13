@@ -72,7 +72,7 @@ const About = () => {
 
             <section className='spacer-y'>
                 <Container>
-                    <h2 className='head_sec mb-4 '><HeadTitle title="Why Health Easy EMI offers:" /></h2>
+                    <h2 className='head_sec mb-5'><HeadTitle title="Why Health Easy EMI offers" /></h2>
                     <Row className="g-3 g-md-4 justify-content-center service_amb">
                         <Col xs={12} md={6} lg={4}>
                             <Card className="border rounded-4 shadow-sm h-100 overflow-hidden">

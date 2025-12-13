@@ -22,7 +22,7 @@ const DoctorListComponents = ({ details }) => {
                         />
                         <div className="rating-badge-orange d-inline-flex align-items-center gap-2 position-absolute top-0 start-0 m-3 px-2 py-1 rounded-3">
                             <FaStar size={14} className="text-white" />
-                            <small className="fw-bold text-white fs-7">{details?.averageRating === 0 ? '0' : details?.averageRating + '.0'}</small>
+                            <small className="fw-bold text-white fs-7">{details?.averageRating === 0 ? '0' : details?.averageRating}</small>
                         </div>
                     </div>
 

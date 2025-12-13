@@ -57,11 +57,8 @@ function App() {
         <Route path="/contact" element={<Contact />}></Route>
         <Route path="/consult" element={<VideoConsult />}></Route>
         <Route path="/doctorfind" element={<Doctors />}></Route>
-        <Route
-          path="/doctorprofile/:id"
-          element={<DoctorProfilePage />}
-        ></Route>
-        <Route path="/surgery" element={<Surgeries />}></Route>
+        <Route path="/doctorprofile/:id" element={<DoctorProfilePage />}></Route>
+        {/* <Route path="/surgery" element={<Surgeries />}></Route> */}
         <Route path="/surgery/:id" element={<Surgerydoctorlist />}></Route>
         <Route path="/comparedoctor" element={<CompareDoctor />}></Route>
         <Route path="/ambulancepage" element={<AmbulancePage />}></Route>
@@ -70,10 +67,7 @@ function App() {
         <Route path="/blog/:id" element={<BlogDetail />}></Route>
         <Route path="termsandcondition" element={<Terms />}></Route>
         <Route path="doctor-tc" element={<DoctorTC />}></Route>
-        <Route
-          path="doctor-telemedicine-tc"
-          element={<DoctorTelemedicineTC />}
-        ></Route>
+        <Route path="doctor-telemedicine-tc" element={<DoctorTelemedicineTC />}></Route>
         <Route path="/doctor">
           <Route path="" index element={<DoctorLogin />}></Route>
           <Route path="doctorregister" element={<DoctorRegister />}></Route>
