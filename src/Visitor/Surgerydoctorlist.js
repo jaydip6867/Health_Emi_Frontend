@@ -33,7 +33,7 @@ const Surgerydoctorlist = () => {
     }, [navigate])
     const [loading, setloading] = useState(false)
     var { id } = useParams()
-    const d_id = atob(decodeURIComponent(id))
+    const d_id = id ? atob(decodeURIComponent(id)) : null;
     const [doctor_list, setdoclist] = useState([])
     // Filters state
     const [genderFilter, setGenderFilter] = useState('')
@@ -143,28 +143,59 @@ const Surgerydoctorlist = () => {
     const expOptions = ['0+', '1+', '2+', '3+', '4+', '5+', '10+', '20+'].map(level => ({ value: level, label: `${level} years` }))
 
     useEffect(() => {
-        setloading(true)
-        if (d_id) {
-            getdoctorlist(d_id)
-        } else {
-            setloading(false)
-        }
-    }, [d_id])
+        setloading(true);
+        // Always call getdoctorlist, it will handle both cases
+        getdoctorlist(d_id);
+    }, [d_id]);  // Add d_id to dependency array to refetch when it changes
 
     const getdoctorlist = async (d) => {
-        // console.log(d)
-        await axios({
-            method: 'post',
-            url: `${API_BASE_URL}/user/doctors/list`,
-            data: {
-                surgeryname: d
-            }
-        }).then((res) => {
-            setdoclist(res.data.Data)
-        }).catch(function (error) {
-        }).finally(() => {
-            setloading(false)
-        });
+        console.log('Fetching doctors with ID:', d);
+        try {
+            const endpoint = d
+                ? `${API_BASE_URL}/user/doctors/list`  // When specific surgery ID is provided
+                : `${API_BASE_URL}/user/doctors`;     // When no ID, get all doctors
+
+            const requestData = d
+                ? { surgeryname: d }  // For specific surgery
+                : {                  // For all doctors with pagination
+                    page: 1,
+                    limit: 100,       // Increased limit to get more results
+                    search: "",
+                    surgerytypeid: "",
+                    //   surgeryname: ""
+                };
+
+            const response = await axios({
+                method: 'post',
+                url: endpoint,
+                headers: token ? { Authorization: token } : {},
+                data: requestData
+            });
+            // console.log('API Response:', response.data);
+            // If ID is provided, use response.data.Data
+            // If no ID, use response.data.Data.docs
+            const doctorsData = d ? response.data.Data : (response.data.Data?.docs || []);
+            setdoclist(Array.isArray(doctorsData) ? doctorsData : []);
+        } catch (error) {
+            // console.error('Error fetching doctors list:', error);
+            setdoclist([]);
+        } finally {
+            setloading(false);
+        }
+        // await axios({
+        //     method: 'post',
+        //     url: `${API_BASE_URL}/user/doctors/list`,
+        //     data: {
+        //         surgeryname: d || ''
+        //     }
+        // }).then((res) => {
+        //     setdoclist(res.data.Data)
+        // }).catch(function (error) {
+        //     console.error('Error fetching doctors list:', error);
+        //     setdoclist([]); // Set empty array on error
+        // }).finally(() => {
+        //     setloading(false)
+        // });
     }
 
     // Helpers for filters
@@ -280,7 +311,7 @@ const Surgerydoctorlist = () => {
         return years >= min
     }
 
-    const filteredDoctors = doctor_list.filter(doc =>
+    const filteredDoctors = (Array.isArray(doctor_list) ? doctor_list : []).filter(doc =>
         matchesGender(doc, genderFilter)
         && withinFeeRange(doc, feeFilter)
         && matchesType(doc, typeFilter)
@@ -301,7 +332,7 @@ const Surgerydoctorlist = () => {
                 </Container>
             </section>
             {/* search box */}
-            <div style={{marginTop: '-22px'}}>
+            <div style={{ marginTop: '-22px' }}>
                 <SearchBox />
             </div>
 
