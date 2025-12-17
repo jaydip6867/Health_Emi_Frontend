@@ -387,9 +387,14 @@ h6 {
 
 .functionality_box .card-body {
     position: absolute;
-    bottom: 40px;
+    /* bottom: 40px; */
     width: 100%;
+    height: 100%;
+    top: 0;
     border: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
 }
 
 .functionality_box .card-body .card-title {
@@ -399,6 +404,7 @@ h6 {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-bottom: 40px;
 }
 
 .functionality_box .card-body .card-title .icon_box {

@@ -14,7 +14,7 @@ const FunctionalitySec = () => {
                             <Card className='functionality_box border-0'>
                                 <Card.Img src={require('../assets/find-doctor-image.png')} alt='video consultant' />
                                 <Card.Body>
-                                    <Card.Title><Link to='/surgery' className='d-flex align-items-center justify-content-center'> <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
+                                    <Card.Title><Link to='/surgery' className='d-flex align-items-center justify-content-center stretched-link'> <div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
                                 </Card.Body>
                                 <Card.Footer className='text-center fw-bold'>Find Doctor</Card.Footer>
                             </Card>
@@ -25,7 +25,7 @@ const FunctionalitySec = () => {
                             <Card className='functionality_box border-0'>
                                 <Card.Img src={require('../assets/video-consultant-image.png')} alt='video consultant' />
                                 <Card.Body>
-                                    <Card.Title><Link to='/consult' className='d-flex align-items-center justify-content-center'><div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
+                                    <Card.Title><Link to='/consult' className='d-flex align-items-center justify-content-center stretched-link'><div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
                                 </Card.Body>
                                 <Card.Footer className='text-center fw-bold'>Video Consultant</Card.Footer>
                             </Card>
@@ -36,7 +36,7 @@ const FunctionalitySec = () => {
                             <Card className='functionality_box border-0'>
                                 <Card.Img variant="top" src={require('../assets/surgeries-image.png')} alt='video consultant' />
                                 <Card.Body>
-                                    <Card.Title><Link to='/comparedoctor' className='d-flex align-items-center justify-content-center'><div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
+                                    <Card.Title><Link to='/comparedoctor' className='d-flex align-items-center justify-content-center stretched-link'><div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
                                 </Card.Body>
                                 <Card.Footer className='text-center fw-bold'>Compare Surgeries </Card.Footer>
                             </Card>
@@ -47,7 +47,7 @@ const FunctionalitySec = () => {
                         <Card className='functionality_box border-0'>
                             <Card.Img src={require('../assets/book-ambulance-image.png')} alt='video consultant' />
                             <Card.Body>
-                                <Card.Title><Link to='/ambulancepage' className='d-flex align-items-center justify-content-center'><div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
+                                <Card.Title><Link to='/ambulancepage' className='d-flex align-items-center justify-content-center stretched-link'><div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
                             </Card.Body>
                             <Card.Footer className='text-center fw-bold '>Book Ambulance </Card.Footer>
                         </Card>
