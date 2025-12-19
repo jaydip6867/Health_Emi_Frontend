@@ -139,16 +139,16 @@ const D_Consultation = () => {
               </div>
               <div className="d-flex gap-3 register_doctor">
                 <p>
-                  <Form.Label>Home Visit</Form.Label>
-                  <Form.Control type="text" value={consultdata?.home_visit_price} readOnly/>
-                </p>
-                <p>
                   <Form.Label>Clinic Visit</Form.Label>
                   <Form.Control type="text" value={consultdata?.clinic_visit_price} readOnly/>
                 </p>
                 <p>
                   <Form.Label>EOPD</Form.Label>
                   <Form.Control type="text" value={consultdata?.eopd_price} readOnly/>
+                </p>
+                <p>
+                  <Form.Label>Home Visit</Form.Label>
+                  <Form.Control type="text" value={consultdata?.home_visit_price} readOnly/>
                 </p>
               </div>
             </div>

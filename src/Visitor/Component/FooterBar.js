@@ -25,8 +25,10 @@ const FooterBar = () => {
                 className="img-fluid mx-auto"
               />
             </div>
-            <p className="footer-text text-center">
-              Discover stylish, tech-savvy wearables at Kalindi — where innovation meets elegance in every product.
+            <p className="footer-text">
+              <b>Health Easy EMI - </b>Your trusted partner for affordable healthcare.
+              <br/> Compare dctors, surgeries, book ambulances and consult online - all in one secure platform.
+              <br/> Making healthcare <b>simple, transparent and financially accessible</b>
             </p>
           </Col>
           <Col sm={3} xs={12} md={4} lg={2} className="footer-links">

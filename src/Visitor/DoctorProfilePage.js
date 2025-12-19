@@ -167,7 +167,8 @@ const DoctorProfilePage = () => {
       if (!selectedConsultationType) {
         setConsultError(true);
       }
-      if (selectedConsultationType === 'clinic_visit' && !selectedHospital) {
+      // if (selectedConsultationType === 'clinic_visit' && !selectedHospital) {
+      if (!selectedHospital) {
         setHospitalError(true);
       }
       if (!selectedConsultationType) {
@@ -877,11 +878,11 @@ const DoctorProfilePage = () => {
                 </Card>
 
                 {/* Select Hospital - only for Clinic Visit */}
-                {selectedConsultationType === 'clinic_visit' && (
+                {/* {selectedConsultationType === 'clinic_visit' && ( */}
                   <Card className={`border-0 shadow-sm ${hospitalError ? 'error-outline' : ''}`} style={{ borderRadius: '15px' }}>
                     <Card.Body className="p-4">
                       <h5 className="fw-bold mb-4 text-center">Select Hospital</h5>
-                      {hospitalError && <div className="text-danger small text-center mb-2">Please select hospital</div>}
+                      {hospitalError && <div className="text-danger small text-center mb-4">Please select hospital</div>}
                       <Row className="g-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                         {doctor_profile?.hospitals?.map((hospital, index) => (
                           <Col xs={12} key={index}>
@@ -925,7 +926,7 @@ const DoctorProfilePage = () => {
                       </Row>
                     </Card.Body>
                   </Card>
-                )}
+                 {/* )} */}
 
                 {/* Book Consultation Card */}
                 <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>

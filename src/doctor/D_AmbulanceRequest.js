@@ -1275,7 +1275,7 @@ const D_AmbulanceRequest = () => {
                                 value={form.drop_longitude}
                                 readOnly
                               />
-                              <Button
+                              {/* <Button
                                 variant="outline-primary"
                                 size="sm"
                                 type="button"
@@ -1283,7 +1283,7 @@ const D_AmbulanceRequest = () => {
                               >
                                 <FaLocationArrow className="me-2" /> Use Current
                                 Location
-                              </Button>
+                              </Button> */}
                             </Col>
                           </Row>
 

@@ -89,6 +89,9 @@ const D_Appointment = () => {
         }).then((res) => {
             // console.log(res)
             Swal.fire({
+                customClass: {
+                    title: 'text-capitalize',
+                },
                 title: `${v_type} Appointment ${s} Successfully.`,
                 icon: "success",
             });
@@ -694,7 +697,7 @@ const D_Appointment = () => {
                         <OverlayTrigger placement="top" overlay={renderTooltip('Cancel')}>
                             <button
                                 className="btn btn-sm p-1 apt_status_btn danger"
-                                onClick={() => appointmentbtn(row._id, 'Cancel' , row.visit_types)}
+                                onClick={() => appointmentbtn(row._id, 'Cancel', row.visit_types)}
                             >
                                 <MdClose size={18} />
                             </button>
@@ -703,7 +706,7 @@ const D_Appointment = () => {
                         <OverlayTrigger placement="top" overlay={renderTooltip('Reschedule')}>
                             <button
                                 className="btn btn-sm p-1 apt_status_btn dark"
-                                onClick={() => reschedule_modal(row._id , row.visit_types)}
+                                onClick={() => reschedule_modal(row._id, row.visit_types)}
                             >
                                 <MdOutlineAutorenew size={18} />
                             </button>

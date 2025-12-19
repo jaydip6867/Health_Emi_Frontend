@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Col } from 'react-bootstrap';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { GiHamburgerMenu } from 'react-icons/gi';
@@ -7,14 +7,26 @@ import { FiActivity, FiCalendar, FiDollarSign, FiFilePlus, FiLayout, FiLogOut, F
 import { IoCalendarOutline } from "react-icons/io5";
 import { TbRosetteDiscountCheckFilled } from "react-icons/tb";
 import { isPast } from 'date-fns';
-
+import { Form } from 'react-bootstrap';
 
 const DoctorSidebar = ({ doctor }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isAvailable, setIsAvailable] = useState(false);
     const navigate = useNavigate();
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
+    };
+
+    useEffect(() => {
+        setIsAvailable(doctor?.is_available || false);
+    }, [doctor]);
+
+    const handleAvailabilityChange = (e) => {
+        setIsAvailable(e.target.checked);
+        // Here you would typically make an API call to update the doctor's availability
+        // For now, we'll just log the change
+        console.log('Availability changed to:', e.target.checked);
     };
 
     return (
@@ -35,7 +47,26 @@ const DoctorSidebar = ({ doctor }) => {
                             <img src={doctor?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} alt={`${doctor?.name} profile`} />
                         </div>
                         <div className='text-center py-3 align-items-center d-flex flex-column gap-2'>
-                            {doctor?.is_available === true ? <span className='apt_complete_btn small'>Available</span> : <span className='apt_dark_btn small'>Not Available</span>}
+                            <div className='d-flex align-items-center gap-2 mb-2'>
+                                {doctor?.is_available === true ? (
+                                    <span className='apt_complete_btn small'>Available</span>
+                                ) : (
+                                    <span className='apt_dark_btn small'>Not Available</span>
+                                )}
+                                {/* <Form.Check 
+                                    type="switch"
+                                    id="availability-toggle"
+                                    checked={doctor?.is_available || false}
+                                    onChange={(e) => {
+                                        // Here you would typically make an API call to update the doctor's availability
+                                        // For now, we'll just log the change
+                                        console.log('Availability changed to:', e.target.checked);
+                                        // Update the local state if needed
+                                        // setDoctor({...doctor, is_available: e.target.checked});
+                                    }}
+                                    className="ms-2"
+                                /> */}
+                            </div>
                             <div>
                                 <h5 style={{ color: 'var(--grayscale-color-800)' }}>Dr. {doctor?.name} <TbRosetteDiscountCheckFilled fill='#0E9384'/></h5>
                                 <p className='m-0' style={{ color: '#0E9384' }}>{doctor?.specialty} Psychologist</p>
