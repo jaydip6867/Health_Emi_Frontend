@@ -8,10 +8,15 @@ import { IoCalendarOutline } from "react-icons/io5";
 import { TbRosetteDiscountCheckFilled } from "react-icons/tb";
 import { isPast } from 'date-fns';
 import { Form } from 'react-bootstrap';
+import axios from 'axios';
+import CryptoJS from 'crypto-js';
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
 const DoctorSidebar = ({ doctor }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isAvailable, setIsAvailable] = useState(false);
+    const [token, setToken] = useState(null);
+    const [profile, setProfile] = useState(null);
     const navigate = useNavigate();
 
     const toggleSidebar = () => {
@@ -19,14 +24,69 @@ const DoctorSidebar = ({ doctor }) => {
     };
 
     useEffect(() => {
-        setIsAvailable(doctor?.is_available || false);
-    }, [doctor]);
+        try {
+            const stored = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+            if (stored) {
+                const bytes = CryptoJS.AES.decrypt(stored, SECRET_KEY);
+                const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+                if (decrypted) {
+                    const obj = JSON.parse(decrypted);
+                    if (obj && obj.accessToken) {
+                        const t = `Bearer ${obj.accessToken}`;
+                        setToken(t);
+                        // Fetch profile on sidebar load
+                        axios({
+                            method: 'get',
+                            url: `${API_BASE_URL}/doctor/profile`,
+                            headers: { Authorization: t }
+                        }).then((res) => {
+                            const data = res?.data?.Data || null;
+                            setProfile(data);
+                            setIsAvailable(Boolean(data?.is_available));
+                        }).catch(() => {
+                            // silently ignore for sidebar
+                        });
+                    }
+                }
+            }
+        } catch (e) {}
+    }, []);
 
-    const handleAvailabilityChange = (e) => {
-        setIsAvailable(e.target.checked);
-        // Here you would typically make an API call to update the doctor's availability
-        // For now, we'll just log the change
-        console.log('Availability changed to:', e.target.checked);
+    const handleAvailabilityChange = async (e) => {
+        const next = e.target.checked;
+        setIsAvailable(next);
+        if (!token || !profile) return;
+        try {
+            const payload = { ...profile, is_available: next };
+            if (!payload.password) delete payload.password;
+            if ('available' in payload) delete payload.available;
+            await axios({
+                method: 'post',
+                url: `${API_BASE_URL}/doctor/profile/edit`,
+                headers: { Authorization: token },
+                data: payload,
+            });
+            // update local cached profile and storage
+            setProfile((prev) => (prev ? { ...prev, is_available: next } : prev));
+            try {
+                const stored = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+                if (stored) {
+                    const bytes = CryptoJS.AES.decrypt(stored, SECRET_KEY);
+                    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+                    if (decrypted) {
+                        const obj = JSON.parse(decrypted);
+                        if (obj && obj.doctorData) {
+                            obj.doctorData.is_available = next;
+                            const cipher = CryptoJS.AES.encrypt(JSON.stringify(obj), SECRET_KEY).toString();
+                            localStorage.setItem(STORAGE_KEYS.DOCTOR, cipher);
+                        }
+                    }
+                }
+            } catch (err) {}
+        } catch (err) {
+            // revert UI on failure
+            setIsAvailable(!next);
+        }
     };
 
     return (
@@ -48,24 +108,18 @@ const DoctorSidebar = ({ doctor }) => {
                         </div>
                         <div className='text-center py-3 align-items-center d-flex flex-column gap-2'>
                             <div className='d-flex align-items-center gap-2 mb-2'>
-                                {doctor?.is_available === true ? (
+                                {isAvailable === true ? (
                                     <span className='apt_complete_btn small'>Available</span>
                                 ) : (
                                     <span className='apt_dark_btn small'>Not Available</span>
                                 )}
-                                {/* <Form.Check 
+                                <Form.Check 
                                     type="switch"
                                     id="availability-toggle"
-                                    checked={doctor?.is_available || false}
-                                    onChange={(e) => {
-                                        // Here you would typically make an API call to update the doctor's availability
-                                        // For now, we'll just log the change
-                                        console.log('Availability changed to:', e.target.checked);
-                                        // Update the local state if needed
-                                        // setDoctor({...doctor, is_available: e.target.checked});
-                                    }}
+                                    checked={isAvailable || false}
+                                    onChange={handleAvailabilityChange}
                                     className="ms-2"
-                                /> */}
+                                />
                             </div>
                             <div>
                                 <h5 style={{ color: 'var(--grayscale-color-800)' }}>Dr. {doctor?.name} <TbRosetteDiscountCheckFilled fill='#0E9384'/></h5>
