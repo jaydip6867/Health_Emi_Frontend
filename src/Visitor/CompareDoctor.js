@@ -194,7 +194,7 @@ const CompareDoctor = () => {
             {selectedDoctors.length === 0 ? (
               <div className='text-muted'>Select doctors to compare.</div>
             ) : (
-              <Card className='p-3 shadow-sm rounded-4'>
+              <Card className='p-3 shadow-sm rounded-4 mb-5'>
                 {(() => {
                   const d1 = selectedDoctors[0];
                   const d2 = selectedDoctors[1];
