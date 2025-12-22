@@ -101,6 +101,9 @@ const DoctorSidebar = ({ doctor }) => {
                             <NavLink to={'/doctor/ambulance-request'} className={({ isActive }) => (isActive ? 'active' : '')}>
                                 <FiTruck /> Ambulance Booking
                             </NavLink>
+                            <NavLink to={'/doctor/ambulance-history'} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <FiTruck /> Ambulance History
+                            </NavLink>
                             <NavLink to={'/doctor/doctorprofile'} className={({ isActive }) => (isActive ? 'active' : '')}>
                                 <FiSettings />Settings
                             </NavLink>

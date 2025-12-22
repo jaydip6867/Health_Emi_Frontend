@@ -49,6 +49,7 @@ import D_Review from "./doctor/D_Review";
 import P_AmbulanceRequest from "./patient/P_AmbulanceRequest";
 import P_RideSatus from "./patient/P_RideSatus";
 import SurgeriesPage from "./Visitor/SurgeriesPage";
+import D_AmbulanceHistory from "./doctor/D_AmbulanceHistory";
 function App() {
   return (
     <div className="App">
@@ -77,23 +78,15 @@ function App() {
           <Route path="doctordashboard" element={<DoctorDashboard />}></Route>
           <Route path="doctorprofile" element={<DoctorProfile />}></Route>
           <Route path="doctorappointment" element={<D_Appointment />}></Route>
-          <Route
-            path="doctorsurgeryappointment"
-            element={<D_SurgeryAppointment />}
-          ></Route>
+          <Route path="doctorsurgeryappointment" element={<D_SurgeryAppointment />}></Route>
           <Route path="doctorblog" element={<D_Blog />}></Route>
           <Route path="doctorsurgery" element={<D_Surgery />}></Route>
           <Route path="doctorconsultation" element={<D_Consultation />}></Route>
           <Route path="doctorreviews" element={<D_Review />}></Route>
           <Route path="calender" element={<D_Calender />}></Route>
-          <Route
-            path="ambulance-request"
-            element={<D_AmbulanceRequest />}
-          ></Route>
-          <Route
-            path="ambulance-request/status/:id"
-            element={<D_StatusAmbulance />}
-          />
+          <Route path="ambulance-request" element={<D_AmbulanceRequest />}></Route>
+          <Route path="ambulance-history" element={<D_AmbulanceHistory />}></Route>
+          <Route path="ambulance-request/status/:id" element={<D_StatusAmbulance />}/>
         </Route>
         <Route path="/patientregister" element={<PatientRegister />}></Route>
         <Route path="/patient">

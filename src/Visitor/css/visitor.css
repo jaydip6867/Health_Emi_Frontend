@@ -2454,3 +2454,7 @@ body::-webkit-scrollbar-thumb:hover {
 .list_number{
     list-style-type: decimal;
 }
+.compare_btn{
+    background-color: var(--grayscale-color-950);
+    color: var(--white);
+}
