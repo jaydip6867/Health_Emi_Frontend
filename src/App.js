@@ -48,6 +48,7 @@ import DoctorTelemedicineTC from "./Visitor/T&CPage/DoctorTelemedicineTC";
 import D_Review from "./doctor/D_Review";
 import P_AmbulanceRequest from "./patient/P_AmbulanceRequest";
 import P_RideSatus from "./patient/P_RideSatus";
+import SurgeriesPage from "./Visitor/SurgeriesPage";
 function App() {
   return (
     <div className="App">
@@ -62,6 +63,7 @@ function App() {
         <Route path="/surgery/:id" element={<Surgerydoctorlist />}></Route>
         <Route path="/comparedoctor" element={<CompareDoctor />}></Route>
         <Route path="/ambulancepage" element={<AmbulancePage />}></Route>
+        <Route path="/surgerypage" element={<SurgeriesPage />}></Route>
         <Route path="/faq" element={<Faq />}></Route>
         <Route path="/blog" element={<Blog />}></Route>
         <Route path="/blog/:id" element={<BlogDetail />}></Route>

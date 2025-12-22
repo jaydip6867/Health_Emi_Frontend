@@ -39,7 +39,7 @@ const AmbulancePage = () => {
 
             {/* Hero Section */}
             <section className="page_banner ambulance_banner">
-                <Container fluid className='p-0'>
+                <Container className='p-0'>
                     <Row className="align-items-center justify-content-between g-0">
                         <Col md={6}>
                             <div className='ps-5'>

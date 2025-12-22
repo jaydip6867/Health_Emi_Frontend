@@ -1601,6 +1601,9 @@ body::-webkit-scrollbar-thumb:hover {
 .ambulance_banner {
     background-image: url('../assets/book-ambulance-banner.png');
 }
+.surgery_banner{
+    background-image: url('../assets/surgery_banner.png');
+}
 
 .page_banner {
     min-height: 80vh;
@@ -1639,9 +1642,15 @@ body::-webkit-scrollbar-thumb:hover {
     color: var(--primary-color-950)
 }
 
-.feature_icon_sec img {
-    width: 50px;
-    height: auto
+.feature_icon_sec .box_div{
+    border-color: var(--grayscale-color-200);
+    padding: 30px 12px;
+}
+
+.feature_icon_sec .box_icon{
+    border: 1px solid var(--primary-color-400);
+    background-color: var(--grayscale-color-50);
+    padding: 15px;
 }
 
 .matter_bg {

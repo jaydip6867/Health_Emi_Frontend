@@ -36,7 +36,7 @@ const FunctionalitySec = () => {
                             <Card className='functionality_box border-0'>
                                 <Card.Img variant="top" src={require('../assets/surgeries-image.png')} alt='video consultant' />
                                 <Card.Body>
-                                    <Card.Title><Link to='/comparedoctor' className='d-flex align-items-center justify-content-center stretched-link'><div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
+                                    <Card.Title><Link to='/surgerypage' className='d-flex align-items-center justify-content-center stretched-link'><div className='icon_box'><FiArrowUpRight className='text-white' /></div></Link></Card.Title>
                                 </Card.Body>
                                 <Card.Footer className='text-center fw-bold'>Compare Surgeries </Card.Footer>
                             </Card>

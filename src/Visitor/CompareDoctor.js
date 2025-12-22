@@ -147,18 +147,8 @@ return (
     {/* offers section */}
     <section className='py-5'>
       <Container>
-        <Card className='border-0 rounded-4 p-4 sec_head shadow-sm mb-4' style={{ background: 'linear-gradient(135deg, #e0f2ff 0%, #ffffff 60%)' }}>
-          <div className='text-center '>
-            <h2 className='d-flex align-items-center justify-content-center gap-2'>
-              <span className='d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white' style={{ width: 38, height: 38 }}>
-                <MdCompare size={20} />
-              </span>
-              Compare Doctors by Surgery
-            </h2>
-            <p className='text-muted mb-0'>Choose a surgery, pick up to two doctors, and instantly compare key details at a glance.</p>
-          </div>
-        </Card>
-        <Row className='justify-content-center mt-4 g-3'>
+        
+        <Row className='justify-content-center g-3'>
           <Col xs={12} md={6} lg={5}>
             <Form.Label className='fw-semibold'>Choose a Surgery</Form.Label>
             <Form.Select
