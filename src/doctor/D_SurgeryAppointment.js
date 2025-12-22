@@ -1115,8 +1115,8 @@ const D_SurgeryAppointment = () => {
                             <Form.Label>Select an option</Form.Label>
                             <Form.Select value={prescriptionOption} onChange={(e) => setPrescriptionOption(e.target.value)}>
                                 <option value='write'>Write prescription</option>
-                                <option value='upload'>Upload prescription image</option>
-                                <option value='none'>not add prescription</option>
+                                <option value='upload'>Upload prescription</option>
+                                <option value='none'>Skip prescription</option>
                             </Form.Select>
                         </Form.Group>
                         {prescriptionOption === 'upload' && (

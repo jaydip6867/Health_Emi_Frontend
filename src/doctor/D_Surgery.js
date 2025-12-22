@@ -385,7 +385,7 @@ const D_Surgery = () => {
       return v._id === id;
     });
     setsingleview(datasingle);
-    // console.log(datasingle)
+    console.log(datasingle)
     handleShow();
     // console.log(datasingle)
   }
@@ -1318,6 +1318,23 @@ const D_Surgery = () => {
                                 <div className="d-flex flex-column mt-1">
                                   <span className="fw-bold">{v?.yearsof_experience}</span>
                                   <small className="text-muted">Surgery Experience</small>
+                                </div>
+                              </div>
+                            </div>
+                          </Col>
+                          <Col xs={6}>
+                            <div className="text-center p-1 h-100">
+                              <div>
+                                <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#E2E7F2', fontSize: '14px' }} >
+                                  <svg width="21" height="21" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15.2725 19.0904C20.0172 19.0904 23.8635 15.3865 23.8635 10.8176C23.8635 6.24875 20.0172 2.54492 15.2725 2.54492C10.5279 2.54492 6.68164 6.24875 6.68164 10.8176C6.68164 15.3865 10.5279 19.0904 15.2725 19.0904Z" fill="#12A79D" />
+                                    <path d="M20.0968 19.8681C20.5168 19.6517 21.0004 19.9699 21.0004 20.4408V26.6135C21.0004 27.759 20.1986 28.319 19.2059 27.8481L15.795 26.2317C15.5023 26.1044 15.0441 26.1044 14.7514 26.2317L11.3404 27.8481C10.3477 28.3063 9.5459 27.7463 9.5459 26.6008L9.57135 20.4408C9.57135 19.9699 10.0677 19.6644 10.475 19.8681C11.9132 20.5935 13.5423 21.0008 15.2732 21.0008C17.0041 21.0008 18.6459 20.5935 20.0968 19.8681Z" fill="#12A79D" />
+                                  </svg>
+
+                                </div>
+                                <div className="d-flex flex-column mt-1">
+                                  <span className="fw-bold">{v?.days}</span>
+                                  <small className="text-muted">Stays</small>
                                 </div>
                               </div>
                             </div>

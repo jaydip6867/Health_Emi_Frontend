@@ -334,6 +334,34 @@ const D_Blog = () => {
         </Tooltip>
     );
 
+    // Function to check if blog has expired
+    const isBlogExpired = (expiryDate) => {
+        if (!expiryDate || expiryDate === '' || expiryDate === 'Not Defined') {
+            return false;
+        }
+        
+        try {
+            // Parse expiry date (format: dd-mm-yyyy)
+            const parts = String(expiryDate).split('-');
+            if (parts.length === 3) {
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1; // JavaScript months are 0-indexed
+                const year = parseInt(parts[2], 10);
+                const expiryDateObj = new Date(year, month, day);
+                
+                // Get current date without time
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                return expiryDateObj < today;
+            }
+        } catch (error) {
+            console.error('Error parsing expiry date:', error);
+        }
+        
+        return false;
+    };
+
 
     // Minimal table inline styles; visuals handled in CSS
     const customTableStyles = {
@@ -380,14 +408,16 @@ const D_Blog = () => {
         name: 'Action',
         cell: row => (
             <div className="d-flex align-items-center gap-1">
-                <OverlayTrigger placement="top" overlay={renderTooltip('Edit')}>
-                    <button
-                        className="btn btn-sm p-1 apt_status_btn success"
-                        onClick={() => btnedit(row._id)}
-                    >
-                        <MdOutlineEditCalendar size={18} />
-                    </button>
-                </OverlayTrigger>
+                {!isBlogExpired(row.expirydate) && (
+                    <OverlayTrigger placement="top" overlay={renderTooltip('Edit')}>
+                        <button
+                            className="btn btn-sm p-1 apt_status_btn success"
+                            onClick={() => btnedit(row._id)}
+                        >
+                            <MdOutlineEditCalendar size={18} />
+                        </button>
+                    </OverlayTrigger>
+                )}
 
                 <OverlayTrigger placement="top" overlay={renderTooltip('Delete')}>
                     <button

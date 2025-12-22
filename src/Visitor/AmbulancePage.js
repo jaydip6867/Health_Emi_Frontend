@@ -53,11 +53,11 @@ const AmbulancePage = () => {
                 </Container>
             </section>
 
-            <section className="spacer-t bg-white">
+            <section className="spacer-t bg-white pb-5">
                 <FadeIn delay={0}>
                     <Container>
                         {/* Heading */}
-                        <h2 className='head_sec mb-3'><HeadTitle title="Service We Provider" /></h2>
+                        <h2 className='head_sec mb-4'><HeadTitle title="Service We Provider" /></h2>
 
                         {/* Services */}
                         <Row className="g-3 g-md-4 justify-content-center service_amb mb-5">
@@ -108,7 +108,7 @@ const AmbulancePage = () => {
             <section>
                 <FadeIn delay={0}>
                     <Container>
-                        <h2 className='head_sec mb-3'><HeadTitle title="Key Features" /></h2>
+                        <h2 className='head_sec mb-4'><HeadTitle title="Key Features" /></h2>
 
                         <Row className="g-4 justify-content-center mb-5 feature_icon_sec">
                             <Col xs={6} md={4} lg className="text-center">

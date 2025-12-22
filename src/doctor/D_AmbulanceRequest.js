@@ -993,7 +993,7 @@ const D_AmbulanceRequest = () => {
       <NavBar logindata={doctor} />
       <Container className="my-4">
         <Row className="g-0">
-          <DoctorSidebar />
+          <DoctorSidebar doctor={doctor} />
           <Col xs={12} lg={9} className="p-3">
             <div className="bg-white rounded p-2">
               <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3">
