@@ -554,7 +554,7 @@ const DoctorProfilePage = () => {
                       <p className="text-dark mb-2">{doctor_profile.specialty} ({doctor_profile.qualification})</p>
                       <div className="d-flex align-items-center mb-2">
                         <FaLocationDot className="me-2 text-muted" />
-                        <small className="text-muted">{doctor_profile.state} , {doctor_profile.city}</small>
+                        <small className="text-muted"> {doctor_profile.city},{doctor_profile.state} </small>
                       </div>
                       <div className="d-flex align-items-center mb-2">
                         <FaEnvelope className="me-2 text-muted" />
@@ -813,37 +813,6 @@ const DoctorProfilePage = () => {
                         <input
                           type="radio"
                           name="consultationType"
-                          value="home_visit"
-                          checked={selectedConsultationType === 'home_visit'}
-                          onChange={(e) => { setSelectedConsultationType(e.target.value); setConsultError(false); setSelectedHospital(''); setHospitalError(false); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
-                          className="d-none"
-                          id="home_visit"
-                        />
-
-                        <label
-                          htmlFor="home_visit"
-                          className={`text-center p-3 bg-white check_room_type rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'home_visit' ? 'active' : ''
-                            }`}
-                          style={{ cursor: 'pointer' }}
-                        >
-                          <div>
-                            <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#D8F3F1', fontSize: '14px' }} >
-                              <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M6.5498 17.8719H4.5498C3.48894 17.8719 2.47152 17.4505 1.72138 16.7003C0.971232 15.9502 0.549805 14.9328 0.549805 13.8719V7.57989C0.54979 6.8921 0.727121 6.21593 1.06467 5.61668C1.40222 5.01742 1.88859 4.51533 2.4768 4.15889L7.4768 1.12889C8.10192 0.750083 8.81887 0.549805 9.5498 0.549805C10.2807 0.549805 10.9977 0.750083 11.6228 1.12889L16.6228 4.15889C17.2109 4.51524 17.6971 5.01718 18.0347 5.61624C18.3722 6.21531 18.5496 6.89127 18.5498 7.57889V13.8719C18.5498 14.9328 18.1284 15.9502 17.3782 16.7003C16.6281 17.4505 15.6107 17.8719 14.5498 17.8719H12.5498M6.5498 17.8719V13.8719C6.5498 13.0762 6.86587 12.3132 7.42848 11.7506C7.99109 11.188 8.75416 10.8719 9.5498 10.8719C10.3455 10.8719 11.1085 11.188 11.6711 11.7506C12.2337 12.3132 12.5498 13.0762 12.5498 13.8719V17.8719M6.5498 17.8719H12.5498" stroke="#12A79D" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" />
-                              </svg>
-
-                            </div>
-                            <div className="d-flex flex-column mt-1">
-                              <span className="fw-bold">Home Visit</span>
-                              <small className="text-muted">₹{doctor_profile?.consultationsDetails === null ? 0 : doctor_profile?.consultationsDetails?.home_visit_price}</small>
-                            </div>
-                          </div>
-                        </label>
-                      </Col>
-                      <Col xs={4}>
-                        <input
-                          type="radio"
-                          name="consultationType"
                           value="eopd"
                           checked={selectedConsultationType === 'eopd'}
                           onChange={(e) => { setSelectedConsultationType(e.target.value); setConsultError(false); setSelectedHospital(''); setHospitalError(false); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
@@ -868,6 +837,37 @@ const DoctorProfilePage = () => {
                             <div className="d-flex flex-column mt-1">
                               <span className="fw-bold">EOPD</span>
                               <small className="text-muted">₹{doctor_profile?.consultationsDetails === null ? 0 : doctor_profile?.consultationsDetails?.eopd_price}</small>
+                            </div>
+                          </div>
+                        </label>
+                      </Col>
+                      <Col xs={4}>
+                        <input
+                          type="radio"
+                          name="consultationType"
+                          value="home_visit"
+                          checked={selectedConsultationType === 'home_visit'}
+                          onChange={(e) => { setSelectedConsultationType(e.target.value); setConsultError(false); setSelectedHospital(''); setHospitalError(false); setaptdata({ ...apt_data, visit_types: e.target.value }); }}
+                          className="d-none"
+                          id="home_visit"
+                        />
+
+                        <label
+                          htmlFor="home_visit"
+                          className={`text-center p-3 bg-white check_room_type rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === 'home_visit' ? 'active' : ''
+                            }`}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <div>
+                            <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#D8F3F1', fontSize: '14px' }} >
+                              <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.5498 17.8719H4.5498C3.48894 17.8719 2.47152 17.4505 1.72138 16.7003C0.971232 15.9502 0.549805 14.9328 0.549805 13.8719V7.57989C0.54979 6.8921 0.727121 6.21593 1.06467 5.61668C1.40222 5.01742 1.88859 4.51533 2.4768 4.15889L7.4768 1.12889C8.10192 0.750083 8.81887 0.549805 9.5498 0.549805C10.2807 0.549805 10.9977 0.750083 11.6228 1.12889L16.6228 4.15889C17.2109 4.51524 17.6971 5.01718 18.0347 5.61624C18.3722 6.21531 18.5496 6.89127 18.5498 7.57889V13.8719C18.5498 14.9328 18.1284 15.9502 17.3782 16.7003C16.6281 17.4505 15.6107 17.8719 14.5498 17.8719H12.5498M6.5498 17.8719V13.8719C6.5498 13.0762 6.86587 12.3132 7.42848 11.7506C7.99109 11.188 8.75416 10.8719 9.5498 10.8719C10.3455 10.8719 11.1085 11.188 11.6711 11.7506C12.2337 12.3132 12.5498 13.0762 12.5498 13.8719V17.8719M6.5498 17.8719H12.5498" stroke="#12A79D" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" />
+                              </svg>
+
+                            </div>
+                            <div className="d-flex flex-column mt-1">
+                              <span className="fw-bold">Home Visit</span>
+                              <small className="text-muted">₹{doctor_profile?.consultationsDetails === null ? 0 : doctor_profile?.consultationsDetails?.home_visit_price}</small>
                             </div>
                           </div>
                         </label>
