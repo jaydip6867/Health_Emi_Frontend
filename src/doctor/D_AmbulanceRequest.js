@@ -133,6 +133,7 @@ const D_AmbulanceRequest = () => {
       fetchAmbulanceHistory();
     }
   }, [doctor, token]);
+
   useEffect(() => {
     // Only try to get current location if we don't already have pickup coordinates
     if (!form.pickup_latitude || !form.pickup_longitude) {
@@ -409,6 +410,22 @@ const D_AmbulanceRequest = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (details.book_for === "myself" && doctor) {
+      setDetails((prev) => ({
+        ...prev,
+        name: doctor.name || "",
+        mobile: doctor.mobile || "",
+      }));
+    } else if (details.book_for === "other" && doctor) {
+      setDetails((prev) => ({
+        ...prev,
+        name:  "",
+        mobile: "",
+      }));
+    }
+  }, [details.book_for, doctor]);
   const fetchAddressSuggestions = async (type, query) => {
     if (!query || query.trim().length < 3) {
       if (type === "pickup") {
@@ -454,7 +471,6 @@ const D_AmbulanceRequest = () => {
             lat: null,
             lon: null,
           }));
-          console.log(predictions);
 
           const suggestions = [{ group: "Suggestions", items }];
 
