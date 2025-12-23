@@ -1,12 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Card, Col, Container, Form, Row, Badge, Modal } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  Row,
+  Badge,
+  Modal,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import DoctorSidebar from "./DoctorSidebar";
 import axios from "axios";
 import Swal from "sweetalert2";
 import CryptoJS from "crypto-js";
 import Loader from "../Loader";
-import SmartDataTable from '../components/SmartDataTable';
+import SmartDataTable from "../components/SmartDataTable";
 import {
   API_BASE_URL,
   SECRET_KEY,
@@ -124,7 +133,13 @@ const D_AmbulanceRequest = () => {
       fetchAmbulanceHistory();
     }
   }, [doctor, token]);
-
+  useEffect(() => {
+    // Only try to get current location if we don't already have pickup coordinates
+    if (!form.pickup_latitude || !form.pickup_longitude) {
+      getCurrentLocation("pickup");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // Add this render function for status badges
   const renderStatusBadge = (status) => {
     const statusMap = {
@@ -253,6 +268,7 @@ const D_AmbulanceRequest = () => {
   const onChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+
     if (name === "pickupaddress") {
       setActiveType("pickup");
       if (pickupDebounceRef.current) clearTimeout(pickupDebounceRef.current);
@@ -260,6 +276,7 @@ const D_AmbulanceRequest = () => {
         fetchAddressSuggestions("pickup", value);
       }, 350);
     }
+
     if (name === "dropaddress") {
       setActiveType("drop");
       if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
@@ -295,7 +312,7 @@ const D_AmbulanceRequest = () => {
         if (pickupMarkerRef.current) {
           pickupMarkerRef.current.setPosition({ lat, lng });
         } else {
-          pickupMarkerRef.current = new google.maps.Marker({
+          pickupMarkerRef.current = new window.google.maps.Marker({
             position: { lat, lng },
             map,
           });
@@ -381,7 +398,7 @@ const D_AmbulanceRequest = () => {
             }
             autoLocatedRef.current = true;
           },
-          () => { },
+          () => {},
           { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
         );
       };
@@ -392,7 +409,6 @@ const D_AmbulanceRequest = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   const fetchAddressSuggestions = async (type, query) => {
     if (!query || query.trim().length < 3) {
       if (type === "pickup") {
@@ -404,76 +420,110 @@ const D_AmbulanceRequest = () => {
       }
       return;
     }
+
+    if (!window.google || !window.google.maps) {
+      console.error("Google Maps JS not loaded");
+      return;
+    }
+
     try {
       const map = await ensureMap();
-      const b = map.getBounds();
-      const viewbox = `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`;
-      const headers = { headers: { Accept: "application/json" } };
-      // Nearby (bounded) results
-      const nearbyUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&bounded=1&countrycodes=${encodeURIComponent(
-        countryCode
-      )}&viewbox=${encodeURIComponent(viewbox)}&q=${encodeURIComponent(query)}`;
-      // Global results (unbounded) for other cities
-      const globalUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&countrycodes=${encodeURIComponent(
-        countryCode
-      )}&q=${encodeURIComponent(query)}`;
-      const [nearRes, globalRes] = await Promise.all([
-        fetch(nearbyUrl, headers),
-        fetch(globalUrl, headers),
-      ]);
-      const near = await nearRes.json();
-      const global = await globalRes.json();
-      // Deduplicate by osm_id + lat/lon
-      const seen = new Set();
-      const dedup = (arr) =>
-        arr.filter((x) => {
-          const key = `${x.osm_id}-${x.lat}-${x.lon}`;
-          if (seen.has(key)) return false;
-          seen.add(key);
-          return true;
-        });
-      // Optionally prioritize current city in global results
-      const prioritizeCity = (arr) => {
-        if (!currentCity) return arr;
-        const matches = [];
-        const others = [];
-        for (const item of arr) {
-          const dn = (item.display_name || "").toLowerCase();
-          if (dn.includes(currentCity.toLowerCase())) matches.push(item);
-          else others.push(item);
-        }
-        return [...matches, ...others];
-      };
-      const suggestions = [
-        { group: "Nearby", items: Array.isArray(near) ? dedup(near) : [] },
+      const center = map.getCenter();
+
+      const service = new window.google.maps.places.AutocompleteService();
+
+      service.getPlacePredictions(
         {
-          group: "Other cities",
-          items: Array.isArray(global) ? prioritizeCity(dedup(global)) : [],
+          input: query,
+          location: new window.google.maps.LatLng(center.lat(), center.lng()),
+          radius: 5000,
+          componentRestrictions: { country: "in" },
         },
-      ];
-      if (type === "pickup") {
-        setPickupSuggestions(suggestions);
-        setShowPickupSuggestions(true);
-      } else {
-        setDropSuggestions(suggestions);
-        setShowDropSuggestions(true);
-      }
+        (predictions, status) => {
+          if (
+            status !== window.google.maps.places.PlacesServiceStatus.OK ||
+            !predictions
+          ) {
+            console.error("Places API error:", status);
+            return;
+          }
+
+          const items = predictions.map((p) => ({
+            place_id: p.place_id,
+            display_name: p.description,
+            lat: null,
+            lon: null,
+          }));
+          console.log(predictions);
+
+          const suggestions = [{ group: "Suggestions", items }];
+
+          if (type === "pickup") {
+            setPickupSuggestions(suggestions);
+            setShowPickupSuggestions(true);
+          } else {
+            setDropSuggestions(suggestions);
+            setShowDropSuggestions(true);
+          }
+        }
+      );
     } catch (e) {
-      console.error("Suggest failed", e);
-      if (type === "pickup") {
-        setPickupSuggestions([]);
-        setShowPickupSuggestions(false);
-      } else {
-        setDropSuggestions([]);
-        setShowDropSuggestions(false);
-      }
+      console.error("Autocomplete failed", e);
     }
   };
 
+  const fetchPlaceDetails = (placeId) => {
+    if (!placeId || !window.google) return Promise.resolve(null);
+
+    return new Promise((resolve) => {
+      const service = new window.google.maps.places.PlacesService(
+        document.createElement("div")
+      );
+
+      service.getDetails(
+        {
+          placeId,
+          fields: ["geometry", "formatted_address", "name"],
+        },
+        (place, status) => {
+          if (
+            status !== window.google.maps.places.PlacesServiceStatus.OK ||
+            !place?.geometry?.location
+          ) {
+            console.error("Place details error:", status);
+            resolve(null);
+            return;
+          }
+
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+
+          resolve({
+            lat: Number(lat.toFixed(6)),
+            lon: Number(lng.toFixed(6)),
+            display_name: place.formatted_address || place.name || "",
+          });
+        }
+      );
+    });
+  };
+
   const selectSuggestion = async (type, sug) => {
-    const lat = Number(Number(sug.lat).toFixed(6));
-    const lon = Number(Number(sug.lon).toFixed(6));
-    const display = sug.display_name || "";
+    let lat = sug.lat != null ? Number(Number(sug.lat).toFixed(6)) : null;
+    let lon = sug.lon != null ? Number(Number(sug.lon).toFixed(6)) : null;
+    let display = sug.display_name || "";
+    if ((!lat || !lon) && sug.place_id) {
+      const details = await fetchPlaceDetails(sug.place_id);
+      if (details) {
+        lat = details.lat;
+        lon = details.lon;
+        display = details.display_name || display;
+      }
+    }
+    if (!lat || !lon) {
+      console.warn("No coordinates available for selected suggestion", sug);
+      return;
+    }
     const map = await ensureMap();
     map.setCenter({ lat, lng: lon });
     map.setZoom(14);
@@ -517,92 +567,104 @@ const D_AmbulanceRequest = () => {
     }
   };
 
-  const getCurrentLocation = (type) => {
+  const getCurrentLocation = async (type) => {
     if (!navigator.geolocation) {
-      Swal.fire({ title: "Geolocation not supported", icon: "warning" });
+      Swal.fire("Error", "Geolocation not supported", "warning");
       return;
     }
+
+    const permission =
+      navigator.permissions &&
+      (await navigator.permissions.query({ name: "geolocation" }));
+
+    if (permission?.state === "denied") {
+      Swal.fire(
+        "Location blocked",
+        "Please allow location access in browser settings",
+        "error"
+      );
+      return;
+    }
+
     setLoading(true);
+
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        const meta = await reverseGeocodeMeta(longitude, latitude);
-        const address = meta.display_name;
-        if (meta.address?.country_code)
-          setCountryCode((meta.address.country_code || "").toLowerCase());
-        const cityCandidate =
-          meta.address?.city ||
-          meta.address?.town ||
-          meta.address?.village ||
-          meta.address?.state_district ||
-          meta.address?.state ||
-          "";
-        if (cityCandidate) setCurrentCity(cityCandidate);
-        const fix = (n) => Number(n.toFixed(6));
-        const update = async () => {
+        try {
+          const { latitude, longitude } = pos.coords;
+
           const map = await ensureMap();
           map.setCenter({ lat: latitude, lng: longitude });
           map.setZoom(14);
-          if (type === "pickup") {
-            if (pickupMarkerRef.current) {
-              pickupMarkerRef.current.setPosition({
-                lat: latitude,
-                lng: longitude,
-              });
-            } else {
-              const google = window.google;
-              pickupMarkerRef.current = new google.maps.Marker({
-                position: { lat: latitude, lng: longitude },
-                map,
-              });
+
+          const geocoder = new window.google.maps.Geocoder();
+
+          geocoder.geocode(
+            { location: { lat: latitude, lng: longitude } },
+            (results, status) => {
+              if (status === "OK" && results[0]) {
+                const address = results[0].formatted_address;
+
+                const fix = (n) => Number(n.toFixed(6));
+
+                if (type === "pickup") {
+                  pickupMarkerRef.current?.setMap(null);
+                  pickupMarkerRef.current = new window.google.maps.Marker({
+                    position: { lat: latitude, lng: longitude },
+                    map,
+                  });
+
+                  setForm((prev) => ({
+                    ...prev,
+                    pickup_latitude: fix(latitude),
+                    pickup_longitude: fix(longitude),
+                    pickupaddress: address,
+                  }));
+                } else {
+                  dropMarkerRef.current?.setMap(null);
+                  dropMarkerRef.current = new window.google.maps.Marker({
+                    position: { lat: latitude, lng: longitude },
+                    map,
+                    icon: DROP_ICON_URL,
+                  });
+
+                  setForm((prev) => ({
+                    ...prev,
+                    drop_latitude: fix(latitude),
+                    drop_longitude: fix(longitude),
+                    dropaddress: address,
+                  }));
+                }
+
+                Swal.fire({
+                  title: "Location detected",
+                  icon: "success",
+                  timer: 1200,
+                  showConfirmButton: false,
+                });
+              }
             }
-            setForm((prev) => ({
-              ...prev,
-              pickup_latitude: fix(latitude),
-              pickup_longitude: fix(longitude),
-              pickupaddress: address || prev.pickupaddress,
-            }));
-          } else {
-            if (dropMarkerRef.current) {
-              dropMarkerRef.current.setPosition({
-                lat: latitude,
-                lng: longitude,
-              });
-            } else {
-              const google = window.google;
-              dropMarkerRef.current = new google.maps.Marker({
-                position: { lat: latitude, lng: longitude },
-                map,
-                icon: DROP_ICON_URL,
-              });
-            }
-            setForm((prev) => ({
-              ...prev,
-              drop_latitude: fix(latitude),
-              drop_longitude: fix(longitude),
-              dropaddress: address || prev.dropaddress,
-            }));
-          }
-        };
-        await update();
-        setLoading(false);
-        Swal.fire({
-          title: "Location captured",
-          icon: "success",
-          timer: 1200,
-          showConfirmButton: false,
-        });
+          );
+        } catch (e) {
+          console.error(e);
+          Swal.fire("Error", "Failed to process location", "error");
+        } finally {
+          setLoading(false);
+        }
       },
       (err) => {
-        console.error(err);
         setLoading(false);
-        Swal.fire({
-          title: "Failed to get location",
-          text: err.message,
-          icon: "error",
-        });
+        Swal.fire(
+          "Location Error",
+          err.message || "Unable to detect location",
+          "error"
+        );
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      {
+        enableHighAccuracy: false,
+        timeout: 20000,
+        maximumAge: 30000,
+      }
     );
   };
 
@@ -631,9 +693,9 @@ const D_AmbulanceRequest = () => {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return Number((R * c).toFixed(2));
   };
@@ -642,7 +704,7 @@ const D_AmbulanceRequest = () => {
   const handleMobileChange = (e) => {
     const value = e.target.value;
     // Remove all non-digit characters
-    const numericValue = value.replace(/\D/g, '');
+    const numericValue = value.replace(/\D/g, "");
     // Limit to 10 digits
     const limitedValue = numericValue.slice(0, 10);
 
@@ -656,7 +718,12 @@ const D_AmbulanceRequest = () => {
     if (!details.name || !details.mobile) return false;
     // Validate 10-digit Indian mobile number
     if (!/^\d{10}$/.test(String(details.mobile))) return false;
-    if (details.price === "" || details.price === null || details.price === undefined) return false;
+    if (
+      details.price === "" ||
+      details.price === null ||
+      details.price === undefined
+    )
+      return false;
     if (isNaN(Number(details.price))) return false;
     return true;
   };
@@ -717,8 +784,8 @@ const D_AmbulanceRequest = () => {
         ...p,
         price:
           nextPrice !== undefined &&
-            nextPrice !== null &&
-            !isNaN(Number(nextPrice))
+          nextPrice !== null &&
+          !isNaN(Number(nextPrice))
             ? Number(nextPrice)
             : p.price,
         gst_per:
@@ -726,7 +793,7 @@ const D_AmbulanceRequest = () => {
             ? Number(nextGst)
             : p.gst_per,
       }));
-    } catch (e) { }
+    } catch (e) {}
   };
 
   const fetchAllPrices = async (distanceKm) => {
@@ -751,7 +818,7 @@ const D_AmbulanceRequest = () => {
         ...prev,
         price:
           prices[prev.ambulance_type] !== undefined &&
-            prices[prev.ambulance_type] !== null
+          prices[prev.ambulance_type] !== null
             ? Number(prices[prev.ambulance_type])
             : prev.price,
         gst_per:
@@ -764,7 +831,7 @@ const D_AmbulanceRequest = () => {
       } else {
         setPlatformFee(0);
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   useEffect(() => {
@@ -886,7 +953,10 @@ const D_AmbulanceRequest = () => {
       return;
     }
     if (!/^\d{10}$/.test(String(nextDetails.mobile))) {
-      Swal.fire({ title: "Enter valid 10-digit mobile number", icon: "warning" });
+      Swal.fire({
+        title: "Enter valid 10-digit mobile number",
+        icon: "warning",
+      });
       return;
     }
     if (!nextDetails.ambulance_type) {
@@ -914,7 +984,12 @@ const D_AmbulanceRequest = () => {
     !!form.drop_longitude;
 
   const mobileValid = /^\d{10}$/.test(String(details.mobile || ""));
-  const priceValid = !(details.price === "" || details.price === null || details.price === undefined || isNaN(Number(details.price)));
+  const priceValid = !(
+    details.price === "" ||
+    details.price === null ||
+    details.price === undefined ||
+    isNaN(Number(details.price))
+  );
   const showVehicle = hasBothLocations && !!details.name && mobileValid;
   const canSubmit =
     hasBothLocations &&
@@ -925,67 +1000,83 @@ const D_AmbulanceRequest = () => {
 
   // Table columns configuration for SmartDataTable
   const customTableStyles = {
-    table: { backgroundColor: 'transparent', borderRadius: 0, boxShadow: 'none' }
+    table: {
+      backgroundColor: "transparent",
+      borderRadius: 0,
+      boxShadow: "none",
+    },
   };
 
-  const columns = [{
-    name: 'No',
-    cell: (row, index) => index + 1,
-    width: '50px'
-  }, {
-    name: 'Name',
-    selector: row => row.name,
-    cell: row => (
-      <div className="">
-        <span className="fw-semibold">{row?.name || "N/A"}</span>
-      </div>
-    ),
-  }, {
-    name: 'Pickup',
-    selector: row => row.pickupaddress,
-    cell: row => (
-      <div className="text-truncate" style={{ maxWidth: "150px" }} title={row.pickupaddress}>
-        <span>{row.pickupaddress || "N/A"}</span>
-      </div>
-    ),
-  }, {
-    name: 'Drop',
-    selector: row => row.dropaddress,
-    cell: row => (
-      <div className="text-truncate" style={{ maxWidth: "150px" }} title={row.dropaddress}>
-        <span>{row.dropaddress || "N/A"}</span>
-      </div>
-    ),
-  }, {
-    name: 'Type',
-    selector: row => row.ambulance_type,
-    cell: row => (
-      <span className="badge bg-primary">
-        {row.ambulance_type || "N/A"}
-      </span>
-    ),
-  }, {
-    name: 'Status',
-    selector: row => row.status,
-    cell: row => renderStatusBadge(row.status),
-  },
-  {
-    name: 'View',
-    cell: row => (
-      <button
-        className="btn btn-sm p-1 appt-view-btn"
-        onClick={() => {
-          setSelectedRequest(row);
-          setIsViewModalOpen(true);
-        }}
-        title="View Details"
-      >
-        <MdOutlineRemoveRedEye size={18} />
-      </button>
-    ),
-    width: '100px',
-    center: true
-  }
+  const columns = [
+    {
+      name: "No",
+      cell: (row, index) => index + 1,
+      width: "50px",
+    },
+    {
+      name: "Name",
+      selector: (row) => row.name,
+      cell: (row) => (
+        <div className="">
+          <span className="fw-semibold">{row?.name || "N/A"}</span>
+        </div>
+      ),
+    },
+    {
+      name: "Pickup",
+      selector: (row) => row.pickupaddress,
+      cell: (row) => (
+        <div
+          className="text-truncate"
+          style={{ maxWidth: "150px" }}
+          title={row.pickupaddress}
+        >
+          <span>{row.pickupaddress || "N/A"}</span>
+        </div>
+      ),
+    },
+    {
+      name: "Drop",
+      selector: (row) => row.dropaddress,
+      cell: (row) => (
+        <div
+          className="text-truncate"
+          style={{ maxWidth: "150px" }}
+          title={row.dropaddress}
+        >
+          <span>{row.dropaddress || "N/A"}</span>
+        </div>
+      ),
+    },
+    {
+      name: "Type",
+      selector: (row) => row.ambulance_type,
+      cell: (row) => (
+        <span className="badge bg-primary">{row.ambulance_type || "N/A"}</span>
+      ),
+    },
+    {
+      name: "Status",
+      selector: (row) => row.status,
+      cell: (row) => renderStatusBadge(row.status),
+    },
+    {
+      name: "View",
+      cell: (row) => (
+        <button
+          className="btn btn-sm p-1 appt-view-btn"
+          onClick={() => {
+            setSelectedRequest(row);
+            setIsViewModalOpen(true);
+          }}
+          title="View Details"
+        >
+          <MdOutlineRemoveRedEye size={18} />
+        </button>
+      ),
+      width: "100px",
+      center: true,
+    },
   ];
 
   return (
@@ -998,8 +1089,12 @@ const D_AmbulanceRequest = () => {
             <div className="bg-white rounded p-2">
               <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3">
                 <h4 className="mb-0">Book Ambulance</h4>
-                <Button variant="primary" className="apt_accept_btn" onClick={() => setShowHistory(!showHistory)}>
-                  {showHistory ? 'Hide' : 'Show'} Ambulance History
+                <Button
+                  variant="primary"
+                  className="apt_accept_btn"
+                  onClick={() => setShowHistory(!showHistory)}
+                >
+                  {showHistory ? "Hide" : "Show"} Ambulance History
                 </Button>
               </div>
               {localStorage.getItem("amb_req_id") != null ? (
@@ -1290,7 +1385,10 @@ const D_AmbulanceRequest = () => {
                           {/* Passenger details (after locations, before vehicle) */}
                           {hasBothLocations && (
                             <div className="mt-3">
-                              <div className="d-flex align-items-center mb-2" style={{ color: "#374151" }}>
+                              <div
+                                className="d-flex align-items-center mb-2"
+                                style={{ color: "#374151" }}
+                              >
                                 <h6 className="m-0">Passenger Details</h6>
                               </div>
                               <Row className="g-3">
@@ -1299,7 +1397,12 @@ const D_AmbulanceRequest = () => {
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control
                                       value={details.name}
-                                      onChange={(e) => setDetails((p) => ({ ...p, name: e.target.value }))}
+                                      onChange={(e) =>
+                                        setDetails((p) => ({
+                                          ...p,
+                                          name: e.target.value,
+                                        }))
+                                      }
                                       placeholder="Full name"
                                     />
                                   </Form.Group>
@@ -1319,7 +1422,12 @@ const D_AmbulanceRequest = () => {
                                     <Form.Label>Pickup House No.</Form.Label>
                                     <Form.Control
                                       value={details.pickup_house_number}
-                                      onChange={(e) => setDetails((p) => ({ ...p, pickup_house_number: e.target.value }))}
+                                      onChange={(e) =>
+                                        setDetails((p) => ({
+                                          ...p,
+                                          pickup_house_number: e.target.value,
+                                        }))
+                                      }
                                       placeholder="House/Flat no."
                                     />
                                   </Form.Group>
@@ -1329,7 +1437,12 @@ const D_AmbulanceRequest = () => {
                                     <Form.Label>Drop House No.</Form.Label>
                                     <Form.Control
                                       value={details.drop_house_number}
-                                      onChange={(e) => setDetails((p) => ({ ...p, drop_house_number: e.target.value }))}
+                                      onChange={(e) =>
+                                        setDetails((p) => ({
+                                          ...p,
+                                          drop_house_number: e.target.value,
+                                        }))
+                                      }
                                       placeholder="House/Flat no."
                                     />
                                   </Form.Group>
@@ -1346,7 +1459,12 @@ const D_AmbulanceRequest = () => {
                                           label={opt}
                                           name="book_for"
                                           checked={details.book_for === opt}
-                                          onChange={() => setDetails((p) => ({ ...p, book_for: opt }))}
+                                          onChange={() =>
+                                            setDetails((p) => ({
+                                              ...p,
+                                              book_for: opt,
+                                            }))
+                                          }
                                         />
                                       ))}
                                     </div>
@@ -1411,8 +1529,9 @@ const D_AmbulanceRequest = () => {
                                       className={`text-center`}
                                     >
                                       <div
-                                        className={`p-2 border rounded h-100 d-flex flex-column justify-content-center ${selected ? "shadow-sm" : ""
-                                          }`}
+                                        className={`p-2 border rounded h-100 d-flex flex-column justify-content-center ${
+                                          selected ? "shadow-sm" : ""
+                                        }`}
                                         style={{
                                           cursor: "pointer",
                                           backgroundColor: selected
@@ -1425,7 +1544,7 @@ const D_AmbulanceRequest = () => {
                                             ambulance_type: opt.key,
                                             price:
                                               price !== undefined &&
-                                                price !== null
+                                              price !== null
                                                 ? Number(price)
                                                 : p.price,
                                           }))
@@ -1441,7 +1560,7 @@ const D_AmbulanceRequest = () => {
                                           <div>
                                             <div className="fw-semibold">
                                               {price !== undefined &&
-                                                price !== null
+                                              price !== null
                                                 ? `₹${price}`
                                                 : "—"}{" "}
                                             </div>
@@ -1488,25 +1607,29 @@ const D_AmbulanceRequest = () => {
             </div>
 
             {showHistory && (
-              <div className='appointments-card mb-3 mt-4'>
-              <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
-                <h4 className='mb-0'>Book Ambulance History</h4>
-                <Badge text='white' className='apt_accept_btn'>
-                  {ambulanceHistory ? ambulanceHistory.length : 0} Requests
-                </Badge>
+              <div className="appointments-card mb-3 mt-4">
+                <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3">
+                  <h4 className="mb-0">Book Ambulance History</h4>
+                  <Badge text="white" className="apt_accept_btn">
+                    {ambulanceHistory ? ambulanceHistory.length : 0} Requests
+                  </Badge>
+                </div>
+                <SmartDataTable
+                  className="appointments-table"
+                  columns={columns}
+                  data={ambulanceHistory || []}
+                  pagination
+                  customStyles={customTableStyles}
+                />
               </div>
-              <SmartDataTable
-                className="appointments-table"
-                columns={columns}
-                data={ambulanceHistory || []}
-                pagination
-                customStyles={customTableStyles}
-              />
-            </div>
             )}
           </Col>
         </Row>
-        <Modal show={isViewModalOpen} onHide={() => setIsViewModalOpen(false)} size="lg">
+        <Modal
+          show={isViewModalOpen}
+          onHide={() => setIsViewModalOpen(false)}
+          size="lg"
+        >
           <Modal.Header closeButton>
             <Modal.Title>Ambulance Details</Modal.Title>
           </Modal.Header>
@@ -1516,16 +1639,31 @@ const D_AmbulanceRequest = () => {
                 {/* Header */}
                 <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
                   <div className="text-muted">
-                    {selectedRequest.createdAt ? new Date(selectedRequest.createdAt).toLocaleString('en-US', { 
-                      weekday: 'short',
-                      month: 'short',
-                      day: 'numeric',
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      hour12: true
-                    }) : "Today, 4:42PM"}
+                    {selectedRequest.createdAt
+                      ? new Date(selectedRequest.createdAt).toLocaleString(
+                          "en-US",
+                          {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          }
+                        )
+                      : "Today, 4:42PM"}
                   </div>
-                  <Badge bg={selectedRequest?.status === "completed" ? "success" : selectedRequest?.status === "cancelled" ? "danger" : "warning"}>{selectedRequest?.status}</Badge>
+                  <Badge
+                    bg={
+                      selectedRequest?.status === "completed"
+                        ? "success"
+                        : selectedRequest?.status === "cancelled"
+                        ? "danger"
+                        : "warning"
+                    }
+                  >
+                    {selectedRequest?.status}
+                  </Badge>
                   <div className="fw-bold text-success">
                     ₹ {selectedRequest.price || "80"}
                   </div>
@@ -1537,10 +1675,13 @@ const D_AmbulanceRequest = () => {
                     <FaAmbulance className="text-primary me-3" size={24} />
                     <div className="flex-grow-1">
                       <div className="fw-semibold">
-                        {selectedRequest.acceptedAmbulance.fullname || "NandKumar Yadav"}
+                        {selectedRequest.acceptedAmbulance.fullname ||
+                          "NandKumar Yadav"}
                       </div>
                       <div className="text-muted small">
-                        Ambulance | {selectedRequest.acceptedAmbulance.vehicle_no || "GJ-05-TR-2859"}
+                        Ambulance |{" "}
+                        {selectedRequest.acceptedAmbulance.vehicle_no ||
+                          "GJ-05-TR-2859"}
                       </div>
                     </div>
                     {/* <FaArrowRight className="text-muted" /> */}
@@ -1557,9 +1698,12 @@ const D_AmbulanceRequest = () => {
                       </div>
                     </div>
                     <div className="flex-grow-1">
-                      <div className="text-muted small mb-1">Pickup Location</div>
+                      <div className="text-muted small mb-1">
+                        Pickup Location
+                      </div>
                       <div className="fw-medium">
-                        {selectedRequest.pickupaddress || "Sahajanand Business Hub, Yogi Cho..."}
+                        {selectedRequest.pickupaddress ||
+                          "Sahajanand Business Hub, Yogi Cho..."}
                       </div>
                     </div>
                   </div>
@@ -1574,7 +1718,8 @@ const D_AmbulanceRequest = () => {
                     <div className="flex-grow-1">
                       <div className="text-muted small mb-1">Drop Location</div>
                       <div className="fw-medium">
-                        {selectedRequest.dropaddress || "Savan Plaza, Savaliya Circle"}
+                        {selectedRequest.dropaddress ||
+                          "Savan Plaza, Savaliya Circle"}
                       </div>
                     </div>
                   </div>
@@ -1586,7 +1731,8 @@ const D_AmbulanceRequest = () => {
                     Total Distance {selectedRequest.distance || "5.2"} Km
                   </div>
                   <div className="text-muted small">
-                    Total Duration {Math.round((selectedRequest.distance || 5.2) * 5)} Min
+                    Total Duration{" "}
+                    {Math.round((selectedRequest.distance || 5.2) * 5)} Min
                   </div>
                 </div>
               </div>
@@ -1595,14 +1741,14 @@ const D_AmbulanceRequest = () => {
         </Modal>
       </Container>
       {loading ? <Loader /> : ""}
-      
+
       <style jsx>{`
         .ambulance-details-card {
           background: white;
           border-radius: 8px;
           overflow: hidden;
         }
-        
+
         .vertical-dashed-line {
           position: absolute;
           top: 20px;
@@ -1610,7 +1756,11 @@ const D_AmbulanceRequest = () => {
           transform: translateX(-50%);
           width: 2px;
           height: 40px;
-          background-image: linear-gradient(to bottom, #ccc 50%, transparent 50%);
+          background-image: linear-gradient(
+            to bottom,
+            #ccc 50%,
+            transparent 50%
+          );
           background-size: 2px 8px;
           background-repeat: repeat-y;
         }
