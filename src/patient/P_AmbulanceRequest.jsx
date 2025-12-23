@@ -327,129 +327,167 @@ const P_AmbulanceRequest = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchAddressSuggestions = async (type, query) => {
-    if (!query || query.trim().length < 3) {
-      if (type === "pickup") {
-        setPickupSuggestions([]);
-        setShowPickupSuggestions(false);
-      } else {
-        setDropSuggestions([]);
-        setShowDropSuggestions(false);
-      }
-      return;
-    }
-    try {
-      const map = await ensureMap();
-      const b = map.getBounds();
-      const viewbox = `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`;
-      const headers = { headers: { Accept: "application/json" } };
-      // Nearby (bounded) results
-      const nearbyUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&bounded=1&countrycodes=${encodeURIComponent(
-        countryCode
-      )}&viewbox=${encodeURIComponent(viewbox)}&q=${encodeURIComponent(query)}`;
-      // Global results (unbounded) for other cities
-      const globalUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&countrycodes=${encodeURIComponent(
-        countryCode
-      )}&q=${encodeURIComponent(query)}`;
-      const [nearRes, globalRes] = await Promise.all([
-        fetch(nearbyUrl, headers),
-        fetch(globalUrl, headers),
-      ]);
-      const near = await nearRes.json();
-      const global = await globalRes.json();
-      // Deduplicate by osm_id + lat/lon
-      const seen = new Set();
-      const dedup = (arr) =>
-        arr.filter((x) => {
-          const key = `${x.osm_id}-${x.lat}-${x.lon}`;
-          if (seen.has(key)) return false;
-          seen.add(key);
-          return true;
-        });
-      // Optionally prioritize current city in global results
-      const prioritizeCity = (arr) => {
-        if (!currentCity) return arr;
-        const matches = [];
-        const others = [];
-        for (const item of arr) {
-          const dn = (item.display_name || "").toLowerCase();
-          if (dn.includes(currentCity.toLowerCase())) matches.push(item);
-          else others.push(item);
-        }
-        return [...matches, ...others];
-      };
-      const suggestions = [
-        { group: "Nearby", items: Array.isArray(near) ? dedup(near) : [] },
-        {
-          group: "Other cities",
-          items: Array.isArray(global) ? prioritizeCity(dedup(global)) : [],
-        },
-      ];
-      if (type === "pickup") {
-        setPickupSuggestions(suggestions);
-        setShowPickupSuggestions(true);
-      } else {
-        setDropSuggestions(suggestions);
-        setShowDropSuggestions(true);
-      }
-    } catch (e) {
-      console.error("Suggest failed", e);
-      if (type === "pickup") {
-        setPickupSuggestions([]);
-        setShowPickupSuggestions(false);
-      } else {
-        setDropSuggestions([]);
-        setShowDropSuggestions(false);
-      }
-    }
-  };
-
-  const selectSuggestion = async (type, sug) => {
-    const lat = Number(Number(sug.lat).toFixed(6));
-    const lon = Number(Number(sug.lon).toFixed(6));
-    const display = sug.display_name || "";
-    const map = await ensureMap();
-    map.setCenter({ lat, lng: lon });
-    map.setZoom(14);
+ const fetchAddressSuggestions = async (type, query) => {
+  if (!query || query.trim().length < 3) {
     if (type === "pickup") {
-      if (pickupMarkerRef.current) {
-        pickupMarkerRef.current.setPosition({ lat, lng: lon });
-      } else {
-        const google = window.google;
-        pickupMarkerRef.current = new google.maps.Marker({
-          position: { lat, lng: lon },
-          map,
-        });
-      }
-      setForm((prev) => ({
-        ...prev,
-        pickup_latitude: lat,
-        pickup_longitude: lon,
-        pickupaddress: display,
-      }));
       setPickupSuggestions([]);
       setShowPickupSuggestions(false);
     } else {
-      if (dropMarkerRef.current) {
-        dropMarkerRef.current.setPosition({ lat, lng: lon });
-      } else {
-        const google = window.google;
-        dropMarkerRef.current = new google.maps.Marker({
-          position: { lat, lng: lon },
-          map,
-          icon: DROP_ICON_URL,
-        });
-      }
-      setForm((prev) => ({
-        ...prev,
-        drop_latitude: lat,
-        drop_longitude: lon,
-        dropaddress: display,
-      }));
       setDropSuggestions([]);
       setShowDropSuggestions(false);
     }
-  };
+    return;
+  }
+
+  if (!window.google || !window.google.maps) {
+    console.error("Google Maps JS not loaded");
+    return;
+  }
+
+  try {
+    const map = await ensureMap();
+    const center = map.getCenter();
+
+    const service = new window.google.maps.places.AutocompleteService();
+
+    service.getPlacePredictions(
+      {
+        input: query,
+        location: new window.google.maps.LatLng(center.lat(), center.lng()),
+        radius: 5000,
+        componentRestrictions: { country: "in" },
+      },
+      (predictions, status) => {
+        if (
+          status !== window.google.maps.places.PlacesServiceStatus.OK ||
+          !predictions
+        ) {
+          console.error("Places API error:", status);
+          return;
+        }
+
+        const items = predictions.map((p) => ({
+          place_id: p.place_id,
+          display_name: p.description,
+          lat: null,
+          lon: null,
+        }));
+
+        const suggestions = [{ group: "Suggestions", items }];
+
+        if (type === "pickup") {
+          setPickupSuggestions(suggestions);
+          setShowPickupSuggestions(true);
+        } else {
+          setDropSuggestions(suggestions);
+          setShowDropSuggestions(true);
+        }
+      }
+    );
+  } catch (e) {
+    console.error("Autocomplete failed", e);
+  }
+};
+
+const fetchPlaceDetails = (placeId) => {
+  if (!placeId || !window.google) return Promise.resolve(null);
+
+  return new Promise((resolve) => {
+    const service = new window.google.maps.places.PlacesService(
+      document.createElement("div")
+    );
+
+    service.getDetails(
+      {
+        placeId,
+        fields: ["geometry", "formatted_address", "name"],
+      },
+      (place, status) => {
+        if (
+          status !== window.google.maps.places.PlacesServiceStatus.OK ||
+          !place?.geometry?.location
+        ) {
+          console.error("Place details error:", status);
+          resolve(null);
+          return;
+        }
+
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+
+        resolve({
+          lat: Number(lat.toFixed(6)),
+          lon: Number(lng.toFixed(6)),
+          display_name: place.formatted_address || place.name || "",
+        });
+      }
+    );
+  });
+};
+
+ const selectSuggestion = async (type, sug) => {
+  let lat = sug.lat != null ? Number(Number(sug.lat).toFixed(6)) : null;
+  let lon = sug.lon != null ? Number(Number(sug.lon).toFixed(6)) : null;
+  let display = sug.display_name || "";
+
+  // If we only have place_id, fetch the coordinates
+  if ((!lat || !lon) && sug.place_id) {
+    const details = await fetchPlaceDetails(sug.place_id);
+    if (details) {
+      lat = details.lat;
+      lon = details.lon;
+      display = details.display_name || display;
+    }
+  }
+
+  if (!lat || !lon) {
+    console.warn("No coordinates available for selected suggestion", sug);
+    return;
+  }
+
+  const map = await ensureMap();
+  map.setCenter({ lat, lng: lon });
+  map.setZoom(14);
+
+  if (type === "pickup") {
+    if (pickupMarkerRef.current) {
+      pickupMarkerRef.current.setPosition({ lat, lng: lon });
+    } else {
+      const google = window.google;
+      pickupMarkerRef.current = new google.maps.Marker({
+        position: { lat, lng: lon },
+        map,
+      });
+    }
+    setForm((prev) => ({
+      ...prev,
+      pickup_latitude: lat,
+      pickup_longitude: lon,
+      pickupaddress: display,
+    }));
+    setPickupSuggestions([]);
+    setShowPickupSuggestions(false);
+  } else {
+    if (dropMarkerRef.current) {
+      dropMarkerRef.current.setPosition({ lat, lng: lon });
+    } else {
+      const google = window.google;
+      dropMarkerRef.current = new google.maps.Marker({
+        position: { lat, lng: lon },
+        map,
+        icon: DROP_ICON_URL,
+      });
+    }
+    setForm((prev) => ({
+      ...prev,
+      drop_latitude: lat,
+      drop_longitude: lon,
+      dropaddress: display,
+    }));
+    setDropSuggestions([]);
+    setShowDropSuggestions(false);
+  }
+};
 
   const getCurrentLocation = (type) => {
     if (!navigator.geolocation) {
@@ -632,6 +670,22 @@ const P_AmbulanceRequest = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [details.distance, token]);
+
+  useEffect(() => {
+  if (details.book_for === "myself" && patient) {
+    setDetails((prev) => ({
+      ...prev,
+      name: patient.name || "",
+      mobile: patient.mobile || "",
+    }));
+  } else if (details.book_for === "other" && patient) {
+    setDetails((prev) => ({
+      ...prev,
+      name: "",
+      mobile: "",
+    }));
+  }
+}, [details.book_for, patient]);
 
   const fetchPrice = async (type, distanceKm) => {
     if (!token) return;
@@ -988,6 +1042,14 @@ const P_AmbulanceRequest = () => {
   }
   ];
 
+    useEffect(() => {
+    // Only try to get current location if we don't already have pickup coordinates
+    if (!form.pickup_latitude || !form.pickup_longitude) {
+      getCurrentLocation("pickup");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   return (
 
@@ -1279,7 +1341,7 @@ const P_AmbulanceRequest = () => {
                                 value={form.drop_longitude}
                                 readOnly
                               />
-                              <Button
+                              {/* <Button
                                 variant="outline-primary"
                                 size="sm"
                                 type="button"
@@ -1287,7 +1349,7 @@ const P_AmbulanceRequest = () => {
                               >
                                 <FaLocationArrow className="me-2" /> Use Current
                                 Location
-                              </Button>
+                              </Button> */}
                             </Col>
                           </Row>
 
