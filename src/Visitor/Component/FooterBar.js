@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { MdCall, MdMail } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { FaLocationDot } from "react-icons/fa6";
 import "../css/visitor.css";
 
 const FooterBar = () => {
@@ -78,12 +79,16 @@ const FooterBar = () => {
             <div className="contact-info">
               <p>
                 <MdCall className="me-2" />
-                +91 81412 61261
+                +91 8087161522
               </p>
               <p>
                 <MdMail className="me-2" />
-                info@healtheasyemi.com
+                healtheasyemi@gmail.com
               </p>
+               <p>
+                <FaLocationDot className="me-2" />
+                Office no.23, 3rd Floor, Aston Plaza, Narhe Ambegaon Rd, above Star Bazaar, Ambegaon Budruk, Pune, Maharashtra 411046
+               </p>
             </div>
             <div className="social-links">
               <a className="social-icon">

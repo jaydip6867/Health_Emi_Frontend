@@ -1105,13 +1105,13 @@ const D_AmbulanceRequest = () => {
             <div className="bg-white rounded p-2">
               <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3">
                 <h4 className="mb-0">Book Ambulance</h4>
-                <Button
+                {/* <Button
                   variant="primary"
                   className="apt_accept_btn"
                   onClick={() => setShowHistory(!showHistory)}
                 >
                   {showHistory ? "Hide" : "Show"} Ambulance History
-                </Button>
+                </Button> */}
               </div>
               {localStorage.getItem("amb_req_id") != null ? (
                 <div className="d-flex justify-content-end mt-2">

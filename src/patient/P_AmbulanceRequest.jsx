@@ -1063,9 +1063,9 @@ const fetchPlaceDetails = (placeId) => {
             <Col xs={12} lg={9} className="p-4">
               <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3">
                 <h4 className="mb-0">Book Ambulance</h4>
-                <Button variant="primary" className="apt_accept_btn" onClick={() => setShowHistory(!showHistory)}>
+                {/* <Button variant="primary" className="apt_accept_btn" onClick={() => setShowHistory(!showHistory)}>
                   {showHistory ? 'Hide' : 'Show'} Ambulance History
-                </Button>
+                </Button> */}
               </div>
 
               <Row>
