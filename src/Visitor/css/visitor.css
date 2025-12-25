@@ -470,7 +470,7 @@ h6 {
 }
 
 /* Login/Signup Button Styles */
-.login-signup-btn {
+.login-signup-btn ,.btn-sky-gradint{
     display: inline-block;
     padding: 0.5rem 1.25rem;
     border-radius: 26px;
@@ -480,6 +480,13 @@ h6 {
     transition: all 0.3s ease;
     text-decoration: none;
 }
+
+.btn-sky-gradint {
+   
+    border-radius: 8px;
+  
+}
+
 
 
 /* Dropdown Styles */

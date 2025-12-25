@@ -8,6 +8,18 @@
     width: 60%;
 }
 
+.bg-secondary-muted{
+    background-color: #e1e6ea;
+}
+.text-amb-label{
+    font-size: 14px;
+    color: #9CA3AF;
+}
+
+.text-amb-control{
+    font-size: 14px;
+}
+
 .doctor_testi_content h4 {
     color: #223F99;
     font-size: 32px;

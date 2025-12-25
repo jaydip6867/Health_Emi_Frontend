@@ -68,7 +68,7 @@ const D_AmbulanceRequest = () => {
   const [loading, setLoading] = useState(false);
   const [doctor, setDoctor] = useState(null);
   const [token, setToken] = useState(null);
-
+  const [isAddressConfirmed, setIsAddressConfirmed] = useState(false);
   const [ambulanceHistory, setAmbulanceHistory] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -421,7 +421,7 @@ const D_AmbulanceRequest = () => {
     } else if (details.book_for === "other" && doctor) {
       setDetails((prev) => ({
         ...prev,
-        name:  "",
+        name: "",
         mobile: "",
       }));
     }
@@ -947,50 +947,6 @@ const D_AmbulanceRequest = () => {
       .finally(() => setLoading(false));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) {
-      Swal.fire({
-        title: "Please select pickup and drop locations",
-        icon: "warning",
-      });
-      return;
-    }
-    const dist = haversineKm(
-      Number(form.pickup_latitude),
-      Number(form.pickup_longitude),
-      Number(form.drop_latitude),
-      Number(form.drop_longitude)
-    );
-    const nextDetails = { ...details, distance: dist };
-    setDetails(nextDetails);
-    if (!nextDetails.name || !nextDetails.mobile) {
-      Swal.fire({ title: "Enter passenger name and mobile", icon: "warning" });
-      return;
-    }
-    if (!/^\d{10}$/.test(String(nextDetails.mobile))) {
-      Swal.fire({
-        title: "Enter valid 10-digit mobile number",
-        icon: "warning",
-      });
-      return;
-    }
-    if (!nextDetails.ambulance_type) {
-      Swal.fire({ title: "Please select a vehicle", icon: "warning" });
-      return;
-    }
-    if (
-      nextDetails.price === "" ||
-      nextDetails.price === null ||
-      nextDetails.price === undefined ||
-      isNaN(Number(nextDetails.price))
-    ) {
-      Swal.fire({ title: "Select vehicle to get fare", icon: "warning" });
-      return;
-    }
-    performSave(dist);
-  };
-
   const hasBothLocations =
     !!form.pickupaddress &&
     !!form.dropaddress &&
@@ -998,7 +954,6 @@ const D_AmbulanceRequest = () => {
     !!form.pickup_longitude &&
     !!form.drop_latitude &&
     !!form.drop_longitude;
-
   const mobileValid = /^\d{10}$/.test(String(details.mobile || ""));
   const priceValid = !(
     details.price === "" ||
@@ -1006,14 +961,80 @@ const D_AmbulanceRequest = () => {
     details.price === undefined ||
     isNaN(Number(details.price))
   );
-  const showVehicle = hasBothLocations && !!details.name && mobileValid;
+  // Step 1: after confirm address
+  const showVehicle =
+    isAddressConfirmed && hasBothLocations && !!details.name && mobileValid;
+  // Step 2: final request
   const canSubmit =
+    isAddressConfirmed &&
     hasBothLocations &&
     !!details.ambulance_type &&
     !!details.name &&
     mobileValid &&
     priceValid;
 
+  const handleConfirmAddress = (e) => {
+    e.preventDefault();
+
+    if (!hasBothLocations) {
+      Swal.fire({
+        title: "Please select pickup and drop locations",
+        icon: "warning",
+      });
+      return;
+    }
+
+    if (!details.name || !details.mobile) {
+      Swal.fire({
+        title: "Enter passenger name and mobile",
+        icon: "warning",
+      });
+      return;
+    }
+
+    if (!mobileValid) {
+      Swal.fire({
+        title: "Enter valid 10-digit mobile number",
+        icon: "warning",
+      });
+      return;
+    }
+
+    // distance will already be calculated by the effect using form coordinates
+    setIsAddressConfirmed(true);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!isAddressConfirmed) {
+      // Safety: should not happen if button is disabled correctly
+      Swal.fire({ title: "Please confirm address first", icon: "warning" });
+      return;
+    }
+
+    if (!details.ambulance_type) {
+      Swal.fire({ title: "Please select a vehicle", icon: "warning" });
+      return;
+    }
+
+    if (!priceValid) {
+      Swal.fire({ title: "Select vehicle to get fare", icon: "warning" });
+      return;
+    }
+
+    const dist = haversineKm(
+      Number(form.pickup_latitude),
+      Number(form.pickup_longitude),
+      Number(form.drop_latitude),
+      Number(form.drop_longitude)
+    );
+
+    const nextDetails = { ...details, distance: dist };
+    setDetails(nextDetails);
+
+    await performSave(dist);
+  };
   // Table columns configuration for SmartDataTable
   const customTableStyles = {
     table: {
@@ -1139,7 +1160,7 @@ const D_AmbulanceRequest = () => {
                 </div>
               ) : (
                 <Row>
-                  <Col xs={12} md={5}>
+                  <Col xs={12} md={8}>
                     {/* Map + Geocoder */}
                     <Card className="mt-3 shadow-sm border-0">
                       <Card.Header className="bg-light d-flex flex-wrap gap-2 align-items-center">
@@ -1170,220 +1191,341 @@ const D_AmbulanceRequest = () => {
                         />
                       </Card.Body>
                     </Card>
-                    
                   </Col>
-                  <Col xs={12} md={7}>
+                  <Col xs={12} md={4} className="p-0">
                     {/* Form of ambulace */}
-                    <Card className="mt-3 shadow-sm border-0">
-                      <Card.Body className="p-4">
-                        <Form onSubmit={handleSubmit}>
-                          <Row>
-                            <Col md={6} className="mb-4">
-                              <div
-                                className="d-flex align-items-center mb-2"
-                                style={{ color: "#374151" }}
-                              >
-                                <FaMapMarkerAlt className="me-2" />
-                                <h6 className="m-0">Pickup Location</h6>
-                              </div>
-                              <Form.Group className="mb-3 position-relative">
-                                <Form.Label>Pickup Address</Form.Label>
-                                <Form.Control
-                                  type="text"
-                                  placeholder="Search pickup address"
-                                  name="pickupaddress"
-                                  value={form.pickupaddress}
-                                  onChange={onChange}
-                                  onFocus={() => {
-                                    setActiveType("pickup");
-                                    if (
-                                      form.pickupaddress &&
-                                      form.pickupaddress.length >= 3
-                                    ) {
-                                      setShowPickupSuggestions(true);
-                                      if (
-                                        !pickupSuggestions ||
-                                        pickupSuggestions.length === 0
-                                      ) {
-                                        fetchAddressSuggestions(
-                                          "pickup",
-                                          form.pickupaddress
-                                        );
-                                      }
-                                    }
-                                  }}
-                                  onBlur={() =>
-                                    setTimeout(
-                                      () => setShowPickupSuggestions(false),
-                                      150
-                                    )
-                                  }
-                                  onKeyDown={(e) => {
-                                    if (e.key === "Escape")
-                                      setShowPickupSuggestions(false);
-                                  }}
-                                  autoComplete="off"
-                                />
-                                {showPickupSuggestions &&
-                                  pickupSuggestions.length > 0 && (
+                    <div className="rounded p-3 mt-3 bg-secondary-muted">
+                      <Form
+                        onSubmit={
+                          isAddressConfirmed
+                            ? handleSubmit
+                            : handleConfirmAddress
+                        }
+                      >
+                        {!isAddressConfirmed && (
+                          <div>
+                            <Card className=" shadow-sm border-0">
+                              <Card.Body className="px-3">
+                                <Row>
+                                  <Col md={12}>
                                     <div
-                                      className="bg-white border rounded shadow position-absolute w-100"
-                                      style={{
-                                        zIndex: 1050,
-                                        maxHeight: 260,
-                                        overflowY: "auto",
-                                      }}
+                                      className="d-flex align-items-center "
+                                      style={{ color: "#374151" }}
                                     >
-                                      {pickupSuggestions.map((group, gIdx) => (
-                                        <div key={`p-group-${gIdx}`}>
-                                          <div className="px-2 py-1 small text-muted bg-light">
-                                            {group.group}
-                                          </div>
-                                          {group.items.map((sug, idx) => (
-                                            <div
-                                              key={`p-${sug.osm_id}-${idx}`}
-                                              className="p-2 suggestion-item"
-                                              style={{ cursor: "pointer" }}
-                                              onMouseDown={(e) => {
-                                                e.preventDefault();
-                                                selectSuggestion("pickup", sug);
-                                              }}
-                                            >
-                                              <div
-                                                className="fw-semibold"
-                                                style={{ fontSize: "0.9rem" }}
-                                              >
-                                                {sug.display_name}
-                                              </div>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      ))}
+                                      <FaMapMarkerAlt className="me-2" />
+                                      <h6 className="m-0">Pickup </h6>
                                     </div>
-                                  )}
-                              </Form.Group>
-                              {/* Hidden fields for pickup coordinates (not shown to user) */}
-                              <Form.Control
-                                type="hidden"
-                                name="pickup_latitude"
-                                value={form.pickup_latitude}
-                                readOnly
-                              />
-                              <Form.Control
-                                type="hidden"
-                                name="pickup_longitude"
-                                value={form.pickup_longitude}
-                                readOnly
-                              />
-                              <Button
-                                variant="outline-primary"
-                                size="sm"
-                                type="button"
-                                onClick={() => getCurrentLocation("pickup")}
-                              >
-                                <FaLocationArrow className="me-2" /> Use Current
-                                Location
-                              </Button>
-                            </Col>
+                                    <Form.Group className="py-2 position-relative">
+                                      <Form.Label className="text-amb-label m-0">
+                                        Select pickup Location
+                                      </Form.Label>
+                                      <Form.Control
+                                        className="text-amb-control"
+                                        type="text"
+                                        placeholder="Search pickup address"
+                                        name="pickupaddress"
+                                        value={form.pickupaddress}
+                                        onChange={onChange}
+                                        onFocus={() => {
+                                          setActiveType("pickup");
+                                          if (
+                                            form.pickupaddress &&
+                                            form.pickupaddress.length >= 3
+                                          ) {
+                                            setShowPickupSuggestions(true);
+                                            if (
+                                              !pickupSuggestions ||
+                                              pickupSuggestions.length === 0
+                                            ) {
+                                              fetchAddressSuggestions(
+                                                "pickup",
+                                                form.pickupaddress
+                                              );
+                                            }
+                                          }
+                                        }}
+                                        onBlur={() =>
+                                          setTimeout(
+                                            () =>
+                                              setShowPickupSuggestions(false),
+                                            150
+                                          )
+                                        }
+                                        onKeyDown={(e) => {
+                                          if (e.key === "Escape")
+                                            setShowPickupSuggestions(false);
+                                        }}
+                                        autoComplete="off"
+                                      />
+                                      {showPickupSuggestions &&
+                                        pickupSuggestions.length > 0 && (
+                                          <div
+                                            className="bg-white border rounded shadow position-absolute w-100"
+                                            style={{
+                                              zIndex: 1050,
+                                              maxHeight: 260,
+                                              overflowY: "auto",
+                                            }}
+                                          >
+                                            {pickupSuggestions.map(
+                                              (group, gIdx) => (
+                                                <div key={`p-group-${gIdx}`}>
+                                                  <div className="px-2 py-1 small text-muted bg-light">
+                                                    {group.group}
+                                                  </div>
+                                                  {group.items.map(
+                                                    (sug, idx) => (
+                                                      <div
+                                                        key={`p-${sug.osm_id}-${idx}`}
+                                                        className="p-2 suggestion-item"
+                                                        style={{
+                                                          cursor: "pointer",
+                                                        }}
+                                                        onMouseDown={(e) => {
+                                                          e.preventDefault();
+                                                          selectSuggestion(
+                                                            "pickup",
+                                                            sug
+                                                          );
+                                                        }}
+                                                      >
+                                                        <div
+                                                          className="fw-semibold"
+                                                          style={{
+                                                            fontSize: "0.9rem",
+                                                          }}
+                                                        >
+                                                          {sug.display_name}
+                                                        </div>
+                                                      </div>
+                                                    )
+                                                  )}
+                                                </div>
+                                              )
+                                            )}
+                                          </div>
+                                        )}
+                                    </Form.Group>
+                                    {/* Hidden fields for pickup coordinates (not shown to user) */}
+                                    <Form.Control
+                                      type="hidden"
+                                      name="pickup_latitude"
+                                      value={form.pickup_latitude}
+                                      readOnly
+                                    />
+                                    <Form.Control
+                                      type="hidden"
+                                      name="pickup_longitude"
+                                      value={form.pickup_longitude}
+                                      readOnly
+                                    />
+                                  </Col>
 
-                            <Col md={6} className="mb-4">
-                              <div
-                                className="d-flex align-items-center mb-2"
-                                style={{ color: "#374151" }}
-                              >
-                                <FaRoute className="me-2" />
-                                <h6 className="m-0">Drop Location</h6>
-                              </div>
-                              <Form.Group className="mb-3 position-relative">
-                                <Form.Label>Drop Address</Form.Label>
-                                <Form.Control
-                                  type="text"
-                                  placeholder="Search drop address"
-                                  name="dropaddress"
-                                  value={form.dropaddress}
-                                  onChange={onChange}
-                                  onFocus={() => {
-                                    setActiveType("drop");
-                                    if (
-                                      form.dropaddress &&
-                                      form.dropaddress.length >= 3
-                                    ) {
-                                      setShowDropSuggestions(true);
-                                      if (
-                                        !dropSuggestions ||
-                                        dropSuggestions.length === 0
-                                      ) {
-                                        fetchAddressSuggestions(
-                                          "drop",
-                                          form.dropaddress
-                                        );
-                                      }
-                                    }
-                                  }}
-                                  onBlur={() =>
-                                    setTimeout(
-                                      () => setShowDropSuggestions(false),
-                                      150
-                                    )
-                                  }
-                                  onKeyDown={(e) => {
-                                    if (e.key === "Escape")
-                                      setShowDropSuggestions(false);
-                                  }}
-                                  autoComplete="off"
-                                />
-                                {showDropSuggestions &&
-                                  dropSuggestions.length > 0 && (
+                                  <Col md={12} className="py-2">
+                                    <Form.Group>
+                                      <Form.Label className="text-amb-label m-0">
+                                        Pickup Address.
+                                      </Form.Label>
+                                      <Form.Control
+                                        value={details.pickup_house_number}
+                                        onChange={(e) =>
+                                          setDetails((p) => ({
+                                            ...p,
+                                            pickup_house_number: e.target.value,
+                                          }))
+                                        }
+                                        className="text-amb-control"
+                                        placeholder="House no."
+                                      />
+                                    </Form.Group>
+                                  </Col>
+
+                                  <Col md={12}>
+                                    <Form.Group>
+                                      <Form.Label className="text-amb-label m-0">
+                                        Why Books
+                                      </Form.Label>
+                                      <div>
+                                        {["myself", "other"].map((opt) => (
+                                          <Form.Check
+                                            className="text-amb-control"
+                                            inline
+                                            key={opt}
+                                            type="radio"
+                                            label={opt}
+                                            name="book_for"
+                                            checked={details.book_for === opt}
+                                            onChange={() =>
+                                              setDetails((p) => ({
+                                                ...p,
+                                                book_for: opt,
+                                              }))
+                                            }
+                                          />
+                                        ))}
+                                      </div>
+                                    </Form.Group>
+                                  </Col>
+
+                                  <div
+                                    style={{
+                                      display:
+                                        details.book_for == "myself"
+                                          ? "none"
+                                          : "block",
+                                    }}
+                                  >
+                                    <Col md={12}>
+                                      <Form.Group className="my-2">
+                                        <Form.Label className="m-0 text-amb-label">
+                                          Name
+                                        </Form.Label>
+                                        <Form.Control
+                                          value={details.name}
+                                          onChange={(e) =>
+                                            setDetails((p) => ({
+                                              ...p,
+                                              name: e.target.value,
+                                            }))
+                                          }
+                                          className="text-amb-control"
+                                          placeholder="Enter name"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+
+                                    <Col md={12}>
+                                      <Form.Group className="my-2">
+                                        <Form.Label className="text-amb-label m-0 ">
+                                          Mobile Number
+                                        </Form.Label>
+                                        <Form.Control
+                                          value={details.mobile}
+                                          onChange={handleMobileChange}
+                                          placeholder="can add from contact list"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                  </div>
+                                </Row>
+                              </Card.Body>
+                            </Card>
+
+                            <Card className=" shadow-sm border-0 my-3">
+                              <Card.Body className="px-3">
+                                <Row>
+                                  <Col md={12} className="py-2">
                                     <div
-                                      className="bg-white border rounded shadow position-absolute w-100"
-                                      style={{
-                                        zIndex: 1050,
-                                        maxHeight: 260,
-                                        overflowY: "auto",
-                                      }}
+                                      className="d-flex align-items-center mb-2"
+                                      style={{ color: "#374151" }}
                                     >
-                                      {dropSuggestions.map((group, gIdx) => (
-                                        <div key={`d-group-${gIdx}`}>
-                                          <div className="px-2 py-1 small text-muted bg-light">
-                                            {group.group}
-                                          </div>
-                                          {group.items.map((sug, idx) => (
-                                            <div
-                                              key={`d-${sug.osm_id}-${idx}`}
-                                              className="p-2 suggestion-item"
-                                              style={{ cursor: "pointer" }}
-                                              onMouseDown={(e) => {
-                                                e.preventDefault();
-                                                selectSuggestion("drop", sug);
-                                              }}
-                                            >
-                                              <div
-                                                className="fw-semibold"
-                                                style={{ fontSize: "0.9rem" }}
-                                              >
-                                                {sug.display_name}
-                                              </div>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      ))}
+                                      <FaRoute className="me-2" />
+                                      <h6 className="m-0">Drop</h6>
                                     </div>
-                                  )}
-                              </Form.Group>
-                              {/* Hidden fields for drop coordinates (not shown to user) */}
-                              <Form.Control
-                                type="hidden"
-                                name="drop_latitude"
-                                value={form.drop_latitude}
-                                readOnly
-                              />
-                              <Form.Control
-                                type="hidden"
-                                name="drop_longitude"
-                                value={form.drop_longitude}
-                                readOnly
-                              />
-                              {/* <Button
+                                    <Form.Group className=" position-relative">
+                                      <Form.Label className="text-amb-label m-0">
+                                        Select Drop Location
+                                      </Form.Label>
+                                      <Form.Control
+                                        className="text-amb-control"
+                                        type="text"
+                                        placeholder="Search drop address"
+                                        name="dropaddress"
+                                        value={form.dropaddress}
+                                        onChange={onChange}
+                                        onFocus={() => {
+                                          setActiveType("drop");
+                                          if (
+                                            form.dropaddress &&
+                                            form.dropaddress.length >= 3
+                                          ) {
+                                            setShowDropSuggestions(true);
+                                            if (
+                                              !dropSuggestions ||
+                                              dropSuggestions.length === 0
+                                            ) {
+                                              fetchAddressSuggestions(
+                                                "drop",
+                                                form.dropaddress
+                                              );
+                                            }
+                                          }
+                                        }}
+                                        onBlur={() =>
+                                          setTimeout(
+                                            () => setShowDropSuggestions(false),
+                                            150
+                                          )
+                                        }
+                                        onKeyDown={(e) => {
+                                          if (e.key === "Escape")
+                                            setShowDropSuggestions(false);
+                                        }}
+                                        autoComplete="off"
+                                      />
+                                      {showDropSuggestions &&
+                                        dropSuggestions.length > 0 && (
+                                          <div
+                                            className="bg-white border rounded shadow position-absolute w-100"
+                                            style={{
+                                              zIndex: 1050,
+                                              maxHeight: 260,
+                                              overflowY: "auto",
+                                            }}
+                                          >
+                                            {dropSuggestions.map(
+                                              (group, gIdx) => (
+                                                <div key={`d-group-${gIdx}`}>
+                                                  <div className="px-2 py-1 small text-muted bg-light">
+                                                    {group.group}
+                                                  </div>
+                                                  {group.items.map(
+                                                    (sug, idx) => (
+                                                      <div
+                                                        key={`d-${sug.osm_id}-${idx}`}
+                                                        className="p-2 suggestion-item"
+                                                        style={{
+                                                          cursor: "pointer",
+                                                        }}
+                                                        onMouseDown={(e) => {
+                                                          e.preventDefault();
+                                                          selectSuggestion(
+                                                            "drop",
+                                                            sug
+                                                          );
+                                                        }}
+                                                      >
+                                                        <div
+                                                          className="fw-semibold"
+                                                          style={{
+                                                            fontSize: "0.9rem",
+                                                          }}
+                                                        >
+                                                          {sug.display_name}
+                                                        </div>
+                                                      </div>
+                                                    )
+                                                  )}
+                                                </div>
+                                              )
+                                            )}
+                                          </div>
+                                        )}
+                                    </Form.Group>
+                                    {/* Hidden fields for drop coordinates (not shown to user) */}
+                                    <Form.Control
+                                      type="hidden"
+                                      name="drop_latitude"
+                                      value={form.drop_latitude}
+                                      readOnly
+                                    />
+                                    <Form.Control
+                                      type="hidden"
+                                      name="drop_longitude"
+                                      value={form.drop_longitude}
+                                      readOnly
+                                    />
+                                    {/* <Button
                                 variant="outline-primary"
                                 size="sm"
                                 type="button"
@@ -1392,228 +1534,160 @@ const D_AmbulanceRequest = () => {
                                 <FaLocationArrow className="me-2" /> Use Current
                                 Location
                               </Button> */}
-                            </Col>
-                          </Row>
-
-                          {/* Passenger details (after locations, before vehicle) */}
-                          {hasBothLocations && (
-                            <div className="mt-3">
-                              <div
-                                className="d-flex align-items-center mb-2"
-                                style={{ color: "#374151" }}
-                              >
-                                <h6 className="m-0">Passenger Details</h6>
-                              </div>
-                              <Row className="g-3">
-                                <Col md={6}>
-                                  <Form.Group>
-                                    <Form.Label>Name</Form.Label>
-                                    <Form.Control
-                                      value={details.name}
-                                      onChange={(e) =>
-                                        setDetails((p) => ({
-                                          ...p,
-                                          name: e.target.value,
-                                        }))
-                                      }
-                                      placeholder="Full name"
-                                    />
-                                  </Form.Group>
-                                </Col>
-                                <Col md={6}>
-                                  <Form.Group>
-                                    <Form.Label>Mobile</Form.Label>
-                                    <Form.Control
-                                      value={details.mobile}
-                                      onChange={handleMobileChange}
-                                      placeholder="e.g. 9876543210"
-                                    />
-                                  </Form.Group>
-                                </Col>
-                                <Col md={6}>
-                                  <Form.Group>
-                                    <Form.Label>Pickup House No.</Form.Label>
-                                    <Form.Control
-                                      value={details.pickup_house_number}
-                                      onChange={(e) =>
-                                        setDetails((p) => ({
-                                          ...p,
-                                          pickup_house_number: e.target.value,
-                                        }))
-                                      }
-                                      placeholder="House/Flat no."
-                                    />
-                                  </Form.Group>
-                                </Col>
-                                <Col md={6}>
-                                  <Form.Group>
-                                    <Form.Label>Drop House No.</Form.Label>
-                                    <Form.Control
-                                      value={details.drop_house_number}
-                                      onChange={(e) =>
-                                        setDetails((p) => ({
-                                          ...p,
-                                          drop_house_number: e.target.value,
-                                        }))
-                                      }
-                                      placeholder="House/Flat no."
-                                    />
-                                  </Form.Group>
-                                </Col>
-                                <Col md={12}>
-                                  <Form.Group>
-                                    <Form.Label>Book For</Form.Label>
-                                    <div>
-                                      {["myself", "other"].map((opt) => (
-                                        <Form.Check
-                                          inline
-                                          key={opt}
-                                          type="radio"
-                                          label={opt}
-                                          name="book_for"
-                                          checked={details.book_for === opt}
-                                          onChange={() =>
-                                            setDetails((p) => ({
-                                              ...p,
-                                              book_for: opt,
-                                            }))
-                                          }
-                                        />
-                                      ))}
-                                    </div>
-                                  </Form.Group>
-                                </Col>
-                              </Row>
-                            </div>
-                          )}
-
-                          {showVehicle && (
-                            <div className="mt-3">
-                              <div
-                                className="d-flex align-items-center justify-content-between mb-2"
-                                style={{ color: "#374151" }}
-                              >
-                                <div className="d-flex align-items-center">
-                                  <FaAmbulance className="me-2" />
-                                  <h6 className="m-0">Select Vehicle</h6>
-                                </div>
-                                <div className="small text-muted"></div>
-                              </div>
-                              <Row className="bg-white g-3">
-                                {[
-                                  // { key: "Ambulance", label: "Ambulance", icon: <FaAmbulance size={28} className="me-3" />, sub: "Emergency medical van" },
-                                  // { key: "Bike", label: "Bike", icon: <FaMotorcycle size={28} className="me-3" />, sub: "Beat the traffic on a bike" },
-                                  // { key: "Rickshaw", label: "Rickshaw", icon: <FaCar size={28} className="me-3" />, sub: "Quick auto ride in town" },
-                                  // { key: "Cab", label: "Cab", icon: <FaCar size={28} className="me-3" />, sub: "Comfy, economical cars" },
-                                  {
-                                    key: "Ambulance",
-                                    label: "Ambulance",
-                                    icon: require("../Visitor/assets/icon/ambulance_icon.png"),
-                                    sub: "Emergency medical van",
-                                  },
-                                  {
-                                    key: "Bike",
-                                    label: "Bike",
-                                    icon: require("../Visitor/assets/icon/bike_icon.png"),
-                                    sub: "Beat the traffic on a bike",
-                                  },
-                                  {
-                                    key: "Rickshaw",
-                                    label: "Rickshaw",
-                                    icon: require("../Visitor/assets/icon/rikshaw_icon.png"),
-                                    sub: "Quick auto ride in town",
-                                  },
-                                  {
-                                    key: "Cab",
-                                    label: "Cab",
-                                    icon: require("../Visitor/assets/icon/car_icon.png"),
-                                    sub: "Comfy, economical cars",
-                                  },
-                                ].map((opt, idx) => {
-                                  const price = vehiclePrices
-                                    ? vehiclePrices[opt.key]
-                                    : null;
-                                  const selected =
-                                    details.ambulance_type === opt.key;
-                                  return (
-                                    <Col
-                                      xs={6}
-                                      key={opt.key}
-                                      className={`text-center`}
-                                    >
-                                      <div
-                                        className={`p-2 border rounded h-100 d-flex flex-column justify-content-center ${
-                                          selected ? "shadow-sm" : ""
-                                        }`}
-                                        style={{
-                                          cursor: "pointer",
-                                          backgroundColor: selected
-                                            ? "#EEF2FF"
-                                            : "#fff",
-                                        }}
-                                        onClick={() =>
+                                  </Col>
+                                  <Col md={12} className="py-2">
+                                    <Form.Group>
+                                      <Form.Label className="m-0 text-amb-label">
+                                        Drop Adress.
+                                      </Form.Label>
+                                      <Form.Control
+                                        className="text-amb-control"
+                                        value={details.drop_house_number}
+                                        onChange={(e) =>
                                           setDetails((p) => ({
                                             ...p,
-                                            ambulance_type: opt.key,
-                                            price:
-                                              price !== undefined &&
-                                              price !== null
-                                                ? Number(price)
-                                                : p.price,
+                                            drop_house_number: e.target.value,
                                           }))
                                         }
-                                      >
-                                        <div className="text-center">
-                                          <img
-                                            src={opt.icon}
-                                            alt="ambulance image"
-                                            className="mx-auto mb-2"
-                                            style={{ maxHeight: "35px" }}
-                                          />
-                                          <div>
-                                            <div className="fw-semibold">
-                                              {price !== undefined &&
-                                              price !== null
-                                                ? `₹${price}`
-                                                : "—"}{" "}
-                                            </div>
-                                            <div className="fw-semibold badge text-bg-dark">
-                                              {opt.label}
-                                            </div>
-                                            {/* <div className="text-muted" style={{ fontSize: "0.8rem" }}>{opt.sub}</div> */}
+                                        placeholder="House no."
+                                      />
+                                    </Form.Group>
+                                  </Col>
+                                </Row>
+                              </Card.Body>
+                            </Card>
+                          </div>
+                        )}
+
+                        {/* Passenger details (after locations, before vehicle) hasBothLocations */}
+
+                        {showVehicle && (
+                          <div className="">
+                            <div className="d-flex justify-content-center">
+                              <h2 className="m-0 text-amb-label py-2">
+                                Select Vehicle{" "}
+                              </h2>
+                            </div>
+
+                            <Row className="my-2 g-3">
+                              {[
+                                // { key: "Ambulance", label: "Ambulance", icon: <FaAmbulance size={28} className="me-3" />, sub: "Emergency medical van" },
+                                // { key: "Bike", label: "Bike", icon: <FaMotorcycle size={28} className="me-3" />, sub: "Beat the traffic on a bike" },
+                                // { key: "Rickshaw", label: "Rickshaw", icon: <FaCar size={28} className="me-3" />, sub: "Quick auto ride in town" },
+                                // { key: "Cab", label: "Cab", icon: <FaCar size={28} className="me-3" />, sub: "Comfy, economical cars" },
+                                {
+                                  key: "Ambulance",
+                                  label: "Ambulance",
+                                  icon: require("../Visitor/assets/icon/ambulance_icon.png"),
+                                  sub: "Emergency medical van",
+                                },
+                                {
+                                  key: "Bike",
+                                  label: "Bike",
+                                  icon: require("../Visitor/assets/icon/bike_icon.png"),
+                                  sub: "Beat the traffic on a bike",
+                                },
+                                {
+                                  key: "Rickshaw",
+                                  label: "Rickshaw",
+                                  icon: require("../Visitor/assets/icon/rikshaw_icon.png"),
+                                  sub: "Quick auto ride in town",
+                                },
+                                {
+                                  key: "Cab",
+                                  label: "Cab",
+                                  icon: require("../Visitor/assets/icon/car_icon.png"),
+                                  sub: "Comfy, economical cars",
+                                },
+                              ].map((opt, idx) => {
+                                const price = vehiclePrices
+                                  ? vehiclePrices[opt.key]
+                                  : null;
+                                const selected =
+                                  details.ambulance_type === opt.key;
+                                return (
+                                  <Col
+                                    xs={6}
+                                    key={opt.key}
+                                    className="text-center m-0 p-2"
+                                  >
+                                    <div
+                                      className={`p-2 border rounded h-100 d-flex flex-column justify-content-center ${
+                                        selected ? "shadow-sm" : ""
+                                      }`}
+                                      style={{
+                                        cursor: "pointer",
+                                        backgroundColor: selected
+                                          ? "#dfe6ffff"
+                                          : "#fff",
+                                      }}
+                                      onClick={() =>
+                                        setDetails((p) => ({
+                                          ...p,
+                                          ambulance_type: opt.key,
+                                          price:
+                                            price !== undefined &&
+                                            price !== null
+                                              ? Number(price)
+                                              : p.price,
+                                        }))
+                                      }
+                                    >
+                                      <div className="text-center">
+                                        <img
+                                          src={opt.icon}
+                                          alt="ambulance image"
+                                          className="mx-auto  my-2"
+                                          style={{ maxHeight: "35px" }}
+                                        />
+                                        <div>
+                                          <div className="fw-semibold py-2">
+                                            {price !== undefined &&
+                                            price !== null
+                                              ? `₹${price}`
+                                              : "—"}{" "}
                                           </div>
+                                          <div className="fw-semibold badge radius-20 p-2 w-100 text-bg-dark">
+                                            {opt.label}
+                                          </div>
+                                          {/* <div className="text-muted" style={{ fontSize: "0.8rem" }}>{opt.sub}</div> */}
                                         </div>
-                                        {/* <div className="text-end">
+                                      </div>
+                                      {/* <div className="text-end">
                                             <div className="text-muted" style={{ fontSize: "0.8rem" }}>GST + {platformFee ? `(₹${platformFee}) platform fee incl.` : ""}</div>
                                           </div> */}
-                                      </div>
-                                    </Col>
-                                  );
-                                })}
-                              </Row>
-                            </div>
-                          )}
-
-                          <div className="d-flex justify-content-end mt-2">
-                            <Button
-                              type="submit"
-                              className="px-4"
-                              style={{ backgroundColor: "#4F46E5" }}
-                              disabled={loading || !token || !canSubmit}
-                            >
-                              {loading ? (
-                                <span
-                                  className="spinner-border spinner-border-sm me-2"
-                                  role="status"
-                                  aria-hidden="true"
-                                ></span>
-                              ) : null}
-                              Request Ambulance
-                            </Button>
+                                    </div>
+                                  </Col>
+                                );
+                              })}
+                            </Row>
                           </div>
-                        </Form>
-                      </Card.Body>
-                    </Card>
+                        )}
+
+                        <div className="d-flex justify-content-center mt-2">
+                          <Button
+                            type="submit"
+                            className="px-4 btn-sky-gradint border-0"
+                            disabled={
+                              loading ||
+                              !token ||
+                              (isAddressConfirmed && !canSubmit)
+                            }
+                          >
+                            {loading ? (
+                              <span
+                                className="spinner-border spinner-border-sm me-2"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                            ) : null}
+                            {isAddressConfirmed
+                              ? "Request For Ambulance"
+                              : "Confirm Address"}
+                          </Button>
+                        </div>
+                      </Form>
+                    </div>
                   </Col>
                 </Row>
               )}
