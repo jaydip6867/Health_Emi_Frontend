@@ -200,6 +200,7 @@ const D_AmbulanceRequest = () => {
     drop_house_number: "",
     book_for: "myself",
     ambulance_type: "",
+    category: "Basic",
     price: "",
     gst_per: 18,
     distance: 0,
@@ -878,6 +879,8 @@ const D_AmbulanceRequest = () => {
         drop_house_number: details.drop_house_number,
         book_for: details.book_for,
         ambulance_type: details.ambulance_type,
+        category:
+          details.ambulance_type === "Ambulance" ? details.category : "Basic",
         price: Number(details.price),
         gst_per: Number(details.gst_per),
         platform_fee: Number(platformFee),
@@ -930,6 +933,8 @@ const D_AmbulanceRequest = () => {
           gst_per: 18,
           distance: 0,
         });
+
+
         setPlatformFee(0);
         localStorage.setItem("amb_req_id", res.data.Data.requestId);
         navigate(`/doctor/ambulance-request/status/${res.data.Data.requestId}`);
@@ -947,6 +952,7 @@ const D_AmbulanceRequest = () => {
       .finally(() => setLoading(false));
   };
 
+  
   const hasBothLocations =
     !!form.pickupaddress &&
     !!form.dropaddress &&
@@ -963,7 +969,7 @@ const D_AmbulanceRequest = () => {
   );
   // Step 1: after confirm address
   const showVehicle =
-    isAddressConfirmed && hasBothLocations && !!details.name && mobileValid;
+    isAddressConfirmed && hasBothLocations && !!details.name && mobileValid && !!details.drop_house_number && !! details.pickup_house_number;
   // Step 2: final request
   const canSubmit =
     isAddressConfirmed &&
@@ -983,6 +989,25 @@ const D_AmbulanceRequest = () => {
       });
       return;
     }
+
+
+     if(!details.pickup_house_number){
+       Swal.fire({
+        title: "Please select Pickup address",
+        icon: "warning",
+      });
+      return;
+    }
+    
+    if(!details.drop_house_number){
+      Swal.fire({
+        title: "Please select drop address",
+        icon: "warning",
+      });
+      return;
+    }
+
+   
 
     if (!details.name || !details.mobile) {
       Swal.fire({
@@ -1565,7 +1590,7 @@ const D_AmbulanceRequest = () => {
                           <div className="">
                             <div className="d-flex justify-content-center">
                               <h2 className="m-0 text-amb-label py-2">
-                                Select Vehicle{" "}
+                                Select Vehicle
                               </h2>
                             </div>
 
@@ -1660,6 +1685,66 @@ const D_AmbulanceRequest = () => {
                                   </Col>
                                 );
                               })}
+                              {/* Ambulance Category Selection - Only show when Ambulance is selected */}
+                              {details.ambulance_type === "Ambulance" && (
+                                <div className="mb-3">
+                                  <div className="text-center mb-2">
+                                    <label className="text-amb-label fw-semibold">
+                                      Select Ambulance Type
+                                    </label>
+                                  </div>
+                                  <div className="d-flex justify-content-center">
+                                    <div
+                                      className="btn-group w-100"
+                                      role="group"
+                                    >
+                                      {["Basic", "Advance"].map((type) => (
+                                        <button
+                                          key={type}
+                                          type="button"
+                                          className={`btn ${
+                                            details.category === type
+                                              ? "btn-primary"
+                                              : "btn-outline-primary"
+                                          }`}
+                                          onClick={() =>
+                                            setDetails((p) => ({
+                                              ...p,
+                                              category: type,
+                                            }))
+                                          }
+                                          style={{
+                                            padding: "0.5rem",
+                                            borderTopLeftRadius:
+                                              type === "Basic"
+                                                ? "0.25rem"
+                                                : "0",
+                                            borderBottomLeftRadius:
+                                              type === "Basic"
+                                                ? "0.25rem"
+                                                : "0",
+                                            borderTopRightRadius:
+                                              type === "Advance"
+                                                ? "0.25rem"
+                                                : "0",
+                                            borderBottomRightRadius:
+                                              type === "Advance"
+                                                ? "0.25rem"
+                                                : "0",
+                                          }}
+                                        >
+                                          <div className="d-flex flex-column align-items-center">
+                                            <span className="fw-semibold">
+                                              {type}
+                                            </span>
+                                           
+                                          </div>
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </Row>
                           </div>
                         )}
