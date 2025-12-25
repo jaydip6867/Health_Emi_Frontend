@@ -1170,10 +1170,7 @@ const D_AmbulanceRequest = () => {
                         />
                       </Card.Body>
                     </Card>
-                    <div className="text-muted small mt-2 px-1">
-                      Tip: You can click "Use Current Location" to auto-fill
-                      latitude and longitude fields.
-                    </div>
+                    
                   </Col>
                   <Col xs={12} md={7}>
                     {/* Form of ambulace */}
