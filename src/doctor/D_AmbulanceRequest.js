@@ -780,6 +780,7 @@ const D_AmbulanceRequest = () => {
 
   const fetchPrice = async (type, distanceKm) => {
     if (!token) return;
+
     try {
       const res = await axios({
         method: "post",
@@ -787,16 +788,27 @@ const D_AmbulanceRequest = () => {
         headers: { Authorization: token },
         data: { distance: distanceKm },
       });
+
       const payload = res.data.Data;
-      const typeKeyMap = {
-        Ambulance: "ambulance_price",
-        Bike: "bike_price",
-        Rickshaw: "rickshaw_price",
-        Cab: "cab_price",
-      };
-      const key = typeKeyMap[type] || "ambulance_price";
-      const nextPrice = payload[key];
+      let priceKey;
+
+      if (type === "Ambulance") {
+        priceKey =
+          details.category === "Advance"
+            ? "advance_ambulance_price"
+            : "ambulance_price";
+      } else {
+        const typeKeyMap = {
+          Bike: "bike_price",
+          Rickshaw: "rickshaw_price",
+          Cab: "cab_price",
+        };
+        priceKey = typeKeyMap[type] || "ambulance_price";
+      }
+
+      const nextPrice = payload[priceKey];
       const nextGst = payload.gst_per;
+
       setDetails((p) => ({
         ...p,
         price:
@@ -810,9 +822,10 @@ const D_AmbulanceRequest = () => {
             ? Number(nextGst)
             : p.gst_per,
       }));
-    } catch (e) {}
+    } catch (e) {
+      console.error("Error fetching price:", e);
+    }
   };
-
   const fetchAllPrices = async (distanceKm) => {
     if (!token) return;
     try {
@@ -826,6 +839,7 @@ const D_AmbulanceRequest = () => {
       const p = res.data?.Data || {};
       const prices = {
         Ambulance: p.ambulance_price,
+        Advance: p.advance_ambulance_price,
         Bike: p.bike_price,
         Rickshaw: p.rickshaw_price,
         Cab: p.cab_price,
@@ -854,9 +868,9 @@ const D_AmbulanceRequest = () => {
   useEffect(() => {
     if (!details.ambulance_type) return;
     if (Number(details.distance) <= 0) return;
+
     fetchPrice(details.ambulance_type, details.distance);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [details.ambulance_type, details.distance, token]);
+  }, [details.ambulance_type, details.distance, details.category, token]);
 
   const performSave = async (overrideDistance) => {
     setLoading(true);
@@ -929,11 +943,11 @@ const D_AmbulanceRequest = () => {
           drop_house_number: "",
           book_for: "myself",
           ambulance_type: "",
+          category:"Basic",
           price: "",
           gst_per: 18,
           distance: 0,
         });
-
 
         setPlatformFee(0);
         localStorage.setItem("amb_req_id", res.data.Data.requestId);
@@ -952,7 +966,6 @@ const D_AmbulanceRequest = () => {
       .finally(() => setLoading(false));
   };
 
-  
   const hasBothLocations =
     !!form.pickupaddress &&
     !!form.dropaddress &&
@@ -969,7 +982,12 @@ const D_AmbulanceRequest = () => {
   );
   // Step 1: after confirm address
   const showVehicle =
-    isAddressConfirmed && hasBothLocations && !!details.name && mobileValid && !!details.drop_house_number && !! details.pickup_house_number;
+    isAddressConfirmed &&
+    hasBothLocations &&
+    !!details.name &&
+    mobileValid &&
+    !!details.drop_house_number &&
+    !!details.pickup_house_number;
   // Step 2: final request
   const canSubmit =
     isAddressConfirmed &&
@@ -990,24 +1008,21 @@ const D_AmbulanceRequest = () => {
       return;
     }
 
-
-     if(!details.pickup_house_number){
-       Swal.fire({
+    if (!details.pickup_house_number) {
+      Swal.fire({
         title: "Please select Pickup address",
         icon: "warning",
       });
       return;
     }
-    
-    if(!details.drop_house_number){
+
+    if (!details.drop_house_number) {
       Swal.fire({
         title: "Please select drop address",
         icon: "warning",
       });
       return;
     }
-
-   
 
     if (!details.name || !details.mobile) {
       Swal.fire({
@@ -1595,96 +1610,110 @@ const D_AmbulanceRequest = () => {
                             </div>
 
                             <Row className="my-2 g-3">
+                              {console.log('details',details)}
                               {[
                                 // { key: "Ambulance", label: "Ambulance", icon: <FaAmbulance size={28} className="me-3" />, sub: "Emergency medical van" },
                                 // { key: "Bike", label: "Bike", icon: <FaMotorcycle size={28} className="me-3" />, sub: "Beat the traffic on a bike" },
                                 // { key: "Rickshaw", label: "Rickshaw", icon: <FaCar size={28} className="me-3" />, sub: "Quick auto ride in town" },
                                 // { key: "Cab", label: "Cab", icon: <FaCar size={28} className="me-3" />, sub: "Comfy, economical cars" },
                                 {
-                                  key: "Ambulance",
-                                  label: "Ambulance",
+                                  key:
+                                    details.category === "Advance"
+                                      ? "Advance"
+                                      : "Ambulance",
+                                  label:
+                                    details.category === "Advance"
+                                      ? "Advance Amb.."
+                                      : "Basic Amb..",
                                   icon: require("../Visitor/assets/icon/ambulance_icon.png"),
-                                  sub: "Emergency medical van",
+                                  sub:
+                                    details.category === "Advance"
+                                      ? "Advanced life support"
+                                      : "Emergency medical van",
+              
                                 },
                                 {
                                   key: "Bike",
                                   label: "Bike",
                                   icon: require("../Visitor/assets/icon/bike_icon.png"),
                                   sub: "Beat the traffic on a bike",
+                                 
                                 },
                                 {
                                   key: "Rickshaw",
                                   label: "Rickshaw",
                                   icon: require("../Visitor/assets/icon/rikshaw_icon.png"),
                                   sub: "Quick auto ride in town",
+                             
                                 },
                                 {
                                   key: "Cab",
                                   label: "Cab",
                                   icon: require("../Visitor/assets/icon/car_icon.png"),
                                   sub: "Comfy, economical cars",
+                             
                                 },
                               ].map((opt, idx) => {
-                                const price = vehiclePrices
-                                  ? vehiclePrices[opt.key]
-                                  : null;
-                                const selected =
-                                  details.ambulance_type === opt.key;
-                                return (
-                                  <Col
-                                    xs={6}
-                                    key={opt.key}
-                                    className="text-center m-0 p-2"
-                                  >
-                                    <div
-                                      className={`p-2 border rounded h-100 d-flex flex-column justify-content-center ${
-                                        selected ? "shadow-sm" : ""
-                                      }`}
-                                      style={{
-                                        cursor: "pointer",
-                                        backgroundColor: selected
-                                          ? "#dfe6ffff"
-                                          : "#fff",
-                                      }}
-                                      onClick={() =>
-                                        setDetails((p) => ({
-                                          ...p,
-                                          ambulance_type: opt.key,
-                                          price:
-                                            price !== undefined &&
-                                            price !== null
-                                              ? Number(price)
-                                              : p.price,
-                                        }))
-                                      }
+                                  const price = vehiclePrices
+                                    ? vehiclePrices[opt.key]
+                                    : null;
+                                  const selected =
+                                    details.ambulance_type === opt.key;
+                                  return (
+                                    <Col
+                                      xs={6}
+                                      key={opt.key}
+                                      className="text-center m-0 p-2"
                                     >
-                                      <div className="text-center">
-                                        <img
-                                          src={opt.icon}
-                                          alt="ambulance image"
-                                          className="mx-auto  my-2"
-                                          style={{ maxHeight: "35px" }}
-                                        />
-                                        <div>
-                                          <div className="fw-semibold py-2">
-                                            {price !== undefined &&
-                                            price !== null
-                                              ? `₹${price}`
-                                              : "—"}{" "}
+                                      <div
+                                        className={`p-2 border rounded h-100 d-flex flex-column justify-content-center ${
+                                          selected ? "shadow-sm" : ""
+                                        }`}
+                                        style={{
+                                          cursor: "pointer",
+                                          backgroundColor: selected
+                                            ? "#dfe6ffff"
+                                            : "#fff",
+                                        }}
+                                        onClick={() =>
+                                          setDetails((p) => ({
+                                            ...p,
+                                            ambulance_type: opt.key,
+                                            price:
+                                              price !== undefined &&
+                                              price !== null
+                                                ? Number(price)
+                                                : p.price,
+                                          }))
+                                        }
+                                      >
+                                        <div className="text-center">
+                                          <img
+                                            src={opt.icon}
+                                            alt="ambulance image"
+                                            className="mx-auto  my-2"
+                                            style={{ maxHeight: "35px" }}
+                                          />
+                                          <div>
+                                            <div className="fw-semibold py-2">
+                                              {price !== undefined &&
+                                              price !== null
+                                                ? `₹${price}`
+                                                : "—"}{" "}
+                                            </div>
+                                            <div className="fw-semibold badge radius-20 p-2 w-100 text-bg-dark">
+                                              {opt.label}
+                                            </div>
+                                            {/* <div className="text-muted" style={{ fontSize: "0.8rem" }}>{opt.sub}</div> */}
                                           </div>
-                                          <div className="fw-semibold badge radius-20 p-2 w-100 text-bg-dark">
-                                            {opt.label}
-                                          </div>
-                                          {/* <div className="text-muted" style={{ fontSize: "0.8rem" }}>{opt.sub}</div> */}
                                         </div>
-                                      </div>
-                                      {/* <div className="text-end">
+                                        {/* <div className="text-end">
                                             <div className="text-muted" style={{ fontSize: "0.8rem" }}>GST + {platformFee ? `(₹${platformFee}) platform fee incl.` : ""}</div>
                                           </div> */}
-                                    </div>
-                                  </Col>
-                                );
-                              })}
+                                      </div>
+                                    </Col>
+                                  );
+                                })}
                               {/* Ambulance Category Selection - Only show when Ambulance is selected */}
                               {details.ambulance_type === "Ambulance" && (
                                 <div className="mb-3">
@@ -1707,12 +1736,17 @@ const D_AmbulanceRequest = () => {
                                               ? "btn-primary"
                                               : "btn-outline-primary"
                                           }`}
-                                          onClick={() =>
+                                          onClick={() => {
                                             setDetails((p) => ({
                                               ...p,
-                                              category: type,
-                                            }))
-                                          }
+                                              category: type, // This will be either "Basic" or "Advance"
+                                            }));
+                                            // Trigger price update after state is set
+                                            fetchPrice(
+                                              "Ambulance",
+                                              details.distance
+                                            );
+                                          }}
                                           style={{
                                             padding: "0.5rem",
                                             borderTopLeftRadius:
@@ -1737,7 +1771,6 @@ const D_AmbulanceRequest = () => {
                                             <span className="fw-semibold">
                                               {type}
                                             </span>
-                                           
                                           </div>
                                         </button>
                                       ))}
