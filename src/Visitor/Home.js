@@ -87,7 +87,7 @@ const Home = () => {
           <FunctionalitySec />
         </FadeIn>
       </section>
-      {/* speciality section */}
+      {/* Top Specialities */}
       <FadeIn delay={0}>
         <Speciality />
       </FadeIn>
