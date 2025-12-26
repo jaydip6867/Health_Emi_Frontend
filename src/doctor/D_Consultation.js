@@ -164,19 +164,8 @@ const D_Consultation = () => {
               <Col xs={12} md={12}>
                 <div className="bg-white rounded p-3 shadow">
                   <Form className="row register_doctor justfify-content-center">
-                    <Form.Group controlId="hv" className="mb-3 col-md-4">
-                      <div className="position-relative">
-                        <Form.Label>Home Visit Price</Form.Label>
-                        <Form.Control
-                          placeholder="Ex:- 500"
-                          name="home_visit_price"
-                          value={consult.home_visit_price}
-                          onChange={selconsult}
-                        />
-                      </div>
-                    </Form.Group>
 
-                    <Form.Group controlId="cv" className="mb-3 col-md-4">
+                      <Form.Group controlId="cv" className="mb-3 col-md-4">
                       <div className="position-relative">
                         <Form.Label>Clinic Visit Price</Form.Label>
                         <Form.Control
@@ -195,6 +184,18 @@ const D_Consultation = () => {
                           placeholder="Ex:- 1000"
                           name="eopd_price"
                           value={consult.eopd_price}
+                          onChange={selconsult}
+                        />
+                      </div>
+                    </Form.Group>
+
+                     <Form.Group controlId="hv" className="mb-3 col-md-4">
+                      <div className="position-relative">
+                        <Form.Label>Home Visit Price</Form.Label>
+                        <Form.Control
+                          placeholder="Ex:- 500"
+                          name="home_visit_price"
+                          value={consult.home_visit_price}
                           onChange={selconsult}
                         />
                       </div>
