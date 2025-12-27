@@ -1,31 +1,31 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Col, Container, Row } from 'react-bootstrap'
-import NavBar from './Component/NavBar'
-import FooterBar from './Component/FooterBar'
-import AppDownload from './Component/AppDownload'
-import Loader from '../Loader'
-import Testimonial from './Component/Testimonial'
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Col, Container, Row } from "react-bootstrap";
+import NavBar from "./Component/NavBar";
+import FooterBar from "./Component/FooterBar";
+import AppDownload from "./Component/AppDownload";
+import Loader from "../Loader";
+import Testimonial from "./Component/Testimonial";
 import CryptoJS from "crypto-js";
-import { useNavigate } from 'react-router-dom';
-import SearchBox from './Component/SearchBox'
-import Speciality from './Component/Speciality'
-import FunctionalitySec from './Component/FunctionalitySec'
-import BestDoctor from './Component/BestDoctor'
-import HeadTitle from './Component/HeadTitle'
-import HomeSlider from './Component/HomeSlider'
-import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
+import { useNavigate } from "react-router-dom";
+import SearchBox from "./Component/SearchBox";
+import Speciality from "./Component/Speciality";
+import FunctionalitySec from "./Component/FunctionalitySec";
+import BestDoctor from "./Component/BestDoctor";
+import HeadTitle from "./Component/HeadTitle";
+import HomeSlider from "./Component/HomeSlider";
+import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from "../config";
 import FadeIn from "../components/FadeIn";
-import axios from 'axios'
-import BlogBox from './Component/BlogBox'
+import axios from "axios";
+import BlogBox from "./Component/BlogBox";
+import "react-toastify/dist/ReactToastify.css";
 
 const Home = () => {
-
   var navigate = useNavigate();
 
-  const [loading, setloading] = useState(false)
-  const [token, settoken] = useState(null)
-  const [logdata, setlogdata] = useState(null)
+  const [loading, setloading] = useState(false);
+  const [token, settoken] = useState(null);
+  const [logdata, setlogdata] = useState(null);
 
   useEffect(() => {
     var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
@@ -35,45 +35,48 @@ const Home = () => {
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var data = JSON.parse(decrypted);
       setlogdata(data.userData);
-    }
-    else if (dgetlocaldata != null) {
+    } else if (dgetlocaldata != null) {
       const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var data = JSON.parse(decrypted);
       setlogdata(data.doctorData);
     }
     if (data) {
-      settoken(`Bearer ${data.accessToken}`)
+      settoken(`Bearer ${data.accessToken}`);
     }
-    getblog()
-  }, [navigate])
+    getblog();
+  }, [navigate]);
 
-  const [bloglist, setbloglist] = useState(null)
+  const [bloglist, setbloglist] = useState(null);
 
   function getblog() {
-    setloading(true)
+    setloading(true);
     axios({
-      method: 'post',
+      method: "post",
       url: `${API_BASE_URL}/user/blogs`,
       headers: {
         Authorization: token,
       },
       data: {
-        "page": 1,
-        "limit": 4,
-        "search": "",
-      }
-    }).then((res) => {
-      setbloglist(res.data.Data.docs)
-    }).catch(function (error) {
-      // console.log(error);
-    }).finally(() => {
-      setloading(false)
-    });
+        page: 1,
+        limit: 4,
+        search: "",
+      },
+    })
+      .then((res) => {
+        setbloglist(res.data.Data.docs);
+      })
+      .catch(function (error) {
+        // console.log(error);
+      })
+      .finally(() => {
+        setloading(false);
+      });
   }
 
   return (
     <>
+   
       <NavBar logindata={logdata} />
       {/* search by city and doctor name or surgery */}
       <section>
@@ -82,7 +85,7 @@ const Home = () => {
           <SearchBox />
         </section>
       </section>
-      <section className='spacer-y'>
+      <section className="spacer-y">
         <FadeIn delay={0}>
           <FunctionalitySec />
         </FadeIn>
@@ -96,67 +99,111 @@ const Home = () => {
         <BestDoctor />
       </FadeIn>
       {/* testimonial section */}
-      <section className='spacer-t position-relative'>
+      <section className="spacer-t position-relative">
         <FadeIn delay={0}>
           <Testimonial />
         </FadeIn>
       </section>
       {/* how it work section */}
-      <section className='how_it_work_sec my-5'>
+      <section className="how_it_work_sec my-5">
         <Container>
           <Row>
-            <Col xs={12} lg={5} className='align-self-end order-last order-lg-first'>
+            <Col
+              xs={12}
+              lg={5}
+              className="align-self-end order-last order-lg-first"
+            >
               <FadeIn delay={0}>
-                <img src={require('./assets/step_doctor.png')} className='mx-auto w-sm-50' alt='how it work image of health easy emi' />
+                <img
+                  src={require("./assets/step_doctor.png")}
+                  className="mx-auto w-sm-50"
+                  alt="how it work image of health easy emi"
+                />
               </FadeIn>
             </Col>
             <Col xs={12} lg={7}>
-              <div className='spacer-y'>
-                <div className='head_sec mb-4'>
-                  <span className='head_sec_subtitle fw-medium'>how it works</span>
-                  <div className='d-flex pt-2'><HeadTitle title="4 easy steps to get your solution" /></div>
+              <div className="spacer-y">
+                <div className="head_sec mb-4">
+                  <span className="head_sec_subtitle fw-medium">
+                    how it works
+                  </span>
+                  <div className="d-flex pt-2">
+                    <HeadTitle title="4 easy steps to get your solution" />
+                  </div>
                 </div>
                 <Row>
                   <Col xs={12} md={6}>
                     <FadeIn delay={0}>
-                      <div className='d-flex align-items-start step_box gap-3'>
-                        <div><img src={require('./assets/icon/step1.png')} alt='step 1 image of health easy emi' /></div>
+                      <div className="d-flex align-items-start step_box gap-3">
+                        <div>
+                          <img
+                            src={require("./assets/icon/step1.png")}
+                            alt="step 1 image of health easy emi"
+                          />
+                        </div>
                         <div>
                           <h6>Search Doctor</h6>
-                          <p>Search for a doctor based on specialization, location, or availability.</p>
+                          <p>
+                            Search for a doctor based on specialization,
+                            location, or availability.
+                          </p>
                         </div>
                       </div>
                     </FadeIn>
                   </Col>
                   <Col xs={12} md={6}>
                     <FadeIn delay={200}>
-                      <div className='d-flex align-items-start step_box gap-3'>
-                        <div><img src={require('./assets/icon/step2.png')} alt='step 1 image of health easy emi' /></div>
+                      <div className="d-flex align-items-start step_box gap-3">
+                        <div>
+                          <img
+                            src={require("./assets/icon/step2.png")}
+                            alt="step 1 image of health easy emi"
+                          />
+                        </div>
                         <div>
                           <h6>Check Doctor Profile</h6>
-                          <p>Explore detailed doctor profiles on our platform to make informed healthcare decisions.</p>
+                          <p>
+                            Explore detailed doctor profiles on our platform to
+                            make informed healthcare decisions.
+                          </p>
                         </div>
                       </div>
                     </FadeIn>
                   </Col>
                   <Col xs={12} md={6}>
                     <FadeIn delay={400}>
-                      <div className='d-flex align-items-start step_box gap-3'>
-                        <div><img src={require('./assets/icon/step3.png')} alt='step 1 image of health easy emi' /></div>
+                      <div className="d-flex align-items-start step_box gap-3">
+                        <div>
+                          <img
+                            src={require("./assets/icon/step3.png")}
+                            alt="step 1 image of health easy emi"
+                          />
+                        </div>
                         <div>
                           <h6>Schedule Appointment</h6>
-                          <p>After choose your preferred doctor, select a convenient time slot, & confirm your appointment.</p>
+                          <p>
+                            After choose your preferred doctor, select a
+                            convenient time slot, & confirm your appointment.
+                          </p>
                         </div>
                       </div>
                     </FadeIn>
                   </Col>
                   <Col xs={12} md={6}>
                     <FadeIn delay={600}>
-                      <div className='d-flex align-items-start step_box gap-3'>
-                        <div><img src={require('./assets/icon/step4.png')} alt='step 1 image of health easy emi' /></div>
+                      <div className="d-flex align-items-start step_box gap-3">
+                        <div>
+                          <img
+                            src={require("./assets/icon/step4.png")}
+                            alt="step 1 image of health easy emi"
+                          />
+                        </div>
                         <div>
                           <h6>Get Your Solution</h6>
-                          <p>Discuss your health concerns with the doctor and receive personalized advice & solution.</p>
+                          <p>
+                            Discuss your health concerns with the doctor and
+                            receive personalized advice & solution.
+                          </p>
                         </div>
                       </div>
                     </FadeIn>
@@ -169,9 +216,11 @@ const Home = () => {
       </section>
 
       {/* Blog section */}
-      <section className='spacer-y'>
+      <section className="spacer-y">
         <Container>
-          <h2 className='head_sec mb-5'><HeadTitle title="Latest Articles" /></h2>
+          <h2 className="head_sec mb-5">
+            <HeadTitle title="Latest Articles" />
+          </h2>
           <Row>
             {bloglist?.map((item, index) => (
               <BlogBox item={item} index={index} key={index} />
@@ -179,16 +228,16 @@ const Home = () => {
           </Row>
         </Container>
       </section>
-      
+
       {/* App Download Section  */}
       <FadeIn delay={200}>
         <AppDownload />
       </FadeIn>
 
       <FooterBar />
-      {loading ? <Loader /> : ''}
+      {loading ? <Loader /> : ""}
     </>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
