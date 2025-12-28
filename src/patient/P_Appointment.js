@@ -261,7 +261,7 @@ const P_Appointment = () => {
             alt={`${row.doctorid?.name} profile`}
           />
           <span className="fw-semibold appt-doctor-name">
-            {row.doctorid?.name}{" "}
+            Dr. {row.doctorid?.name}{" "}
             <span className="verified">
               <MdVerified size={16} />
             </span>
