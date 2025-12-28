@@ -710,7 +710,7 @@ const D_SurgeryAppointment = () => {
                                             <div className='d-flex align-items-center text-center gap-3 flex-wrap appointment_model'>
                                                 <div>
                                                     <p className='mb-0'>Ward Type</p>
-                                                    <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{v?.roomtype}</span>
+                                                    <span className='badge d-inline-flex align-items-center gap-2' style={{ background: '#F1F5F8', color: '#253948' }}>{v?.roomtype == 'Semiprivate' ? 'Semi Private':v?.roomtype}</span>
                                                 </div>
                                                 <div>
                                                     <p className='mb-0'>Surgery Status</p>
