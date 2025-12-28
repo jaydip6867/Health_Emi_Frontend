@@ -1317,7 +1317,7 @@ const DoctorProfilePage = () => {
               />
             </Form.Group>
             <Form.Group className='col-6'>
-              <Form.Label>Alt Name</Form.Label>
+              <Form.Label>Alternate Name</Form.Label>
               <Form.Control
                 type="text"
                 name='alt_name'
@@ -1326,7 +1326,7 @@ const DoctorProfilePage = () => {
               />
             </Form.Group>
             <Form.Group className='col-6'>
-              <Form.Label>Alt Mobile No</Form.Label>
+              <Form.Label>Alternate Mobile No</Form.Label>
               <Form.Control
                 type="text"
                 name='alt_mobile'
