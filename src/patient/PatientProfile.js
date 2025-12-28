@@ -168,7 +168,7 @@ const PatientProfile = () => {
             "name": profile.name,
             "email": profile.email,
             "gender": profile.gender,
-            "mobile": profile.mobile,
+            "mobile": profile.mobile.replace(/\s+/g, ''),
             "pincode": profile.pincode,
             "blood_group": profile.blood_group,
             "password": passwordToSend || profile.password
@@ -273,7 +273,7 @@ const PatientProfile = () => {
                                                             <Form.Group controlId="mobile" className='col-12 col-sm-6 col-md-4'>
                                                                 <div className="position-relative">
                                                                     <Form.Label>Mobile No.</Form.Label>
-                                                                    <Form.Control placeholder="Mobile No." className='frm_input' name='mobile' value={profile && profile.mobile} disabled onChange={profiledata} />
+                                                                    <Form.Control placeholder="Mobile No." className='frm_input' name='mobile' value={profile && profile.mobile.replace(/\s+/g, '')} disabled onChange={profiledata} />
                                                                 </div>
                                                             </Form.Group>
 

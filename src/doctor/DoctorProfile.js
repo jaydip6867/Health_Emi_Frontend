@@ -834,7 +834,7 @@ const DoctorProfile = () => {
                               type="tel"
                               placeholder="Enter mobile number"
                               name="mobile"
-                              value={profile?.mobile || ""}
+                              value={profile?.mobile.replace(/\s+/g, '') || ""}
                               disabled
                               onChange={handleChange}
                               className="form-control"

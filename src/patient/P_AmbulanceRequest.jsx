@@ -676,7 +676,7 @@ const fetchPlaceDetails = (placeId) => {
     setDetails((prev) => ({
       ...prev,
       name: patient.name || "",
-      mobile: patient.mobile || "",
+      mobile: patient.mobile.replace(/\s+/g, '')|| "",
     }));
   } else if (details.book_for === "other" && patient) {
     setDetails((prev) => ({
@@ -784,7 +784,7 @@ const fetchPlaceDetails = (placeId) => {
         drop_longitude: Number(form.drop_longitude),
         drop_latitude: Number(form.drop_latitude),
         name: details.name,
-        mobile: details.mobile,
+        mobile: details.mobile.replace(/\s+/g, ''),
         pickup_house_number: details.pickup_house_number,
         drop_house_number: details.drop_house_number,
         book_for: details.book_for,
@@ -1379,7 +1379,7 @@ const fetchPlaceDetails = (placeId) => {
                                   <Form.Group>
                                     <Form.Label>Mobile</Form.Label>
                                     <Form.Control
-                                      value={details.mobile}
+                                      value={details.mobile.replace(/\s+/g, '')}
                                       onChange={handleMobileChange}
                                       placeholder="e.g. 9876543210"
                                     />
