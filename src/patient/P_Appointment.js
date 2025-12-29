@@ -649,8 +649,7 @@ const P_Appointment = () => {
                       </div>
                     )}
                     {/* Prescription */}
-                    {v?.doctor_remark != "" ||
-                      v?.doctor_remark != undefined && (
+                    {v?.doctor_remark != ""  && (
                         <div>
                           <div className="fw-semibold mb-3">Prescription</div>
                           <hr />

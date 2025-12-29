@@ -1058,7 +1058,7 @@ const D_SurgeryAppointment = () => {
                       </div>
                     )}
 
-                    {v.status === "Completed" ? (
+                    {v.status === "Completed"  && v?.doctor_remark != "" && (
                       <div>
                         <hr />
                         <div className="fw-semibold mb-3">Prescription</div>
@@ -1090,7 +1090,7 @@ const D_SurgeryAppointment = () => {
                               </Col>}
                         </Row>
                       </div>
-                    ) : null}
+                    ) }
                   </div>
                 </Modal.Body>
               </Modal>

@@ -503,7 +503,7 @@ const P_Surgeries = () => {
                     )}
                     {/* Prescription */}
                     <div>
-                      {v?.doctor_remark != "" || v?.doctor_remark != undefined && (
+                      {v?.doctor_remark != ""  && (
                         <div className="border rounded p-3 mt-3 col-lg-5 col-md-9 col-12">
                           <div className="fw-semibold mb-3">Prescription</div>
                           <div

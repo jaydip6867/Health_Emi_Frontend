@@ -1165,7 +1165,8 @@ const D_Appointment = () => {
                       </div>
                     )}
                     <div>
-                      {v.status === "Completed" && v?.doctor_remark != "" || v?.doctor_remark != undefined && (
+                      {console.log(v?.doctor_remark )}
+                      {v.status === "Completed" && v?.doctor_remark != ""  && (
                         <div>
                           <hr />
                           <div className="fw-semibold mb-3">Prescription</div>
