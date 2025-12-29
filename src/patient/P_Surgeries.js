@@ -25,6 +25,7 @@ import Swal from "sweetalert2";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { PiHospital } from "react-icons/pi";
 import { showReportOrPrication } from "../global";
+import { TbVaccine } from "react-icons/tb";
 
 const P_Surgeries = () => {
   var navigate = useNavigate();
@@ -238,6 +239,7 @@ const P_Surgeries = () => {
       ),
     },
     {
+      name: "View",
       cell: (row) => (
         <OverlayTrigger placement="top" overlay={renderTooltip("View Details")}>
           <button
@@ -447,7 +449,7 @@ const P_Surgeries = () => {
                             <span>{v?.hospital_name?.name || ""}</span>
                           </div>
                         </Col>
-                        <Col xs={12}>
+                        <Col md={6} xs={12}>
                           <div className="text-muted small mb-1">
                             Clinic Location
                           </div>
@@ -460,6 +462,20 @@ const P_Surgeries = () => {
                             </span>
                           </div>
                         </Col>
+                        {v?.surgerydetails?.name && (
+                              <Col md={6} xs={12}>
+                                <div className="text-muted small mb-1">
+                                  Surgery Name
+                                </div>
+                               
+                                <div className="d-flex align-items-center gap-2">
+                                  <TbVaccine size={20} />
+                                  <span className="text-truncate">
+                                    {v?.surgerydetails?.name || ""}
+                                  </span>
+                                </div>
+                              </Col>
+                            )}
                       </Row>
                     </div>
                     {/* Reports */}
@@ -503,7 +519,7 @@ const P_Surgeries = () => {
                     )}
                     {/* Prescription */}
                     <div>
-                      {v?.doctor_remark != ""  && (
+                      {v?.doctor_remark  && (
                         <div className="border rounded p-3 mt-3 col-lg-5 col-md-9 col-12">
                           <div className="fw-semibold mb-3">Prescription</div>
                           <div

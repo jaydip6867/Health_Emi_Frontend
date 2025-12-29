@@ -46,7 +46,7 @@ const AmbulancePage = () => {
                                 <h2 className="fw-bold text-dark mb-2">Ambulance Services Booking</h2>
                                 <h4 className="fw-bold text-secondary mb-3">Fast, Reliable & Affordable Ambulance Booking</h4>
                                 <p className="text-muted mb-4">Emergencies can’t wait — and neither should you. Our Ambulance Booking System connects you to the nearest available ambulance in seconds.</p>
-                                <button className="btn btn-primary px-4 py-2" onClick={()=>navigate('../patient/ambulancerequest')}>Book Appointment</button>
+                                <button className="btn btn-primary px-4 py-2" onClick={()=>navigate('../patient/ambulancerequest')}>Book Ambulance</button>
                             </div>
                         </Col>
                     </Row>

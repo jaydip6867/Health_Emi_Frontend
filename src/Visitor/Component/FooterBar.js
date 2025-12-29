@@ -21,7 +21,7 @@ const FooterBar = () => {
           <Col lg={3} md={12} className="footer-about">
             <div className="footer-logo mb-3">
               <img
-                src={require("../assets/health-easy-emi-logo-white.png")}
+                src={require("../assets/healthEasyEMIllogo1.png")}
                 alt="Health Easy EMI"
                 className="img-fluid mx-auto"
               />

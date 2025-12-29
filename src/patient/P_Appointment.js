@@ -32,6 +32,8 @@ import { FiClock, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 import Swal from "sweetalert2";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { showReportOrPrication } from "../global";
+import { FaUser } from "react-icons/fa";
+import { TbVaccine } from "react-icons/tb";
 
 const P_Appointment = () => {
   var navigate = useNavigate();
@@ -305,7 +307,7 @@ const P_Appointment = () => {
       },
     },
     {
-      name: "Action",
+      name: "View",
       cell: (row) => (
         <div className="d-inline-flex gap-2 align-items-center">
           <OverlayTrigger
@@ -586,7 +588,7 @@ const P_Appointment = () => {
                                 <span>{v?.hospital_name?.name || ""}</span>
                               </div>
                             </Col>
-                            <Col xs={12}>
+                            <Col md={6} xs={12}>
                               <div className="text-muted small mb-1">
                                 Clinic Location
                               </div>
@@ -598,7 +600,22 @@ const P_Appointment = () => {
                                   {v?.hospital_name?.state || ""}
                                 </span>
                               </div>
-                            </Col>{" "}
+                            </Col>
+
+                            {v?.surgerydetails?.name && (
+                              <Col md={6} xs={12}>
+                                <div className="text-muted small mb-1">
+                                  Surgery Name
+                                </div>
+                                {console.log(v)}
+                                <div className="d-flex align-items-center gap-2">
+                                  <TbVaccine size={20} />
+                                  <span className="text-truncate">
+                                    {v?.surgerydetails?.name || ""}
+                                  </span>
+                                </div>
+                              </Col>
+                            )}
                           </>
                         ) : null}
                         <Col xs={12}>
@@ -636,7 +653,10 @@ const P_Appointment = () => {
                                     size="sm"
                                     variant="outline-primary"
                                     onClick={() =>
-                                      window.open(showReportOrPrication(item?.path), "_blank")
+                                      window.open(
+                                        showReportOrPrication(item?.path),
+                                        "_blank"
+                                      )
                                     }
                                   >
                                     View
@@ -649,29 +669,29 @@ const P_Appointment = () => {
                       </div>
                     )}
                     {/* Prescription */}
-                    {v?.doctor_remark != ""  && (
-                        <div>
+                    {v?.doctor_remark && (
+                      <div>
+                        <hr />
+                        <div className="border rounded p-3 mt-3 col-lg-5 col-md-9 col-12">
                           <div className="fw-semibold mb-3">Prescription</div>
-                          <hr />
-                          <div className="border rounded p-3 mt-3 col-lg-5 col-md-9 col-12">
-                            <div
-                              className="border rounded"
-                              style={{ backgroundColor: "#f8f9fa" }}
-                            >
-                              <iframe
-                                src={showReportOrPrication(v.doctor_remark)}
-                                style={{
-                                  width: "100%",
-                                  height: "200px",
-                                  border: "none",
-                                  borderRadius: "4px",
-                                }}
-                                title="Prescription PDF"
-                              />
-                            </div>
+                          <div
+                            className="border rounded"
+                            style={{ backgroundColor: "#f8f9fa" }}
+                          >
+                            <iframe
+                              src={showReportOrPrication(v.doctor_remark)}
+                              style={{
+                                width: "100%",
+                                height: "200px",
+                                border: "none",
+                                borderRadius: "4px",
+                              }}
+                              title="Prescription PDF"
+                            />
                           </div>
                         </div>
-                      )}
+                      </div>
+                    )}
                     {v.status === "Completed" && v?.is_review === false ? (
                       <div className="d-flex justify-content-end mt-4">
                         <Button

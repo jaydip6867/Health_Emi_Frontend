@@ -1113,7 +1113,8 @@ const D_Appointment = () => {
                                 {v?.hospital_name?.state || ""}
                               </span>
                             </div>
-                          </Col>{" "}
+                          </Col>
+                          
                         </>
                       ) : null}
                       <Col xs={12}>
@@ -1165,8 +1166,8 @@ const D_Appointment = () => {
                       </div>
                     )}
                     <div>
-                      {console.log(v?.doctor_remark )}
-                      {v.status === "Completed" && v?.doctor_remark != ""  && (
+                      {console.log(v?.doctor_remark)}
+                      {v.status === "Completed" && v?.doctor_remark && (
                         <div>
                           <hr />
                           <div className="fw-semibold mb-3">Prescription</div>

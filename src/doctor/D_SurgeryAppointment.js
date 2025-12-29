@@ -1058,7 +1058,7 @@ const D_SurgeryAppointment = () => {
                       </div>
                     )}
 
-                    {v.status === "Completed"  && v?.doctor_remark != "" && (
+                    {v.status === "Completed"  && v?.doctor_remark && (
                       <div>
                         <hr />
                         <div className="fw-semibold mb-3">Prescription</div>
