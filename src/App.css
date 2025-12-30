@@ -290,3 +290,16 @@
   margin: 0;
 }
 
+.truncate-8 {
+  max-width: 10ch; /* roughly ~8 words */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;   /* number of lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
