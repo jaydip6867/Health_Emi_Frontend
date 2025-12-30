@@ -104,28 +104,6 @@ const D_Blog = () => {
   const [imagePreviews, setImagePreviews] = useState([]);
   let selectedImage = null;
   // Image upload function
-  async function uploadImage(imageFile = selectedImage) {
-    if (!imageFile) return null;
-
-    const formData = new FormData();
-    formData.append("file", imageFile);
-
-    try {
-      const response = await axios({
-        method: "post",
-        url: `${API_BASE_URL}/user/upload`,
-        data: formData,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      return response.data.Data.url;
-    } catch (error) {
-      // console.error('Image upload failed:', error);
-      toast("Image upload failed", { className: "custom-toast-error" });
-      return null;
-    }
-  }
   useEffect(() => {
     return () => {
       // Clean up object URLs
