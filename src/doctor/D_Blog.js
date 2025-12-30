@@ -22,6 +22,8 @@ import Loader from "../Loader";
 import {
   MdDeleteOutline,
   MdOutlineEditCalendar,
+  MdDeleteForever,
+  MdDelete,
   MdOutlineRemoveRedEye,
 } from "react-icons/md";
 import SmartDataTable from "../components/SmartDataTable";
@@ -32,7 +34,7 @@ import { FiClipboard, FiClock } from "react-icons/fi";
 const D_Blog = () => {
   var navigate = useNavigate();
   const [loading, setloading] = useState(false);
- 
+
   const [doctor, setdoctor] = useState(null);
   const [token, settoken] = useState(null);
 
@@ -279,113 +281,126 @@ const D_Blog = () => {
   // Edit Blog display surgery in model
   const [editshow, seteditShow] = useState(false);
   const [edit_record, seteditrecord] = useState(null);
-  const [editSelectedImage, setEditSelectedImage] = useState(null);
-  const [editImagePreview, setEditImagePreview] = useState(null);
+  const [editSelectedImages, setEditSelectedImages] = useState([]);
+  const [editImagePreviews, setEditImagePreviews] = useState([]);
+  const [removedImages, setRemovedImages] = useState([]);
+
+  // Add this useEffect for cleanup
+  useEffect(() => {
+    return () => {
+      editImagePreviews.forEach((preview) => {
+        if (preview.startsWith("blob:")) {
+          URL.revokeObjectURL(preview);
+        }
+      });
+    };
+  }, [editImagePreviews]);
 
   const edithandleClose = () => seteditShow(false);
   const edithandleShow = () => seteditShow(true);
 
-  function btnedit(id) {
-    var datasingle = bloglist.filter((v, i) => {
-      return v._id === id;
-    });
-    seteditrecord({ ...datasingle[0], oldImage: datasingle[0].image });
-    // Set existing image preview if available
-    if (datasingle[0]?.image) {
-      setEditImagePreview(datasingle[0].image);
-    } else {
-      setEditImagePreview(null);
-    }
-    // Parse existing expiry date (expected dd-mm-yyyy) and set date picker
-    if (datasingle[0]?.expirydate) {
-      try {
-        const parts = String(datasingle[0].expirydate).split("-");
-        if (parts.length === 3) {
-          const d = parseInt(parts[0], 10);
-          const m = parseInt(parts[1], 10) - 1;
-          const y = parseInt(parts[2], 10);
-          const parsed = new Date(y, m, d);
-          if (!isNaN(parsed)) setStartDate(parsed);
-        }
-      } catch (e) {
+  const btnedit = (id) => {
+    const blogToEdit = bloglist.find((blog) => blog._id === id);
+    if (blogToEdit) {
+      // Ensure we're using the correct property name (image, not images)
+      const blogImages = Array.isArray(blogToEdit.image)
+        ? blogToEdit.image
+        : blogToEdit.image
+        ? [blogToEdit.image]
+        : [];
+
+      seteditrecord({
+        ...blogToEdit,
+        image: [...blogImages], // Ensure we have a clean copy of the array
+      });
+
+      // Set initial previews from existing images
+      setEditImagePreviews([...blogImages]);
+      setEditSelectedImages([]);
+      setRemovedImages([]);
+
+      // Set expiry date if it exists
+      if (blogToEdit.expirydate) {
+        const [day, month, year] = blogToEdit.expirydate.split("-");
+        setStartDate(new Date(year, month - 1, day));
+      } else {
         setStartDate(null);
       }
-    } else {
-      setStartDate(null);
+      edithandleShow();
     }
-    setEditSelectedImage(null);
-    edithandleShow();
-    // console.log(datasingle[0])
-  }
+  };
   const [startDate, setStartDate] = useState(null);
 
   async function editblog() {
     setloading(true);
-    // console.log(edit_record)
     try {
-      // Decide image URL: keep existing unless a new file is selected
-      let imageUrl = edit_record?.oldImage || edit_record?.image || "";
-      if (editSelectedImage) {
-        // Remove old image if exists (best-effort)
-        if (edit_record.oldImage) {
-          try {
-            await axios({
-              method: "post",
-              url: `${API_BASE_URL}/user/upload/removeimage`,
-              headers: {
-                Authorization: token,
-                "Content-Type": "application/json",
-              },
-              data: { path: edit_record.oldImage },
-            });
-          } catch (error) {}
-        }
-        const uploadedUrl = await uploadImage(editSelectedImage);
-        if (!uploadedUrl) {
-          setloading(false);
-          return; // Stop if image upload failed
-        }
-        imageUrl = uploadedUrl;
+      // Start with existing images
+      let imageUrls = [...(Array.isArray(edit_record.image) ? edit_record.image : [])];
+
+      // Remove images that were marked for removal
+      if (removedImages.length > 0) {
+        // Remove from the array
+        imageUrls = imageUrls.filter((img) => !removedImages.includes(img));
+
+        // Remove from server (optional)
+        await Promise.all(
+          removedImages.map(async (imgUrl) => {
+            try {
+              await axios({
+                method: "post",
+                url: `${API_BASE_URL}/user/upload/removeimage`,
+                headers: { Authorization: token },
+                data: { path: imgUrl },
+              });
+            } catch (error) {
+              console.error("Error removing image:", error);
+            }
+          })
+        );
       }
 
-      // Expiry date handling
-      let expiryOut = edit_record?.expirydate || "";
-      if (startDate) {
-        const date = new Date(startDate);
-        const formattedDate = date
-          .toLocaleDateString("en-GB")
-          .replace(/\//g, "-");
-        expiryOut = formattedDate === "01-01-1970" ? "" : formattedDate;
+      // Upload new images if any
+      if (editSelectedImages.length > 0) {
+        const uploadedUrls = await uploadMultipleImages(editSelectedImages);
+        if (uploadedUrls.length > 0) {
+          imageUrls = [...imageUrls, ...uploadedUrls];
+        }
       }
 
+      // Prepare the blog data
+      const blogData = {
+        blogid: edit_record._id,
+        image: imageUrls, // This will be an array of image URLs
+        title: edit_record.title,
+        description: edit_record.description,
+        showto_doctor: edit_record.showto_doctor,
+        showto_patient: edit_record.showto_patient,
+        expirydate: startDate
+          ? startDate.toLocaleDateString("en-GB").replace(/\//g, "-")
+          : "",
+      };
+
+      // Update the blog
       const response = await axios({
         method: "post",
         url: `${API_BASE_URL}/doctor/blogs/save`,
         headers: {
           Authorization: token,
+          "Content-Type": "application/json",
         },
-        data: {
-          blogid: edit_record?._id,
-          title: edit_record?.title,
-          description: edit_record?.description,
-          showto_doctor: edit_record?.showto_doctor,
-          showto_patient: edit_record?.showto_patient,
-          expirydate: expiryOut,
-          image: imageUrl,
-        },
+        data: blogData,
       });
 
+      // Handle success
       Swal.fire({
-        title: "Your blog has been updated successfully.",
+        title: "Blog Updated Successfully",
         icon: "success",
       });
       getblog();
-      seteditrecord(null);
-      setEditSelectedImage(null);
-      setEditImagePreview(null);
       edithandleClose();
     } catch (error) {
-      toast(error.response?.data?.Message || error.message, {
+      console.error("Error updating blog:", error);
+      toast(error.response?.data?.Message || "Error updating blog", {
         className: "custom-toast-error",
       });
     } finally {
@@ -826,44 +841,121 @@ const D_Blog = () => {
             <Modal.Body>
               <div className="p-3 border rounded">
                 <Form className="row register_doctor">
-                  <Form.Group
-                    controlId="editImage"
-                    className="mb-3 col-12 col-md-6"
-                  >
-                    <Form.Label>Blog Image</Form.Label>
+                  <Form.Group className="mb-4 col-12">
+                    <Form.Label className="fw-semibold">Blog Images</Form.Label>
                     <Form.Control
                       type="file"
+                      multiple
                       accept="image/*"
                       onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          setEditSelectedImage(file);
-                          const reader = new FileReader();
-                          reader.onload = (e) => {
-                            setEditImagePreview(e.target.result);
-                          };
-                          reader.readAsDataURL(file);
-                        } else {
-                          setEditSelectedImage(null);
-                          setEditImagePreview(edit_record?.image || null);
+                        const files = Array.from(e.target.files);
+                        if (files.length > 0) {
+                          setEditSelectedImages((prev) => [...prev, ...files]);
+                          const newPreviews = files.map((file) =>
+                            URL.createObjectURL(file)
+                          );
+                          setEditImagePreviews((prev) => [
+                            ...prev,
+                            ...newPreviews,
+                          ]);
                         }
                       }}
+                      className="mb-2"
                     />
-                    {editImagePreview && (
-                      <div className="mt-3">
-                        <img
-                          src={editImagePreview}
-                          alt="Preview"
-                          style={{
-                            maxWidth: "200px",
-                            maxHeight: "200px",
-                            objectFit: "cover",
-                            border: "1px solid #ddd",
-                            borderRadius: "4px",
-                          }}
-                        />
-                      </div>
-                    )}
+                    <Form.Text className="text-muted d-block mb-3">
+                      Click to add more images (Max 10MB per image)
+                    </Form.Text>
+
+                    <div className="d-flex flex-wrap gap-3">
+                      {editImagePreviews.map((preview, index) => {
+                        // Check if this is an existing image (not a new upload)
+                        const isExistingImage =
+                          index <
+                          (Array.isArray(edit_record?.image)
+                            ? edit_record.image.length
+                            : 0);
+                        const isRemoved = removedImages.includes(preview);
+
+                        return (
+                          <div
+                            key={index}
+                            className="position-relative"
+                            style={{
+                              width: "120px",
+                              height: "120px",
+                              opacity: isRemoved ? 0.5 : 1,
+                              transition: "opacity 0.2s",
+                            }}
+                          >
+                            <img
+                              src={preview}
+                              alt={`Preview ${index + 1}`}
+                              className="img-fluid h-100 w-100 rounded"
+                              style={{
+                                objectFit: "cover",
+                                border: `2px solid ${
+                                  isRemoved ? "#dc3545" : "#dee2e6"
+                                }`,
+                                cursor: "pointer",
+                              }}
+                            />
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle p-0 d-flex align-items-center justify-content-center"
+                              style={{
+                                width: "24px",
+                                height: "24px",
+                                zIndex: 1,
+                              }}
+                              onClick={() => {
+                                if (isExistingImage) {
+                                  // Toggle removal of existing image
+                                  if (isRemoved) {
+                                    setRemovedImages((prev) =>
+                                      prev.filter((img) => img !== preview)
+                                    );
+                                  } else {
+                                    setRemovedImages((prev) => [
+                                      ...prev,
+                                      preview,
+                                    ]);
+                                  }
+                                } else {
+                                  // Remove new image that hasn't been uploaded yet
+                                  const newPreviews = [...editImagePreviews];
+                                  newPreviews.splice(index, 1);
+                                  setEditImagePreviews(newPreviews);
+
+                                  const newSelected = [...editSelectedImages];
+                                  const newIndex =
+                                    index -
+                                    (edit_record?.oldImages?.length || 0) +
+                                    removedImages.length;
+                                  newSelected.splice(newIndex, 1);
+                                  setEditSelectedImages(newSelected);
+
+                                  // Clean up the object URL
+                                  URL.revokeObjectURL(preview);
+                                }
+                              }}
+                              title={isRemoved ? "Undo remove" : "Remove image"}
+                            >
+                              {isRemoved ? (
+                                <MdDelete  size={18}/>
+                              ) : (
+                                <MdDeleteForever  size={18} />
+                              )}
+                            </button>
+
+                            {isRemoved && (
+                              <div className="position-absolute top-50 start-50 translate-middle">
+                                <span className="badge bg-danger">Removed</span>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </Form.Group>
                   <Form.Group controlId="title" className="mb-3">
                     <div>
