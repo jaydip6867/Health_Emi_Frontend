@@ -9,11 +9,12 @@ import {
   FaHeart,
 } from "react-icons/fa";
 import { MdCall, MdMail } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaLocationDot } from "react-icons/fa6";
 import "../css/visitor.css";
 
 const FooterBar = () => {
+    var navigate = useNavigate();
   return (
     <footer className="footer">
       <Container>
@@ -94,16 +95,16 @@ const FooterBar = () => {
               <a className="social-icon">
                 <FaFacebookF />
               </a>
-              <a className="social-icon">
+              <a className="social-icon" >
                 <FaTwitter />
               </a>
-              <a className="social-icon">
+              <a className="social-icon" href="https://www.instagram.com/healtheasyemi/?hl=en">
                 <FaInstagram />
               </a>
-              <a className="social-icon">
+              <a className="social-icon" href="https://www.linkedin.com/company/110338361/admin/dashboard/">
                 <FaLinkedinIn />
               </a>
-              <a className="social-icon">
+              <a className="social-icon" href="https://www.youtube.com/channel/UCKDchxSJb-_GVKBVXI3NOKA">
                 <FaYoutube />
               </a>
             </div>
