@@ -102,7 +102,7 @@ const D_Blog = () => {
   const [blog, setblog] = useState(blog_var);
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
-  let selectedImage = null;
+
   // Image upload function
   useEffect(() => {
     return () => {
@@ -177,12 +177,13 @@ const D_Blog = () => {
         },
         data: blogData,
       });
-
-      // Handle success
-      Swal.fire({
-        title: "Blog Added Successfully",
-        icon: "success",
-      });
+      if (response.data.Status) {
+        // Handle success
+        Swal.fire({
+          title: "Blog Added Successfully",
+          icon: "success",
+        });
+      }
 
       // Reset form
       setblog(blog_var);
@@ -201,43 +202,64 @@ const D_Blog = () => {
   }
 
   // delete blog
-  function deleteblog(id) {
-    Swal.fire({
+  const deleteBlog = async (id, images = []) => {
+    const result = await Swal.fire({
       title: "Are you sure?",
-      text: "You Want Delete This Surgery.",
+      text: "You want to delete this blog.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios({
-          method: "post",
-          url: `${API_BASE_URL}/doctor/blogs/remove`,
-          headers: {
-            Authorization: token,
-          },
-          data: {
-            blogid: id,
-          },
-        })
-          .then((res) => {
-            Swal.fire({
-              title: "Blog Deleted",
-              text: "The blog has been removed successfully.",
-              icon: "success",
-            });
-            getblog();
-          })
-          .catch(function (error) {
-            // console.log(error);
-            toast(error.message, { className: "custom-toast-error" });
-          })
-          .finally(() => {});
-      }
     });
-  }
+
+    if (!result.isConfirmed) return;
+
+    try {
+      Swal.fire({
+        title: "Deleting...",
+        text: "Please wait",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
+      // 1️⃣ Remove all images (if exists)
+      if (images.length > 0) {
+        await Promise.all(
+          images.map((imgUrl) =>
+            axios.post(
+              `${API_BASE_URL}/user/upload/removeimage`,
+              { path: imgUrl },
+              { headers: { Authorization: token } }
+            )
+          )
+        );
+      }
+
+      // 2️⃣ Remove blog
+      await axios.post(
+        `${API_BASE_URL}/doctor/blogs/remove`,
+        { blogid: id },
+        { headers: { Authorization: token } }
+      );
+
+      Swal.fire({
+        title: "Blog Deleted",
+        text: "The blog has been removed successfully.",
+        icon: "success",
+      });
+
+      getblog(); // refresh list
+    } catch (error) {
+      console.error("Delete blog error:", error);
+
+      Swal.fire({
+        title: "Error",
+        text: "Something went wrong while deleting the blog.",
+        icon: "error",
+      });
+    }
+  };
 
   // display single blog
   // display blog in model
@@ -313,7 +335,9 @@ const D_Blog = () => {
     setloading(true);
     try {
       // Start with existing images
-      let imageUrls = [...(Array.isArray(edit_record.image) ? edit_record.image : [])];
+      let imageUrls = [
+        ...(Array.isArray(edit_record.image) ? edit_record.image : []),
+      ];
 
       // Remove images that were marked for removal
       if (removedImages.length > 0) {
@@ -368,12 +392,14 @@ const D_Blog = () => {
         },
         data: blogData,
       });
+      if (response.data.Status) {
+        // Handle success
+        Swal.fire({
+          title: "Blog Updated Successfully",
+          icon: "success",
+        });
+      }
 
-      // Handle success
-      Swal.fire({
-        title: "Blog Updated Successfully",
-        icon: "success",
-      });
       getblog();
       edithandleClose();
     } catch (error) {
@@ -505,7 +531,7 @@ const D_Blog = () => {
           <OverlayTrigger placement="top" overlay={renderTooltip("Delete")}>
             <button
               className="btn btn-sm p-1 apt_status_btn danger"
-              onClick={() => deleteblog(row._id)}
+              onClick={() => deleteBlog(row._id, row.image)}
             >
               <MdDeleteOutline size={18} />
             </button>
@@ -527,14 +553,6 @@ const D_Blog = () => {
       width: "150px",
     },
   ];
-
-  const [search, setSearch] = useState("");
-  const searchbox = (e) => {
-    setSearch(e.target.value);
-    var data = bloglist.filter((items) => items.title.includes(e.target.value));
-    setdisplist(data);
-    // console.log(data)
-  };
 
   return (
     <>
@@ -919,9 +937,9 @@ const D_Blog = () => {
                               title={isRemoved ? "Undo remove" : "Remove image"}
                             >
                               {isRemoved ? (
-                                <MdDelete  size={18}/>
+                                <MdDelete size={18} />
                               ) : (
-                                <MdDeleteForever  size={18} />
+                                <MdDeleteForever size={18} />
                               )}
                             </button>
 
