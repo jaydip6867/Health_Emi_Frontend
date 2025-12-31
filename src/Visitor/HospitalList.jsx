@@ -105,7 +105,7 @@ const HospitalList = () => {
             ) : (
               hospitalList.map((doc, i) => (
                 <Col className="p-2" xs={12} md={6} lg={4} key={i}>
-                  <div className="card main-card-box p-3">
+                  <div className="card main-card-box d-flex flex-column justify-content-between  p-3">
                     <div className="py-2">
                         <h2 className="title-hospital">{doc.name}</h2>
                         <div className="d-flex align-items-center h-100">
@@ -114,7 +114,7 @@ const HospitalList = () => {
                         <hr className="border-x"/>
                     </div>
                      
-                     <div className="d-flex justify-content-end">
+                     <div className="d-flex justify-content-end h-100 ">
                         <Link to='' className="text-primary see-all-doc">See All Dooctors <TbChevronRight size={18}/></Link>
                      </div>
                    
