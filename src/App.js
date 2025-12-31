@@ -50,6 +50,7 @@ import P_AmbulanceRequest from "./patient/P_AmbulanceRequest";
 import P_RideSatus from "./patient/P_RideSatus";
 import SurgeriesPage from "./Visitor/SurgeriesPage";
 import D_AmbulanceHistory from "./doctor/D_AmbulanceHistory";
+import HospitalList from "./Visitor/HospitalList";
 function App() {
   return (
     <div className="App">
@@ -59,8 +60,12 @@ function App() {
         <Route path="/contact" element={<Contact />}></Route>
         <Route path="/consult" element={<VideoConsult />}></Route>
         <Route path="/doctorfind" element={<Doctors />}></Route>
-        <Route path="/doctorprofile/:id" element={<DoctorProfilePage />}></Route>
+        <Route
+          path="/doctorprofile/:id"
+          element={<DoctorProfilePage />}
+        ></Route>
         <Route path="/surgery" element={<Surgerydoctorlist />}></Route>
+        <Route path="/hospitallist" element={<HospitalList />}></Route>
         <Route path="/surgery/:id" element={<Surgerydoctorlist />}></Route>
         <Route path="/comparedoctor" element={<CompareDoctor />}></Route>
         <Route path="/ambulancepage" element={<AmbulancePage />}></Route>
@@ -70,7 +75,10 @@ function App() {
         <Route path="/blog/:id" element={<BlogDetail />}></Route>
         <Route path="termsandcondition" element={<Terms />}></Route>
         <Route path="doctor-tc" element={<DoctorTC />}></Route>
-        <Route path="doctor-telemedicine-tc" element={<DoctorTelemedicineTC />}></Route>
+        <Route
+          path="doctor-telemedicine-tc"
+          element={<DoctorTelemedicineTC />}
+        ></Route>
         <Route path="/doctor">
           <Route path="" index element={<DoctorLogin />}></Route>
           <Route path="doctorregister" element={<DoctorRegister />}></Route>
@@ -78,15 +86,27 @@ function App() {
           <Route path="doctordashboard" element={<DoctorDashboard />}></Route>
           <Route path="doctorprofile" element={<DoctorProfile />}></Route>
           <Route path="doctorappointment" element={<D_Appointment />}></Route>
-          <Route path="doctorsurgeryappointment" element={<D_SurgeryAppointment />}></Route>
+          <Route
+            path="doctorsurgeryappointment"
+            element={<D_SurgeryAppointment />}
+          ></Route>
           <Route path="doctorblog" element={<D_Blog />}></Route>
           <Route path="doctorsurgery" element={<D_Surgery />}></Route>
           <Route path="doctorconsultation" element={<D_Consultation />}></Route>
           <Route path="doctorreviews" element={<D_Review />}></Route>
           <Route path="calender" element={<D_Calender />}></Route>
-          <Route path="ambulance-request" element={<D_AmbulanceRequest />}></Route>
-          <Route path="ambulance-history" element={<D_AmbulanceHistory />}></Route>
-          <Route path="ambulance-request/status/:id" element={<D_StatusAmbulance />}/>
+          <Route
+            path="ambulance-request"
+            element={<D_AmbulanceRequest />}
+          ></Route>
+          <Route
+            path="ambulance-history"
+            element={<D_AmbulanceHistory />}
+          ></Route>
+          <Route
+            path="ambulance-request/status/:id"
+            element={<D_StatusAmbulance />}
+          />
         </Route>
         <Route path="/patientregister" element={<PatientRegister />}></Route>
         <Route path="/patient">
@@ -100,7 +120,7 @@ function App() {
           ></Route>
           <Route
             path="ambulance-request/status/:id"
-            element={<P_RideSatus/>}
+            element={<P_RideSatus />}
           />
           <Route path="patientprofile" element={<PatientProfile />}></Route>
         </Route>

@@ -326,7 +326,7 @@ const Surgerydoctorlist = () => {
                 <Container>
                     <Row>
                         <Col xs={12}>
-                            <h2 className='head_sec text-center'>Find Perfect Doctor</h2>
+                            <h2 className='head_sec text-center'>Find Perfect <span className='sky-blue'>Doctor</span> </h2>
                         </Col>
                     </Row>
                 </Container>
