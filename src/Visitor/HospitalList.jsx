@@ -93,7 +93,7 @@ const HospitalList = () => {
       </section>
       {/* search box */}
       <div style={{ marginTop: "-22px" }}>
-        <HospitalSearch />
+        <HospitalSearch hospitalList={hospitalList} setHospitalList={setHospitalList}/>
       </div>
 
       {/* doctor list section */}

@@ -2472,7 +2472,9 @@ body::-webkit-scrollbar-thumb:hover {
 .main-card-box{
     min-height: 100%;
 }
-
+.suggestion-box li:hover {
+  background-color: #f8f9fa;
+}
 .title-hospital{
     font-size: 22px;
     color: var(--grayscale-color-800);

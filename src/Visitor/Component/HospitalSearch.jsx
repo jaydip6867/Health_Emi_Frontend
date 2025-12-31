@@ -8,14 +8,14 @@ import Loader from "../../Loader";
 import { API_BASE_URL } from "../../config";
 import { toast, ToastContainer } from "react-toastify";
 
-const HospitalSearch = () => {
+const HospitalSearch = ({ hospitalList, setHospitalList }) => {
   const [loading, setloading] = useState(false);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [locationLoading, setLocationLoading] = useState(false);
-
+  const [filteredHospitals, setFilteredHospitals] = useState([]);
   const locationCalledRef = useRef(false); // 🔒 prevent multiple calls
 
   const [recordlist, setreclist] = useState([]);
@@ -110,9 +110,8 @@ const HospitalSearch = () => {
   useEffect(() => {
     if (states.length > 0 && !locationCalledRef.current) {
       locationCalledRef.current = true;
-  
-        detectUserLocation();
-      
+
+      detectUserLocation();
     }
   }, [states]);
 
@@ -124,30 +123,22 @@ const HospitalSearch = () => {
   }, [selectedState]);
 
   // -------------------- SUGGESTIONS --------------------
-  const getsuggestion = async (n) => {
-    if (!n) return;
-    try {
-      const res = await axios.post(`${API_BASE_URL}/user/suggestions`, {
-        search: n,
-        state: selectedStateName,
-        city: selectedCity,
-      });
-      setreclist(res.data.Data);
-    } catch (error) {
-      console.error(error);
+  useEffect(() => {
+    if (!inputValue.trim()) {
+      setFilteredHospitals([]);
+      return;
     }
-  };
+    const searchTerm = inputValue.toLowerCase();
+    const filtered = hospitalList.filter(
+      (hospital) =>
+        hospital.name.toLowerCase().includes(searchTerm) ||
+        (hospital.city && hospital.city.toLowerCase().includes(searchTerm)) ||
+        (hospital.state && hospital.state.toLowerCase().includes(searchTerm))
+    );
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-    setShowList(true);
-    getsuggestion(e.target.value);
-  };
+    setFilteredHospitals(filtered);
+  }, [inputValue, hospitalList]);
 
-  const handleSelectItem = (item) => {
-    setInputValue(item);
-    setShowList(false);
-  };
   const locationErrorToastShownRef = useRef(false);
   // -------------------- UI (UNCHANGED) --------------------
   return (
@@ -173,7 +164,6 @@ const HospitalSearch = () => {
                     onChange={(e) => {
                       setSelectedState(e.target.value);
                       setSelectedCity("");
-                      if (inputValue?.trim()) getsuggestion(inputValue);
                     }}
                     onFocus={() => setShowList(false)}
                   >
@@ -204,7 +194,6 @@ const HospitalSearch = () => {
                       value={selectedCity}
                       onChange={(e) => {
                         setSelectedCity(e.target.value);
-                        if (inputValue?.trim()) getsuggestion(inputValue);
                       }}
                       onFocus={() => setShowList(false)}
                       disabled={!selectedState}
@@ -231,14 +220,35 @@ const HospitalSearch = () => {
                       placeholder="Search Hospital"
                       autoComplete="off"
                       value={inputValue}
-                      onChange={handleInputChange}
-                      onFocus={() => setShowList(true)}
-                      onBlur={() => setTimeout(() => setShowList(false), 50)}
+                      onChange={(e) => {
+                        setInputValue(e.target.value);
+                        setShowList(e.target.value.length > 0);
+                      }}
+                      onFocus={() => inputValue.length > 0 && setShowList(true)}
+                      onBlur={() => setTimeout(() => setShowList(false), 200)}
                       className="bg-transparent ps-5 py-2 border-0"
                     />
                   </div>
-
-                  {showList && (
+                  {showList && filteredHospitals.length === 0 && inputValue && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "100%",
+                        left: 0,
+                        width: "100%",
+                        backgroundColor: "white",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: "8px",
+                        padding: "10px",
+                        zIndex: 1000,
+                        boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+                      }}
+                      className="text-muted small"
+                    >
+                      No hospitals found matching "{inputValue}"
+                    </div>
+                  )}
+                  {showList && filteredHospitals.length > 0 && (
                     <ul
                       style={{
                         position: "absolute",
@@ -258,37 +268,42 @@ const HospitalSearch = () => {
                       }}
                       className="suggestion-box"
                     >
-                      {recordlist.length === 0 ? (
-                        <p className="p-2 m-0 text-muted">No Record Found</p>
-                      ) : (
-                        recordlist.map((item, index) => (
-                          <li
-                            style={{
-                              padding: "10px 8px",
-                              cursor: "pointer",
-                              borderBottom: "1px solid #f3f4f6",
-                              borderRadius: "10px",
-                            }}
-                            key={index}
-                            onMouseDown={(e) => e.preventDefault()}
-                          >
-                            <Link
-                              to={
-                                item.type === "surgery"
-                                  ? `/surgery/${encodeURIComponent(
-                                      btoa(item.name)
-                                    )}`
-                                  : `/doctorprofile/${encodeURIComponent(
-                                      btoa(item.id)
-                                    )}`
-                              }
-                              onClick={() => handleSelectItem(item.name)}
-                            >
-                              {item.name}
-                            </Link>
-                          </li>
-                        ))
-                      )}
+                      {filteredHospitals.map((hospital, index) => (
+                        <li
+                          key={hospital.id || index}
+                          style={{
+                            padding: "10px 8px",
+                            cursor: "pointer",
+                            borderBottom: "1px solid #f3f4f6",
+                            borderRadius: "10px",
+                            transition: "background-color 0.2s",
+                          }}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setInputValue(hospital.name);
+                            setSelectedCity(hospital.city || "");
+                            // If you want to filter the main list when a hospital is selected
+                            setHospitalList([hospital]);
+                            setShowList(false);
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.backgroundColor = "#f9fafb")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "transparent")
+                          }
+                        >
+                          <div className="d-flex flex-column">
+                            <span className="fw-medium">{hospital.name}</span>
+                            <small className="text-muted">
+                              {[hospital.city, hospital.state]
+                                .filter(Boolean)
+                                .join(", ")}
+                            </small>
+                          </div>
+                        </li>
+                      ))}
                     </ul>
                   )}
                 </div>
