@@ -23,7 +23,7 @@ const BlogBox = ({ item, index }) => {
     const images = Array.isArray(item.image) && item.image.length > 0 
         ? item.image 
         : item?.image != '' ? [item?.image] : [require('../assets/blog_thumb.jpg')];
-     console.log(item.image)
+
     return (
         <Col key={index} xl={3} lg={4} sm={6} xs={12}>
             <Card className='rounded-4 overflow-hidden blog h-100'>
