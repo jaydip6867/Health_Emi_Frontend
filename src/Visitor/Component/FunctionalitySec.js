@@ -30,7 +30,7 @@ const FunctionalitySec = () => {
                   </Card.Title>
                 </Card.Body>
                 <Card.Footer className="text-center fw-bold">
-                  Find Perfect Hospital
+                  Find  Hospital
                 </Card.Footer>
               </Card>
             </FadeIn>
