@@ -17,7 +17,7 @@ import HospitalSearch from "./Component/HospitalSearch";
 
 const HospitalList = () => {
   var navigate = useNavigate();
-
+  const searchRef = useRef();
   const [patient, setpatient] = useState(null);
   const [token, settoken] = useState(null);
 
@@ -35,6 +35,7 @@ const HospitalList = () => {
   }, [navigate]);
   const [loading, setloading] = useState(false);
   const [doctor_list, setdoclist] = useState([]);
+  const [hospitalAllList, setHospitalAllList] = useState([]);
   const [hospitalList, setHospitalList] = useState([]);
   // Filters state
   useEffect(() => {
@@ -48,8 +49,8 @@ const HospitalList = () => {
       const endpoint = `${API_BASE_URL}/user/doctors`; // When no ID, get all doctors
 
       const requestData = {
-            search: "",
-          };
+        search: "",
+      };
 
       const response = await axios({
         method: "post",
@@ -58,7 +59,7 @@ const HospitalList = () => {
         data: requestData,
       });
 
-      const doctorsData =  response.data.Data?.docs || [];
+      const doctorsData = response.data.Data?.docs || [];
       setdoclist(Array.isArray(doctorsData) ? doctorsData : []);
       const uniqueHospitals = [
         ...new Map(
@@ -67,12 +68,20 @@ const HospitalList = () => {
             .map((h) => [`${h.name}_${h.city}`, h])
         ).values(),
       ];
+      setHospitalAllList(uniqueHospitals);
       setHospitalList(uniqueHospitals);
     } catch (error) {
       // console.error('Error fetching doctors list:', error);
       setdoclist([]);
     } finally {
       setloading(false);
+    }
+  };
+
+  const showAllHospitals = () => {
+    setHospitalList([...hospitalAllList]);
+    if (searchRef.current) {
+      searchRef.current.resetFilters();
     }
   };
 
@@ -93,12 +102,27 @@ const HospitalList = () => {
       </section>
       {/* search box */}
       <div style={{ marginTop: "-22px" }}>
-        <HospitalSearch hospitalList={hospitalList} setHospitalList={setHospitalList}/>
+        <HospitalSearch
+          ref={searchRef}
+          hospitalList={hospitalList}
+          hospitalAllList={hospitalAllList}
+          setHospitalList={setHospitalList}
+        />
       </div>
 
       {/* doctor list section */}
       <section className="py-5">
         <Container>
+          <Row>
+            <Col xs={12} className="pb-2">
+              <button
+                onClick={showAllHospitals}
+                className="btn btn-outline-primary rounded-pill "
+              >
+                show all hospitals
+              </button>
+            </Col>
+          </Row>
           <Row>
             {doctor_list.length <= 0 ? (
               <Col>No Hospital Found...</Col>
@@ -107,17 +131,21 @@ const HospitalList = () => {
                 <Col className="p-2" xs={12} md={6} lg={4} key={i}>
                   <div className="card main-card-box d-flex flex-column justify-content-between  p-3">
                     <div className="py-2">
-                        <h2 className="title-hospital">{doc.name}</h2>
-                        <div className="d-flex align-items-center h-100">
-                            <TbMapPin size={20} className="text-sub-title" /> <div className="ms-1 text-sub-title">{doc.city} , {doc.state}</div>
+                      <h2 className="title-hospital">{doc.name}</h2>
+                      <div className="d-flex align-items-center h-100">
+                        <TbMapPin size={20} className="text-sub-title" />{" "}
+                        <div className="ms-1 text-sub-title">
+                          {doc.city} , {doc.state}
                         </div>
-                        <hr className="border-x"/>
+                      </div>
+                      <hr className="border-x" />
                     </div>
-                     
-                     <div className="d-flex justify-content-end h-100 ">
-                        <Link to='' className="text-primary see-all-doc">See All Dooctors <TbChevronRight size={18}/></Link>
-                     </div>
-                   
+
+                    <div className="d-flex justify-content-end h-100 ">
+                      <Link to="" className="text-primary see-all-doc">
+                        See All Dooctors <TbChevronRight size={18} />
+                      </Link>
+                    </div>
                   </div>
                 </Col>
               ))
