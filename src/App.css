@@ -308,3 +308,29 @@
   color: #5b8cff;
 }
 
+
+/* Mobile (default) */
+.w-20 {
+    width: 100%;
+}
+
+/* Medium devices (≥768px) */
+@media (min-width: 768px) {
+    .w-20 {
+        width: 50%;
+    }
+}
+
+/* Large devices (≥992px) */
+@media (min-width: 992px) {
+    .w-20 {
+        width: 25%;
+    }
+}
+
+/* Extra large devices (≥1200px) */
+@media (min-width: 1200px) {
+    .w-20 {
+        width: 20%;
+    }
+}
