@@ -20,6 +20,7 @@ const HospitalList = () => {
   const searchRef = useRef();
   const [patient, setpatient] = useState(null);
   const [token, settoken] = useState(null);
+  const normalize = (str = "") => str.toLowerCase().trim().replace(/\s+/g, " ");
 
   useEffect(() => {
     var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
@@ -37,6 +38,7 @@ const HospitalList = () => {
   const [doctor_list, setdoclist] = useState([]);
   const [hospitalAllList, setHospitalAllList] = useState([]);
   const [hospitalList, setHospitalList] = useState([]);
+
   // Filters state
   useEffect(() => {
     setloading(true);
@@ -61,11 +63,22 @@ const HospitalList = () => {
 
       const doctorsData = response.data.Data?.docs || [];
       setdoclist(Array.isArray(doctorsData) ? doctorsData : []);
+      // const uniqueHospitals = [
+      //   ...new Map(
+      //     doctorsData
+      //       .flatMap((d) => d.hospitals || [])
+      //       .map((h) => [`${h.name}_${h.city}`, h])
+      //   ).values(),
+      // ];
+
       const uniqueHospitals = [
         ...new Map(
           doctorsData
             .flatMap((d) => d.hospitals || [])
-            .map((h) => [`${h.name}_${h.city}`, h])
+            .map((h) => {
+              const key = `${normalize(h.name)}_${normalize(h.city)}`;
+              return [key, h];
+            })
         ).values(),
       ];
       setHospitalAllList(uniqueHospitals);
@@ -142,7 +155,10 @@ const HospitalList = () => {
                     </div>
 
                     <div className="d-flex justify-content-end h-100 ">
-                      <Link to="" className="text-primary see-all-doc">
+                      <Link
+                        to={`/hospital-doctors/${doc.name}`}
+                        className="text-primary see-all-doc"
+                      >
                         See All Dooctors <TbChevronRight size={18} />
                       </Link>
                     </div>

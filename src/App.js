@@ -51,6 +51,7 @@ import P_RideSatus from "./patient/P_RideSatus";
 import SurgeriesPage from "./Visitor/SurgeriesPage";
 import D_AmbulanceHistory from "./doctor/D_AmbulanceHistory";
 import HospitalList from "./Visitor/HospitalList";
+import HospitalDoctorList from "./Visitor/HospitalDoctorList";
 function App() {
   return (
     <div className="App">
@@ -66,6 +67,7 @@ function App() {
         ></Route>
         <Route path="/surgery" element={<Surgerydoctorlist />}></Route>
         <Route path="/hospitallist" element={<HospitalList />}></Route>
+        <Route path="/hospital-doctors/:hospitalTitle" element={<HospitalDoctorList/>}></Route>
         <Route path="/surgery/:id" element={<Surgerydoctorlist />}></Route>
         <Route path="/comparedoctor" element={<CompareDoctor />}></Route>
         <Route path="/ambulancepage" element={<AmbulancePage />}></Route>
