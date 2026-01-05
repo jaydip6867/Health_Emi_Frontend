@@ -51,8 +51,13 @@ function Terms() {
             <section className="py-5">
                 <Container>
                     <ListGroup>
-                        <ListGroup.Item action onClick={()=>navigate('/doctor-tc')}>Doctor terms & condition</ListGroup.Item>
+                        <ListGroup.Item action onClick={()=>navigate('/doctor-term')}>Doctor Terms</ListGroup.Item>
+                        {/* <ListGroup.Item action onClick={()=>navigate('/doctor-tc')}>Doctor terms & condition</ListGroup.Item> */}
                         <ListGroup.Item action onClick={()=>navigate('/doctor-telemedicine-tc')}>Doctor Telemedicine Terms & condition</ListGroup.Item>
+                        <ListGroup.Item action onClick={()=>navigate('/pns-policy')}>Patient No-Show (PNS) Policy</ListGroup.Item>
+                        <ListGroup.Item action onClick={()=>navigate('/privacy-policy')}>Privacy Policy</ListGroup.Item>
+                        <ListGroup.Item action onClick={()=>navigate('/guide-principle')}>Guide Principle</ListGroup.Item>
+                        <ListGroup.Item action onClick={()=>navigate('/medicine-policy')}>Medicine Policy</ListGroup.Item>
                     </ListGroup>
                 </Container>
             </section>

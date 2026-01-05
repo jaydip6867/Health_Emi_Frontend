@@ -52,6 +52,11 @@ import SurgeriesPage from "./Visitor/SurgeriesPage";
 import D_AmbulanceHistory from "./doctor/D_AmbulanceHistory";
 import HospitalList from "./Visitor/HospitalList";
 import HospitalDoctorList from "./Visitor/HospitalDoctorList";
+import PrivacyPolicy from "./Visitor/T&CPage/PrivacyPolicy";
+import GuidePrinciple from "./Visitor/T&CPage/GuidePrinciple";
+import MedicinePolicy from "./Visitor/T&CPage/MedicinePolicy";
+import DoctorTerm from "./Visitor/T&CPage/DoctorTerm";
+import PnsPolicy from "./Visitor/T&CPage/PnsPolicy";
 function App() {
   return (
     <div className="App">
@@ -77,6 +82,11 @@ function App() {
         <Route path="/blog/:id" element={<BlogDetail />}></Route>
         <Route path="termsandcondition" element={<Terms />}></Route>
         <Route path="doctor-tc" element={<DoctorTC />}></Route>
+        <Route path="pns-policy" element={<PnsPolicy/>}></Route>
+        <Route path="privacy-policy" element={<PrivacyPolicy />}></Route>
+        <Route path="guide-principle" element={<GuidePrinciple />}></Route>
+        <Route path="medicine-policy" element={<MedicinePolicy />}></Route>
+        <Route path="doctor-term" element={<DoctorTerm />}></Route>
         <Route
           path="doctor-telemedicine-tc"
           element={<DoctorTelemedicineTC />}
