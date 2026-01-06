@@ -80,6 +80,7 @@
     --secondary-color-300: #6FE1FB;
     --secondary-color-200: #98EAFC;
     --secondary-color-100: #C2F2FD;
+    --secondary-color-75: #f3f3f3;
     --secondary-color-50: #EBFBFE;
     --tertary-color-950: #07362E;
     --tertary-color-900: #0C5C4F;
@@ -2496,3 +2497,20 @@ body::-webkit-scrollbar-thumb:hover {
     font-family: 'Inter-Regular';
 }
 
+
+.text-cupoon{
+  color:var(--primary-color-600);
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.font-600{
+    font-weight: 600;
+}
+.bg-p-mode{
+  background-color: #e2e8f2;
+}
+
+.bg-p-card{
+    background-color: var(--secondary-color-75);
+}
