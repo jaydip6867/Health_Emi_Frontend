@@ -597,22 +597,79 @@ const DoctorProfilePage = () => {
   }
 
   // Get the price based on selected consultation type
-const getConsultationPrice = () => {
-  if (!selectedConsultationType || !doctor_profile?.consultationsDetails) return 0;
-  
-  const priceMap = {
-    'clinic_visit': doctor_profile.consultationsDetails.clinic_visit_price,
-    'eopd': doctor_profile.consultationsDetails.eopd_price,
-    'home_visit': doctor_profile.consultationsDetails.home_visit_price
+  const getConsultationPrice = () => {
+    if (!selectedConsultationType || !doctor_profile?.consultationsDetails)
+      return 0;
+
+    const priceMap = {
+      clinic_visit: doctor_profile.consultationsDetails.clinic_visit_price,
+      eopd: doctor_profile.consultationsDetails.eopd_price,
+      home_visit: doctor_profile.consultationsDetails.home_visit_price,
+    };
+
+    return priceMap[selectedConsultationType] || 0;
   };
 
-  return priceMap[selectedConsultationType] || 0;
-};
+  const consultationPrice = useMemo(
+    () => getConsultationPrice(),
+    [selectedConsultationType, doctor_profile?.consultationsDetails]
+  );
+  const handlePayment = async () => {
+    try {
+      // For testing without a backend, we'll create the order directly in the frontend
+      // Note: In production, always create orders from your backend
+      const amount = consultationPrice * 100; // Convert to paise
 
-const consultationPrice = useMemo(() => getConsultationPrice(), [selectedConsultationType, doctor_profile?.consultationsDetails])
+      const options = {
+        key: "rzp_live_S0smOweosyTmQ8", // Your live key
+        amount: amount,
+        currency: "INR",
+        name: "Health Emi",
+        description: "Consultation Fee",
+        handler: async function (response) {
+          // Payment successful, now call appointmentbtn
 
-  
+          try {
+            console.log("Payment ID:", response.razorpay_payment_id);
 
+            if (!response.razorpay_payment_id) {
+              alert("Payment failed");
+              return;
+            }
+
+            await appointmentbtn();
+            // Show success message
+            alert("Payment successful! Your appointment is confirmed.");
+          } catch (error) {
+            console.error("Error in appointment booking:", error);
+            alert(
+              "Payment successful but there was an error confirming your appointment. Please contact support."
+            );
+          }
+        },
+        prefill: {
+          name: patient?.name || "",
+          email: patient?.email || "",
+          contact: patient?.phone || "",
+        },
+        theme: {
+          color: "#4CAF50",
+        },
+        modal: {
+          ondismiss: function () {
+            // Handle when user closes the payment modal
+            console.log("Payment modal closed");
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      alert("Error processing payment. Please try again.");
+    }
+  };
   return (
     <>
       <NavBar logindata={logdata} />
@@ -1510,7 +1567,10 @@ const consultationPrice = useMemo(() => getConsultationPrice(), [selectedConsult
 
                           <div className="d-flex py-2 justify-content-between">
                             <div className="d-flex flex-column">
-                              <h6 className="font-600"> {selectedConsultationType?.replace('_', ' ')}</h6>
+                              <h6 className="font-600">
+                                {" "}
+                                {selectedConsultationType?.replace("_", " ")}
+                              </h6>
                               <p className="text-cupoon">Add Coupon Code</p>
                             </div>
                             <div>
@@ -1546,7 +1606,9 @@ const consultationPrice = useMemo(() => getConsultationPrice(), [selectedConsult
                               <h6 className="text-center font-600">
                                 Pay online
                               </h6>
-                              <h6 className="text-center font-600">₹{consultationPrice}</h6>
+                              <h6 className="text-center font-600">
+                                ₹{consultationPrice}
+                              </h6>
                             </div>
                           </div>
                         </div>
@@ -1620,16 +1682,16 @@ const consultationPrice = useMemo(() => getConsultationPrice(), [selectedConsult
           </Modal.Body>
           <Modal.Footer>
             {modelpayment ? (
-               <Button
+              <Button
                 variant="primary"
                 onClick={() => {
-                  appointmentbtn();
+                  handlePayment();
                 }}
               >
                 confirm
               </Button>
             ) : (
-             <Button
+              <Button
                 variant="primary"
                 onClick={() => {
                   saveAppointmentData(doctor_profile._id);
