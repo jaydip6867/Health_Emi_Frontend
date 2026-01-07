@@ -35,6 +35,7 @@ const CompareDoctor = () => {
   const [doctorsList, setDoctorsList] = useState([]);
   const [selectedDoctors, setSelectedDoctors] = useState([]); // store selected doctor objects (max 2)
   const [subSpecialty, setSubSpecialty] = useState([]);
+  const [allDoctorList,setAllDoctorList] = useState([])
   useEffect(() => {
     let data = null;
     const pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
@@ -81,6 +82,30 @@ const CompareDoctor = () => {
   }, []);
 
   // Fetch doctors on page load and when surgery changes
+ useEffect(()=>{
+   const fetchDoctorsAll = async () => {
+     
+      try {
+       
+        const res = await axios({
+          method: "post",
+          url: `${API_BASE_URL}/user/doctors/list`,
+          headers: token ? { Authorization: token } : undefined,
+          data: {
+            search: "",
+          },
+        });
+     
+        setAllDoctorList(res?.data?.Data || []);
+      } catch (e) {
+        // optional: handle error UI/logging
+      } finally {
+        
+      }
+    };
+    fetchDoctorsAll();
+ },[])
+  
   useEffect(() => {
     const fetchDoctors = async () => {
       setloading(true);
@@ -98,14 +123,14 @@ const CompareDoctor = () => {
             // surgeryname: selected ? (selected?.surgerytypename || selected?.name || '') : ''
           },
         });
-
-        const uniqueSubSpecialties = res?.data?.Data.reduce((acc, doctor) => {
+     
+        const uniqueSubSpecialties = allDoctorList.reduce((acc, doctor) => {
           if (doctor.sub_specialty && !acc.includes(doctor.sub_specialty)) {
             acc.push(doctor.sub_specialty);
           }
           return acc;
         }, []);
-
+          
         setSubSpecialty(uniqueSubSpecialties);
         setDoctorsList(res?.data?.Data || []);
         setDoctors(res?.data?.Data || []);
