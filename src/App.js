@@ -57,9 +57,11 @@ import GuidePrinciple from "./Visitor/T&CPage/GuidePrinciple";
 import MedicinePolicy from "./Visitor/T&CPage/MedicinePolicy";
 import DoctorTerm from "./Visitor/T&CPage/DoctorTerm";
 import PnsPolicy from "./Visitor/T&CPage/PnsPolicy";
+import ScrollToTop from "./ScrollToTop";
 function App() {
   return (
     <div className="App">
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/about" element={<About />}></Route>
@@ -72,7 +74,10 @@ function App() {
         ></Route>
         <Route path="/surgery" element={<Surgerydoctorlist />}></Route>
         <Route path="/hospitallist" element={<HospitalList />}></Route>
-        <Route path="/hospital-doctors/:hospitalTitle" element={<HospitalDoctorList/>}></Route>
+        <Route
+          path="/hospital-doctors/:hospitalTitle"
+          element={<HospitalDoctorList />}
+        ></Route>
         <Route path="/surgery/:id" element={<Surgerydoctorlist />}></Route>
         <Route path="/comparedoctor" element={<CompareDoctor />}></Route>
         <Route path="/ambulancepage" element={<AmbulancePage />}></Route>
@@ -82,7 +87,7 @@ function App() {
         <Route path="/blog/:id" element={<BlogDetail />}></Route>
         <Route path="termsandcondition" element={<Terms />}></Route>
         <Route path="doctor-tc" element={<DoctorTC />}></Route>
-        <Route path="pns-policy" element={<PnsPolicy/>}></Route>
+        <Route path="pns-policy" element={<PnsPolicy />}></Route>
         <Route path="privacy-policy" element={<PrivacyPolicy />}></Route>
         <Route path="guide-principle" element={<GuidePrinciple />}></Route>
         <Route path="medicine-policy" element={<MedicinePolicy />}></Route>
