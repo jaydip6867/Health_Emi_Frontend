@@ -82,7 +82,7 @@ const HospitalDoctorList = () => {
           <Row>
             <Col xs={12}>
               <h2 className="head_sec text-center">
-              <span className="sky-blue">Doctors</span> in Hospital  
+              <span className="sky-blue">Doctors</span> in {hospitalTitle}  
               </h2>
             </Col>
           </Row>

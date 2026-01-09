@@ -23,6 +23,7 @@ import {
   MdDone,
   MdOutlineAutorenew,
   MdOutlineRemoveRedEye,
+  MdOutlineNightsStay,
 } from "react-icons/md";
 import DatePicker from "react-datepicker";
 import { format, parse, addDays } from "date-fns";
@@ -829,7 +830,6 @@ const D_SurgeryAppointment = () => {
     return c;
   }, [appointment]);
 
-  
   return (
     <>
       <NavBar logindata={doctor} />
@@ -1010,18 +1010,32 @@ const D_SurgeryAppointment = () => {
                                 Clinic Location
                               </div>
                               <div className="d-flex align-items-center gap-2">
-                                <FiMapPin />
-                                <span className="text-truncate">
-                                  {v?.hospital_name?.address || ""} ,
-                                  {v?.hospital_name?.city || ""} ,
-                                  {v?.hospital_name?.state || ""}
-                                </span>
+                                <div>
+                                  <FiMapPin size={18} />
+                                </div>
+                                <div>
+                                  <span className="text-truncate">
+                                    {v?.hospital_name?.address || ""} ,
+                                    {v?.hospital_name?.city || ""} ,
+                                    {v?.hospital_name?.state || ""}
+                                  </span>
+                                </div>
                               </div>
                             </Col>
                           </>
                         ) : null}
+
+                        <Col md={6} xs={12}>
+                          <div className="text-muted small mb-1">Stay</div>
+                          <div className="d-flex align-items-center gap-2">
+                            <span>
+                             
+                              <MdOutlineNightsStay size={18} />
+                              {v?.surgerydetails?.days} - day
+                            </span>
+                          </div>
+                        </Col>
                       </Row>
-                      
                     </div>
 
                     {(v?.report || []).length > 0 && (
@@ -1046,7 +1060,12 @@ const D_SurgeryAppointment = () => {
                                   <Button
                                     size="sm"
                                     variant="outline-primary"
-                                    onClick={() => window.open(showReportOrPrication(url), "_blank")}
+                                    onClick={() =>
+                                      window.open(
+                                        showReportOrPrication(url),
+                                        "_blank"
+                                      )
+                                    }
                                   >
                                     View
                                   </Button>
@@ -1058,39 +1077,46 @@ const D_SurgeryAppointment = () => {
                       </div>
                     )}
 
-                    {v.status === "Completed"  && v?.doctor_remark && (
+                    {v.status === "Completed" && v?.doctor_remark && (
                       <div>
                         <hr />
                         <div className="fw-semibold mb-3">Prescription</div>
                         <Row className="g-3">
-                          {<Col md={4} sm={6}>
-                                <Card className="h-100">
-                                  <div className="ratio ratio-16x9 bg-light">
-                                    <iframe
-                                      src={showReportOrPrication(v?.doctor_remark)}
-                                      title={`prescription consultant`}
-                                      className="border-0"
-                                    ></iframe>
+                          {
+                            <Col md={4} sm={6}>
+                              <Card className="h-100">
+                                <div className="ratio ratio-16x9 bg-light">
+                                  <iframe
+                                    src={showReportOrPrication(
+                                      v?.doctor_remark
+                                    )}
+                                    title={`prescription consultant`}
+                                    className="border-0"
+                                  ></iframe>
+                                </div>
+                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                  <div className="small text-muted">
+                                    Prescription
                                   </div>
-                                  <Card.Body className="d-flex justify-content-between align-items-center">
-                                    <div className="small text-muted">
-                                      Prescription
-                                    </div>
-                                    <Button
-                                      size="sm"
-                                      variant="outline-primary"
-                                      onClick={() =>
-                                        window.open(showReportOrPrication(v?.doctor_remark), "_blank")
-                                      }
-                                    >
-                                      View
-                                    </Button>
-                                  </Card.Body>
-                                </Card>
-                              </Col>}
+                                  <Button
+                                    size="sm"
+                                    variant="outline-primary"
+                                    onClick={() =>
+                                      window.open(
+                                        showReportOrPrication(v?.doctor_remark),
+                                        "_blank"
+                                      )
+                                    }
+                                  >
+                                    View
+                                  </Button>
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                          }
                         </Row>
                       </div>
-                    ) }
+                    )}
                   </div>
                 </Modal.Body>
               </Modal>

@@ -17,7 +17,11 @@ import CryptoJS from "crypto-js";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SmartDataTable from "../components/SmartDataTable";
-import { MdOutlineRemoveRedEye, MdVerified } from "react-icons/md";
+import {
+  MdOutlineRemoveRedEye,
+  MdVerified,
+  MdOutlineNightsStay,
+} from "react-icons/md";
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from "../config";
 import { BsClipboard } from "react-icons/bs";
 import { FiClock, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
@@ -454,28 +458,45 @@ const P_Surgeries = () => {
                             Clinic Location
                           </div>
                           <div className="d-flex align-items-center gap-2">
-                            <FiMapPin />
-                            <span className="text-truncate">
-                              {v?.hospital_name?.address || ""} ,{" "}
-                              {v?.hospital_name?.city || ""} ,{" "}
-                              {v?.hospital_name?.state || ""}
-                            </span>
+                            <div>
+                              <FiMapPin size={18}  />
+                            </div>
+                            <div className="text-truncate">
+                              <span >
+                                {v?.hospital_name?.address || ""} ,{" "}
+                                {v?.hospital_name?.city || ""} ,{" "}
+                                {v?.hospital_name?.state || ""}
+                              </span>
+                            </div>
                           </div>
                         </Col>
                         {v?.surgerydetails?.name && (
-                              <Col md={6} xs={12}>
-                                <div className="text-muted small mb-1">
-                                  Surgery Name
-                                </div>
-                               
-                                <div className="d-flex align-items-center gap-2">
-                                  <TbVaccine size={20} />
-                                  <span className="text-truncate">
-                                    {v?.surgerydetails?.name || ""}
-                                  </span>
-                                </div>
-                              </Col>
-                            )}
+                          <Col md={6} xs={12}>
+                            <div className="text-muted small mb-1">
+                              Surgery Name
+                            </div>
+
+                            <div className="d-flex align-items-center gap-2">
+                              <TbVaccine size={20} />
+                              <span className="text-truncate">
+                                {v?.surgerydetails?.name || ""}
+                              </span>
+                            </div>
+                          </Col>
+                        )}
+
+                        <Col md={6} xs={12}>
+                          <div className="text-muted small mb-1">Stay</div>
+                          <div className="d-flex align-items-center gap-2">
+                            <span>
+                              {" "}
+                              <MdOutlineNightsStay /> {
+                                v?.surgerydetails?.days
+                              }{" "}
+                              - day
+                            </span>
+                          </div>
+                        </Col>
                       </Row>
                     </div>
                     {/* Reports */}
@@ -519,7 +540,7 @@ const P_Surgeries = () => {
                     )}
                     {/* Prescription */}
                     <div>
-                      {v?.doctor_remark  && (
+                      {v?.doctor_remark && (
                         <div className="border rounded p-3 mt-3 col-lg-5 col-md-9 col-12">
                           <div className="fw-semibold mb-3">Prescription</div>
                           <div
