@@ -13,7 +13,7 @@ import { FaLocationDot, FaXTwitter } from "react-icons/fa6";
 import "../css/visitor.css";
 
 const FooterBar = () => {
-    var navigate = useNavigate();
+  var navigate = useNavigate();
   return (
     <footer className="footer">
       <Container>
@@ -27,9 +27,12 @@ const FooterBar = () => {
               />
             </div>
             <p className="footer-text">
-              <b>Health Easy EMI - </b>Your trusted partner for affordable healthcare.
-              <br/> Compare dctors, surgeries, book ambulances and consult online - all in one secure platform.
-              <br/> Making healthcare <b>simple, transparent and financially accessible</b>
+              <b>Health Easy EMI - </b>Your trusted partner for affordable
+              healthcare.
+              <br /> Compare dctors, surgeries, book ambulances and consult
+              online - all in one secure platform.
+              <br /> Making healthcare{" "}
+              <b>simple, transparent and financially accessible</b>
             </p>
           </Col>
           <Col sm={3} xs={12} md={4} lg={2} className="footer-links">
@@ -81,29 +84,43 @@ const FooterBar = () => {
                 <MdCall className="me-2" />
                 +91 8087161522
               </p>
+              <a href="mailto:healtheasyemi@gmail.com?subject=Inquiry&body=Hello HealthEasy team,">
+                <div className="d-flex align-items-center ">
+                  <div className="d-flex align-items-center">
+                    <MdMail size={18} className=" me-2" />
+                  </div>
+                  <div className="d-flex align-items-center">healtheasyemi@gmail.com</div>
+                </div>
+              </a>
               <p>
-                <MdMail className="me-2" />
-                healtheasyemi@gmail.com
-              </p>
-               <p>
                 <FaLocationDot className="me-2" />
-                Office no.23, 3rd Floor, Aston Plaza, Narhe Ambegaon Rd, above Star Bazaar, Ambegaon Budruk, Pune, Maharashtra 411046
-               </p>
+                Office no.23, 3rd Floor, Aston Plaza, Narhe Ambegaon Rd, above
+                Star Bazaar, Ambegaon Budruk, Pune, Maharashtra 411046
+              </p>
             </div>
             <div className="social-links">
               <a className="social-icon">
                 <FaFacebookF />
               </a>
-              <a className="social-icon" >
-               <FaXTwitter/>
+              <a className="social-icon">
+                <FaXTwitter />
               </a>
-              <a className="social-icon" href="https://www.instagram.com/healtheasyemi/?hl=en">
+              <a
+                className="social-icon"
+                href="https://www.instagram.com/healtheasyemi/?hl=en"
+              >
                 <FaInstagram />
               </a>
-              <a className="social-icon" href="https://www.linkedin.com/company/110338361/admin/dashboard/">
+              <a
+                className="social-icon"
+                href="https://www.linkedin.com/company/110338361/admin/dashboard/"
+              >
                 <FaLinkedinIn />
               </a>
-              <a className="social-icon" href="https://www.youtube.com/channel/UCKDchxSJb-_GVKBVXI3NOKA">
+              <a
+                className="social-icon"
+                href="https://www.youtube.com/channel/UCKDchxSJb-_GVKBVXI3NOKA"
+              >
                 <FaYoutube />
               </a>
             </div>
@@ -113,9 +130,19 @@ const FooterBar = () => {
       <div className="footer-bottom">
         <Container>
           <Row>
-            <Col xs={12} md={6} lg><span>Made with <FaHeart fill={"#FF4D4F"} /> India</span></Col>
-            <Col xs={12} md={6} lg className="copyright"><p>Copyright © 2024 <span>Health Easy EMI</span></p></Col>
-            <Col xs={12} md={6} lg className="text-lg-end text-center"><span>Developed By @ Codezil Technologies</span></Col>
+            <Col xs={12} md={6} lg>
+              <span>
+                Made with <FaHeart fill={"#FF4D4F"} /> India
+              </span>
+            </Col>
+            <Col xs={12} md={6} lg className="copyright">
+              <p>
+                Copyright © 2024 <span>Health Easy EMI</span>
+              </p>
+            </Col>
+            <Col xs={12} md={6} lg className="text-lg-end text-center">
+              <span>Developed By @ Codezil Technologies</span>
+            </Col>
           </Row>
         </Container>
       </div>
