@@ -2514,3 +2514,12 @@ body::-webkit-scrollbar-thumb:hover {
 .bg-p-card{
     background-color: var(--secondary-color-75);
 }
+
+.contact-form input , .contact-form textarea{
+    border: 0;
+    background-color: var(--grayscale-color-50);
+}
+.contact-form input:focus , .contact-form textarea:focus{
+    box-shadow: none;
+    background-color: var(--primary-color-50);
+}
