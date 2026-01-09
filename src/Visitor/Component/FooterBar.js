@@ -2,7 +2,6 @@ import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import {
   FaFacebookF,
-  FaTwitter,
   FaInstagram,
   FaLinkedinIn,
   FaYoutube,
@@ -10,7 +9,7 @@ import {
 } from "react-icons/fa";
 import { MdCall, MdMail } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
-import { FaLocationDot } from "react-icons/fa6";
+import { FaLocationDot, FaXTwitter } from "react-icons/fa6";
 import "../css/visitor.css";
 
 const FooterBar = () => {
@@ -71,7 +70,7 @@ const FooterBar = () => {
                 <Link to="#">Privacy Policy</Link>
               </li> */}
               <li>
-                <Link to="termsandcondition">Terms & Conditions</Link>
+                <Link to="/terms">Terms & Conditions</Link>
               </li>
             </ul>
           </Col>
@@ -96,7 +95,7 @@ const FooterBar = () => {
                 <FaFacebookF />
               </a>
               <a className="social-icon" >
-                <FaTwitter />
+               <FaXTwitter/>
               </a>
               <a className="social-icon" href="https://www.instagram.com/healtheasyemi/?hl=en">
                 <FaInstagram />

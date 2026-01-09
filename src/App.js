@@ -85,7 +85,7 @@ function App() {
         <Route path="/faq" element={<Faq />}></Route>
         <Route path="/blog" element={<Blog />}></Route>
         <Route path="/blog/:id" element={<BlogDetail />}></Route>
-        <Route path="termsandcondition" element={<Terms />}></Route>
+        <Route path="/terms" element={<Terms />}></Route>
         <Route path="doctor-tc" element={<DoctorTC />}></Route>
         <Route path="pns-policy" element={<PnsPolicy />}></Route>
         <Route path="privacy-policy" element={<PrivacyPolicy />}></Route>
