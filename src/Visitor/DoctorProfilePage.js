@@ -616,60 +616,69 @@ const DoctorProfilePage = () => {
   );
   const handlePayment = async () => {
     try {
-      // For testing without a backend, we'll create the order directly in the frontend
-      // Note: In production, always create orders from your backend
-      const amount = consultationPrice * 100; // Convert to paise
-
-      const options = {
-        key: "rzp_live_S0smOweosyTmQ8", // Your live key
-        amount: amount,
-        currency: "INR",
-        name: "Health Emi",
-        description: "Consultation Fee",
-        handler: async function (response) {
-          // Payment successful, now call appointmentbtn
-
-          try {
-            console.log("Payment ID:", response.razorpay_payment_id);
-
-            if (!response.razorpay_payment_id) {
-              alert("Payment failed");
-              return;
-            }
-
-            await appointmentbtn();
-            // Show success message
-            alert("Payment successful! Your appointment is confirmed.");
-          } catch (error) {
-            console.error("Error in appointment booking:", error);
-            alert(
-              "Payment successful but there was an error confirming your appointment. Please contact support."
-            );
-          }
-        },
-        prefill: {
-          name: patient?.name || "",
-          email: patient?.email || "",
-          contact: patient?.phone || "",
-        },
-        theme: {
-          color: "#4CAF50",
-        },
-        modal: {
-          ondismiss: function () {
-            // Handle when user closes the payment modal
-            console.log("Payment modal closed");
+      var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+      const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
+      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+      var dataToken = JSON.parse(decrypted);
+      // 1️⃣ Create order from backend
+      const { data } = await axios.post(
+        `${API_BASE_URL}/user/order/create`,
+        { amount: consultationPrice }, // INR
+        {
+          headers: {
+            Authorization: `Bearer ${dataToken.accessToken}`, // REQUIRED
           },
-        },
-      };
+        }
+      );
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
+      console.log(data, "data");
+      if (data != "") {
+        const options = {
+          key: "rzp_live_S0smOweosyTmQ8",
+          order_id: data.Data.id, // ✅ MUST
+          amount: data.Data.amount, // from backend (paise)
+          currency: "INR",
+          name: "Health Emi",
+          description: "Consultation Fee",
+
+          handler: async function (response) {
+            try {
+              console.log("Payment Success:", response);
+
+              // OPTIONAL but recommended:
+              // send response to backend for verification
+
+              await appointmentbtn(); // ✅ now safe
+              alert("Payment successful! Appointment confirmed.");
+            } catch (err) {
+              console.error(err);
+              alert("Payment done but appointment failed");
+            }
+          },
+
+          prefill: {
+            name: patient?.name ?? "",
+            email: patient?.email ?? "",
+            contact: patient?.phone ?? "",
+          },
+
+          theme: { color: "#4CAF50" },
+
+          modal: {
+            ondismiss() {
+              console.log("Payment cancelled");
+            },
+          },
+        };
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      }
     } catch (error) {
-      console.error("Error processing payment:", error);
-      alert("Error processing payment. Please try again.");
+      console.error("Payment error:", error);
+      alert("Unable to initiate payment");
     }
   };
+
   return (
     <>
       <NavBar logindata={logdata} />
