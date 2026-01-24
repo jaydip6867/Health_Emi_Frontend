@@ -647,12 +647,13 @@ const DoctorProfilePage = () => {
 
               // OPTIONAL but recommended:
               // send response to backend for verification
-
-              await appointmentbtn(); // ✅ now safe
-              alert("Payment successful! Appointment confirmed.");
+           
+            let res = await appointmentbtn(); // ✅ now safe
+            console.log(res)
+            //  alert("Payment successful! Appointment confirmed.");
             } catch (err) {
               console.error(err);
-              alert("Payment done but appointment failed");
+              //alert("Payment done but appointment failed");
             }
           },
 

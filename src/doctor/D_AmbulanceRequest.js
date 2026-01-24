@@ -49,7 +49,7 @@ const loadGoogleMaps = () => {
     const s = document.createElement("script");
     s.id = id;
     s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
-      GOOGLE_MAPS_API_KEY
+      GOOGLE_MAPS_API_KEY,
     )}&libraries=places,marker`;
     s.async = true;
     s.defer = true;
@@ -238,7 +238,7 @@ const D_AmbulanceRequest = () => {
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,
         {
           headers: { Accept: "application/json" },
-        }
+        },
       );
       const data = await res.json();
       return data?.display_name || "";
@@ -255,7 +255,7 @@ const D_AmbulanceRequest = () => {
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,
         {
           headers: { Accept: "application/json" },
-        }
+        },
       );
       const data = await res.json();
       return {
@@ -401,7 +401,7 @@ const D_AmbulanceRequest = () => {
             autoLocatedRef.current = true;
           },
           () => {},
-          { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+          { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 },
         );
       };
       autoCenterOnCurrentLocation();
@@ -417,7 +417,7 @@ const D_AmbulanceRequest = () => {
       setDetails((prev) => ({
         ...prev,
         name: doctor.name || "",
-        mobile: doctor.mobile.replace(/\s+/g, '') || "",
+        mobile: doctor.mobile.replace(/\s+/g, "") || "",
       }));
     } else if (details.book_for === "other" && doctor) {
       setDetails((prev) => ({
@@ -482,7 +482,7 @@ const D_AmbulanceRequest = () => {
             setDropSuggestions(suggestions);
             setShowDropSuggestions(true);
           }
-        }
+        },
       );
     } catch (e) {
       console.error("Autocomplete failed", e);
@@ -494,7 +494,7 @@ const D_AmbulanceRequest = () => {
 
     return new Promise((resolve) => {
       const service = new window.google.maps.places.PlacesService(
-        document.createElement("div")
+        document.createElement("div"),
       );
 
       service.getDetails(
@@ -520,7 +520,7 @@ const D_AmbulanceRequest = () => {
             lon: Number(lng.toFixed(6)),
             display_name: place.formatted_address || place.name || "",
           });
-        }
+        },
       );
     });
   };
@@ -598,7 +598,7 @@ const D_AmbulanceRequest = () => {
       Swal.fire(
         "Location blocked",
         "Please allow location access in browser settings",
-        "error"
+        "error",
       );
       return;
     }
@@ -660,7 +660,7 @@ const D_AmbulanceRequest = () => {
                   showConfirmButton: false,
                 });
               }
-            }
+            },
           );
         } catch (e) {
           console.error(e);
@@ -674,14 +674,14 @@ const D_AmbulanceRequest = () => {
         Swal.fire(
           "Location Error",
           err.message || "Unable to detect location",
-          "error"
+          "error",
         );
       },
       {
         enableHighAccuracy: false,
         timeout: 20000,
         maximumAge: 30000,
-      }
+      },
     );
   };
 
@@ -756,7 +756,7 @@ const D_AmbulanceRequest = () => {
         Number(form.pickup_latitude),
         Number(form.pickup_longitude),
         Number(form.drop_latitude),
-        Number(form.drop_longitude)
+        Number(form.drop_longitude),
       );
       setDetails((p) => ({ ...p, distance: dist }));
     }
@@ -786,7 +786,13 @@ const D_AmbulanceRequest = () => {
         method: "post",
         url: `${API_BASE_URL}/doctor/ambulancerequests/getprice`,
         headers: { Authorization: token },
-        data: { distance: distanceKm },
+        data: {
+          pickup_longitude: form.pickup_longitude,
+          pickup_latitude: form.pickup_latitude,
+          drop_longitude: form.drop_longitude,
+          drop_latitude: form.drop_latitude,
+          distance: distanceKm,
+        },
       });
 
       const payload = res.data.Data;
@@ -833,7 +839,13 @@ const D_AmbulanceRequest = () => {
         method: "post",
         url: `${API_BASE_URL}/doctor/ambulancerequests/getprice`,
         headers: { Authorization: token },
-        data: { distance: Math.round(distanceKm) },
+        data: {
+          pickup_longitude: form.pickup_longitude,
+          pickup_latitude: form.pickup_latitude,
+          drop_longitude: form.drop_longitude,
+          drop_latitude: form.drop_latitude,
+          distance: Math.round(distanceKm),
+        },
       });
       // console.log(res.data);
       const p = res.data?.Data || {};
@@ -888,7 +900,7 @@ const D_AmbulanceRequest = () => {
         drop_longitude: Number(form.drop_longitude),
         drop_latitude: Number(form.drop_latitude),
         name: details.name,
-        mobile: details.mobile.replace(/\s+/g, ''),
+        mobile: details.mobile.replace(/\s+/g, ""),
         pickup_house_number: details.pickup_house_number,
         drop_house_number: details.drop_house_number,
         book_for: details.book_for,
@@ -899,7 +911,7 @@ const D_AmbulanceRequest = () => {
         gst_per: Number(details.gst_per),
         platform_fee: Number(platformFee),
         distance: Number(
-          overrideDistance !== undefined ? overrideDistance : details.distance
+          overrideDistance !== undefined ? overrideDistance : details.distance,
         ),
       },
     })
@@ -911,7 +923,7 @@ const D_AmbulanceRequest = () => {
               requestId: res.data.Data.requestId,
               notifiedCount: res.data.Data.notifiedCount,
               timestamp: new Date().toISOString(),
-            })
+            }),
           );
         }
         if (
@@ -943,7 +955,7 @@ const D_AmbulanceRequest = () => {
           drop_house_number: "",
           book_for: "myself",
           ambulance_type: "",
-          category:"Basic",
+          category: "Basic",
           price: "",
           gst_per: 18,
           distance: 0,
@@ -1067,7 +1079,7 @@ const D_AmbulanceRequest = () => {
       Number(form.pickup_latitude),
       Number(form.pickup_longitude),
       Number(form.drop_latitude),
-      Number(form.drop_longitude)
+      Number(form.drop_longitude),
     );
 
     const nextDetails = { ...details, distance: dist };
@@ -1183,8 +1195,8 @@ const D_AmbulanceRequest = () => {
                     onClick={() => {
                       navigate(
                         `/doctor/ambulance-request/status/${localStorage.getItem(
-                          "amb_req_id"
-                        )}`
+                          "amb_req_id",
+                        )}`,
                       );
                     }}
                   >
@@ -1279,7 +1291,7 @@ const D_AmbulanceRequest = () => {
                                             ) {
                                               fetchAddressSuggestions(
                                                 "pickup",
-                                                form.pickupaddress
+                                                form.pickupaddress,
                                               );
                                             }
                                           }
@@ -1288,7 +1300,7 @@ const D_AmbulanceRequest = () => {
                                           setTimeout(
                                             () =>
                                               setShowPickupSuggestions(false),
-                                            150
+                                            150,
                                           )
                                         }
                                         onKeyDown={(e) => {
@@ -1325,7 +1337,7 @@ const D_AmbulanceRequest = () => {
                                                           e.preventDefault();
                                                           selectSuggestion(
                                                             "pickup",
-                                                            sug
+                                                            sug,
                                                           );
                                                         }}
                                                       >
@@ -1338,10 +1350,10 @@ const D_AmbulanceRequest = () => {
                                                           {sug.display_name}
                                                         </div>
                                                       </div>
-                                                    )
+                                                    ),
                                                   )}
                                                 </div>
-                                              )
+                                              ),
                                             )}
                                           </div>
                                         )}
@@ -1440,7 +1452,10 @@ const D_AmbulanceRequest = () => {
                                           Mobile Number
                                         </Form.Label>
                                         <Form.Control
-                                          value={details.mobile.replace(/\s+/g, '')}
+                                          value={details.mobile.replace(
+                                            /\s+/g,
+                                            "",
+                                          )}
                                           onChange={handleMobileChange}
                                           placeholder="can add from contact list"
                                         />
@@ -1486,7 +1501,7 @@ const D_AmbulanceRequest = () => {
                                             ) {
                                               fetchAddressSuggestions(
                                                 "drop",
-                                                form.dropaddress
+                                                form.dropaddress,
                                               );
                                             }
                                           }
@@ -1494,7 +1509,7 @@ const D_AmbulanceRequest = () => {
                                         onBlur={() =>
                                           setTimeout(
                                             () => setShowDropSuggestions(false),
-                                            150
+                                            150,
                                           )
                                         }
                                         onKeyDown={(e) => {
@@ -1531,7 +1546,7 @@ const D_AmbulanceRequest = () => {
                                                           e.preventDefault();
                                                           selectSuggestion(
                                                             "drop",
-                                                            sug
+                                                            sug,
                                                           );
                                                         }}
                                                       >
@@ -1544,10 +1559,10 @@ const D_AmbulanceRequest = () => {
                                                           {sug.display_name}
                                                         </div>
                                                       </div>
-                                                    )
+                                                    ),
                                                   )}
                                                 </div>
-                                              )
+                                              ),
                                             )}
                                           </div>
                                         )}
@@ -1610,7 +1625,7 @@ const D_AmbulanceRequest = () => {
                             </div>
 
                             <Row className="my-2 g-3">
-                              {console.log('details',details)}
+                              {console.log("details", details)}
                               {[
                                 // { key: "Ambulance", label: "Ambulance", icon: <FaAmbulance size={28} className="me-3" />, sub: "Emergency medical van" },
                                 // { key: "Bike", label: "Bike", icon: <FaMotorcycle size={28} className="me-3" />, sub: "Beat the traffic on a bike" },
@@ -1630,90 +1645,86 @@ const D_AmbulanceRequest = () => {
                                     details.category === "Advance"
                                       ? "Advanced life support"
                                       : "Emergency medical van",
-              
                                 },
                                 {
                                   key: "Bike",
                                   label: "Bike",
                                   icon: require("../Visitor/assets/icon/bike_icon.png"),
                                   sub: "Beat the traffic on a bike",
-                                 
                                 },
                                 {
                                   key: "Rickshaw",
                                   label: "Rickshaw",
                                   icon: require("../Visitor/assets/icon/rikshaw_icon.png"),
                                   sub: "Quick auto ride in town",
-                             
                                 },
                                 {
                                   key: "Cab",
                                   label: "Cab",
                                   icon: require("../Visitor/assets/icon/car_icon.png"),
                                   sub: "Comfy, economical cars",
-                             
                                 },
                               ].map((opt, idx) => {
-                                  const price = vehiclePrices
-                                    ? vehiclePrices[opt.key]
-                                    : null;
-                                  const selected =
-                                    details.ambulance_type === opt.key;
-                                  return (
-                                    <Col
-                                      xs={6}
-                                      key={opt.key}
-                                      className="text-center m-0 p-2"
+                                const price = vehiclePrices
+                                  ? vehiclePrices[opt.key]
+                                  : null;
+                                const selected =
+                                  details.ambulance_type === opt.key;
+                                return (
+                                  <Col
+                                    xs={6}
+                                    key={opt.key}
+                                    className="text-center m-0 p-2"
+                                  >
+                                    <div
+                                      className={`p-2 border rounded h-100 d-flex flex-column justify-content-center ${
+                                        selected ? "shadow-sm" : ""
+                                      }`}
+                                      style={{
+                                        cursor: "pointer",
+                                        backgroundColor: selected
+                                          ? "#dfe6ffff"
+                                          : "#fff",
+                                      }}
+                                      onClick={() =>
+                                        setDetails((p) => ({
+                                          ...p,
+                                          ambulance_type: opt.key,
+                                          price:
+                                            price !== undefined &&
+                                            price !== null
+                                              ? Number(price)
+                                              : p.price,
+                                        }))
+                                      }
                                     >
-                                      <div
-                                        className={`p-2 border rounded h-100 d-flex flex-column justify-content-center ${
-                                          selected ? "shadow-sm" : ""
-                                        }`}
-                                        style={{
-                                          cursor: "pointer",
-                                          backgroundColor: selected
-                                            ? "#dfe6ffff"
-                                            : "#fff",
-                                        }}
-                                        onClick={() =>
-                                          setDetails((p) => ({
-                                            ...p,
-                                            ambulance_type: opt.key,
-                                            price:
-                                              price !== undefined &&
-                                              price !== null
-                                                ? Number(price)
-                                                : p.price,
-                                          }))
-                                        }
-                                      >
-                                        <div className="text-center">
-                                          <img
-                                            src={opt.icon}
-                                            alt="ambulance image"
-                                            className="mx-auto  my-2"
-                                            style={{ maxHeight: "35px" }}
-                                          />
-                                          <div>
-                                            <div className="fw-semibold py-2">
-                                              {price !== undefined &&
-                                              price !== null
-                                                ? `₹${price}`
-                                                : "—"}{" "}
-                                            </div>
-                                            <div className="fw-semibold badge radius-20 p-2 w-100 text-bg-dark">
-                                              {opt.label}
-                                            </div>
-                                            {/* <div className="text-muted" style={{ fontSize: "0.8rem" }}>{opt.sub}</div> */}
+                                      <div className="text-center">
+                                        <img
+                                          src={opt.icon}
+                                          alt="ambulance image"
+                                          className="mx-auto  my-2"
+                                          style={{ maxHeight: "35px" }}
+                                        />
+                                        <div>
+                                          <div className="fw-semibold py-2">
+                                            {price !== undefined &&
+                                            price !== null
+                                              ? `₹${price}`
+                                              : "—"}{" "}
                                           </div>
+                                          <div className="fw-semibold badge radius-20 p-2 w-100 text-bg-dark">
+                                            {opt.label}
+                                          </div>
+                                          {/* <div className="text-muted" style={{ fontSize: "0.8rem" }}>{opt.sub}</div> */}
                                         </div>
-                                        {/* <div className="text-end">
+                                      </div>
+                                      {/* <div className="text-end">
                                             <div className="text-muted" style={{ fontSize: "0.8rem" }}>GST + {platformFee ? `(₹${platformFee}) platform fee incl.` : ""}</div>
                                           </div> */}
-                                      </div>
-                                    </Col>
-                                  );
-                                })}
+                                    </div>
+                                  </Col>
+                                );
+                              })}
                               {/* Ambulance Category Selection - Only show when Ambulance is selected */}
                               {details.ambulance_type === "Ambulance" && (
                                 <div className="mb-3">
@@ -1744,7 +1755,7 @@ const D_AmbulanceRequest = () => {
                                             // Trigger price update after state is set
                                             fetchPrice(
                                               "Ambulance",
-                                              details.distance
+                                              details.distance,
                                             );
                                           }}
                                           style={{
@@ -1854,7 +1865,7 @@ const D_AmbulanceRequest = () => {
                             hour: "numeric",
                             minute: "2-digit",
                             hour12: true,
-                          }
+                          },
                         )
                       : "Today, 4:42PM"}
                   </div>
@@ -1863,8 +1874,8 @@ const D_AmbulanceRequest = () => {
                       selectedRequest?.status === "completed"
                         ? "success"
                         : selectedRequest?.status === "cancelled"
-                        ? "danger"
-                        : "warning"
+                          ? "danger"
+                          : "warning"
                     }
                   >
                     {selectedRequest?.status}

@@ -90,7 +90,6 @@ const Amb_Profile = () => {
                     <Col md={4} className="mb-4">
                       <Card className="shadow-sm h-100 border-0">
                         <Card.Body className="text-center p-4">
-
                           <div className="d-flex justify-content-center">
                             <Image
                               src={
@@ -98,16 +97,17 @@ const Amb_Profile = () => {
                                 "https://via.placeholder.com/150"
                               }
                               roundedCircle
-                              width={150}
-                              height={150}
                               className="border border-3 border-primary position-relative"
-                              style={{ objectFit: "cover" }}
+                              style={{
+                                objectFit: "cover",
+                                width: "150px",
+                                height: "150px",
+                              }}
                             />
                           </div>
 
                           <div className="mb-4">
                             <h3 className="mb-1 fw-bold text-dark">
-
                               {ambulance.fullname}
                             </h3>
                             <p className="text-muted mb-3">
@@ -147,7 +147,6 @@ const Amb_Profile = () => {
                                   .toUpperCase() +
                                   ambulance.ambulance_status.slice(1)}
                               </Badge>
-
                             </div>
                           </div>
 
@@ -371,7 +370,7 @@ const Amb_Profile = () => {
                                     <p className="mt-2">
                                       <strong>Fitness Expiry:</strong>{" "}
                                       {formatDate(
-                                        ambulance.ambulance_fitness_expiry
+                                        ambulance.ambulance_fitness_expiry,
                                       )}
                                     </p>
                                   </Col>

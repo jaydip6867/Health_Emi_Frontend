@@ -1,11 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Card, Col, Container, Form, Row, Badge, Modal } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  Row,
+  Badge,
+  Modal,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import P_Sidebar from "./P_Sidebar";
 import axios from "axios";
 import Swal from "sweetalert2";
 import CryptoJS from "crypto-js";
-import SmartDataTable from '../components/SmartDataTable';
+import SmartDataTable from "../components/SmartDataTable";
 import {
   API_BASE_URL,
   SECRET_KEY,
@@ -40,7 +49,7 @@ const loadGoogleMaps = () => {
     const s = document.createElement("script");
     s.id = id;
     s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
-      GOOGLE_MAPS_API_KEY
+      GOOGLE_MAPS_API_KEY,
     )}&libraries=places,marker`;
     s.async = true;
     s.defer = true;
@@ -155,7 +164,7 @@ const P_AmbulanceRequest = () => {
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,
         {
           headers: { Accept: "application/json" },
-        }
+        },
       );
       const data = await res.json();
       return data?.display_name || "";
@@ -172,7 +181,7 @@ const P_AmbulanceRequest = () => {
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,
         {
           headers: { Accept: "application/json" },
-        }
+        },
       );
       const data = await res.json();
       return {
@@ -315,8 +324,8 @@ const P_AmbulanceRequest = () => {
             }
             autoLocatedRef.current = true;
           },
-          () => { },
-          { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+          () => {},
+          { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 },
         );
       };
       autoCenterOnCurrentLocation();
@@ -327,167 +336,167 @@ const P_AmbulanceRequest = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
- const fetchAddressSuggestions = async (type, query) => {
-  if (!query || query.trim().length < 3) {
+  const fetchAddressSuggestions = async (type, query) => {
+    if (!query || query.trim().length < 3) {
+      if (type === "pickup") {
+        setPickupSuggestions([]);
+        setShowPickupSuggestions(false);
+      } else {
+        setDropSuggestions([]);
+        setShowDropSuggestions(false);
+      }
+      return;
+    }
+
+    if (!window.google || !window.google.maps) {
+      console.error("Google Maps JS not loaded");
+      return;
+    }
+
+    try {
+      const map = await ensureMap();
+      const center = map.getCenter();
+
+      const service = new window.google.maps.places.AutocompleteService();
+
+      service.getPlacePredictions(
+        {
+          input: query,
+          location: new window.google.maps.LatLng(center.lat(), center.lng()),
+          radius: 5000,
+          componentRestrictions: { country: "in" },
+        },
+        (predictions, status) => {
+          if (
+            status !== window.google.maps.places.PlacesServiceStatus.OK ||
+            !predictions
+          ) {
+            console.error("Places API error:", status);
+            return;
+          }
+
+          const items = predictions.map((p) => ({
+            place_id: p.place_id,
+            display_name: p.description,
+            lat: null,
+            lon: null,
+          }));
+
+          const suggestions = [{ group: "Suggestions", items }];
+
+          if (type === "pickup") {
+            setPickupSuggestions(suggestions);
+            setShowPickupSuggestions(true);
+          } else {
+            setDropSuggestions(suggestions);
+            setShowDropSuggestions(true);
+          }
+        },
+      );
+    } catch (e) {
+      console.error("Autocomplete failed", e);
+    }
+  };
+
+  const fetchPlaceDetails = (placeId) => {
+    if (!placeId || !window.google) return Promise.resolve(null);
+
+    return new Promise((resolve) => {
+      const service = new window.google.maps.places.PlacesService(
+        document.createElement("div"),
+      );
+
+      service.getDetails(
+        {
+          placeId,
+          fields: ["geometry", "formatted_address", "name"],
+        },
+        (place, status) => {
+          if (
+            status !== window.google.maps.places.PlacesServiceStatus.OK ||
+            !place?.geometry?.location
+          ) {
+            console.error("Place details error:", status);
+            resolve(null);
+            return;
+          }
+
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+
+          resolve({
+            lat: Number(lat.toFixed(6)),
+            lon: Number(lng.toFixed(6)),
+            display_name: place.formatted_address || place.name || "",
+          });
+        },
+      );
+    });
+  };
+
+  const selectSuggestion = async (type, sug) => {
+    let lat = sug.lat != null ? Number(Number(sug.lat).toFixed(6)) : null;
+    let lon = sug.lon != null ? Number(Number(sug.lon).toFixed(6)) : null;
+    let display = sug.display_name || "";
+
+    // If we only have place_id, fetch the coordinates
+    if ((!lat || !lon) && sug.place_id) {
+      const details = await fetchPlaceDetails(sug.place_id);
+      if (details) {
+        lat = details.lat;
+        lon = details.lon;
+        display = details.display_name || display;
+      }
+    }
+
+    if (!lat || !lon) {
+      console.warn("No coordinates available for selected suggestion", sug);
+      return;
+    }
+
+    const map = await ensureMap();
+    map.setCenter({ lat, lng: lon });
+    map.setZoom(14);
+
     if (type === "pickup") {
+      if (pickupMarkerRef.current) {
+        pickupMarkerRef.current.setPosition({ lat, lng: lon });
+      } else {
+        const google = window.google;
+        pickupMarkerRef.current = new google.maps.Marker({
+          position: { lat, lng: lon },
+          map,
+        });
+      }
+      setForm((prev) => ({
+        ...prev,
+        pickup_latitude: lat,
+        pickup_longitude: lon,
+        pickupaddress: display,
+      }));
       setPickupSuggestions([]);
       setShowPickupSuggestions(false);
     } else {
+      if (dropMarkerRef.current) {
+        dropMarkerRef.current.setPosition({ lat, lng: lon });
+      } else {
+        const google = window.google;
+        dropMarkerRef.current = new google.maps.Marker({
+          position: { lat, lng: lon },
+          map,
+          icon: DROP_ICON_URL,
+        });
+      }
+      setForm((prev) => ({
+        ...prev,
+        drop_latitude: lat,
+        drop_longitude: lon,
+        dropaddress: display,
+      }));
       setDropSuggestions([]);
       setShowDropSuggestions(false);
     }
-    return;
-  }
-
-  if (!window.google || !window.google.maps) {
-    console.error("Google Maps JS not loaded");
-    return;
-  }
-
-  try {
-    const map = await ensureMap();
-    const center = map.getCenter();
-
-    const service = new window.google.maps.places.AutocompleteService();
-
-    service.getPlacePredictions(
-      {
-        input: query,
-        location: new window.google.maps.LatLng(center.lat(), center.lng()),
-        radius: 5000,
-        componentRestrictions: { country: "in" },
-      },
-      (predictions, status) => {
-        if (
-          status !== window.google.maps.places.PlacesServiceStatus.OK ||
-          !predictions
-        ) {
-          console.error("Places API error:", status);
-          return;
-        }
-
-        const items = predictions.map((p) => ({
-          place_id: p.place_id,
-          display_name: p.description,
-          lat: null,
-          lon: null,
-        }));
-
-        const suggestions = [{ group: "Suggestions", items }];
-
-        if (type === "pickup") {
-          setPickupSuggestions(suggestions);
-          setShowPickupSuggestions(true);
-        } else {
-          setDropSuggestions(suggestions);
-          setShowDropSuggestions(true);
-        }
-      }
-    );
-  } catch (e) {
-    console.error("Autocomplete failed", e);
-  }
-};
-
-const fetchPlaceDetails = (placeId) => {
-  if (!placeId || !window.google) return Promise.resolve(null);
-
-  return new Promise((resolve) => {
-    const service = new window.google.maps.places.PlacesService(
-      document.createElement("div")
-    );
-
-    service.getDetails(
-      {
-        placeId,
-        fields: ["geometry", "formatted_address", "name"],
-      },
-      (place, status) => {
-        if (
-          status !== window.google.maps.places.PlacesServiceStatus.OK ||
-          !place?.geometry?.location
-        ) {
-          console.error("Place details error:", status);
-          resolve(null);
-          return;
-        }
-
-        const lat = place.geometry.location.lat();
-        const lng = place.geometry.location.lng();
-
-        resolve({
-          lat: Number(lat.toFixed(6)),
-          lon: Number(lng.toFixed(6)),
-          display_name: place.formatted_address || place.name || "",
-        });
-      }
-    );
-  });
-};
-
- const selectSuggestion = async (type, sug) => {
-  let lat = sug.lat != null ? Number(Number(sug.lat).toFixed(6)) : null;
-  let lon = sug.lon != null ? Number(Number(sug.lon).toFixed(6)) : null;
-  let display = sug.display_name || "";
-
-  // If we only have place_id, fetch the coordinates
-  if ((!lat || !lon) && sug.place_id) {
-    const details = await fetchPlaceDetails(sug.place_id);
-    if (details) {
-      lat = details.lat;
-      lon = details.lon;
-      display = details.display_name || display;
-    }
-  }
-
-  if (!lat || !lon) {
-    console.warn("No coordinates available for selected suggestion", sug);
-    return;
-  }
-
-  const map = await ensureMap();
-  map.setCenter({ lat, lng: lon });
-  map.setZoom(14);
-
-  if (type === "pickup") {
-    if (pickupMarkerRef.current) {
-      pickupMarkerRef.current.setPosition({ lat, lng: lon });
-    } else {
-      const google = window.google;
-      pickupMarkerRef.current = new google.maps.Marker({
-        position: { lat, lng: lon },
-        map,
-      });
-    }
-    setForm((prev) => ({
-      ...prev,
-      pickup_latitude: lat,
-      pickup_longitude: lon,
-      pickupaddress: display,
-    }));
-    setPickupSuggestions([]);
-    setShowPickupSuggestions(false);
-  } else {
-    if (dropMarkerRef.current) {
-      dropMarkerRef.current.setPosition({ lat, lng: lon });
-    } else {
-      const google = window.google;
-      dropMarkerRef.current = new google.maps.Marker({
-        position: { lat, lng: lon },
-        map,
-        icon: DROP_ICON_URL,
-      });
-    }
-    setForm((prev) => ({
-      ...prev,
-      drop_latitude: lat,
-      drop_longitude: lon,
-      dropaddress: display,
-    }));
-    setDropSuggestions([]);
-    setShowDropSuggestions(false);
-  }
-};
+  };
 
   const getCurrentLocation = (type) => {
     if (!navigator.geolocation) {
@@ -574,7 +583,7 @@ const fetchPlaceDetails = (placeId) => {
           icon: "error",
         });
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
     );
   };
 
@@ -603,9 +612,9 @@ const fetchPlaceDetails = (placeId) => {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return Number((R * c).toFixed(2));
   };
@@ -614,7 +623,7 @@ const fetchPlaceDetails = (placeId) => {
   const handleMobileChange = (e) => {
     const value = e.target.value;
     // Remove all non-digit characters
-    const numericValue = value.replace(/\D/g, '');
+    const numericValue = value.replace(/\D/g, "");
     // Limit to 10 digits
     const limitedValue = numericValue.slice(0, 10);
 
@@ -649,7 +658,7 @@ const fetchPlaceDetails = (placeId) => {
         Number(form.pickup_latitude),
         Number(form.pickup_longitude),
         Number(form.drop_latitude),
-        Number(form.drop_longitude)
+        Number(form.drop_longitude),
       );
       setDetails((p) => ({ ...p, distance: dist }));
     }
@@ -672,20 +681,20 @@ const fetchPlaceDetails = (placeId) => {
   }, [details.distance, token]);
 
   useEffect(() => {
-  if (details.book_for === "myself" && patient) {
-    setDetails((prev) => ({
-      ...prev,
-      name: patient.name || "",
-      mobile: patient.mobile.replace(/\s+/g, '')|| "",
-    }));
-  } else if (details.book_for === "other" && patient) {
-    setDetails((prev) => ({
-      ...prev,
-      name: "",
-      mobile: "",
-    }));
-  }
-}, [details.book_for, patient]);
+    if (details.book_for === "myself" && patient) {
+      setDetails((prev) => ({
+        ...prev,
+        name: patient.name || "",
+        mobile: patient.mobile.replace(/\s+/g, "") || "",
+      }));
+    } else if (details.book_for === "other" && patient) {
+      setDetails((prev) => ({
+        ...prev,
+        name: "",
+        mobile: "",
+      }));
+    }
+  }, [details.book_for, patient]);
 
   const fetchPrice = async (type, distanceKm) => {
     if (!token) return;
@@ -694,7 +703,13 @@ const fetchPlaceDetails = (placeId) => {
         method: "post",
         url: `${API_BASE_URL}/user/ambulancerequests/getprice`,
         headers: { Authorization: token },
-        data: { distance: distanceKm },
+        data: {
+          pickup_longitude: form.pickup_longitude,
+          pickup_latitude: form.pickup_latitude,
+          drop_longitude: form.drop_longitude,
+          drop_latitude: form.drop_latitude,
+          distance: distanceKm,
+        },
       });
       const payload = res.data.Data;
       // console.log(res.data.Data);
@@ -711,8 +726,8 @@ const fetchPlaceDetails = (placeId) => {
         ...p,
         price:
           nextPrice !== undefined &&
-            nextPrice !== null &&
-            !isNaN(Number(nextPrice))
+          nextPrice !== null &&
+          !isNaN(Number(nextPrice))
             ? Number(nextPrice)
             : p.price,
         gst_per:
@@ -720,7 +735,7 @@ const fetchPlaceDetails = (placeId) => {
             ? Number(nextGst)
             : p.gst_per,
       }));
-    } catch (e) { }
+    } catch (e) {}
   };
 
   const fetchAllPrices = async (distanceKm) => {
@@ -745,7 +760,7 @@ const fetchPlaceDetails = (placeId) => {
         ...prev,
         price:
           prices[prev.ambulance_type] !== undefined &&
-            prices[prev.ambulance_type] !== null
+          prices[prev.ambulance_type] !== null
             ? Number(prices[prev.ambulance_type])
             : prev.price,
         gst_per:
@@ -758,7 +773,7 @@ const fetchPlaceDetails = (placeId) => {
       } else {
         setPlatformFee(0);
       }
-    } catch (e) { }
+    } catch (e) {}
   };
 
   useEffect(() => {
@@ -784,7 +799,7 @@ const fetchPlaceDetails = (placeId) => {
         drop_longitude: Number(form.drop_longitude),
         drop_latitude: Number(form.drop_latitude),
         name: details.name,
-        mobile: details.mobile.replace(/\s+/g, ''),
+        mobile: details.mobile.replace(/\s+/g, ""),
         pickup_house_number: details.pickup_house_number,
         drop_house_number: details.drop_house_number,
         book_for: details.book_for,
@@ -793,7 +808,7 @@ const fetchPlaceDetails = (placeId) => {
         gst_per: Number(details.gst_per),
         platform_fee: Number(platformFee),
         distance: Number(
-          overrideDistance !== undefined ? overrideDistance : details.distance
+          overrideDistance !== undefined ? overrideDistance : details.distance,
         ),
       },
     })
@@ -805,7 +820,7 @@ const fetchPlaceDetails = (placeId) => {
               requestId: res.data.Data.requestId,
               notifiedCount: res.data.Data.notifiedCount,
               timestamp: new Date().toISOString(),
-            })
+            }),
           );
         }
         if (
@@ -844,7 +859,7 @@ const fetchPlaceDetails = (placeId) => {
         setPlatformFee(0);
         localStorage.setItem("p_amb_req_id", res.data.Data.requestId);
         navigate(
-          `/patient/ambulance-request/status/${res.data.Data.requestId}`
+          `/patient/ambulance-request/status/${res.data.Data.requestId}`,
         );
       })
       .catch((error) => {
@@ -873,7 +888,7 @@ const fetchPlaceDetails = (placeId) => {
       Number(form.pickup_latitude),
       Number(form.pickup_longitude),
       Number(form.drop_latitude),
-      Number(form.drop_longitude)
+      Number(form.drop_longitude),
     );
     const nextDetails = { ...details, distance: dist };
     setDetails(nextDetails);
@@ -882,7 +897,10 @@ const fetchPlaceDetails = (placeId) => {
       return;
     }
     if (!/^\d{10}$/.test(String(nextDetails.mobile))) {
-      Swal.fire({ title: "Enter valid 10-digit mobile number", icon: "warning" });
+      Swal.fire({
+        title: "Enter valid 10-digit mobile number",
+        icon: "warning",
+      });
       return;
     }
     if (!nextDetails.ambulance_type) {
@@ -938,17 +956,14 @@ const fetchPlaceDetails = (placeId) => {
           "Content-Type": "application/json",
         },
         data: {
-
           search: "",
         },
       });
 
       if (response.data && response.data.Data) {
-
         let patienData = response.data.Data.filter((item) => {
-          return item.patientid == patient._id
-        })
-
+          return item.patientid == patient._id;
+        });
 
         setAmbulanceHistory(patienData);
         // Calculate total pages based on total count or fallback to 1
@@ -979,70 +994,86 @@ const fetchPlaceDetails = (placeId) => {
 
   // Table columns configuration for SmartDataTable
   const customTableStyles = {
-    table: { backgroundColor: 'transparent', borderRadius: 0, boxShadow: 'none' }
+    table: {
+      backgroundColor: "transparent",
+      borderRadius: 0,
+      boxShadow: "none",
+    },
   };
 
-  const columns = [{
-    name: 'No',
-    cell: (row, index) => index + 1,
-    width: '50px'
-  }, {
-    name: 'Name',
-    selector: row => row.name,
-    cell: row => (
-      <div className="">
-        <span className="fw-semibold">{row?.name || "N/A"}</span>
-      </div>
-    ),
-  }, {
-    name: 'Pickup',
-    selector: row => row.pickupaddress,
-    cell: row => (
-      <div className="text-truncate" style={{ maxWidth: "200px" }} title={row.pickupaddress}>
-        <span>{row.pickupaddress || "N/A"}</span>
-      </div>
-    ),
-  }, {
-    name: 'Drop',
-    selector: row => row.dropaddress,
-    cell: row => (
-      <div className="text-truncate" style={{ maxWidth: "200px" }} title={row.dropaddress}>
-        <span>{row.dropaddress || "N/A"}</span>
-      </div>
-    ),
-  }, {
-    name: 'Type',
-    selector: row => row.ambulance_type,
-    cell: row => (
-      <span className="badge bg-primary">
-        {row.ambulance_type || "N/A"}
-      </span>
-    ),
-  }, {
-    name: 'Status',
-    selector: row => row.status,
-    cell: row => renderStatusBadge(row.status),
-  },
-  {
-    name: 'View',
-    cell: row => (
-      <button
-        className="btn btn-sm p-1 appt-view-btn"
-        onClick={() => {
-          setSelectedRequest(row);
-          setIsViewModalOpen(true);
-        }}
-        title="View Details"
-      >
-        <MdOutlineRemoveRedEye size={18} />
-      </button>
-    ),
-    width: '100px',
-    center: true
-  }
+  const columns = [
+    {
+      name: "No",
+      cell: (row, index) => index + 1,
+      width: "50px",
+    },
+    {
+      name: "Name",
+      selector: (row) => row.name,
+      cell: (row) => (
+        <div className="">
+          <span className="fw-semibold">{row?.name || "N/A"}</span>
+        </div>
+      ),
+    },
+    {
+      name: "Pickup",
+      selector: (row) => row.pickupaddress,
+      cell: (row) => (
+        <div
+          className="text-truncate"
+          style={{ maxWidth: "200px" }}
+          title={row.pickupaddress}
+        >
+          <span>{row.pickupaddress || "N/A"}</span>
+        </div>
+      ),
+    },
+    {
+      name: "Drop",
+      selector: (row) => row.dropaddress,
+      cell: (row) => (
+        <div
+          className="text-truncate"
+          style={{ maxWidth: "200px" }}
+          title={row.dropaddress}
+        >
+          <span>{row.dropaddress || "N/A"}</span>
+        </div>
+      ),
+    },
+    {
+      name: "Type",
+      selector: (row) => row.ambulance_type,
+      cell: (row) => (
+        <span className="badge bg-primary">{row.ambulance_type || "N/A"}</span>
+      ),
+    },
+    {
+      name: "Status",
+      selector: (row) => row.status,
+      cell: (row) => renderStatusBadge(row.status),
+    },
+    {
+      name: "View",
+      cell: (row) => (
+        <button
+          className="btn btn-sm p-1 appt-view-btn"
+          onClick={() => {
+            setSelectedRequest(row);
+            setIsViewModalOpen(true);
+          }}
+          title="View Details"
+        >
+          <MdOutlineRemoveRedEye size={18} />
+        </button>
+      ),
+      width: "100px",
+      center: true,
+    },
   ];
 
-    useEffect(() => {
+  useEffect(() => {
     // Only try to get current location if we don't already have pickup coordinates
     if (!form.pickup_latitude || !form.pickup_longitude) {
       getCurrentLocation("pickup");
@@ -1050,9 +1081,7 @@ const fetchPlaceDetails = (placeId) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   return (
-
     <>
       <div className="bg-light">
         <NavBar logindata={patient} />
@@ -1100,7 +1129,6 @@ const fetchPlaceDetails = (placeId) => {
                       />
                     </Card.Body>
                   </Card>
-                  
                 </Col>
                 <Col xs={12} md={7}>
                   {/* Form of ambulace */}
@@ -1115,8 +1143,8 @@ const fetchPlaceDetails = (placeId) => {
                             onClick={() => {
                               navigate(
                                 `/patient/ambulance-request/status/${localStorage.getItem(
-                                  "p_amb_req_id"
-                                )}`
+                                  "p_amb_req_id",
+                                )}`,
                               );
                             }}
                           >
@@ -1162,7 +1190,7 @@ const fetchPlaceDetails = (placeId) => {
                                       ) {
                                         fetchAddressSuggestions(
                                           "pickup",
-                                          form.pickupaddress
+                                          form.pickupaddress,
                                         );
                                       }
                                     }
@@ -1170,7 +1198,7 @@ const fetchPlaceDetails = (placeId) => {
                                   onBlur={() =>
                                     setTimeout(
                                       () => setShowPickupSuggestions(false),
-                                      150
+                                      150,
                                     )
                                   }
                                   onKeyDown={(e) => {
@@ -1270,7 +1298,7 @@ const fetchPlaceDetails = (placeId) => {
                                       ) {
                                         fetchAddressSuggestions(
                                           "drop",
-                                          form.dropaddress
+                                          form.dropaddress,
                                         );
                                       }
                                     }
@@ -1278,7 +1306,7 @@ const fetchPlaceDetails = (placeId) => {
                                   onBlur={() =>
                                     setTimeout(
                                       () => setShowDropSuggestions(false),
-                                      150
+                                      150,
                                     )
                                   }
                                   onKeyDown={(e) => {
@@ -1379,7 +1407,7 @@ const fetchPlaceDetails = (placeId) => {
                                   <Form.Group>
                                     <Form.Label>Mobile</Form.Label>
                                     <Form.Control
-                                      value={details.mobile.replace(/\s+/g, '')}
+                                      value={details.mobile.replace(/\s+/g, "")}
                                       onChange={handleMobileChange}
                                       placeholder="e.g. 9876543210"
                                     />
@@ -1456,10 +1484,30 @@ const fetchPlaceDetails = (placeId) => {
                               </div>
                               <Row className="bg-white g-3">
                                 {[
-                                  { key: "Ambulance", label: "Ambulance", icon: require('../Visitor/assets/icon/ambulance_icon.png'), sub: "Emergency medical van" },
-                                  { key: "Bike", label: "Bike", icon: require('../Visitor/assets/icon/bike_icon.png'), sub: "Beat the traffic on a bike" },
-                                  { key: "Rickshaw", label: "Rickshaw", icon: require('../Visitor/assets/icon/rikshaw_icon.png'), sub: "Quick auto ride in town" },
-                                  { key: "Cab", label: "Cab", icon: require('../Visitor/assets/icon/car_icon.png'), sub: "Comfy, economical cars" },
+                                  {
+                                    key: "Ambulance",
+                                    label: "Ambulance",
+                                    icon: require("../Visitor/assets/icon/ambulance_icon.png"),
+                                    sub: "Emergency medical van",
+                                  },
+                                  {
+                                    key: "Bike",
+                                    label: "Bike",
+                                    icon: require("../Visitor/assets/icon/bike_icon.png"),
+                                    sub: "Beat the traffic on a bike",
+                                  },
+                                  {
+                                    key: "Rickshaw",
+                                    label: "Rickshaw",
+                                    icon: require("../Visitor/assets/icon/rikshaw_icon.png"),
+                                    sub: "Quick auto ride in town",
+                                  },
+                                  {
+                                    key: "Cab",
+                                    label: "Cab",
+                                    icon: require("../Visitor/assets/icon/car_icon.png"),
+                                    sub: "Comfy, economical cars",
+                                  },
                                 ].map((opt, idx) => {
                                   const price = vehiclePrices
                                     ? vehiclePrices[opt.key]
@@ -1473,8 +1521,9 @@ const fetchPlaceDetails = (placeId) => {
                                       className={`text-center`}
                                     >
                                       <div
-                                        className={`p-2 border rounded ${selected ? "shadow-sm" : ""
-                                          }`}
+                                        className={`p-2 border rounded ${
+                                          selected ? "shadow-sm" : ""
+                                        }`}
                                         style={{
                                           cursor: "pointer",
                                           backgroundColor: selected
@@ -1487,18 +1536,23 @@ const fetchPlaceDetails = (placeId) => {
                                             ambulance_type: opt.key,
                                             price:
                                               price !== undefined &&
-                                                price !== null
+                                              price !== null
                                                 ? Number(price)
                                                 : p.price,
                                           }))
                                         }
                                       >
                                         <div className="text-center">
-                                          <img src={opt.icon} alt="ambulance image" className="mx-auto mb-2" style={{ maxHeight: '35px' }} />
+                                          <img
+                                            src={opt.icon}
+                                            alt="ambulance image"
+                                            className="mx-auto mb-2"
+                                            style={{ maxHeight: "35px" }}
+                                          />
                                           <div>
                                             <div className="fw-semibold">
                                               {price !== undefined &&
-                                                price !== null
+                                              price !== null
                                                 ? `₹${price}`
                                                 : "—"}{" "}
                                             </div>
@@ -1544,10 +1598,10 @@ const fetchPlaceDetails = (placeId) => {
               </Row>
               {/* ambulance history section */}
               {showHistory && (
-                <div className='appointments-card mb-3 mt-4'>
-                  <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
-                    <h4 className='mb-0'>Book Ambulance History</h4>
-                    <Badge text='white' className='apt_accept_btn'>
+                <div className="appointments-card mb-3 mt-4">
+                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3">
+                    <h4 className="mb-0">Book Ambulance History</h4>
+                    <Badge text="white" className="apt_accept_btn">
                       {ambulanceHistory ? ambulanceHistory.length : 0} Requests
                     </Badge>
                   </div>
@@ -1560,7 +1614,11 @@ const fetchPlaceDetails = (placeId) => {
                   />
                 </div>
               )}
-              <Modal show={isViewModalOpen} onHide={() => setIsViewModalOpen(false)} size="lg">
+              <Modal
+                show={isViewModalOpen}
+                onHide={() => setIsViewModalOpen(false)}
+                size="lg"
+              >
                 <Modal.Header closeButton>
                   <Modal.Title>Ambulance Details</Modal.Title>
                 </Modal.Header>
@@ -1570,16 +1628,30 @@ const fetchPlaceDetails = (placeId) => {
                       {/* Header */}
                       <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
                         <div className="text-muted">
-                          {selectedRequest.createdAt ? new Date(selectedRequest.createdAt).toLocaleString('en-US', {
-                            weekday: 'short',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true
-                          }) : "Today, 4:42PM"}
+                          {selectedRequest.createdAt
+                            ? new Date(
+                                selectedRequest.createdAt,
+                              ).toLocaleString("en-US", {
+                                weekday: "short",
+                                month: "short",
+                                day: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit",
+                                hour12: true,
+                              })
+                            : "Today, 4:42PM"}
                         </div>
-                        <Badge bg={selectedRequest?.status === "completed" ? "success" : selectedRequest?.status === "cancelled" ? "danger" : "warning"}>{selectedRequest?.status}</Badge>
+                        <Badge
+                          bg={
+                            selectedRequest?.status === "completed"
+                              ? "success"
+                              : selectedRequest?.status === "cancelled"
+                                ? "danger"
+                                : "warning"
+                          }
+                        >
+                          {selectedRequest?.status}
+                        </Badge>
                         <div className="fw-bold text-success">
                           ₹ {selectedRequest.price || "80"}
                         </div>
@@ -1588,13 +1660,19 @@ const fetchPlaceDetails = (placeId) => {
                       {/* Ambulance Driver/Vehicle Info */}
                       {selectedRequest.acceptedAmbulance && (
                         <div className="d-flex align-items-center p-3 border-bottom">
-                          <FaAmbulance className="text-primary me-3" size={24} />
+                          <FaAmbulance
+                            className="text-primary me-3"
+                            size={24}
+                          />
                           <div className="flex-grow-1">
                             <div className="fw-semibold">
-                              {selectedRequest.acceptedAmbulance.fullname || "NandKumar Yadav"}
+                              {selectedRequest.acceptedAmbulance.fullname ||
+                                "NandKumar Yadav"}
                             </div>
                             <div className="text-muted small">
-                              Ambulance | {selectedRequest.acceptedAmbulance.vehicle_no || "GJ-05-TR-2859"}
+                              Ambulance |{" "}
+                              {selectedRequest.acceptedAmbulance.vehicle_no ||
+                                "GJ-05-TR-2859"}
                             </div>
                           </div>
                         </div>
@@ -1610,9 +1688,12 @@ const fetchPlaceDetails = (placeId) => {
                             </div>
                           </div>
                           <div className="flex-grow-1">
-                            <div className="text-muted small mb-1">Pickup Location</div>
+                            <div className="text-muted small mb-1">
+                              Pickup Location
+                            </div>
                             <div className="fw-medium">
-                              {selectedRequest.pickupaddress || "Sahajanand Business Hub, Yogi Cho..."}
+                              {selectedRequest.pickupaddress ||
+                                "Sahajanand Business Hub, Yogi Cho..."}
                             </div>
                           </div>
                         </div>
@@ -1625,9 +1706,12 @@ const fetchPlaceDetails = (placeId) => {
                             <FaMapPin className="text-danger" size={20} />
                           </div>
                           <div className="flex-grow-1">
-                            <div className="text-muted small mb-1">Drop Location</div>
+                            <div className="text-muted small mb-1">
+                              Drop Location
+                            </div>
                             <div className="fw-medium">
-                              {selectedRequest.dropaddress || "Savan Plaza, Savaliya Circle"}
+                              {selectedRequest.dropaddress ||
+                                "Savan Plaza, Savaliya Circle"}
                             </div>
                           </div>
                         </div>
@@ -1639,7 +1723,9 @@ const fetchPlaceDetails = (placeId) => {
                           Total Distance {selectedRequest.distance || "5.2"} Km
                         </div>
                         <div className="text-muted small">
-                          Total Duration {Math.round((selectedRequest.distance || 5.2) * 5)} Min
+                          Total Duration{" "}
+                          {Math.round((selectedRequest.distance || 5.2) * 5)}{" "}
+                          Min
                         </div>
                       </div>
                     </div>
@@ -1653,24 +1739,28 @@ const fetchPlaceDetails = (placeId) => {
       {loading ? <Loader /> : ""}
 
       <style jsx>{`
-              .ambulance-details-card {
-                background: white;
-                border-radius: 8px;
-                overflow: hidden;
-              }
-              
-              .vertical-dashed-line {
-                position: absolute;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 2px;
-                height: 40px;
-                background-image: linear-gradient(to bottom, #ccc 50%, transparent 50%);
-                background-size: 2px 8px;
-                background-repeat: repeat-y;
-              }
-            `}</style>
+        .ambulance-details-card {
+          background: white;
+          border-radius: 8px;
+          overflow: hidden;
+        }
+
+        .vertical-dashed-line {
+          position: absolute;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 2px;
+          height: 40px;
+          background-image: linear-gradient(
+            to bottom,
+            #ccc 50%,
+            transparent 50%
+          );
+          background-size: 2px 8px;
+          background-repeat: repeat-y;
+        }
+      `}</style>
     </>
   );
 };
