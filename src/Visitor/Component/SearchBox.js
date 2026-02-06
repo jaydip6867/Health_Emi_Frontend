@@ -14,6 +14,8 @@ const SearchBox = () => {
   const [cities, setCities] = useState([]);
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [stateInput, setStateInput] = useState("");
+  const [cityInput, setCityInput] = useState("");
   const [locationLoading, setLocationLoading] = useState(false);
 
   const locationCalledRef = useRef(false); // 🔒 prevent multiple calls
@@ -123,6 +125,57 @@ const SearchBox = () => {
     }
   }, [selectedState]);
 
+  // -------------------- INPUT HANDLERS --------------------
+  const handleStateInputChange = (e) => {
+    const value = e.target.value;
+    setStateInput(value);
+    
+    // Find if the input matches any state
+    const state = states.find(s => s.name.toLowerCase() === value.toLowerCase());
+    if (state) {
+      setSelectedState(state.isoCode);
+      setSelectedCity("");
+      setCityInput("");
+      loadCitiesForState(state.isoCode);
+    } else {
+      setSelectedState("");
+      setSelectedCity("");
+      setCityInput("");
+      setCities([]);
+    }
+    
+    if (inputValue?.trim()) getsuggestion(inputValue);
+  };
+
+  const handleCityInputChange = (e) => {
+    const value = e.target.value;
+    setCityInput(value);
+    
+    // Find if the input matches any city in the current state
+    const city = cities.find(c => c.name.toLowerCase() === value.toLowerCase());
+    if (city) {
+      setSelectedCity(city.name);
+    } else {
+      setSelectedCity(value);
+    }
+    
+    if (inputValue?.trim()) getsuggestion(inputValue);
+  };
+
+  // Update input values when selected state/city changes
+  useEffect(() => {
+    if (selectedState) {
+      const state = states.find(s => s.isoCode === selectedState);
+      setStateInput(state?.name || "");
+    } else {
+      setStateInput("");
+    }
+  }, [selectedState, states]);
+
+  useEffect(() => {
+    setCityInput(selectedCity || "");
+  }, [selectedCity]);
+
   // -------------------- SUGGESTIONS --------------------
   const getsuggestion = async (n) => {
     if (!n) return;
@@ -167,27 +220,23 @@ const SearchBox = () => {
                     className="position-absolute"
                     style={{ left: 12 }}
                   />
-                  <Form.Select
-                    className="ps-5 pe-1 py-2 bg-transparent border-0"
-                    value={selectedState}
-                    onChange={(e) => {
-                      setSelectedState(e.target.value);
-                      setSelectedCity("");
-                      if (inputValue?.trim()) getsuggestion(inputValue);
-                    }}
-                    onFocus={() => setShowList(false)}
-                  >
-                    <option value="">
-                      {locationLoading
-                        ? "Detecting location..."
-                        : "Choose State"}
-                    </option>
-                    {states.map((st) => (
-                      <option key={st.isoCode} value={st.isoCode}>
-                        {st.name}
-                      </option>
-                    ))}
-                  </Form.Select>
+                  <div className="position-relative w-100">
+                    <Form.Control
+                      type="text"
+                      list="state-list"
+                      placeholder={locationLoading ? "Detecting location..." : "Enter State"}
+                      className="ps-5 pe-1 py-2 bg-transparent border-0"
+                      value={stateInput}
+                      onChange={handleStateInputChange}
+                      onFocus={() => setShowList(false)}
+                      autoComplete="off"
+                    />
+                    <datalist id="state-list">
+                      {states.map((st) => (
+                        <option key={st.isoCode} value={st.name} />
+                      ))}
+                    </datalist>
+                  </div>
                 </div>
 
                 <div className="d-flex g-0 align-items-center">
@@ -199,23 +248,24 @@ const SearchBox = () => {
                       className="position-absolute"
                       style={{ left: 12 }}
                     />
-                    <Form.Select
-                      className="ps-5 pe-1 py-2 bg-transparent border-0"
-                      value={selectedCity}
-                      onChange={(e) => {
-                        setSelectedCity(e.target.value);
-                        if (inputValue?.trim()) getsuggestion(inputValue);
-                      }}
-                      onFocus={() => setShowList(false)}
-                      disabled={!selectedState}
-                    >
-                      <option value="">Choose City</option>
-                      {cities.map((city) => (
-                        <option key={city.name} value={city.name}>
-                          {city.name}
-                        </option>
-                      ))}
-                    </Form.Select>
+                    <div className="position-relative w-100">
+                      <Form.Control
+                        type="text"
+                        list="city-list"
+                        placeholder={selectedState ? "Enter City" : "Select State First"}
+                        className="ps-5 pe-1 py-2 bg-transparent border-0"
+                        value={cityInput}
+                        onChange={handleCityInputChange}
+                        onFocus={() => setShowList(false)}
+                        disabled={!selectedState}
+                        autoComplete="off"
+                      />
+                      <datalist id="city-list">
+                        {cities.map((city) => (
+                          <option key={city.name} value={city.name} />
+                        ))}
+                      </datalist>
+                    </div>
                   </div>
                   <div className="mx-md-2 line_search_bar"></div>
                 </div>
