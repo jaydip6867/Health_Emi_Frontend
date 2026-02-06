@@ -2523,3 +2523,22 @@ body::-webkit-scrollbar-thumb:hover {
     box-shadow: none;
     background-color: var(--primary-color-50);
 }
+
+.home_slider .slick-prev{
+    left: 0;
+    color: var(--primary-color-600);
+    z-index: 1;
+}
+.home_slider .slick-next{
+    right: 0;
+    color: var(--primary-color-600);
+}
+.home_slider .slick-dots{
+    bottom: 30px;
+}
+.home_slider .slick-dots li{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--primary-color-600);
+}

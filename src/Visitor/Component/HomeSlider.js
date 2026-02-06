@@ -7,9 +7,9 @@ import { API_BASE_URL } from '../../config';
 
 const HomeSlider = () => {
     var settings = {
-        dots: false,
+        dots: true,
         infinite: true,
-        arrows: false,
+        arrows: true,
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
@@ -31,7 +31,7 @@ const HomeSlider = () => {
     }, [])
     return (
         <>
-            <Slider {...settings}>
+            <Slider {...settings} className='home_slider'>
                 {banner.map((item, index) => (
                     <div key={index}>
                         <img src={item.path} alt={'banner title' + index} className='slider-img d-block' />
