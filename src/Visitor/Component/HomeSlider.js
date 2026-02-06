@@ -4,12 +4,32 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import axios from 'axios';
 import { API_BASE_URL } from '../../config';
+import { FaAngleLeft , FaAngleRight } from "react-icons/fa";
+
 
 const HomeSlider = () => {
+    const PrevArrow = (props) => {
+        const { onClick } = props;
+        return (
+          <button type="button" className="slick-prev slick-arrow" onClick={onClick} aria-label="Previous">
+            <FaAngleLeft />
+          </button>
+        );
+      };
+      const NextArrow = (props) => {
+        const { onClick } = props;
+        return (
+          <button type="button" className="slick-next slick-arrow" onClick={onClick} aria-label="Next">
+            <FaAngleRight />
+          </button>
+        );
+      };
     var settings = {
         dots: true,
-        infinite: true,
-        arrows: true,
+  infinite: true,
+  arrows: true,
+  prevArrow: <PrevArrow />,
+  nextArrow: <NextArrow />,
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
