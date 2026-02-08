@@ -890,7 +890,7 @@ const DoctorProfile = () => {
                           </Form.Group>
                         </Col>
                         <Col md={6} lg={4}>
-                          <Form.Label className="fw-semibold">
+                          {/* <Form.Label className="fw-semibold">
                             Available
                           </Form.Label>
                           <Form.Check
@@ -902,7 +902,7 @@ const DoctorProfile = () => {
                             onChange={handleChange}
                             size="lg"
                             label={profile?.is_available === 'available' || profile?.is_available === true ? 'Yes' : 'No'}
-                          />
+                          /> */}
                         </Col>
                         <Col md={4}>
                           <Form.Group>
