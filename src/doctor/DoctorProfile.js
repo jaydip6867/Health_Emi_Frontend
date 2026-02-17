@@ -80,6 +80,26 @@ const DoctorProfile = () => {
     setAddHospitalCountries(Country.getAllCountries());
   }, []);
 
+  // Populate states and cities when profile loads with existing country/state
+  useEffect(() => {
+    if (profile?.country && countries.length > 0) {
+      const country = countries.find((c) => c.name === profile.country);
+      if (country) {
+        setSelectedCountryCode(country.isoCode);
+        const filteredStates = State.getStatesOfCountry(country.isoCode);
+        setStates(filteredStates);
+        if (profile?.state) {
+          const state = filteredStates.find((s) => s.name === profile.state);
+          if (state) {
+            setSelectedStateCode(state.isoCode);
+            const filteredCities = City.getCitiesOfState(country.isoCode, state.isoCode);
+            setCities(filteredCities);
+          }
+        }
+      }
+    }
+  }, [profile?.country, profile?.state, countries]);
+
   // Cleanup preview URL on component unmount
   useEffect(() => {
     return () => {
@@ -99,45 +119,59 @@ const DoctorProfile = () => {
     // console.log("All states:", allStates); 
   }
 
-  // When user selects a country
+  // When user selects a country (input + datalist - value is country name)
   const handleCountryChange = (e) => {
-    const countryCode = e.target.value;
-    setSelectedCountryCode(countryCode);
-    const { name, value } = e.target;
-    var sel_contry = countries.filter((v, i) => {
-      return value === v.isoCode;
-    });
-    setprofile((profile) => ({
-      ...profile,
-      [name]: sel_contry[0].name,
-    }));
+    const countryName = e.target.value;
+    const country = countries.find((c) => c.name === countryName);
 
-    const filteredStates = State.getStatesOfCountry(countryCode);
-    setStates(filteredStates);
-    setCities([]);
-    setSelectedStateCode("");
-    // console.log(sel_contry[0].name)
+    if (country) {
+      setSelectedCountryCode(country.isoCode);
+      setprofile((prev) => ({ ...prev, country: country.name }));
+      const filteredStates = State.getStatesOfCountry(country.isoCode);
+      setStates(filteredStates);
+      setCities([]);
+      setSelectedStateCode("");
+    } else {
+      setprofile((prev) => ({ ...prev, country: countryName }));
+      setSelectedCountryCode("");
+      setStates([]);
+      setCities([]);
+      setSelectedStateCode("");
+    }
   };
 
-  // When user selects a state
-  const handleStateChange = (e) => {
-    const stateCode = e.target.value;
-    setSelectedStateCode(stateCode);
-    const { name, value } = e.target;
-    var sel_state = states.filter((v, i) => {
-      return value === v.isoCode;
-    });
-    setprofile((profile) => ({
-      ...profile,
-      [name]: sel_state[0].name,
-    }));
-
-    const filteredCities = City.getCitiesOfState(
-      selectedCountryCode,
-      stateCode
+  const handleCountryBlur = (e) => {
+    const countryName = e.target.value.trim();
+    if (!countryName) return;
+    const match = countries.find((c) =>
+      c.name.toLowerCase() === countryName.toLowerCase()
     );
-    setCities(filteredCities);
-    // console.log(sel_state[0].name)
+    if (match) {
+      setprofile((prev) => ({ ...prev, country: match.name }));
+      setSelectedCountryCode(match.isoCode);
+      const filteredStates = State.getStatesOfCountry(match.isoCode);
+      setStates(filteredStates);
+    }
+  };
+
+  // When user selects a state (input + datalist - value is state name)
+  const handleStateChange = (e) => {
+    const stateName = e.target.value;
+    const state = states.find((s) => s.name === stateName);
+
+    if (state) {
+      setSelectedStateCode(state.isoCode);
+      setprofile((prev) => ({ ...prev, state: state.name }));
+      const filteredCities = City.getCitiesOfState(
+        selectedCountryCode,
+        state.isoCode
+      );
+      setCities(filteredCities);
+    } else {
+      setprofile((prev) => ({ ...prev, state: stateName }));
+      setSelectedStateCode("");
+      setCities([]);
+    }
   };
 
   // Hospital edit handlers
@@ -909,23 +943,23 @@ const DoctorProfile = () => {
                             <Form.Label className="fw-semibold">
                               Country
                             </Form.Label>
-                            <Form.Select
+                            <Form.Control
+                              as="input"
+                              type="text"
                               name="country"
+                              list="profile-country-list"
+                              value={profile?.country || ""}
                               disabled={IsDisable}
                               onChange={handleCountryChange}
-                              className="form-select"
-                            >
-                              <option value="">Select Country</option>
+                              onBlur={handleCountryBlur}
+                              placeholder="Select or type country"
+                              autoComplete="off"
+                            />
+                            <datalist id="profile-country-list">
                               {countries.map((country) => (
-                                <option
-                                  key={country.isoCode}
-                                  value={country.isoCode}
-                                  selected={profile?.country === country.name}
-                                >
-                                  {country.name}
-                                </option>
+                                <option key={country.isoCode} value={country.name} />
                               ))}
-                            </Form.Select>
+                            </datalist>
                           </Form.Group>
                         </Col>
                         <Col md={4}>
@@ -933,30 +967,22 @@ const DoctorProfile = () => {
                             <Form.Label className="fw-semibold">
                               State
                             </Form.Label>
-                            <Form.Select
+                            <Form.Control
+                              as="input"
+                              type="text"
                               name="state"
-                              onChange={handleStateChange}
-                              value={selectedStateCode}
+                              list="profile-state-list"
+                              value={profile?.state || ""}
                               disabled={!selectedCountryCode || IsDisable}
-                              className="form-select"
-                            >
-                              {!selectedCountryCode ? (
-                                <option>
-                                  {profile?.state || "Select State"}
-                                </option>
-                              ) : (
-                                <option value="">Select State</option>
-                              )}
+                              onChange={handleStateChange}
+                              placeholder="Select or type state"
+                              autoComplete="off"
+                            />
+                            <datalist id="profile-state-list">
                               {states.map((state) => (
-                                <option
-                                  key={state.isoCode}
-                                  value={state.isoCode}
-                                  selected={profile?.state === state.name}
-                                >
-                                  {state.name}
-                                </option>
+                                <option key={state.isoCode} value={state.name} />
                               ))}
-                            </Form.Select>
+                            </datalist>
                           </Form.Group>
                         </Col>
                         <Col md={4}>
@@ -964,29 +990,22 @@ const DoctorProfile = () => {
                             <Form.Label className="fw-semibold">
                               City
                             </Form.Label>
-                            <Form.Select
+                            <Form.Control
+                              as="input"
+                              type="text"
                               name="city"
-                              onChange={handleChange}
+                              list="profile-city-list"
+                              value={profile?.city || ""}
                               disabled={!selectedStateCode || IsDisable}
-                              className="form-select"
-                            >
-                              {!selectedStateCode ? (
-                                <option>
-                                  {profile?.city || "Select City"}
-                                </option>
-                              ) : (
-                                <option value="">Select City</option>
-                              )}
+                              onChange={handleChange}
+                              placeholder="Select or type city"
+                              autoComplete="off"
+                            />
+                            <datalist id="profile-city-list">
                               {cities?.map((city, vi) => (
-                                <option
-                                  key={vi}
-                                  value={city.name}
-                                  selected={profile?.city === city.name}
-                                >
-                                  {city.name}
-                                </option>
+                                <option key={vi} value={city.name} />
                               ))}
-                            </Form.Select>
+                            </datalist>
                           </Form.Group>
                         </Col>
                         <Col xs={12}>
