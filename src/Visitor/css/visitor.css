@@ -222,7 +222,7 @@ h6 {
     transition: all 0.3s ease;
     position: relative;
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 1.2rem;
 }
 
 .menubar a.nav-link:hover,
@@ -383,15 +383,8 @@ h6 {
     border: none;
 }
 
-.functionality_box img {
-    /* object-fit: cover; */
-    /* min-height: 200px; */
-    /* max-height: 300px; */
-}
-
 .functionality_box .card-body {
     position: absolute;
-    /* bottom: 40px; */
     width: 100%;
     height: 100%;
     top: 0;
@@ -402,7 +395,7 @@ h6 {
 }
 
 .functionality_box .card-body .card-title {
-    font-size: 20px;
+    font-size: 22px;
     padding: 12px 18px;
     border-radius: 17px;
     display: flex;
@@ -410,7 +403,14 @@ h6 {
     align-items: center;
     margin-bottom: 40px;
 }
-
+.functionality_box img{
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+.functionality_box:hover img{
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 .functionality_box .card-body .card-title .icon_box {
     width: 39.7131462097168px;
     height: 39.7131462097168px;
