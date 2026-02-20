@@ -8,6 +8,18 @@
     width: 60%;
 }
 
+.bg-secondary-muted{
+    background-color: #e1e6ea;
+}
+.text-amb-label{
+    font-size: 14px;
+    color: #9CA3AF;
+}
+
+.text-amb-control{
+    font-size: 14px;
+}
+
 .doctor_testi_content h4 {
     color: #223F99;
     font-size: 32px;
@@ -19,11 +31,51 @@
 }
 
 .theme_btn {
-    background-color: #223F99;
+    background-color: var(--primary-color-600);
     color: white;
     font-size: 14px;
+    border: 0;
+}
+.theme_btn:hover{
+    background-color: var(--primary-color-900);
 }
 
+.modal-header .btn-close{
+    height: 36px;
+    width: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 50%;
+    padding: 0;
+    box-sizing: border-box;
+    margin-right: 4px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
+    opacity: 1;
+    border: 1px solid var(--primary-color-500);
+    box-shadow: none;
+    /* Circle with X (stroke in primary) */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'><path d='M12 12 L24 24 M24 12 L12 24' stroke='%230084E9' stroke-width='2' stroke-linecap='round'/></svg>");
+}
+
+.modal-header .btn-close:hover,
+.modal-header .btn-close:focus {
+    background-color: var(--primary-color-900);
+    border-color: var(--primary-color-900);
+    outline: none;
+    /* White X over primary background */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'><path d='M12 12 L24 24 M24 12 L12 24' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round'/></svg>");
+}
+
+.modal-header .btn-close:active {
+    opacity: 0.9;
+}
+
+.register_doctor .form-label{
+    color: var(--grayscale-color-600);
+}
 .register_doctor .form-label,
 .frm-select {
     font-size: 14px;
@@ -37,13 +89,19 @@ select.frm_input {
 .register_doctor .frm_input,
 .register_doctor input::placeholder {
     font-size: 14px;
-    color: #757575;
+    color: var(--grayscale-color-800);
+    border-color: var(--grayscale-color-300);
 }
 
 .register_doctor input::placeholder,
 .register_doctor textarea::placeholder {
     color: #bfbfbf;
     padding-left: 10px;
+}
+
+.register_doctor .form-control:focus{
+    box-shadow: none;
+    border-color: var(--grayscale-color-700);
 }
 
 .register_doctor input.upload_file_doc {
@@ -65,11 +123,12 @@ select.frm_input {
 .register_doctor h3 {
     color: #223F99;
     font-weight: 700;
-    font-size: 36px;
+    font-size: 24px;
 }
 
 .register_doctor p {
-    color: #757575;
+    color: var(--grayscale-color-400);
+    font-size: 13px;
 }
 
 .slider_doctor .slick-dots {
@@ -111,6 +170,13 @@ select.frm_input {
     font-size: 30px;
 }
 
+.register_doctor .eye_btn{
+    background-color: transparent;
+    border: none;
+}
+.register_doctor .eye_btn:focus{
+    background-color: transparent;
+}
 /* styles.css or in your component's CSS module */
 .sticky-md-up {
   position: sticky;
@@ -141,13 +207,20 @@ select.frm_input {
     color: #223f99;
     border-radius: 4px;
 }
-/* .desc_3line {
+.truncaate_description {
     display: -webkit-box;
-    max-width: 600px;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: #757575;
+}
+.truncaate_description_3 {
+    display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-} */
+    color: #757575;
+}
  .icon_doctor{
     font-size: 50px;
  }
@@ -442,28 +515,55 @@ select.frm_input {
     transition: transform 0.3s ease-in-out;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
     .sidebar-wrapper {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: auto;
-        height: 100vh;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100vw;
+        width: 100%;
+        height: auto;
+        /* max-height: 100vh; */
         background-color: white;
         transform: translateX(-100%);
         display: block !important; /* override d-none */
+        border-radius: 8px;
+        transition: ease-in-out;
+        /* overflow-y: auto; */
     }
+    .sidebar-wrapper.blackarea::before{
+        height: 400vh;
+        width: 500vw;
+        background-color: rgba(0, 0, 0, 0.7);
+        position: fixed;
+        top: -100vh;
+        left: -100vw;
+        content: '';
+    }
+
 
     .sidebar-wrapper.open {
         transform: translateX(0);
+        left: 0;
     }
 
     .sidebar-inner {
         height: 100%;
         overflow-y: auto;
+        padding-bottom: 20px;
     }
 }
 
+.review_profile img{
+    height: 60px;
+    width: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.dashboard-card svg{
+    color: var(--primary-color-600);
+    font-size: 38px;
+}
 
 /* display modal data */
 .label_head{
@@ -483,3 +583,193 @@ select.frm_input {
     color: #6B7280;
     border-radius: 8px;
 }
+
+/* appointment model design */
+.appointment_model{
+    font-weight: 400;
+}
+.appointment_model p{
+    font-size: 16px;
+    color: var(--grayscale-color-400);
+}
+.appointment_model span{
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.appt-doctor-name{
+    font-size: 16px;
+}
+
+.apt_status_btn{
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    color: var(--white);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.apt_status_btn.success , .apt_status_btn:active.success{
+    background: #04BD6C;
+}
+.apt_status_btn.danger , .apt_status_btn:active.danger{
+    background: #ff0000;
+}
+.apt_status_btn.dark , .apt_status_btn:active.dark{
+    background: var(--grayscale-color-900);
+}
+.apt_status_btn:focus , .apt_status_btn:active{
+    color: var(--white) !important;
+    outline: none;
+}
+.apt_accept_btn{
+    background: var(--primary-gradient);
+    color: var(--white);
+    white-space: nowrap;
+    padding: 6px 20px;
+    border-radius: 5rem;
+    border: none;
+}
+.apt_accept_btn:hover{
+    color: var(--white);
+}
+.apt_complete_btn{
+    white-space: nowrap;
+    padding: 6px 20px;
+    color: #04BD6C;
+    background-color: #EDF9F0;
+    border-radius: 5rem;
+    font-weight: 500;
+}
+.apt_cancel_btn{
+    white-space: nowrap;
+    padding: 6px 20px;
+    color: #ff0000;
+    background-color: #F9EDED;
+    border-radius: 5rem;
+    font-weight: 500;
+}
+.apt_dark_btn{
+    white-space: nowrap;
+    padding: 6px 20px;
+    color: var(--grayscale-color-800);
+    background-color: var(--grayscale-color-100);
+    border-radius: 5rem;
+    font-weight: 500;
+}
+
+.surgery_model img{
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+.btn-primary{
+    background-color: var(--primary-color-600);
+}
+
+/* Income Widgets Styles */
+.income-widget {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+    border-left: 4px solid var(--primary-color-600);
+}
+
+.income-widget:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 132, 233, 0.15);
+    border-left-color: var(--primary-color-800);
+}
+
+.income-widget .card-body {
+    padding: 0.75rem 1.5rem;
+}
+
+.income-widget-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color-100) 0%, var(--primary-color-200) 100%);
+}
+
+.income-widget-icon.current-month {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.income-widget-icon.last-7-days {
+    background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+}
+
+.income-widget-icon.last-month {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+.widget-icon {
+    font-size: 24px;
+    color: white;
+}
+
+.income-widget-period {
+    font-size: 12px;
+    color: var(--grayscale-color-500);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.income-widget-amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--grayscale-color-900);
+    margin: 12px 0;
+    line-height: 1.2;
+}
+
+.income-widget-label {
+    font-size: 14px;
+    color: var(--grayscale-color-600);
+    font-weight: 500;
+}
+
+/* Responsive adjustments for income widgets */
+@media (max-width: 768px) {
+    .income-widget-amount {
+        font-size: 24px;
+    }
+    
+    .income-widget .card-body {
+        padding: 1.25rem;
+    }
+    
+    .income-widget-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .widget-icon {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .income-widget-amount {
+        font-size: 20px;
+    }
+    
+    .income-widget-label {
+        font-size: 12px;
+    }
+    
+    .income-widget-period {
+        font-size: 11px;
+    }
+}
+
