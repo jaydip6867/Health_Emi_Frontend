@@ -304,6 +304,12 @@ const DoctorProfilePage = () => {
           }
         }
 
+        // Format report URLs to match API structure
+        const formattedReports = reportUrls.map(url => ({
+          path: url,
+          type: url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? "IMG" : "DOC"
+        }));
+
         // console.log('Report URLs to save:', reportUrls);
         setAppointmentForm({
           patientname: patient.name,
@@ -311,12 +317,12 @@ const DoctorProfilePage = () => {
           alt_mobile: apt_data.alt_mobile,
           date: datePart,
           time: timeWithMeridiem,
-          surgeryid: apt_data.surgeryid,
+          // surgeryid: apt_data.surgeryid || "",
           appointment_reason: apt_data.appointment_reason,
-          ...(reportUrls.length > 0 && { report: reportUrls }), // Only add report if array is not empty
-          doctorid: id,
-          visit_types: selectedConsultationType,
+          ...(formattedReports.length > 0 && { report: formattedReports }), // Only add report if array is not empty
+          doctorid: d_id, // Use decoded doctor ID
           hospital_name: selectedHospital || "",
+          visit_types: selectedConsultationType,
         });
 
         setModelPayment(true);
@@ -333,6 +339,8 @@ const DoctorProfilePage = () => {
     if (patient) {
       try {
         setloading(true);
+        
+        console.log("Appointment Form Data:", appointmentForm);
 
         // Now save appointment with uploaded report URLs
         const response = await axios({
@@ -343,6 +351,9 @@ const DoctorProfilePage = () => {
           },
           data: appointmentForm,
         });
+        
+        console.log("Appointment API Response:", response.data);
+        
         Swal.fire({
           title: "Appointment Add Successfully",
           icon: "success",
@@ -351,11 +362,12 @@ const DoctorProfilePage = () => {
           navigate("/patient/appointment");
         });
       } catch (error) {
-        // console.error('Error:', error);
+        console.error("Appointment API Error:", error.response?.data);
         Swal.fire({
           title: "Something Went Wrong.",
           text:
             error.response?.data?.Message ||
+            error.response?.data?.message ||
             "This time slot is already booked with the selected doctor. Please choose a different time and try again.",
           icon: "error",
         });
@@ -363,7 +375,7 @@ const DoctorProfilePage = () => {
         setloading(false);
       }
     } else {
-      // navigate('/patient')
+      navigate("/patient");
     }
   }
 
@@ -517,27 +529,7 @@ const DoctorProfilePage = () => {
   async function booksurgery(d_id) {
     if (patient) {
       // console.log('book surgery : ',addsurgery, d_id)
-      if (!addsurgery?.hospital_name) {
-        Swal.fire({
-          title: "Please select Hospital",
-          icon: "warning",
-          confirmButtonText: "Ok",
-        });
-        setSurgeryHospitalError(true);
-        return;
-      }
-      // Validate alt_mobile if filled
-      if (
-        addsurgery.alt_mobile &&
-        !/^[6-9]\d{9}$/.test((addsurgery.alt_mobile || "").trim())
-      ) {
-        setSurgeryErrors((prev) => ({
-          ...prev,
-          alt_mobile: "Enter a valid 10-digit Indian mobile (starts with 6-9)",
-        }));
-        return;
-      }
-
+      
       // Build date and time from surgeryDate (independent from consultation selection)
       const datePart = format(surgeryDate, "dd-MM-yyyy");
       const timeWithMeridiem = format(surgeryDate, "hh:mm a");
@@ -610,10 +602,30 @@ const DoctorProfilePage = () => {
     return priceMap[selectedConsultationType] || 0;
   };
 
+  // Get the price based on selected surgery room type
+  const getSurgeryPrice = () => {
+    if (!addsurgery?.roomtype || !single_surg) return 0;
+
+    const priceMap = {
+      General: single_surg?.general_price || 0,
+      SemiPrivate: single_surg?.semiprivate_price || 0,
+      Private: single_surg?.private_price || 0,
+      Delux: single_surg?.delux_price || 0,
+    };
+
+    return priceMap[addsurgery.roomtype] || 0;
+  };
+
   const consultationPrice = useMemo(
     () => getConsultationPrice(),
     [selectedConsultationType, doctor_profile?.consultationsDetails]
   );
+
+  const surgeryPrice = useMemo(
+    () => getSurgeryPrice(),
+    [addsurgery?.roomtype, single_surg]
+  );
+
   const handlePayment = async () => {
     try {
       var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
@@ -645,15 +657,17 @@ const DoctorProfilePage = () => {
             try {
               console.log("Payment Success:", response);
 
-              // OPTIONAL but recommended:
-              // send response to backend for verification
-           
-            let res = await appointmentbtn(); // ✅ now safe
-            console.log(res)
-            //  alert("Payment successful! Appointment confirmed.");
+              // Payment successful, now book appointment directly
+              await saveAppointmentData(d_id);
+              await appointmentbtn();
             } catch (err) {
-              console.error(err);
-              //alert("Payment done but appointment failed");
+              console.error("Payment successful but appointment failed:", err);
+              Swal.fire({
+                title: "Payment Successful",
+                text: "Payment was successful but there was an issue booking your appointment. Please contact support.",
+                icon: "warning",
+                confirmButtonText: "Ok",
+              });
             }
           },
 
@@ -677,6 +691,94 @@ const DoctorProfilePage = () => {
     } catch (error) {
       console.error("Payment error:", error);
       alert("Unable to initiate payment");
+    }
+  };
+
+  const handleSurgeryPayment = async () => {
+    try {
+      var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+      const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
+      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+      var dataToken = JSON.parse(decrypted);
+      
+      // Validate surgery data before payment
+      if (!addsurgery?.hospital_name) {
+        Swal.fire({
+          title: "Please select Hospital",
+          icon: "warning",
+          confirmButtonText: "Ok",
+        });
+        setSurgeryHospitalError(true);
+        return;
+      }
+      
+      if (!addsurgery?.roomtype) {
+        Swal.fire({
+          title: "Please select Room Type",
+          icon: "warning",
+          confirmButtonText: "Ok",
+        });
+        return;
+      }
+
+      // 1️⃣ Create order from backend
+      const { data } = await axios.post(
+        `${API_BASE_URL}/user/order/create`,
+        { amount: surgeryPrice }, // INR
+        {
+          headers: {
+            Authorization: `Bearer ${dataToken.accessToken}`, // REQUIRED
+          },
+        }
+      );
+
+      console.log(data, "surgery order data");
+      if (data != "") {
+        const options = {
+          key: "rzp_live_S0smOweosyTmQ8",
+          order_id: data.Data.id, // ✅ MUST
+          amount: data.Data.amount, // from backend (paise)
+          currency: "INR",
+          name: "Health Emi",
+          description: "Surgery Appointment Fee",
+
+          handler: async function (response) {
+            try {
+              console.log("Surgery Payment Success:", response);
+
+              // Payment successful, now book surgery appointment directly
+              await booksurgery(doctor_profile._id);
+            } catch (err) {
+              console.error("Surgery payment successful but appointment failed:", err);
+              Swal.fire({
+                title: "Payment Successful",
+                text: "Payment was successful but there was an issue booking your surgery appointment. Please contact support.",
+                icon: "warning",
+                confirmButtonText: "Ok",
+              });
+            }
+          },
+
+          prefill: {
+            name: patient?.name ?? "",
+            email: patient?.email ?? "",
+            contact: patient?.phone ?? "",
+          },
+
+          theme: { color: "#4CAF50" },
+
+          modal: {
+            ondismiss() {
+              console.log("Surgery payment cancelled");
+            },
+          },
+        };
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      }
+    } catch (error) {
+      console.error("Surgery payment error:", error);
+      alert("Unable to initiate surgery payment");
     }
   };
 
@@ -2226,12 +2328,12 @@ const DoctorProfilePage = () => {
         <Modal.Footer>
           <Button
             variant="primary"
-            onClick={() => booksurgery(doctor_profile._id)}
+            onClick={() => handleSurgeryPayment()}
             disabled={isUploadingReports}
           >
             {isUploadingReports
               ? "Uploading Reports..."
-              : "Book Surgery Appointment"}
+              : "Pay & Book Surgery"}
           </Button>
         </Modal.Footer>
       </Modal>
