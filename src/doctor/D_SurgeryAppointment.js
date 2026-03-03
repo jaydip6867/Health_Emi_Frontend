@@ -211,6 +211,11 @@ const D_SurgeryAppointment = () => {
     diagnosis: "",
     instructions: "",
     bp: "",
+    pulseRate: "",
+    rbs: "",
+    wt: "",
+    pathologyTest: "",
+    radiologyTest: "",
     complain: "",
     pasHistory: "",
     prescriptionItems: [],
@@ -585,6 +590,11 @@ const D_SurgeryAppointment = () => {
         diagnosis: "",
         instructions: "",
         bp: "",
+        pulseRate: "",
+        rbs: "",
+        wt: "",
+        pathologyTest: "",
+        radiologyTest: "",
         complain: "",
         pasHistory: "",
         prescriptionItems: [],
@@ -1426,6 +1436,83 @@ const D_SurgeryAppointment = () => {
                     <Col md={6}>
                       <Form.Group className="mb-3">
                         <Form.Label>
+                          <strong>Pulse Rate</strong>
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter Pulse Rate..."
+                          value={prescriptionData.pulseRate}
+                          onChange={(e) =>
+                            handlePrescriptionChange("pulseRate", e.target.value)
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>Rbs</strong>
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter Rbs..."
+                          value={prescriptionData.rbs}
+                          onChange={(e) =>
+                            handlePrescriptionChange("rbs", e.target.value)
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>Weight (Wt)</strong>
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter Weight..."
+                          value={prescriptionData.wt}
+                          onChange={(e) =>
+                            handlePrescriptionChange("wt", e.target.value)
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>Pathology Test</strong>
+                        </Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={2}
+                          placeholder="Enter Pathology Test details..."
+                          value={prescriptionData.pathologyTest}
+                          onChange={(e) =>
+                            handlePrescriptionChange("pathologyTest", e.target.value)
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>Radiology Test</strong>
+                        </Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={2}
+                          placeholder="Enter Radiology Test details..."
+                          value={prescriptionData.radiologyTest}
+                          onChange={(e) =>
+                            handlePrescriptionChange("radiologyTest", e.target.value)
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
                           <strong>Diagnosis *</strong>
                         </Form.Label>
                         <Form.Control
@@ -1876,7 +1963,75 @@ const D_SurgeryAppointment = () => {
                 {prescriptionData?.bp || "-"}
               </span>
             </div>
+            <div style={{ fontWeight: 700, fontSize: 14 }}>
+              Pulse Rate :{" "}
+              <span style={{ fontWeight: 400 }}>
+                {prescriptionData?.pulseRate || "-"}
+              </span>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: 14 }}>
+              Rbs :{" "}
+              <span style={{ fontWeight: 400 }}>
+                {prescriptionData?.rbs || "-"}
+              </span>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: 14 }}>
+              Weight (Wt) :{" "}
+              <span style={{ fontWeight: 400 }}>
+                {prescriptionData?.wt || "-"}
+              </span>
+            </div>
           </div>
+          {prescriptionData?.pathologyTest ? (
+            <div
+              style={{
+                background: "#F2F6FF",
+                borderRadius: 8,
+                padding: "10px 14px",
+                marginTop: 12,
+                lineHeight: 1.25,
+              }}
+            >
+              <div
+                style={{
+                  color: "#6B7280",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  lineHeight: "18px",
+                }}
+              >
+                Pathology Test :
+              </div>
+              <div style={{ marginTop: 4, fontSize: 14, lineHeight: "20px" }}>
+                {prescriptionData.pathologyTest}
+              </div>
+            </div>
+          ) : null}
+          {prescriptionData?.radiologyTest ? (
+            <div
+              style={{
+                background: "#F2F6FF",
+                borderRadius: 8,
+                padding: "10px 14px",
+                marginTop: 10,
+                lineHeight: 1.25,
+              }}
+            >
+              <div
+                style={{
+                  color: "#6B7280",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  lineHeight: "18px",
+                }}
+              >
+                Radiology Test :
+              </div>
+              <div style={{ marginTop: 4, fontSize: 14, lineHeight: "20px" }}>
+                {prescriptionData.radiologyTest}
+              </div>
+            </div>
+          ) : null}
           {prescriptionData?.complain ? (
             <div
               style={{

@@ -176,9 +176,8 @@ const D_Appointment = () => {
   };
 
   const handleOpenStartAppointment = (appointmentRow) => {
-    const scheduledStr = `${appointmentRow?.date || ""} ${
-      appointmentRow?.time || ""
-    }`;
+    const scheduledStr = `${appointmentRow?.date || ""} ${appointmentRow?.time || ""
+      }`;
     try {
       const scheduledAt = parse(
         scheduledStr.trim(),
@@ -232,6 +231,11 @@ const D_Appointment = () => {
     diagnosis: "",
     instructions: "",
     bp: "",
+    pulseRate: "",
+    rbs: "",
+    wt: "",
+    pathologyTest: "",
+    radiologyTest: "",
     complain: "",
     pasHistory: "",
     followUpDate: "",
@@ -282,8 +286,8 @@ const D_Appointment = () => {
         Swal.fire(
           "Failed",
           error.response?.data?.Message ||
-            error.message ||
-            "Failed to complete appointment.",
+          error.message ||
+          "Failed to complete appointment.",
           "error"
         );
       } finally {
@@ -312,7 +316,7 @@ const D_Appointment = () => {
         });
         const uploadedUrl = Array.isArray(uploadResponse.data?.Data)
           ? uploadResponse.data?.Data?.[0]?.path ||
-            uploadResponse.data?.Data?.[0]?.url
+          uploadResponse.data?.Data?.[0]?.url
           : uploadResponse.data?.Data?.url || uploadResponse.data?.Data;
         if (!uploadedUrl) throw new Error("Failed to get uploaded file URL");
 
@@ -349,8 +353,8 @@ const D_Appointment = () => {
         Swal.fire(
           "Failed",
           error.response?.data?.Message ||
-            error.message ||
-            "Failed to upload/complete appointment.",
+          error.message ||
+          "Failed to upload/complete appointment.",
           "error"
         );
       } finally {
@@ -513,9 +517,8 @@ const D_Appointment = () => {
             item.instruction && item.instruction !== "-SELECT-"
               ? ` - Instr: ${item.instruction}`
               : "";
-          return `${item.medicine} (${item.type}) - ${times.join(", ")} - ${
-            item.days
-          } days - Qty: ${item.quantity}${instr}`;
+          return `${item.medicine} (${item.type}) - ${times.join(", ")} - ${item.days
+            } days - Qty: ${item.quantity}${instr}`;
         })
         .join("\n");
 
@@ -538,7 +541,7 @@ const D_Appointment = () => {
 
       const uploadedFileUrl = Array.isArray(uploadResponse.data?.Data)
         ? uploadResponse.data?.Data?.[0]?.path ||
-          uploadResponse.data?.Data?.[0]?.url
+        uploadResponse.data?.Data?.[0]?.url
         : uploadResponse.data?.Data?.url || uploadResponse.data?.Data;
 
       if (!uploadedFileUrl) throw new Error("Failed to get uploaded file URL");
@@ -573,6 +576,11 @@ const D_Appointment = () => {
         diagnosis: "",
         instructions: "",
         bp: "",
+        pulseRate: "",
+        rbs: "",
+        wt: "",
+        pathologyTest: "",
+        radiologyTest: "",
         complain: "",
         pasHistory: "",
         followUpDate: "",
@@ -588,8 +596,8 @@ const D_Appointment = () => {
       Swal.fire(
         "Failed",
         error.response?.data?.Message ||
-          error.message ||
-          "Failed to complete appointment.",
+        error.message ||
+        "Failed to complete appointment.",
         "error"
       );
     } finally {
@@ -601,9 +609,8 @@ const D_Appointment = () => {
 
   const generatePrescriptionPDF = () => {
     const node = printRef.current;
-    const fileName = `prescription_${
-      currentAppointment?.patientname?.replace(/\s+/g, "_") || "patient"
-    }_${Date.now()}.pdf`;
+    const fileName = `prescription_${currentAppointment?.patientname?.replace(/\s+/g, "_") || "patient"
+      }_${Date.now()}.pdf`;
     return html2canvas(node, {
       scale: 2,
       useCORS: true,
@@ -701,11 +708,11 @@ const D_Appointment = () => {
   };
 
   const renderTooltip = (label) => (props) =>
-    (
-      <Tooltip id="button-tooltip" {...props}>
-        {label} Appointment
-      </Tooltip>
-    );
+  (
+    <Tooltip id="button-tooltip" {...props}>
+      {label} Appointment
+    </Tooltip>
+  );
 
   // Get status badge styling
   const getStatusBadge = (status) => {
@@ -944,10 +951,10 @@ const D_Appointment = () => {
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
-    
+
     // Last 7 days
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    
+
     // Last month
     const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
     const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
@@ -960,7 +967,7 @@ const D_Appointment = () => {
       // Only count completed appointments
       if (apt.status === "Completed" && apt.price) {
         const amount = parseFloat(apt.price) || 0;
-        
+
         // Parse appointment date (assuming format is dd-MM-yyyy)
         const dateParts = apt.date.split('-');
         if (dateParts.length === 3) {
@@ -1006,7 +1013,7 @@ const D_Appointment = () => {
               <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3">
                 <h4 className="mb-0">Consultation Appointments</h4>
               </div>
-              
+
               {/* Income Widgets */}
               <Row className="g-3 mb-4">
                 <Col md={4} xs={12}>
@@ -1058,13 +1065,12 @@ const D_Appointment = () => {
                   </Card>
                 </Col>
               </Row>
-              
+
               <div className="appt-tabs d-flex gap-2 mb-3 overflow-x-auto pb-2">
                 <button
                   type="button"
-                  className={`appt-tab d-flex align-items-center ${
-                    activeTab === "Pending" ? "active" : ""
-                  }`}
+                  className={`appt-tab d-flex align-items-center ${activeTab === "Pending" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("Pending")}
                 >
                   <span>Pending</span>{" "}
@@ -1072,9 +1078,8 @@ const D_Appointment = () => {
                 </button>
                 <button
                   type="button"
-                  className={`appt-tab d-flex align-items-center ${
-                    activeTab === "Accepted" ? "active" : ""
-                  }`}
+                  className={`appt-tab d-flex align-items-center ${activeTab === "Accepted" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("Accepted")}
                 >
                   <span>Accepted</span>{" "}
@@ -1082,9 +1087,8 @@ const D_Appointment = () => {
                 </button>
                 <button
                   type="button"
-                  className={`appt-tab d-flex align-items-center ${
-                    activeTab === "Completed" ? "active" : ""
-                  }`}
+                  className={`appt-tab d-flex align-items-center ${activeTab === "Completed" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("Completed")}
                 >
                   <span>Completed</span>{" "}
@@ -1092,9 +1096,8 @@ const D_Appointment = () => {
                 </button>
                 <button
                   type="button"
-                  className={`appt-tab d-flex align-items-center ${
-                    activeTab === "Cancelled" ? "active" : ""
-                  }`}
+                  className={`appt-tab d-flex align-items-center ${activeTab === "Cancelled" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("Cancelled")}
                 >
                   <span>Cancelled</span>{" "}
@@ -1200,8 +1203,8 @@ const D_Appointment = () => {
                         </div>
                       </Col>
                       {v?.visit_types === "clinic_visit" &&
-                      typeof v?.hospital_name === "object" &&
-                      v?.hospital_name !== null ? (
+                        typeof v?.hospital_name === "object" &&
+                        v?.hospital_name !== null ? (
                         <>
                           <Col md={6} xs={12}>
                             <div className="text-muted small mb-1">
@@ -1225,7 +1228,7 @@ const D_Appointment = () => {
                               </span>
                             </div>
                           </Col>
-                          
+
                         </>
                       ) : null}
                       <Col xs={12}>
@@ -1518,6 +1521,83 @@ const D_Appointment = () => {
                     <Col md={6}>
                       <Form.Group className="mb-3">
                         <Form.Label>
+                          <strong>Pulse Rate</strong>
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter Pulse Rate..."
+                          value={prescriptionData.pulseRate}
+                          onChange={(e) =>
+                            handlePrescriptionChange("pulseRate", e.target.value)
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>Rbs</strong>
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter Rbs..."
+                          value={prescriptionData.rbs}
+                          onChange={(e) =>
+                            handlePrescriptionChange("rbs", e.target.value)
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>Weight (Wt)</strong>
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter Weight..."
+                          value={prescriptionData.wt}
+                          onChange={(e) =>
+                            handlePrescriptionChange("wt", e.target.value)
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>Pathology Test</strong>
+                        </Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={2}
+                          placeholder="Enter Pathology Test details..."
+                          value={prescriptionData.pathologyTest}
+                          onChange={(e) =>
+                            handlePrescriptionChange("pathologyTest", e.target.value)
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
+                          <strong>Radiology Test</strong>
+                        </Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={2}
+                          placeholder="Enter Radiology Test details..."
+                          value={prescriptionData.radiologyTest}
+                          onChange={(e) =>
+                            handlePrescriptionChange("radiologyTest", e.target.value)
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>
                           <strong>Diagnosis *</strong>
                         </Form.Label>
                         <Form.Control
@@ -1553,7 +1633,7 @@ const D_Appointment = () => {
                     <Col md={6}>
                       <Form.Group className="mb-3 mt-3">
                         <Form.Label>
-                          <strong>Pas History *</strong>
+                          <strong>Past History *</strong>
                         </Form.Label>
                         <Form.Control
                           as="textarea"
@@ -1572,7 +1652,7 @@ const D_Appointment = () => {
                   </Row>
                   <Form.Group className="mb-3">
                     <Form.Label>
-                      <strong>Instructions</strong>
+                      <strong>Advise</strong>
                     </Form.Label>
                     <Form.Control
                       as="textarea"
@@ -1762,8 +1842,7 @@ const D_Appointment = () => {
                                       .filter((time) => item[time.id])
                                       .map(
                                         (time) =>
-                                          `${time.label}(${
-                                            item[`${time.id}Dose`]
+                                          `${time.label}(${item[`${time.id}Dose`]
                                           })`
                                       )
                                       .join(", ")}
@@ -1953,11 +2032,10 @@ const D_Appointment = () => {
               Date :{" "}
               <span style={{ fontWeight: 400 }}>
                 {currentAppointment
-                  ? `${currentAppointment.date}${
-                      currentAppointment.time
-                        ? `, ${currentAppointment.time}`
-                        : ""
-                    }`
+                  ? `${currentAppointment.date}${currentAppointment.time
+                    ? `, ${currentAppointment.time}`
+                    : ""
+                  }`
                   : "-"}
               </span>
             </div>
@@ -1967,7 +2045,75 @@ const D_Appointment = () => {
                 {prescriptionData?.bp ? `${prescriptionData.bp}` : "-"}
               </span>
             </div>
+            <div style={{ fontWeight: 700, fontSize: 14 }}>
+              Pulse Rate :{" "}
+              <span style={{ fontWeight: 400 }}>
+                {prescriptionData?.pulseRate ? `${prescriptionData.pulseRate}` : "-"}
+              </span>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: 14 }}>
+              Rbs :{" "}
+              <span style={{ fontWeight: 400 }}>
+                {prescriptionData?.rbs ? `${prescriptionData.rbs}` : "-"}
+              </span>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: 14 }}>
+              Weight (Wt) :{" "}
+              <span style={{ fontWeight: 400 }}>
+                {prescriptionData?.wt ? `${prescriptionData.wt}` : "-"}
+              </span>
+            </div>
           </div>
+          {prescriptionData?.pathologyTest ? (
+            <div
+              style={{
+                background: "#F2F6FF",
+                borderRadius: 8,
+                padding: "10px 14px",
+                marginTop: 12,
+                lineHeight: 1.25,
+              }}
+            >
+              <div
+                style={{
+                  color: "#6B7280",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  lineHeight: "18px",
+                }}
+              >
+                Pathology Test :
+              </div>
+              <div style={{ marginTop: 4, fontSize: 14, lineHeight: "20px" }}>
+                {prescriptionData.pathologyTest}
+              </div>
+            </div>
+          ) : null}
+          {prescriptionData?.radiologyTest ? (
+            <div
+              style={{
+                background: "#F2F6FF",
+                borderRadius: 8,
+                padding: "10px 14px",
+                marginTop: 10,
+                lineHeight: 1.25,
+              }}
+            >
+              <div
+                style={{
+                  color: "#6B7280",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  lineHeight: "18px",
+                }}
+              >
+                Radiology Test :
+              </div>
+              <div style={{ marginTop: 4, fontSize: 14, lineHeight: "20px" }}>
+                {prescriptionData.radiologyTest}
+              </div>
+            </div>
+          ) : null}
           {prescriptionData?.complain ? (
             <div
               style={{
@@ -2172,7 +2318,7 @@ const D_Appointment = () => {
                   lineHeight: "18px",
                 }}
               >
-                Instructions :
+                Advise :
               </div>
               <div style={{ marginTop: 4, fontSize: 14 }}>
                 {prescriptionData.instructions.split("\n").map((ln, i) => (
