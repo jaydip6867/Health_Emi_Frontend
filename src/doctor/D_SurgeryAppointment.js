@@ -1135,7 +1135,7 @@ const D_SurgeryAppointment = () => {
                                   <FiMapPin size={18} />
                                 </div>
                                 <div>
-                                  <span className="text-truncate">
+                                  <span className="font-wrap">
                                     {v?.hospital_name?.address || ""} ,
                                     {v?.hospital_name?.city || ""} ,
                                     {v?.hospital_name?.state || ""}

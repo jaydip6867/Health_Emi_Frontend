@@ -78,6 +78,14 @@ const D_AmbulanceRequest = () => {
   const [showHistory, setShowHistory] = useState(false);
   const itemsPerPage = 5;
 
+  // Add Razorpay script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
   // Add this function to fetch ambulance history for the doctor
   const fetchAmbulanceHistory = async (page = 1) => {
     if (!token || !doctor?._id) return;
@@ -886,6 +894,82 @@ const D_AmbulanceRequest = () => {
 
   const performSave = async (overrideDistance) => {
     setLoading(true);
+    
+    // Calculate 15% of the total price
+    const fifteenPercentPrice = Math.round(Number(details.price) * 0.15); // 15% of total price
+    
+    // Create Razorpay order for 15% advance
+    try {
+      const { data } = await axios.post(
+        `${API_BASE_URL}/user/order/create`,
+        { amount: fifteenPercentPrice }, // INR - 15% of total
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
+      if (data && data.Data) {
+        const options = {
+          key: "rzp_live_S0smOweosyTmQ8",
+          order_id: data.Data.id, // ✅ MUST
+          amount: data.Data.amount, // from backend (paise)
+          currency: "INR",
+          name: "Health Emi",
+          description: `15% Advance Payment for Ambulance (Total: ₹${details.price})`,
+
+          handler: async function (response) {
+            try {
+              console.log("Ambulance Payment Success:", response);
+
+              // Show success message about 15% advance payment
+              Swal.fire({
+                title: "Payment Successful!",
+                html: `15% advance payment of ₹${fifteenPercentPrice} received successfully.<br><br>Remaining 85% (₹${Math.round(Number(details.price) * 0.85)}) will be paid to ambulance driver.`,
+                icon: "success",
+                confirmButtonText: "Ok",
+              });
+
+              // Payment successful, now save ambulance request
+              await saveAmbulanceRequest(overrideDistance);
+            } catch (err) {
+              console.error("Payment successful but request failed:", err);
+              Swal.fire({
+                title: "Payment Successful",
+                text: "Payment was successful but there was an issue booking your ambulance. Please contact support.",
+                icon: "warning",
+                confirmButtonText: "Ok",
+              });
+            }
+          },
+
+          prefill: {
+            name: details.name || "",
+            email: "",
+            contact: details.mobile.replace(/\s+/g, "") || "",
+          },
+
+          theme: { color: "#4CAF50" },
+
+          modal: {
+            ondismiss() {
+              console.log("Ambulance payment cancelled");
+              setLoading(false);
+            },
+          },
+        };
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      }
+    } catch (error) {
+      console.error("Ambulance payment error:", error);
+      // If payment fails, proceed with normal booking
+      await saveAmbulanceRequest(overrideDistance);
+    }
+  };
+
+  const saveAmbulanceRequest = async (overrideDistance) => {
     await axios({
       method: "post",
       url: `${API_BASE_URL}/doctor/ambulancerequests/save`,
@@ -957,8 +1041,7 @@ const D_AmbulanceRequest = () => {
           ambulance_type: "",
           category: "Basic",
           price: "",
-          gst_per: 18,
-          distance: 0,
+          gst_per: "",
         });
 
         setPlatformFee(0);
@@ -972,10 +1055,13 @@ const D_AmbulanceRequest = () => {
           text:
             error?.response?.data?.Message ||
             "Something went wrong, please try again.",
-          icon: "error",
+          icon: "warning",
+          confirmButtonText: "Ok",
         });
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const hasBothLocations =
@@ -1811,7 +1897,7 @@ const D_AmbulanceRequest = () => {
                               ></span>
                             ) : null}
                             {isAddressConfirmed
-                              ? "Request For Ambulance"
+                              ? `Pay 15% Advance (₹${Math.round(Number(details.price) * 0.15)})`
                               : "Confirm Address"}
                           </Button>
                         </div>
