@@ -722,7 +722,7 @@ const DoctorProfilePage = () => {
       }
 
       // 1️⃣ Create order from backend - charge only 10% of surgery price
-      const tenPercentPrice = Math.round(surgeryPrice * 0.1); // 10% of total price
+      const tenPercentPrice = Math.round(surgeryPrice * 0.15); // 10% of total price
       const { data } = await axios.post(
         `${API_BASE_URL}/user/order/create`,
         { amount: tenPercentPrice }, // INR - 10% of total
@@ -750,7 +750,7 @@ const DoctorProfilePage = () => {
               // Show success message about 10% advance payment
               Swal.fire({
                 title: "Payment Successful!",
-                html: `10% advance payment of ₹${Math.round(surgeryPrice * 0.1)} received successfully.<br><br>Remaining 90% (₹${Math.round(surgeryPrice * 0.9)}) will be paid at the hospital.`,
+                html: ` payment of ₹${Math.round(surgeryPrice * 0.15)} received successfully.`,
                 icon: "success",
                 confirmButtonText: "Ok",
               });
@@ -2342,7 +2342,7 @@ const DoctorProfilePage = () => {
           >
             {isUploadingReports
               ? "Uploading Reports..."
-              : `Pay 10% Advance (₹${Math.round(surgeryPrice * 0.1)})`}
+              : `Pay Amount (₹${Math.round(surgeryPrice * 0.15)})`}
           </Button>
         </Modal.Footer>
       </Modal>

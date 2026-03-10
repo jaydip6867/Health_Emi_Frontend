@@ -78,14 +78,6 @@ const D_AmbulanceRequest = () => {
   const [showHistory, setShowHistory] = useState(false);
   const itemsPerPage = 5;
 
-  // Add Razorpay script
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
-  }, []);
-
   // Add this function to fetch ambulance history for the doctor
   const fetchAmbulanceHistory = async (page = 1) => {
     if (!token || !doctor?._id) return;
@@ -894,82 +886,6 @@ const D_AmbulanceRequest = () => {
 
   const performSave = async (overrideDistance) => {
     setLoading(true);
-    
-    // Calculate 15% of the total price
-    const fifteenPercentPrice = Math.round(Number(details.price) * 0.15); // 15% of total price
-    
-    // Create Razorpay order for 15% advance
-    try {
-      const { data } = await axios.post(
-        `${API_BASE_URL}/user/order/create`,
-        { amount: fifteenPercentPrice }, // INR - 15% of total
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
-
-      if (data && data.Data) {
-        const options = {
-          key: "rzp_live_S0smOweosyTmQ8",
-          order_id: data.Data.id, // ✅ MUST
-          amount: data.Data.amount, // from backend (paise)
-          currency: "INR",
-          name: "Health Emi",
-          description: `15% Advance Payment for Ambulance (Total: ₹${details.price})`,
-
-          handler: async function (response) {
-            try {
-              console.log("Ambulance Payment Success:", response);
-
-              // Show success message about 15% advance payment
-              Swal.fire({
-                title: "Payment Successful!",
-                html: `15% advance payment of ₹${fifteenPercentPrice} received successfully.<br><br>Remaining 85% (₹${Math.round(Number(details.price) * 0.85)}) will be paid to ambulance driver.`,
-                icon: "success",
-                confirmButtonText: "Ok",
-              });
-
-              // Payment successful, now save ambulance request
-              await saveAmbulanceRequest(overrideDistance);
-            } catch (err) {
-              console.error("Payment successful but request failed:", err);
-              Swal.fire({
-                title: "Payment Successful",
-                text: "Payment was successful but there was an issue booking your ambulance. Please contact support.",
-                icon: "warning",
-                confirmButtonText: "Ok",
-              });
-            }
-          },
-
-          prefill: {
-            name: details.name || "",
-            email: "",
-            contact: details.mobile.replace(/\s+/g, "") || "",
-          },
-
-          theme: { color: "#4CAF50" },
-
-          modal: {
-            ondismiss() {
-              console.log("Ambulance payment cancelled");
-              setLoading(false);
-            },
-          },
-        };
-        const rzp = new window.Razorpay(options);
-        rzp.open();
-      }
-    } catch (error) {
-      console.error("Ambulance payment error:", error);
-      // If payment fails, proceed with normal booking
-      await saveAmbulanceRequest(overrideDistance);
-    }
-  };
-
-  const saveAmbulanceRequest = async (overrideDistance) => {
     await axios({
       method: "post",
       url: `${API_BASE_URL}/doctor/ambulancerequests/save`,
@@ -1041,7 +957,8 @@ const D_AmbulanceRequest = () => {
           ambulance_type: "",
           category: "Basic",
           price: "",
-          gst_per: "",
+          gst_per: 18,
+          distance: 0,
         });
 
         setPlatformFee(0);
@@ -1055,13 +972,10 @@ const D_AmbulanceRequest = () => {
           text:
             error?.response?.data?.Message ||
             "Something went wrong, please try again.",
-          icon: "warning",
-          confirmButtonText: "Ok",
+          icon: "error",
         });
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   };
 
   const hasBothLocations =
@@ -1731,6 +1645,15 @@ const D_AmbulanceRequest = () => {
                                     details.category === "Advance"
                                       ? "Advanced life support"
                                       : "Emergency medical van",
+                                  onClick: () => {
+                                    setDetails((p) => ({
+                                      ...p,
+                                      ambulance_type: "Ambulance",
+                                      // Default to Basic when ambulance is selected after other vehicles
+                                      category: p.category === "Advance" ? "Advance" : "Basic",
+                                      price: vehiclePrices?.Ambulance || p.price,
+                                    }));
+                                  },
                                 },
                                 {
                                   key: "Bike",
@@ -1776,6 +1699,8 @@ const D_AmbulanceRequest = () => {
                                         setDetails((p) => ({
                                           ...p,
                                           ambulance_type: opt.key,
+                                          // Reset category when switching vehicle types
+                                          category: opt.key === "Ambulance" ? p.category : "",
                                           price:
                                             price !== undefined &&
                                             price !== null
@@ -1873,6 +1798,43 @@ const D_AmbulanceRequest = () => {
                                       ))}
                                     </div>
                                   </div>
+                                  
+                                  {/* Feature Lists */}
+                                  <div className="mt-3">
+                                    {details.category === "Basic" && (
+                                      <div className="alert alert-info" style={{ fontSize: "0.9rem" }}>
+                                        <h6 className="fw-semibold mb-2">Basic Ambulance Features:</h6>
+                                        <ul className="mb-0 ps-3">
+                                          <li>Basic Life Support (BLS)</li>
+                                          <li>Oxygen Cylinder</li>
+                                          <li>Stretcher</li>
+                                          <li>Basic Medical Kit</li>
+                                          <li>Emergency Medication</li>
+                                          <li>Vital Signs Monitoring</li>
+                                          <li>Trained Paramedic</li>
+                                          <li>GPS Tracking</li>
+                                        </ul>
+                                      </div>
+                                    )}
+                                    
+                                    {details.category === "Advance" && (
+                                      <div className="alert alert-success" style={{ fontSize: "0.9rem" }}>
+                                        <h6 className="fw-semibold mb-2">Advance Ambulance Features:</h6>
+                                        <ul className="mb-0 ps-3">
+                                          <li>Advanced Life Support (ALS)</li>
+                                          <li>Ventilator Support</li>
+                                          <li>Cardiac Monitor</li>
+                                          <li>Defibrillator</li>
+                                          <li>Emergency Medication</li>
+                                          <li>Vital Signs Monitoring</li>
+                                          <li>ICU Setup</li>
+                                          <li>Trained Paramedic + Doctor</li>
+                                          <li>GPS Tracking</li>
+                                          <li>Emergency Equipment</li>
+                                        </ul>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               )}
                             </Row>
@@ -1897,7 +1859,7 @@ const D_AmbulanceRequest = () => {
                               ></span>
                             ) : null}
                             {isAddressConfirmed
-                              ? `Pay 15% Advance (₹${Math.round(Number(details.price) * 0.15)})`
+                              ? "Request For Ambulance"
                               : "Confirm Address"}
                           </Button>
                         </div>
