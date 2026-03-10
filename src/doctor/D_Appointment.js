@@ -655,7 +655,7 @@ const D_Appointment = () => {
 
       // Return both blob and filename
       const pdfBlob = pdf.output("blob");
-      pdf.save(fileName);
+      // pdf.save(fileName);
       return { pdfBlob, fileName };
     });
   };
@@ -2009,19 +2009,20 @@ const D_Appointment = () => {
           background: "#1e88e5",
           color: "white",
           textAlign: "center",
+          justifyContent: "center",
           padding: "30px 20px"
         }}>
-          <h1 style={{ margin: 0, fontSize: 32, fontWeight: 700 , color: 'white'}}>
+          <h1 style={{ margin: 0, fontSize: 40, fontWeight: 700 , color: 'white'}}>
             {currentAppointment?.hospital_name?.name || doctor?.hospitalName || "Hospital Name"}
           </h1>
           <h3 style={{ margin: "5px 0", fontWeight: 600, color: 'white' }}>
             Dr. {doctor?.name || "Doctor Name"}
           </h3>
-          <p style={{ margin: "5px 0", fontSize: 14, color: 'white' }}>
-            <MdLocationOn style={{ marginRight: 5 }} />{currentAppointment?.hospital_name?.address || doctor?.address || "Hospital Address"}
+          <p style={{ margin: "5px 0", fontSize: 14, color: 'white', verticalAlign: 'middle', display:'flex', alignItems:'center' }}>
+            <span><MdLocationOn style={{ marginRight: 5 }} /></span>{currentAppointment?.hospital_name?.address || doctor?.address || "Hospital Address"}
           </p>
-          <p style={{ margin: "5px 0", fontSize: 14, color: 'white' }}>
-            <MdEmail style={{ marginRight: 5 }} />{doctor?.email || "doctor@email.com"} | <MdPhone style={{ marginRight: 5 }} />{doctor?.mobile || "1234567890"}
+          <p style={{ margin: "5px 0", fontSize: 14, color: 'white', verticalAlign: 'middle', display:'flex', alignItems:'center' }}>
+            <span><MdEmail style={{ marginRight: 5 }} /></span>{doctor?.email || "doctor@email.com"} | <span><MdPhone style={{ marginRight: 5 }} /></span>{doctor?.mobile || "1234567890"}
           </p>
         </div>
 
@@ -2034,6 +2035,7 @@ const D_Appointment = () => {
           borderRadius: "8px",
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
           flexWrap: "wrap"
         }}>
           <div style={{ margin: "5px 15px" }}><b>Patient Name:</b> {currentAppointment?.patientname || "-"}</div>
@@ -2051,7 +2053,8 @@ const D_Appointment = () => {
           margin: "0 20px 20px 20px",
           borderRadius: "6px",
           display: "flex",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
+          alignItems: "center"
         }}>
           <div>Pulse Rate : {prescriptionData?.pulseRate ? `${prescriptionData.pulseRate} /min` : "-/min"}</div>
           <div>Rbs : {prescriptionData?.rbs ? `${prescriptionData.rbs} mg/dl` : "- mg/dl"}</div>
@@ -2064,7 +2067,9 @@ const D_Appointment = () => {
             border: "1px solid #d0d0d0",
             margin: "10px 20px",
             borderRadius: "6px",
-            padding: "12px"
+            padding: "4px 12px",
+            display: "flex",
+            flexDirection: "column"
           }}>
             <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Pathological Test :</h6>
             <p>{prescriptionData.pathologyTest}</p>
@@ -2076,7 +2081,9 @@ const D_Appointment = () => {
             border: "1px solid #d0d0d0",
             margin: "10px 20px",
             borderRadius: "6px",
-            padding: "12px"
+            padding: "4px 12px",
+            display: "flex",
+            flexDirection: "column"
           }}>
             <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Radiological Test :</h6>
             <p>{prescriptionData.radiologyTest}</p>
@@ -2088,7 +2095,9 @@ const D_Appointment = () => {
             border: "1px solid #d0d0d0",
             margin: "10px 20px",
             borderRadius: "6px",
-            padding: "12px"
+            padding: "4px 12px",
+            display: "flex",
+            flexDirection: "column"
           }}>
             <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Complains :</h6>
             <p>{prescriptionData.complain}</p>
@@ -2100,7 +2109,9 @@ const D_Appointment = () => {
             border: "1px solid #d0d0d0",
             margin: "10px 20px",
             borderRadius: "6px",
-            padding: "12px"
+            padding: "4px 12px",
+            display: "flex",
+            flexDirection: "column"
           }}>
             <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Past History :</h6>
             <p>{prescriptionData.pasHistory}</p>
@@ -2112,7 +2123,9 @@ const D_Appointment = () => {
             border: "1px solid #d0d0d0",
             margin: "10px 20px",
             borderRadius: "6px",
-            padding: "12px"
+            padding: "4px 12px",
+            display: "flex",
+            flexDirection: "column"
           }}>
             <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Diagnosis :</h6>
             <p>{prescriptionData.diagnosis}</p>
@@ -2124,7 +2137,9 @@ const D_Appointment = () => {
             border: "1px solid #d0d0d0",
             margin: "10px 20px",
             borderRadius: "6px",
-            padding: "12px"
+            padding: "4px 12px",
+            display: "flex",
+            flexDirection: "column"
           }}>
             <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Advice :</h6>
             <ul style={{ margin: 0, paddingLeft: "18px" }}>
@@ -2138,16 +2153,16 @@ const D_Appointment = () => {
         {/* Prescription Table */}
         {(prescriptionData?.prescriptionItems || []).length > 0 && (
           <div style={{ margin: "20px" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, borderSpacing: 0}} cellSpacing={0} cellPadding={0}>
               <thead>
                 <tr style={{ background: "#1f2d3d", color: "white" }}>
-                  <th style={{ padding: "10px", border: "1px solid #ddd", textAlign: "left", lineHeight: 1 }}>No.</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd", textAlign: "left", lineHeight: 1 }}>Type</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd", textAlign: "left", lineHeight: 1 }}>Medicine</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd", textAlign: "left", lineHeight: 1 }}>Schedule</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd", textAlign: "left", lineHeight: 1 }}>Instruction</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd", textAlign: "left", lineHeight: 1 }}>Days</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd", textAlign: "left", lineHeight: 1 }}>Qty</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>No.</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Type</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Medicine</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Schedule</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Instruction</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Days</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Qty</th>
                 </tr>
               </thead>
               <tbody>
@@ -2158,16 +2173,16 @@ const D_Appointment = () => {
                   if (item.ev) times.push(`EV(${item.evDose})`);
                   if (item.nt) times.push(`NT(${item.ntDose})`);
                   return (
-                    <tr key={idx}>
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd", lineHeight: 1 }}>{idx + 1}</td>
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd", lineHeight: 1 }}>{item.type}</td>
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd", lineHeight: 1 }}>{item.medicine}</td>
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd", lineHeight: 1 }}>{times.join(", ")}</td>
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd", lineHeight: 1 }}>
+                    <tr key={idx} style={{ margin: 0, lineHeight: "normal" }}>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{idx + 1}</td>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{item.type}</td>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{item.medicine}</td>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{times.join(", ")}</td>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>
                         {item.instruction && item.instruction !== "-SELECT-" ? item.instruction : "-"}
                       </td>
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd", lineHeight: 1 }}>{item.days}</td>
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd", lineHeight: 1 }}>{item.quantity}</td>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{item.days}</td>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{item.quantity}</td>
                     </tr>
                   );
                 })}
