@@ -2009,6 +2009,8 @@ const D_Appointment = () => {
           background: "#1e88e5",
           color: "white",
           textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           padding: "30px 20px"
         }}>
@@ -2142,7 +2144,7 @@ const D_Appointment = () => {
             flexDirection: "column"
           }}>
             <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Advice :</h6>
-            <ul style={{ margin: 0, paddingLeft: "18px" }}>
+            <ul style={{ margin: 0, paddingLeft: "18px", paddingBottom: "5px"}}>
               {prescriptionData.instructions.split("\n").map((ln, i) => (
                 <li key={i}>{ln}</li>
               ))}
@@ -2153,7 +2155,7 @@ const D_Appointment = () => {
         {/* Prescription Table */}
         {(prescriptionData?.prescriptionItems || []).length > 0 && (
           <div style={{ margin: "20px" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, borderSpacing: 0}} cellSpacing={0} cellPadding={0}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, borderSpacing: 0}} cellSpacing={0}>
               <thead>
                 <tr style={{ background: "#1f2d3d", color: "white" }}>
                   <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>No.</th>

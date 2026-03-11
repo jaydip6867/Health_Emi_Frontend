@@ -37,6 +37,7 @@ import {
   FiMapPin,
   FiPhone,
 } from "react-icons/fi";
+import { MdLocationOn, MdEmail, MdPhone } from "react-icons/md";
 import NavBar from "../Visitor/Component/NavBar";
 import FooterBar from "../Visitor/Component/FooterBar";
 import { PiHospital } from "react-icons/pi";
@@ -491,29 +492,40 @@ const D_SurgeryAppointment = () => {
   };
 
   const printRef = useRef(null);
-  const generatePrescriptionPDF = () => {
+  const generatePrescriptionPDF = async () => {
     const node = printRef.current;
     const fileName = `prescription_${
       currentAppointment?.patientname?.replace(/\s+/g, "_") || "patient"
     }_${Date.now()}.pdf`;
     return html2canvas(node, {
-      scale: 2,
+      scale: 1.5, // Reduced from 2 to reduce file size
       useCORS: true,
       backgroundColor: "#ffffff",
+      logging: false, // Disable logging to reduce overhead
+      removeContainer: false,
+      imageTimeout: 15000, // Reduce timeout
+      allowTaint: false,
     }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "pt", "a4");
+      // Use JPEG instead of PNG for smaller file size
+      const imgData = canvas.toDataURL("image/jpeg", 0.8); // 80% quality
+      const pdf = new jsPDF({
+        orientation: "p",
+        unit: "pt",
+        format: "a4",
+        compress: true, // Enable compression
+      });
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const imgWidth = pageWidth;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
       if (imgHeight <= pageHeight) {
-        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+        pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
       } else {
         let remaining = imgHeight;
         let y = 0;
         while (remaining > 0) {
-          pdf.addImage(imgData, "PNG", 0, y, imgWidth, imgHeight);
+          pdf.addImage(imgData, "JPEG", 0, y, imgWidth, imgHeight, undefined, "FAST");
           remaining -= pageHeight;
           if (remaining > 0) {
             pdf.addPage();
@@ -521,6 +533,8 @@ const D_SurgeryAppointment = () => {
           }
         }
       }
+
+      // Return both blob and filename
       const pdfBlob = pdf.output("blob");
       return { pdfBlob, fileName };
     });
@@ -1903,324 +1917,220 @@ const D_SurgeryAppointment = () => {
           width: 794,
           background: "#ffffff",
           color: "#111827",
-          fontFamily: "Inter, Arial, Helvetica, sans-serif",
-          lineHeight: 1.2,
-          letterSpacing: 0,
+          fontFamily: "Arial, Helvetica, sans-serif",
+          fontSize: 14,
         }}
       >
-        <div
-          style={{ background: "#16A498", color: "#fff", padding: "20px 20px" }}
-        >
-          <div style={{ fontSize: 36, fontWeight: 800, textAlign: "center" }}>
-            Dr. {doctor?.name || "-"}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              gap: 16,
-              fontSize: 12,
-              marginTop: 8,
-              justifyContent: "center",
-            }}
-          >
-            {doctor?.email && <div>{doctor.email}</div>}
-            {doctor?.mobile && <div>{doctor.mobile}</div>}
-          </div>
+        {/* Header */}
+        <div style={{
+          background: "#1e88e5",
+          color: "white",
+          textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: "30px 20px"
+        }}>
+          <h1 style={{ margin: 0, fontSize: 40, fontWeight: 700 , color: 'white'}}>
+            {currentAppointment?.hospital_name?.name || doctor?.hospitalName || "Hospital Name"}
+          </h1>
+          <h3 style={{ margin: "5px 0", fontWeight: 600, color: 'white' }}>
+            Dr. {doctor?.name || "Doctor Name"}
+          </h3>
+          <p style={{ margin: "5px 0", fontSize: 14, color: 'white', verticalAlign: 'middle', display:'flex', alignItems: 'center' }}>
+            <span><MdLocationOn style={{ marginRight: 5 }} /></span>{currentAppointment?.hospital_name?.address || doctor?.address || "Hospital Address"}
+          </p>
+          <p style={{ margin: "5px 0", fontSize: 14, color: 'white', verticalAlign: 'middle', display:'flex', alignItems: 'center' }}>
+            <span><MdEmail style={{ marginRight: 5 }} /></span>{doctor?.email || "doctor@email.com"} | <span><MdPhone style={{ marginRight: 5 }} /></span>{doctor?.mobile || "1234567890"}
+          </p>
         </div>
-        <div style={{ padding: 24, lineHeight: 1.25 }}>
-          <div
-            style={{
-              background: "#132031",
-              color: "#fff",
-              borderRadius: 10,
-              padding: "12px 16px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div style={{ fontWeight: 700, fontSize: 14 }}>
-              Patient Name :{" "}
-              <span style={{ fontWeight: 600 }}>
-                {currentAppointment?.patientname || "-"}
-              </span>
-            </div>
-            <div style={{ fontWeight: 700, fontSize: 14 }}>
-              Date :{" "}
-              <span style={{ fontWeight: 400 }}>
-                {currentAppointment
-                  ? `${currentAppointment.date}${
-                      currentAppointment.time
-                        ? `, ${currentAppointment.time}`
-                        : ""
-                    }`
-                  : "-"}
-              </span>
-            </div>
-            <div style={{ fontWeight: 700, fontSize: 14 }}>
-              BP :{" "}
-              <span style={{ fontWeight: 400 }}>
-                {prescriptionData?.bp || "-"}
-              </span>
-            </div>
-            <div style={{ fontWeight: 700, fontSize: 14 }}>
-              Pulse Rate :{" "}
-              <span style={{ fontWeight: 400 }}>
-                {prescriptionData?.pulseRate || "-"}
-              </span>
-            </div>
-            <div style={{ fontWeight: 700, fontSize: 14 }}>
-              Rbs :{" "}
-              <span style={{ fontWeight: 400 }}>
-                {prescriptionData?.rbs || "-"}
-              </span>
-            </div>
-            <div style={{ fontWeight: 700, fontSize: 14 }}>
-              Weight (Wt) :{" "}
-              <span style={{ fontWeight: 400 }}>
-                {prescriptionData?.wt || "-"}
-              </span>
-            </div>
+
+        {/* Patient Info */}
+        <div style={{
+          background: "#1f2d3d",
+          color: "white",
+          padding: "15px",
+          margin: "20px",
+          borderRadius: "8px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap"
+        }}>
+          <div style={{ margin: "5px 15px" }}><b>Patient Name:</b> {currentAppointment?.patientname || "-"}</div>
+          <div style={{ margin: "5px 15px" }}><b>BP:</b> {prescriptionData?.bp || "-"}</div>
+          <div style={{ margin: "5px 15px" }}><b>DOB:</b> {currentAppointment?.date || "-"}</div>
+          <div style={{ margin: "5px 15px" }}><b>Age:</b> 22 Years</div>
+          <div style={{ margin: "5px 15px" }}><b>Date:</b> {currentAppointment?.date || "-"}, {currentAppointment?.time || "-"}</div>
+        </div>
+
+        {/* Vitals */}
+        <div style={{
+          background: "#1f2d3d",
+          color: "white",
+          padding: "10px",
+          margin: "0 20px 20px 20px",
+          borderRadius: "6px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}>
+          <div>Pulse Rate : {prescriptionData?.pulseRate ? `${prescriptionData.pulseRate} /min` : "-/min"}</div>
+          <div>Rbs : {prescriptionData?.rbs ? `${prescriptionData.rbs} mg/dl` : "- mg/dl"}</div>
+          <div>Wt : {prescriptionData?.wt ? `${prescriptionData.wt} kg` : "- kg"}</div>
+        </div>
+
+        {/* Sections */}
+        {prescriptionData?.pathologyTest && (
+          <div style={{
+            border: "1px solid #d0d0d0",
+            margin: "10px 20px",
+            borderRadius: "6px",
+            padding: "4px 12px",
+            display: "flex",
+            flexDirection: "column"
+          }}>
+            <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Pathological Test :</h6>
+            <p>{prescriptionData.pathologyTest}</p>
           </div>
-          {prescriptionData?.pathologyTest ? (
-            <div
-              style={{
-                background: "#F2F6FF",
-                borderRadius: 8,
-                padding: "10px 14px",
-                marginTop: 12,
-                lineHeight: 1.25,
-              }}
-            >
-              <div
-                style={{
-                  color: "#6B7280",
-                  fontWeight: 700,
-                  fontSize: 13,
-                  lineHeight: "18px",
-                }}
-              >
-                Pathology Test :
-              </div>
-              <div style={{ marginTop: 4, fontSize: 14, lineHeight: "20px" }}>
-                {prescriptionData.pathologyTest}
-              </div>
-            </div>
-          ) : null}
-          {prescriptionData?.radiologyTest ? (
-            <div
-              style={{
-                background: "#F2F6FF",
-                borderRadius: 8,
-                padding: "10px 14px",
-                marginTop: 10,
-                lineHeight: 1.25,
-              }}
-            >
-              <div
-                style={{
-                  color: "#6B7280",
-                  fontWeight: 700,
-                  fontSize: 13,
-                  lineHeight: "18px",
-                }}
-              >
-                Radiology Test :
-              </div>
-              <div style={{ marginTop: 4, fontSize: 14, lineHeight: "20px" }}>
-                {prescriptionData.radiologyTest}
-              </div>
-            </div>
-          ) : null}
-          {prescriptionData?.complain ? (
-            <div
-              style={{
-                background: "#F2F6FF",
-                borderRadius: 8,
-                padding: "10px 14px",
-                marginTop: 12,
-                lineHeight: 1.25,
-              }}
-            >
-              <div
-                style={{
-                  color: "#6B7280",
-                  fontWeight: 700,
-                  fontSize: 13,
-                  lineHeight: "18px",
-                }}
-              >
-                Complains :
-              </div>
-              <div style={{ marginTop: 4, fontSize: 14, lineHeight: "20px" }}>
-                {prescriptionData.complain}
-              </div>
-            </div>
-          ) : null}
-          {prescriptionData?.pasHistory ? (
-            <div
-              style={{
-                background: "#F2F6FF",
-                borderRadius: 8,
-                padding: "10px 14px",
-                marginTop: 10,
-                lineHeight: 1.25,
-              }}
-            >
-              <div
-                style={{
-                  color: "#6B7280",
-                  fontWeight: 700,
-                  fontSize: 13,
-                  lineHeight: "18px",
-                }}
-              >
-                Past History :
-              </div>
-              <div style={{ marginTop: 4, fontSize: 14, lineHeight: "20px" }}>
-                {prescriptionData.pasHistory}
-              </div>
-            </div>
-          ) : null}
-          {prescriptionData?.diagnosis ? (
-            <div
-              style={{
-                background: "#F2F6FF",
-                borderRadius: 8,
-                padding: "10px 14px",
-                marginTop: 10,
-                lineHeight: 1.25,
-              }}
-            >
-              <div
-                style={{
-                  color: "#6B7280",
-                  fontWeight: 700,
-                  fontSize: 13,
-                  lineHeight: "18px",
-                }}
-              >
-                Dignosis :
-              </div>
-              <div style={{ marginTop: 4, fontSize: 14, lineHeight: "20px" }}>
-                {prescriptionData.diagnosis}
-              </div>
-            </div>
-          ) : null}
-          {prescriptionData?.prescriptionItems?.length ? (
-            <div
-              style={{
-                marginTop: 14,
-                border: "1px solid #E5E7EB",
-                borderRadius: 8,
-                overflow: "hidden",
-              }}
-            >
-              <div
-                style={{
-                  background: "#132031",
-                  color: "#fff",
-                  padding: "8px 12px",
-                  fontWeight: 700,
-                  fontSize: 13,
-                  lineHeight: "18px",
-                  display: "grid",
-                  gridTemplateColumns: "40px 80px 1fr 160px 150px 60px 60px",
-                  gap: 8,
-                }}
-              >
-                <div>No.</div>
-                <div>Type</div>
-                <div>Medicine</div>
-                <div>Schedule</div>
-                <div>Instruction</div>
-                <div>Days</div>
-                <div>Qty</div>
-              </div>
-              <div style={{ lineHeight: "18px" }}>
-                {prescriptionData.prescriptionItems.map((item, idx) => {
+        )}
+
+        {prescriptionData?.radiologyTest && (
+          <div style={{
+            border: "1px solid #d0d0d0",
+            margin: "10px 20px",
+            borderRadius: "6px",
+            padding: "4px 12px",
+            display: "flex",
+            flexDirection: "column"
+          }}>
+            <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Radiological Test :</h6>
+            <p>{prescriptionData.radiologyTest}</p>
+          </div>
+        )}
+
+        {prescriptionData?.complain && (
+          <div style={{
+            border: "1px solid #d0d0d0",
+            margin: "10px 20px",
+            borderRadius: "6px",
+            padding: "4px 12px",
+            display: "flex",
+            flexDirection: "column"
+          }}>
+            <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Complains :</h6>
+            <p>{prescriptionData.complain}</p>
+          </div>
+        )}
+
+        {prescriptionData?.pasHistory && (
+          <div style={{
+            border: "1px solid #d0d0d0",
+            margin: "10px 20px",
+            borderRadius: "6px",
+            padding: "4px 12px",
+            display: "flex",
+            flexDirection: "column"
+          }}>
+            <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Past History :</h6>
+            <p>{prescriptionData.pasHistory}</p>
+          </div>
+        )}
+
+        {prescriptionData?.diagnosis && (
+          <div style={{
+            border: "1px solid #d0d0d0",
+            margin: "10px 20px",
+            borderRadius: "6px",
+            padding: "4px 12px",
+            display: "flex",
+            flexDirection: "column"
+          }}>
+            <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Diagnosis :</h6>
+            <p>{prescriptionData.diagnosis}</p>
+          </div>
+        )}
+
+        {prescriptionData?.instructions && (
+          <div style={{
+            border: "1px solid #d0d0d0",
+            margin: "10px 20px",
+            borderRadius: "6px",
+            padding: "4px 12px",
+            display: "flex",
+            flexDirection: "column"
+          }}>
+            <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Advice :</h6>
+            <ul style={{ margin: 0, paddingLeft: "18px", paddingBottom: "5px" }}>
+              {prescriptionData.instructions.split("\n").map((ln, i) => (
+                <li key={i}>{ln}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Prescription Table */}
+        {(prescriptionData?.prescriptionItems || []).length > 0 && (
+          <div style={{ margin: "20px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, borderSpacing: 0}} cellSpacing={0}>
+              <thead>
+                <tr style={{ background: "#1f2d3d", color: "white" }}>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>No.</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Type</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Medicine</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Schedule</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Instruction</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Days</th>
+                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Qty</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(prescriptionData.prescriptionItems || []).map((item, idx) => {
                   const times = [];
                   if (item.mo) times.push(`MO(${item.moDose})`);
                   if (item.an) times.push(`AN(${item.anDose})`);
                   if (item.ev) times.push(`EV(${item.evDose})`);
                   if (item.nt) times.push(`NT(${item.ntDose})`);
-                  const instr =
-                    item.instruction && item.instruction !== "-SELECT-"
-                      ? item.instruction
-                      : "-";
                   return (
-                    <div
-                      key={idx}
-                      style={{
-                        padding: "8px 12px",
-                        fontSize: 13,
-                        display: "grid",
-                        gridTemplateColumns:
-                          "40px 80px 1fr 160px 150px 60px 60px",
-                        gap: 8,
-                        background: idx % 2 === 0 ? "#FCFDFF" : "#FFFFFF",
-                        borderTop: "1px solid #F3F4F6",
-                        lineHeight: "18px",
-                      }}
-                    >
-                      <div>{idx + 1}</div>
-                      <div>{item.type}</div>
-                      <div>{item.medicine}</div>
-                      <div>{times.join(", ") || "-"}</div>
-                      <div>{instr}</div>
-                      <div>{item.days}</div>
-                      <div>{item.quantity}</div>
-                    </div>
+                    <tr key={idx} style={{ margin: 0, lineHeight: "normal" }}>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{idx + 1}</td>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{item.type}</td>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{item.medicine}</td>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{times.join(", ")}</td>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>
+                        {item.instruction && item.instruction !== "-SELECT-" ? item.instruction : "-"}
+                      </td>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{item.days}</td>
+                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{item.quantity}</td>
+                    </tr>
                   );
                 })}
-              </div>
-            </div>
-          ) : null}
-          {prescriptionData?.instructions ? (
-            <div
-              style={{
-                background: "#EFF6FF",
-                borderRadius: 8,
-                padding: "10px 14px",
-                marginTop: 12,
-              }}
-            >
-              <div
-                style={{
-                  color: "#6B7280",
-                  fontWeight: 700,
-                  fontSize: 13,
-                  lineHeight: "18px",
-                }}
-              >
-                Instructions :
-              </div>
-              <div style={{ marginTop: 4, fontSize: 14 }}>
-                {prescriptionData.instructions.split("\n").map((ln, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      marginTop: i ? 6 : 0,
-                      lineHeight: "20px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: 3,
-                        background: "#6B7280",
-                      }}
-                    />
-                    <div>{ln}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div style={{ textAlign: "center", fontSize: 12, color: "#666", marginTop: 20 }}>
+          <p>This is a digitally generated prescription from Health EMI Clinic System</p>
+          <p>Generated on: {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString()}</p>
+        </div>
+
+        {/* Signature */}
+        <div style={{ width: 200, float: "right", textAlign: "center", marginTop: 30 }}>
+          <div style={{ borderTop: "1px solid #000", marginTop: 40 }}></div>
+          <p>Dr. {doctor?.name || "-"}<br />({doctor?.qualification || "B.H.M.S"})</p>
+        </div>
+
+        {/* Brand */}
+        <div style={{
+          textAlign: "center",
+          fontSize: 60,
+          color: "#e8f0f7",
+          fontWeight: "bold",
+          marginTop: 40
+        }}>
+          HEALTH EASY EMI
         </div>
       </div>
       <FooterBar />
