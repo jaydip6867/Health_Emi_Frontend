@@ -182,32 +182,32 @@ const D_Appointment = () => {
   const handleOpenStartAppointment = (appointmentRow) => {
     const scheduledStr = `${appointmentRow?.date || ""} ${appointmentRow?.time || ""
       }`;
-    // try {
-    //   const scheduledAt = parse(
-    //     scheduledStr.trim(),
-    //     "dd-MM-yyyy hh:mm a",
-    //     new Date()
-    //   );
-    //   if (isNaN(scheduledAt.getTime())) {
-    //     throw new Error("Invalid date");
-    //   }
-    //   const now = new Date();
-    //   if (now < scheduledAt) {
-    //     Swal.fire({
-    //       title: "Too Early",
-    //       text: "You can start the appointment only at the scheduled time.",
-    //       icon: "warning",
-    //     });
-    //     return;
-    //   }
-    // } catch (e) {
-    //   Swal.fire({
-    //     title: "Invalid schedule",
-    //     text: "Appointment date/time is invalid. Please reschedule or try again.",
-    //     icon: "warning",
-    //   });
-    //   return;
-    // }
+    try {
+      const scheduledAt = parse(
+        scheduledStr.trim(),
+        "dd-MM-yyyy hh:mm a",
+        new Date()
+      );
+      if (isNaN(scheduledAt.getTime())) {
+        throw new Error("Invalid date");
+      }
+      const now = new Date();
+      if (now < scheduledAt) {
+        Swal.fire({
+          title: "Too Early",
+          text: "You can start the appointment only at the scheduled time.",
+          icon: "warning",
+        });
+        return;
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Invalid schedule",
+        text: "Appointment date/time is invalid. Please reschedule or try again.",
+        icon: "warning",
+      });
+      return;
+    }
     setCurrentAppointment(appointmentRow);
     setShowStartAppointment(true);
   };
@@ -2014,16 +2014,16 @@ const D_Appointment = () => {
           justifyContent: "center",
           padding: "30px 20px"
         }}>
-          <h1 style={{ margin: 0, fontSize: 40, fontWeight: 700 , color: 'white'}}>
+          <h1 style={{ margin: 0, fontSize: 40, fontWeight: 700, color: 'white' }}>
             {currentAppointment?.hospital_name?.name || doctor?.hospitalName || "Hospital Name"}
           </h1>
           <h3 style={{ margin: "5px 0", fontWeight: 600, color: 'white' }}>
             Dr. {doctor?.name || "Doctor Name"}
           </h3>
-          <p style={{ margin: "5px 0", fontSize: 14, color: 'white', verticalAlign: 'middle', display:'flex', alignItems:'center' }}>
+          <p style={{ margin: "5px 0", fontSize: 14, color: 'white', verticalAlign: 'middle', display: 'flex', alignItems: 'center' }}>
             <span><MdLocationOn style={{ marginRight: 5 }} /></span>{currentAppointment?.hospital_name?.address || doctor?.address || "Hospital Address"}
           </p>
-          <p style={{ margin: "5px 0", fontSize: 14, color: 'white', verticalAlign: 'middle', display:'flex', alignItems:'center' }}>
+          <p style={{ margin: "5px 0", fontSize: 14, color: 'white', verticalAlign: 'middle', display: 'flex', alignItems: 'center' }}>
             <span><MdEmail style={{ marginRight: 5 }} /></span>{doctor?.email || "doctor@email.com"} | <span><MdPhone style={{ marginRight: 5 }} /></span>{doctor?.mobile || "1234567890"}
           </p>
         </div>
@@ -2144,7 +2144,7 @@ const D_Appointment = () => {
             flexDirection: "column"
           }}>
             <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Advice :</h6>
-            <ul style={{ margin: 0, paddingLeft: "18px", paddingBottom: "5px"}}>
+            <ul style={{ margin: 0, paddingLeft: "18px", paddingBottom: "5px" }}>
               {prescriptionData.instructions.split("\n").map((ln, i) => (
                 <li key={i}>{ln}</li>
               ))}
@@ -2155,7 +2155,7 @@ const D_Appointment = () => {
         {/* Prescription Table */}
         {(prescriptionData?.prescriptionItems || []).length > 0 && (
           <div style={{ margin: "20px" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, borderSpacing: 0}} cellSpacing={0}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, borderSpacing: 0 }} cellSpacing={0}>
               <thead>
                 <tr style={{ background: "#1f2d3d", color: "white" }}>
                   <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>No.</th>
