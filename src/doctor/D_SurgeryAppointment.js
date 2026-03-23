@@ -1959,8 +1959,8 @@ const D_SurgeryAppointment = () => {
         }}>
           <div style={{ margin: "5px 15px" }}><b>Patient Name:</b> {currentAppointment?.patientname || "-"}</div>
           <div style={{ margin: "5px 15px" }}><b>BP:</b> {prescriptionData?.bp || "-"}</div>
-          <div style={{ margin: "5px 15px" }}><b>DOB:</b> {currentAppointment?.date || "-"}</div>
-          <div style={{ margin: "5px 15px" }}><b>Age:</b> 22 Years</div>
+          {/* <div style={{ margin: "5px 15px" }}><b>DOB:</b> {currentAppointment?.date || "-"}</div> */}
+          {/* <div style={{ margin: "5px 15px" }}><b>Age:</b> 22 Years</div> */}
           <div style={{ margin: "5px 15px" }}><b>Date:</b> {currentAppointment?.date || "-"}, {currentAppointment?.time || "-"}</div>
         </div>
 
