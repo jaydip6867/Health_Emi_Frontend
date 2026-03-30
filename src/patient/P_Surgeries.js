@@ -30,6 +30,8 @@ import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { PiHospital } from "react-icons/pi";
 import { showReportOrPrication } from "../global";
 import { TbVaccine } from "react-icons/tb";
+import { generateInvoicePDF } from "../utils/invoiceGenerator";
+import { MdDownload } from "react-icons/md";
 
 const P_Surgeries = () => {
   var navigate = useNavigate();
@@ -154,6 +156,11 @@ const P_Surgeries = () => {
       setSubmittingReview(false);
     }
   }
+
+  // Generate Surgery Invoice PDF function using centralized utility
+  const handleGenerateSurgeryInvoice = (surgery) => {
+    generateInvoicePDF(surgery, { type: 'surgery' });
+  };
 
   // Get status badge styling
   const getStatusBadge = (status) => {
@@ -560,18 +567,28 @@ const P_Surgeries = () => {
                           </div>
                         </div>
                       )}
-                      {v.status === "Completed" && v?.is_review === false ? (
-                        <div className="d-flex justify-content-end mt-4">
+                      <div className="d-flex justify-content-end mt-4 gap-2">
+                        {(v?.status === "Pending" || v?.status === "Accept" || v?.status === "Completed") && (
+                          <Button
+                            variant="primary"
+                            onClick={() => handleGenerateSurgeryInvoice(v)}
+                            style={{ fontSize: "14px", padding: "4px 8px" }}
+                          >
+                            <MdDownload size={14} className="me-1" />
+                            Download Invoice
+                          </Button>
+                        )}
+                        {v.status === "Completed" && v?.is_review === false ? (
                           <Button
                             variant="primary"
                             onClick={() => openReviewModal(v?._id)}
                           >
                             Write a Review
                           </Button>
-                        </div>
-                      ) : (
-                        ""
-                      )}
+                        ) : (
+                          ""
+                        )}
+                      </div>
                     </div>
                   </div>
                 </Modal.Body>

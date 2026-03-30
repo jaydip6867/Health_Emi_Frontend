@@ -34,6 +34,7 @@ import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { showReportOrPrication } from "../global";
 import { FaUser } from "react-icons/fa";
 import { TbVaccine } from "react-icons/tb";
+import { generateInvoicePDF } from "../utils/invoiceGenerator";
 
 const P_Appointment = () => {
   var navigate = useNavigate();
@@ -165,13 +166,17 @@ const P_Appointment = () => {
 
     const link = document.createElement("a");
     link.href = pdfUrl;
-    link.download = `prescription_${
-      patientName?.replace(/\s+/g, "_") || "patient"
-    }_${Date.now()}.pdf`;
+    link.download = `prescription_${patientName?.replace(/\s+/g, "_") || "patient"
+      }_${Date.now()}.pdf`;
     link.target = "_blank";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  // Generate Invoice PDF function using centralized utility
+  const handleGenerateInvoicePDF = (appointment) => {
+    generateInvoicePDF(appointment, { type: 'appointment' });
   };
 
   // Get status badge styling (using CSS variables)
@@ -239,11 +244,11 @@ const P_Appointment = () => {
   };
 
   const renderTooltip = (label) => (props) =>
-    (
-      <Tooltip id="button-tooltip" {...props}>
-        {label} Appointment
-      </Tooltip>
-    );
+  (
+    <Tooltip id="button-tooltip" {...props}>
+      {label} Appointment
+    </Tooltip>
+  );
 
   // table data
   const columns = [
@@ -415,9 +420,8 @@ const P_Appointment = () => {
               <div className="appt-tabs d-flex gap-2 mb-3 overflow-x-auto pb-2">
                 <button
                   type="button"
-                  className={`appt-tab d-flex align-items-center ${
-                    activeTab === "Pending" ? "active" : ""
-                  }`}
+                  className={`appt-tab d-flex align-items-center ${activeTab === "Pending" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("Pending")}
                 >
                   <span>Pending</span>{" "}
@@ -425,9 +429,8 @@ const P_Appointment = () => {
                 </button>
                 <button
                   type="button"
-                  className={`appt-tab d-flex align-items-center ${
-                    activeTab === "Accepted" ? "active" : ""
-                  }`}
+                  className={`appt-tab d-flex align-items-center ${activeTab === "Accepted" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("Accepted")}
                 >
                   <span>Accepted</span>{" "}
@@ -435,9 +438,8 @@ const P_Appointment = () => {
                 </button>
                 <button
                   type="button"
-                  className={`appt-tab d-flex align-items-center ${
-                    activeTab === "Completed" ? "active" : ""
-                  }`}
+                  className={`appt-tab d-flex align-items-center ${activeTab === "Completed" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("Completed")}
                 >
                   <span>Completed</span>{" "}
@@ -445,9 +447,8 @@ const P_Appointment = () => {
                 </button>
                 <button
                   type="button"
-                  className={`appt-tab d-flex align-items-center ${
-                    activeTab === "Cancelled" ? "active" : ""
-                  }`}
+                  className={`appt-tab d-flex align-items-center ${activeTab === "Cancelled" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("Cancelled")}
                 >
                   <span>Cancelled</span>{" "}
@@ -560,6 +561,7 @@ const P_Appointment = () => {
                             ₹ {fee}
                           </span>
                         </div>
+
                       </div>
                     </div>
 
@@ -692,16 +694,30 @@ const P_Appointment = () => {
                         </div>
                       </div>
                     )}
-                    {v.status === "Completed" && v?.is_review === false ? (
-                      <div className="d-flex justify-content-end mt-4">
+                    <div className="d-flex justify-content-end mt-4 gap-2">
+                      {(v?.status === "Pending" || v?.status === "Accept" || v?.status === "Completed") && (
+                        <div>
+                          {/* <p className="mb-0">Invoice</p> */}
+                          <Button
+                            variant="primary"
+                            onClick={() => handleGenerateInvoicePDF(v)}
+                            style={{ fontSize: "14px", padding: "4px 8px" }}
+                          >
+                            <MdDownload size={14} className="me-1" />
+                            Download Invoice
+                          </Button>
+                        </div>
+                      )}
+                      {v.status === "Completed" && v?.is_review === false ? (
                         <Button
                           variant="primary"
                           onClick={() => openReviewModal(v?._id)}
+                          style={{ fontSize: "14px", padding: "4px 8px" }}
                         >
                           Write a Review
                         </Button>
-                      </div>
-                    ) : null}
+                      ) : null}
+                    </div>
                   </div>
                 </Modal.Body>
               </Modal>
