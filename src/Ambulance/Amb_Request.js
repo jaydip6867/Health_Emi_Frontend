@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Container, Row, Col, Card, Table, Badge, Button, Spinner, Form, InputGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, Table, Badge, Button, Spinner, Form, InputGroup, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
 import axios from 'axios';
-import { FaAmbulance, FaMapMarkerAlt, FaUserMd, FaInfoCircle, FaSearch } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import { FaAmbulance, FaMapMarkerAlt, FaUserMd, FaInfoCircle, FaSearch, FaCreditCard } from 'react-icons/fa';
 import { 
   useReactTable,
   getCoreRowModel,
@@ -25,6 +26,11 @@ const Amb_Request = () => {
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
+
+  // Razorpay payment state
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   // Table columns definition
   const columns = useMemo(
@@ -113,19 +119,31 @@ const Amb_Request = () => {
       {
         header: 'Actions',
         accessorKey: '_id',
-        cell: ({ row, getValue }) => (
-          <div className="d-flex gap-2">
-            <Button
-              variant="outline-primary"
-              size="sm"
-              className="d-flex align-items-center"
-              onClick={() => navigate(`/ambulance/rides/${getValue()}`)}
-            >
-              <FaInfoCircle className="me-1" /> Ride Details
-            </Button>
-          
-          </div>
-        ),
+        cell: ({ row, getValue }) => {
+          const request = row.original;
+          return (
+            <div className="d-flex gap-2">
+              <Button
+                variant="outline-primary"
+                size="sm"
+                className="d-flex align-items-center"
+                onClick={() => navigate(`/ambulance/rides/${getValue()}`)}
+              >
+                <FaInfoCircle className="me-1" /> Ride Details
+              </Button>
+              {request.status === 'notified' && (
+                <Button
+                  variant="success"
+                  size="sm"
+                  className="d-flex align-items-center"
+                  onClick={() => handleAcceptRequest(request)}
+                >
+                  <FaAmbulance className="me-1" /> Accept
+                </Button>
+              )}
+            </div>
+          );
+        },
       },
     ],
     []
@@ -192,6 +210,187 @@ const Amb_Request = () => {
   const handleSearch = (e) => {
     const value = e.target.value || '';
     setSearchText(value);
+  };
+
+  // Handle accept request
+  const handleAcceptRequest = (request) => {
+    setSelectedRequest(request);
+    setShowPaymentModal(true);
+  };
+
+  // Handle Razorpay payment
+  const handleRazorpayPayment = async () => {
+    if (!selectedRequest) return;
+
+    setPaymentProcessing(true);
+
+    try {
+      // Get ambulance data from localStorage
+      const getlocaldata = localStorage.getItem(STORAGE_KEYS.AMBULANCE);
+      if (!getlocaldata) {
+        navigate("/ambulance");
+        return;
+      }
+
+      const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+      const data = JSON.parse(decrypted);
+
+      // 1️⃣ Create order from backend
+      const { data: orderData } = await axios.post(
+        `${API_BASE_URL}/user/order/create`,
+        { 
+          amount: Math.round((selectedRequest.price || 80) * 0.10), // 10% of total amount
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${data.accessToken}`, // REQUIRED
+          },
+        }
+      );
+
+      console.log(orderData, "orderData");
+      if (orderData != "") {
+        const options = {
+          key: "rzp_live_S0smOweosyTmQ8",
+          order_id: orderData.Data.id, // ✅ MUST
+          amount: orderData.Data.amount, // from backend (paise)
+          currency: "INR",
+          name: "Health Emi",
+          description: "Ambulance Service Fee",
+
+          handler: async function (response) {
+            try {
+              console.log("Payment Success:", response);
+
+              // Payment successful, now accept the ambulance request
+              await acceptAmbulanceRequest(response);
+            } catch (err) {
+              console.error("Payment successful but request acceptance failed:", err);
+              Swal.fire({
+                title: "Payment Successful",
+                text: "Payment was successful but there was an issue accepting the request. Please contact support.",
+                icon: "warning",
+                confirmButtonText: "Ok",
+              });
+            }
+          },
+
+          prefill: {
+            name: ambulance?.fullname || "",
+            email: ambulance?.email || "",
+            contact: ambulance?.mobile || "",
+          },
+
+          theme: { color: "#4CAF50" },
+
+          modal: {
+            ondismiss() {
+              console.log("Payment cancelled");
+              setPaymentProcessing(false);
+            },
+          },
+        };
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      Swal.fire({
+        title: "Payment Error",
+        text: "Unable to initiate payment. Please try again.",
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+      setPaymentProcessing(false);
+    }
+  };
+
+  // Accept ambulance request after successful payment
+  const acceptAmbulanceRequest = async (paymentResponse) => {
+    try {
+      // Get ambulance data from localStorage
+      const getlocaldata = localStorage.getItem(STORAGE_KEYS.AMBULANCE);
+      if (!getlocaldata) {
+        navigate("/ambulance");
+        return;
+      }
+
+      const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+      const data = JSON.parse(decrypted);
+
+      // Call requestambulance API after successful payment
+      const response = await axios.post(
+        `${API_BASE_URL}/ambulance/requestambulance`,
+        {
+          ambulancerequestid: selectedRequest._id,
+          paymentMethod: 'razorpay',
+          paymentStatus: 'paid',
+          paymentId: paymentResponse.razorpay_payment_id,
+          amount: selectedRequest.price || 0,
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${data.accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.data.IsSuccess) {
+        // Close payment modal
+        setShowPaymentModal(false);
+        setSelectedRequest(null);
+
+        // Refresh requests list
+        const fetchRequests = async () => {
+          try {
+            const response = await axios.post(
+              `${API_BASE_URL}/ambulance/ambulancerequest/list`,
+              {},
+              {
+                headers: {
+                  'Authorization': `Bearer ${data.accessToken}`,
+                  'Content-Type': 'application/json'
+                }
+              }
+            );
+            setRequests(response.data.Data || []);
+          } catch (error) {
+            console.error('Error fetching requests:', error);
+          }
+        };
+
+        await fetchRequests();
+
+        // Show success message
+        Swal.fire({
+          title: "Success!",
+          text: "Request accepted successfully! Payment processed.",
+          icon: "success",
+          confirmButtonText: "Ok",
+        });
+      } else {
+        throw new Error(response.data.Message || 'Failed to accept request');
+      }
+    } catch (error) {
+      console.error('Error accepting request:', error);
+      Swal.fire({
+        title: "Error",
+        text: "Failed to accept request. Please try again.",
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+    } finally {
+      setPaymentProcessing(false);
+    }
+  };
+
+  // Close payment modal
+  const closePaymentModal = () => {
+    setShowPaymentModal(false);
+    setSelectedRequest(null);
   };
 
   if (loading) {
@@ -356,6 +555,65 @@ const Amb_Request = () => {
           </Card>
         </Col>
       </Row>
+
+      {/* Razorpay Payment Modal */}
+      <Modal show={showPaymentModal} onHide={closePaymentModal} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <FaCreditCard className="me-2" />
+            Process Payment
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedRequest && (
+            <div>
+              {/* Request Summary */}
+              <div className="mb-4 p-3 border rounded">
+                <h6 className="mb-3">Request Details</h6>
+                <div className="row">
+                  <div className="col-md-6">
+                    <p className="mb-2"><strong>Patient:</strong> {selectedRequest.doctorid?.name || selectedRequest.patientid?.name}</p>
+                    <p className="mb-2"><strong>Pickup:</strong> {selectedRequest.pickupaddress}</p>
+                  </div>
+                  <div className="col-md-6">
+                    <p className="mb-2"><strong>Drop:</strong> {selectedRequest.dropaddress}</p>
+                    <p className="mb-2"><strong>Total Amount:</strong> <span className="text-muted">₹{selectedRequest.price || 0}</span></p>
+                    <p className="mb-2"><strong>Advance Payment (10%):</strong> <span className="text-success">₹{Math.round((selectedRequest.price || 0) * 0.10)}</span></p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center mb-4">
+                <p className="mb-3">Click below to proceed with Razorpay payment</p>
+                <Button
+                  variant="success"
+                  size="lg"
+                  onClick={handleRazorpayPayment}
+                  disabled={paymentProcessing}
+                  className="px-4"
+                >
+                  {paymentProcessing ? (
+                    <>
+                      <Spinner as="span" animation="border" size="sm" className="me-2" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <FaCreditCard className="me-2" />
+                      Pay with Razorpay ₹{Math.round((selectedRequest.price || 0) * 0.10)}
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closePaymentModal} disabled={paymentProcessing}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
