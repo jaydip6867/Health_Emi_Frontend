@@ -609,9 +609,9 @@ const DoctorProfilePage = () => {
 
     const priceMap = {
       General: single_surg?.general_price || 0,
-      SemiPrivate: single_surg?.semiprivate_price || 0,
+      SemiPrivate: single_surg?.semiprivate_price || single_surg?.semi_private_price || single_surg?.semiprivate || 0,
       Private: single_surg?.private_price || 0,
-      Delux: single_surg?.delux_price || 0,
+      Delux: single_surg?.delux_price || single_surg?.deluxe_price || 0,
     };
 
     return priceMap[addsurgery.roomtype] || 0;
@@ -2260,11 +2260,11 @@ const DoctorProfilePage = () => {
                 <Form.Check
                   name="roomtype"
                   type="radio"
-                  value="Semiprivate"
+                  value="SemiPrivate"
                   id="label-2"
                   onChange={surghandlechange}
                   label={`SemiPrivate - ₹${
-                    single_surg?.semiprivate_price || "N/A"
+                    single_surg?.semiprivate_price
                   }`}
                 />
                 <Form.Check
