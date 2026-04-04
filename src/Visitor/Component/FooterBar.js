@@ -82,7 +82,7 @@ const FooterBar = () => {
             <div className="contact-info">
               <span className="py-2">
                 <MdCall className="me-2" />
-                +91 8087161522
+                +91 8855919195
               </span>
               <a href="mailto:healtheasyemi@gmail.com?subject=Inquiry&body=Hello HealthEasy team," className="py-2">
                 <div className="d-flex align-items-center ">
