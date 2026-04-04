@@ -32,7 +32,6 @@ import { FiClock, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 import Swal from "sweetalert2";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { showReportOrPrication } from "../global";
-import { FaUser } from "react-icons/fa";
 import { TbVaccine } from "react-icons/tb";
 import { generateInvoicePDF } from "../utils/invoiceGenerator";
 
