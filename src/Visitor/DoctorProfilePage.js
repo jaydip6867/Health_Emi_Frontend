@@ -171,6 +171,7 @@ const DoctorProfilePage = () => {
   const [showAllSurgeries, setShowAllSurgeries] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
+  const [surgerySearchTerm, setSurgerySearchTerm] = useState("");
 
   const handleClose = () => setShow(false);
   const handleShow = () => {
@@ -626,6 +627,18 @@ const DoctorProfilePage = () => {
     [addsurgery?.roomtype, single_surg]
   );
 
+  const filteredSurgeries = useMemo(() => {
+    if (!doctor_profile?.surgeriesDetails) return [];
+    
+    if (!surgerySearchTerm.trim()) return doctor_profile.surgeriesDetails;
+    
+    const searchTerm = surgerySearchTerm.toLowerCase().trim();
+    return doctor_profile.surgeriesDetails.filter(surgery => 
+      surgery?.name?.toLowerCase().includes(searchTerm) ||
+      surgery?.surgerytypeid?.surgerytypename?.toLowerCase().includes(searchTerm)
+    );
+  }, [doctor_profile?.surgeriesDetails, surgerySearchTerm]);
+
   const handlePayment = async () => {
     try {
       var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
@@ -650,7 +663,7 @@ const DoctorProfilePage = () => {
           order_id: data.Data.id, // ✅ MUST
           amount: data.Data.amount, // from backend (paise)
           currency: "INR",
-          name: "Health Emi",
+          name: "Health Easy Emi",
           description: "Consultation Fee",
 
           handler: async function (response) {
@@ -740,7 +753,7 @@ const DoctorProfilePage = () => {
           order_id: data.Data.id, // ✅ MUST
           amount: data.Data.amount, // from backend (paise)
           currency: "INR",
-          name: "Health Emi",
+          name: "Health Easy Emi",
           description: `10% Advance Payment for Surgery (Total: ₹${surgeryPrice})`,
 
           handler: async function (response) {
@@ -1096,15 +1109,30 @@ const DoctorProfilePage = () => {
                   style={{ borderRadius: "15px" }}
                 >
                   <Card.Body className="p-4">
-                    <h5 className="fw-bold mb-4">Surgeries</h5>
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                      <h5 className="fw-bold mb-0">Surgeries</h5>
+                      {doctor_profile?.surgeriesDetails?.length > 0 && (
+                        <Form.Group className="mb-0" style={{ maxWidth: "300px" }}>
+                          <Form.Control
+                            type="text"
+                            placeholder="Search surgeries..."
+                            value={surgerySearchTerm}
+                            onChange={(e) => setSurgerySearchTerm(e.target.value)}
+                            className="form-control-sm"
+                          />
+                        </Form.Group>
+                      )}
+                    </div>
                     <Row className="g-4">
                       {!doctor_profile?.surgeriesDetails ||
                       doctor_profile?.surgeriesDetails.length === 0 ? (
                         <p className="text-muted">Surgery not added...</p>
+                      ) : filteredSurgeries.length === 0 ? (
+                        <p className="text-muted">No surgeries found matching your search...</p>
                       ) : (
                         (showAllSurgeries
-                          ? doctor_profile.surgeriesDetails
-                          : doctor_profile.surgeriesDetails.slice(0, 4)
+                          ? filteredSurgeries
+                          : filteredSurgeries.slice(0, 4)
                         ).map((surgery, index) => (
                           <Col md={6} key={index}>
                             <Card
@@ -1148,7 +1176,7 @@ const DoctorProfilePage = () => {
                         ))
                       )}
                     </Row>
-                    {doctor_profile?.surgeriesDetails?.length > 4 && (
+                    {filteredSurgeries.length > 4 && (
                       <div className="text-center mt-3">
                         <Button
                           className="login-signup-btn"
@@ -2121,7 +2149,7 @@ const DoctorProfilePage = () => {
                 handleServiceModalClose();
               }}
             >
-              Book Appointment for this Surgery
+              Book Surgery Appointment
             </Button>
           </Modal.Footer>
         </Modal>
@@ -2338,11 +2366,13 @@ const DoctorProfilePage = () => {
           <Button
             variant="primary"
             onClick={() => handleSurgeryPayment()}
-            disabled={isUploadingReports}
+            disabled={isUploadingReports || !addsurgery?.roomtype}
           >
             {isUploadingReports
               ? "Uploading Reports..."
-              : `Pay Amount (₹${Math.round(surgeryPrice * 0.15)})`}
+              : addsurgery?.roomtype
+              ? `Pay Advance ₹${Math.round(surgeryPrice * 0.15)} (Total: ₹${surgeryPrice})`
+              : "Select Room Type"}
           </Button>
         </Modal.Footer>
       </Modal>

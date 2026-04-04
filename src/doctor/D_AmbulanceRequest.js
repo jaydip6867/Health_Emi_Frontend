@@ -24,10 +24,8 @@ import {
 } from "../config";
 import {
   FaAmbulance,
-  FaLocationArrow,
   FaMapMarkerAlt,
   FaRoute,
-  FaArrowRight,
   FaMapPin,
 } from "react-icons/fa";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
