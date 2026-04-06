@@ -981,7 +981,7 @@ const P_AmbulanceRequest = () => {
 
         setPlatformFee(0);
         localStorage.setItem("amb_req_id", res.data.Data.requestId);
-        navigate(`/doctor/ambulance-request/status/${res.data.Data.requestId}`);
+        navigate(`/patient/ambulance-request/status/${res.data.Data.requestId}`);
       })
       .catch((error) => {
         console.error(error);

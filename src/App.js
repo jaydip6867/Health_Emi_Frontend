@@ -47,7 +47,7 @@ import DoctorTC from "./Visitor/T&CPage/DoctorTC";
 import DoctorTelemedicineTC from "./Visitor/T&CPage/DoctorTelemedicineTC";
 import D_Review from "./doctor/D_Review";
 import P_AmbulanceRequest from "./patient/P_AmbulanceRequest";
-import P_RideSatus from "./patient/P_RideSatus";
+import P_AmbulanceStatus from "./patient/P_AmbulanceStatus";
 import SurgeriesPage from "./Visitor/SurgeriesPage";
 import D_AmbulanceHistory from "./doctor/D_AmbulanceHistory";
 import HospitalList from "./Visitor/HospitalList";
@@ -137,7 +137,7 @@ function App() {
           ></Route>
           <Route
             path="ambulance-request/status/:id"
-            element={<P_RideSatus />}
+            element={<P_AmbulanceStatus />}
           />
           <Route path="patientprofile" element={<PatientProfile />}></Route>
         </Route>
