@@ -104,7 +104,7 @@ const Surgeries = () => {
                                         <Link to={`/surgery/${encodeURIComponent(btoa(item?.name))}`} className='surgery_list_box' key={item?._id}>
                                             <img
                                                 src={img || defaultSurgeryIcon}
-                                                alt={name}
+                                                alt={'surgery - ' + name}
                                             />
                                             <p className='mt-2 fw-semibold text-capitalize'>{name}</p>
                                         </Link>
