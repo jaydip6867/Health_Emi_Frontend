@@ -78,7 +78,7 @@ const Amb_Profile = () => {
   return (
     <Container fluid className="p-0 panel">
       <Row className="g-0">
-        <Amb_Sidebar />
+        <Amb_Sidebar ambulance={ambulance} />
         <Col xs={12} sm={9} lg={10} className="p-3">
           <div className="profile-page">
             <Container fluid>
