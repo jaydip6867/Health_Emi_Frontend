@@ -17,20 +17,20 @@ const PatientForgotps = () => {
     const [patient_forgt_otp, setpatient_forgt_otp] = useState(false);
     const [patient_reset_ps, setdoc_rest_ps] = useState(false);
 
-    const [email, setemail] = useState('')
+    const [mobile, setmobile] = useState('')
     const [newps, setnewps] = useState('')
 
-    function emailotpforgot() {
+    function mobileotpforgot() {
         setloading(true)
         axios({
             method: 'post',
             url: `${API_BASE_URL}/user/forgetpassword`,
             data: {
-                "email": email,
+                "mobile": mobile,
             }
         }).then((res) => {
 
-            toast('OTP sent To your email...', { className: 'custom-toast-success' })
+            toast('OTP sent To your mobile...', { className: 'custom-toast-success' })
             setpatient_email(false);
             setpatient_forgt_otp(true);
         }).catch(function (error) {
@@ -46,7 +46,7 @@ const PatientForgotps = () => {
             method: 'post',
             url: `${API_BASE_URL}/user/forgetpassword/verifyotp`,
             data: {
-                "email": email,
+                "mobile": mobile,
                 "otp": otp
             }
         }).then((res) => {
@@ -66,7 +66,7 @@ const PatientForgotps = () => {
             method: 'post',
             url: `${API_BASE_URL}/user/forgetpassword/setpassword`,
             data: {
-                "email": email,
+                "mobile": mobile,
                 "password": newps
             }
         }).then((res) => {
@@ -88,6 +88,18 @@ const PatientForgotps = () => {
 
     const [otp, setotp] = useState("");
     const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
+
+    const validateMobile = (mobile) => {
+        const mobileRegex = /^[6-9]\d{9}$/;
+        return mobileRegex.test(mobile);
+    };
+
+    const handleMobileChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value) && value.length <= 10) {
+            setmobile(value);
+        }
+    };
 
     // Handle OTP input change
     const handleOtpChange = (index, value) => {
@@ -138,16 +150,27 @@ const PatientForgotps = () => {
                                     <div className='register_doctor bg-white p-3 py-3 px-4 rounded'>
                                         <div className='text-center'>
                                             <h3>Forgot Password</h3>
-                                            <p className='w-75 mx-auto'>Enter your registered email to receive a secure OTP and reset your password.</p>
+                                            <p className='w-75 mx-auto'>Enter your registered mobile number to receive a secure OTP and reset your password.</p>
                                         </div>
                                         <Form>
 
-                                            <Form.Group controlId="Email" className='position-relative mb-3'>
-                                                <Form.Label>Email Address</Form.Label>
-                                                <Form.Control placeholder="Email Address" name='email' value={email} onChange={(e) => setemail(e.target.value)} className='frm_input' />
+                                            <Form.Group controlId="Mobile" className='position-relative mb-3'>
+                                                <Form.Label>Mobile Number</Form.Label>
+                                                <Form.Control 
+                                                    placeholder="Mobile Number" 
+                                                    name='mobile' 
+                                                    value={mobile} 
+                                                    onChange={handleMobileChange} 
+                                                    className='frm_input' 
+                                                    maxLength={10}
+                                                    isInvalid={mobile && !validateMobile(mobile)}
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    Please enter a valid 10-digit mobile number starting with 6-9
+                                                </Form.Control.Feedback>
                                             </Form.Group>
 
-                                            <Button type="button" onClick={emailotpforgot} className='d-block w-100 theme_btn my-3 mt-4'>
+                                            <Button type="button" onClick={mobileotpforgot} className='d-block w-100 theme_btn my-3 mt-4' disabled={!validateMobile(mobile)}>
                                                 Send OTP
                                             </Button>
 
@@ -186,7 +209,7 @@ const PatientForgotps = () => {
                                                         ))}
                                                     </div>
                                                     <small className="d-block text-center text-muted mt-2">
-                                                        Enter the 6-digit code sent to your email
+                                                        Enter the 6-digit code sent to your mobile number
                                                     </small>
                                                 </div>
                                             </Form>

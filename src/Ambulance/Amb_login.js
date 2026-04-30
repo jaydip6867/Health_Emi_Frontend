@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Col, Container, Form, Row } from 'react-bootstrap'
+import { Button, Col, Container, Form, Navbar, Row } from 'react-bootstrap'
 import '../doctor/css/doctor.css'
 import FooterBar from '../Visitor/Component/FooterBar';
 import { Link, useNavigate } from 'react-router-dom'
@@ -9,6 +9,7 @@ import axios from 'axios'
 import CryptoJS from "crypto-js";
 import { io } from "socket.io-client";
 import { API_BASE_URL, SOCKET_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
+import NavBar from '../Visitor/Component/NavBar';
 
 const Amb_login = () => {
 
@@ -97,7 +98,8 @@ const Amb_login = () => {
   }
   return (
     <>
-      <div className="min-vh-100 d-flex align-items-center panel">
+      <NavBar />
+      <div className="py-5 d-flex align-items-center panel">
         <Container className="py-3">
           <Row className="justify-content-center">
             <Col md={8} lg={5}>
