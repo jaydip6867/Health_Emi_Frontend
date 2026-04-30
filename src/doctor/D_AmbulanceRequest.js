@@ -30,6 +30,7 @@ import {
 } from "react-icons/fa";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import NavBar from "../Visitor/Component/NavBar";
+import FooterBar from "../Visitor/Component/FooterBar";
 
 let gmapsPromise = null;
 const loadGoogleMaps = () => {
@@ -2003,7 +2004,7 @@ const D_AmbulanceRequest = () => {
         </Modal>
       </Container>
       {loading ? <Loader /> : ""}
-
+      <FooterBar />
       <style jsx>{`
         .ambulance-details-card {
           background: white;
