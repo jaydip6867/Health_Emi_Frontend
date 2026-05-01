@@ -76,15 +76,15 @@ const Amb_Profile = () => {
   }
 
   return (
-    <Container fluid className="p-0 panel">
+    <Container fluid className="p-0">
       <Row className="g-0">
         <Amb_Sidebar ambulance={ambulance} />
-        <Col xs={12} sm={9} lg={10} className="p-3">
+        <Col xs={12} sm={9} className="p-3">
           <div className="profile-page">
             <Container fluid>
               <Row>
                 <Col lg={12} md={12} className="p-0">
-                  <Amb_Nav ambulancename={ambulance.fullname} />
+                  {/* <Amb_Nav ambulancename={ambulance.fullname} /> */}
 
                   <Row>
                     <Col md={4} className="mb-4">

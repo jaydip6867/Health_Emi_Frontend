@@ -32,11 +32,11 @@ const Amb_dashboard = () => {
 
   return (
     <>
-      <Container fluid className='p-0 panel'>
+      <Container fluid className='p-0'>
         <Row className='g-0'>
           <Amb_Sidebar ambulance={ambulance}/>
-          <Col xs={12} sm={9} lg={10} className='p-3'>
-            <Amb_Nav ambulancename={ambulance && ambulance.fullname} />
+          <Col xs={12} sm={9} className='p-3'>
+            {/* <Amb_Nav ambulancename={ambulance && ambulance.fullname} /> */}
             <div className='bg-white rounded p-2'>
               {
                 ambulance === null ?

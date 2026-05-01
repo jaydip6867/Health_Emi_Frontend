@@ -1,172 +1,143 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Container, Row, Col, Card, Table, Badge, Button, Spinner, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Col, Container, Row, Badge, Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { FaAmbulance, FaMapMarkerAlt, FaUserMd, FaInfoCircle, FaSearch, FaCreditCard } from 'react-icons/fa';
-import { 
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  flexRender,
-} from '@tanstack/react-table';
-import moment from 'moment';
+import { FaAmbulance, FaMapPin, FaCreditCard } from 'react-icons/fa';
+import { MdOutlineRemoveRedEye } from 'react-icons/md';
 import Amb_Nav from './Amb_Nav';
 import Amb_Sidebar from './Amb_Sidebar';
-import '../../src/amb_request.css';
+import SmartDataTable from '../components/SmartDataTable';
+import Loader from '../Loader';
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 
-
 const Amb_Request = () => {
-  const [ambulance, setambulance] = useState(null)
+  const navigate = useNavigate();
+  const [ambulance, setambulance] = useState(null);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchText, setSearchText] = useState('');
-  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("notified");
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+
+  // Filter by status based on active tab
+  const filteredData = useMemo(() => {
+    if (!requests) return [];
+    const map = {
+      notified: ["notified"],
+      accepted: ["accepted"],
+      completed: ["completed"],
+      cancelled: ["cancelled"],
+    };
+    const allowed = map[activeTab] || [];
+    return requests.filter((r) => allowed.includes(r.status));
+  }, [requests, activeTab]);
+
+  const counts = useMemo(() => {
+    const c = { notified: 0, accepted: 0, completed: 0, cancelled: 0 };
+    (requests || []).forEach((r) => {
+      if (r.status === "notified") c.notified++;
+      else if (r.status === "accepted") c.accepted++;
+      else if (r.status === "completed") c.completed++;
+      else if (r.status === "cancelled") c.cancelled++;
+    });
+    return c;
+  }, [requests]);
 
   // Razorpay payment state
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState(null);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
 
-  // Table columns definition
-  const columns = useMemo(
-    () => [
-      {
-        header: '#',
-        accessorKey: '_id',
-        cell: ({ row }) => row.index + 1,
-        size: 50,
-      },
-      {
-        header: 'Request Details',
-        accessorFn: (row) => ({
-          name: row.doctorid?.name ||row.patientid?.name ,
-          type: row.requestertype,
-        }),
-        cell: ({ getValue }) => {
-          const { name, type } = getValue();
-          return (
-            <div className="d-flex align-items-center">
-             
-              <div>
-                <div className="fw-medium">{name}</div>
-                <div className="small text-muted">
-                  <FaUserMd className="me-1" style={{ minWidth: '16px', minHeight: '16px' }} />
-                  {type === 'doctor' ? 'Doctor' : 'Patient'}
-                </div>
-              </div>
-            </div>
-          );
-        },
-      },
-     {
-        header: 'Pickup',
-        accessorKey: 'pickupaddress',
-        cell: ({ getValue }) => (
-          <div className="d-flex align-items-start">
-            <FaMapMarkerAlt className="text-danger mt-1 me-2" />
-            <div>
-              <div className="fw-medium">Pickup</div>
-              <small className="text-muted" style={{ maxWidth: '200px', display: 'inline-block' }}>
-                {getValue().split(',').slice(0, 2).join(',')}
-              </small>
-            </div>
-          </div>
-        ),
-      },
-      {
-        header: 'Drop',
-        accessorKey: 'dropaddress',
-        cell: ({ getValue }) => (
-          <div className="d-flex align-items-start">
-            <FaMapMarkerAlt className="text-success mt-1 me-2" />
-            <div>
-              <div className="fw-medium">Drop</div>
-              <small className="text-muted" style={{ maxWidth: '200px', display: 'inline-block' }}>
-                {getValue().split(',').slice(0, 2).join(',')}
-              </small>
-            </div>
-          </div>
-        ),
-      } ,
-      {
-        header: 'Status',
-        accessorKey: 'status',
-        cell: ({ getValue }) => {
-          const status = getValue();
-          switch (status) {
-            case 'notified': return <Badge bg="warning" className="text-dark">Pending</Badge>;
-            case 'accepted': return <Badge bg="success">Accepted</Badge>;
-            case 'completed': return <Badge bg="info">Completed</Badge>;
-            case 'cancelled': return <Badge bg="danger">Rejected</Badge>;
-            default: return <Badge bg="secondary">{status}</Badge>;
-          }
-        },
-      },
-      {
-        header: 'Requested',
-        accessorKey: 'createdAt',
-        cell: ({ getValue }) => (
-          <span className="small text-muted">
-            {moment(getValue()).format('DD MMM YYYY, hh:mm A')}
-          </span>
-        ),
-      },
-      {
-        header: 'Actions',
-        accessorKey: '_id',
-        cell: ({ row, getValue }) => {
-          const request = row.original;
-          return (
-            <div className="d-flex gap-2">
-              <Button
-                variant="outline-primary"
-                size="sm"
-                className="d-flex align-items-center"
-                onClick={() => navigate(`/ambulance/rides/${getValue()}`)}
-              >
-                <FaInfoCircle className="me-1" /> Ride Details
-              </Button>
-              {request.status === 'notified' && (
-                <Button
-                  variant="success"
-                  size="sm"
-                  className="d-flex align-items-center"
-                  onClick={() => handleAcceptRequest(request)}
-                >
-                  <FaAmbulance className="me-1" /> Accept
-                </Button>
-              )}
-            </div>
-          );
-        },
-      },
-    ],
-    []
-  );
+  // Render status badge function
+  const renderStatusBadge = (status) => {
+    const statusMap = {
+      notified: { text: "Pending", class: "badge bg-warning" },
+      accepted: { text: "Accepted", class: "badge bg-success" },
+      completed: { text: "Completed", class: "badge bg-info" },
+      cancelled: { text: "Rejected", class: "badge bg-danger" },
+    };
+    const statusInfo = statusMap[status] || {
+      text: status,
+      class: "badge bg-secondary",
+    };
+    return <span className={statusInfo.class}>{statusInfo.text}</span>;
+  };
 
-  // React Table instance
-  const table = useReactTable({
-    columns,
-    data: requests,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    state: {
-      globalFilter: searchText,
-    },
-    onGlobalFilterChange: setSearchText,
-    initialState: {
-      pagination: {
-        pageSize: 5,
-      },
-    },
-  });
+  // Table columns configuration for SmartDataTable
+  const customTableStyles = {
+    table: { backgroundColor: 'transparent', borderRadius: 0, boxShadow: 'none' }
+  };
+
+  const columns = [{
+    name: 'No',
+    cell: (row, index) => index + 1,
+    width: '50px'
+  }, {
+    name: 'Name',
+    selector: row => row.doctorid?.name || row.patientid?.name,
+    cell: row => (
+      <div className="">
+        <span className="fw-semibold">{row.doctorid?.name || row.patientid?.name || "N/A"}</span>
+        <div className="small text-muted">
+          {row.requestertype === 'doctor' ? 'Doctor' : 'Patient'}
+        </div>
+      </div>
+    ),
+  }, {
+    name: 'Pickup',
+    selector: row => row.pickupaddress,
+    cell: row => (
+      <div className="text-truncate" style={{ maxWidth: "150px" }} title={row.pickupaddress}>
+        <span>{row.pickupaddress || "N/A"}</span>
+      </div>
+    ),
+  }, {
+    name: 'Drop',
+    selector: row => row.dropaddress,
+    cell: row => (
+      <div className="text-truncate" style={{ maxWidth: "150px" }} title={row.dropaddress}>
+        <span>{row.dropaddress || "N/A"}</span>
+      </div>
+    ),
+  }, {
+    name: 'Status',
+    selector: row => row.status,
+    cell: row => renderStatusBadge(row.status),
+  }, {
+    name: 'Price',
+    selector: row => row.price,
+    cell: row => (
+      <span className="fw-bold text-success">₹{row.price || "80"}</span>
+    ),
+  }, {
+    name: 'Actions',
+    cell: row => (
+      <div className="d-flex gap-2">
+        <button
+          className="btn btn-sm p-1 appt-view-btn"
+          onClick={() => {
+            setSelectedRequest(row);
+            setIsViewModalOpen(true);
+          }}
+          title="View Details"
+        >
+          <MdOutlineRemoveRedEye size={18} />
+        </button>
+        {row.status === 'notified' && (
+          <button
+            className="btn btn-sm btn-success"
+            onClick={() => handleAcceptRequest(row)}
+            title="Accept Request"
+          >
+            <FaAmbulance size={14} />
+          </button>
+        )}
+      </div>
+    ),
+    width: '120px',
+    center: true
+  }];
 
   // Fetch requests data
   useEffect(() => {
@@ -192,7 +163,7 @@ const Amb_Request = () => {
             }
           }
         );
-        
+        console.log(response.data.Data)
         setRequests(response.data.Data || []);
       } catch (error) {
         console.error('Error fetching requests:', error);
@@ -205,12 +176,6 @@ const Amb_Request = () => {
   }, [navigate]);
 
 
-
-  // Handle search
-  const handleSearch = (e) => {
-    const value = e.target.value || '';
-    setSearchText(value);
-  };
 
   // Handle accept request
   const handleAcceptRequest = (request) => {
@@ -393,229 +358,276 @@ const Amb_Request = () => {
     setSelectedRequest(null);
   };
 
+  // Close view modal
+  const closeViewModal = () => {
+    setIsViewModalOpen(false);
+    setSelectedRequest(null);
+  };
+
   if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center min-vh-100">
-        <Spinner animation="border" variant="primary" />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
-    <Container fluid className="p-0 panel">
-      <Row className="g-0">
-        <Amb_Sidebar ambulance={ambulance} />
-        <Col xs={12} sm={9} lg={10} className="p-3">
-          <Amb_Nav ambulancename={ambulance?.fullname} />
-          <Card className="shadow-sm">
-            <Card.Header className="bg-white d-flex justify-content-between align-items-center">
-              <h5 className="mb-0">
-                <FaAmbulance className="me-2 text-primary" />
-                Ambulance Requests
-              </h5>
-              <span className="text-muted small">
-                {requests.length} {requests.length === 1 ? 'request' : 'requests'} found
-              </span>
-            </Card.Header>
-            <Card.Body>
-              {/* Search Box */}
-              <div className="mb-3">
-                <InputGroup style={{ maxWidth: '300px' }}>
-                  <InputGroup.Text>
-                    <FaSearch />
-                  </InputGroup.Text>
-                  <Form.Control
-                    placeholder="Search requests..."
-                    value={searchText}
-                    onChange={handleSearch}
-                  />
-                </InputGroup>
-              </div>
-
-              {/* Table */}
-              <div className="table-responsive">
-                <Table hover className="mb-0">
-                  <thead className="table-light">
-                    {table.getHeaderGroups().map((headerGroup ,index)  => (
-                      
-                      <tr key={index}>
-                        {headerGroup.headers.map((header,index) => (
-                          <th 
-                            key={index} 
-                            onClick={header.column.getToggleSortingHandler()}
-                            style={{ 
-                              cursor: header.column.getCanSort() ? 'pointer' : 'default',
-                              width: header.column.getSize()
-                            }}
-                          >
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                            {{
-                              asc: ' 🔼',
-                              desc: ' 🔽',
-                            }[header.column.getIsSorted()] ?? null}
-                          </th>
-                        ))}
-                      </tr>
-                    ))}
-                  </thead>
-                  <tbody>
-                    {table.getRowModel().rows.map((row,index) => (
-                      <tr key={index} className="align-middle">
-                        {row.getVisibleCells().map((cell,index) => (
-                          <td key={index}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                    {table.getRowModel().rows.length === 0 && (
-                      <tr>
-                        <td colSpan={columns.length} className="text-center py-5">
-                          <div className="text-muted">
-                            <FaAmbulance size={32} className="mb-3" />
-                            <h5>No ambulance requests found</h5>
-                            <p className="mb-0">Try adjusting your search or check back later</p>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </Table>
-              </div>
-
-              {/* Pagination */}
-              {requests.length > 0 && (
-                <div className="d-flex justify-content-between align-items-center mt-3">
-                  <div className="d-flex align-items-center">
-                    <span className="me-2">Show:</span>
-                    <Form.Select
-                      value={table.getState().pagination.pageSize}
-                      onChange={e => table.setPageSize(Number(e.target.value))}
-                      style={{ width: 'auto' }}
-                      size="sm"
-                    >
-                      {[5, 10, 20, 30, 40, 50].map(size => (
-                        <option key={size} value={size}>
-                          {size}
-                        </option>
-                      ))}
-                    </Form.Select>
-                    <span className="ms-2">entries</span>
-                  </div>
-                  
-                  <div className="d-flex align-items-center">
-                    <Button
-                      variant="outline-secondary"
-                      size="sm"
-                      onClick={() => table.setPageIndex(0)}
-                      disabled={!table.getCanPreviousPage()}
-                      className="me-2"
-                    >
-                      {'<<'}
-                    </Button>
-                    <Button
-                      variant="outline-secondary"
-                      size="sm"
-                      onClick={() => table.previousPage()}
-                      disabled={!table.getCanPreviousPage()}
-                      className="me-2"
-                    >
-                      Previous
-                    </Button>
-                    <span className="mx-2">
-                      Page{' '}
-                      <strong>
-                        {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-                      </strong>
-                    </span>
-                    <Button
-                      variant="outline-secondary"
-                      size="sm"
-                      onClick={() => table.nextPage()}
-                      disabled={!table.getCanNextPage()}
-                      className="me-2"
-                    >
-                      Next
-                    </Button>
-                    <Button
-                      variant="outline-secondary"
-                      size="sm"
-                      onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                      disabled={!table.getCanNextPage()}
-                    >
-                      {'>>'}
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Razorpay Payment Modal */}
-      <Modal show={showPaymentModal} onHide={closePaymentModal} centered size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <FaCreditCard className="me-2" />
-            Process Payment
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedRequest && (
-            <div>
-              {/* Request Summary */}
-              <div className="mb-4 p-3 border rounded">
-                <h6 className="mb-3">Request Details</h6>
-                <div className="row">
-                  <div className="col-md-6">
-                    <p className="mb-2"><strong>Patient:</strong> {selectedRequest.doctorid?.name || selectedRequest.patientid?.name}</p>
-                    <p className="mb-2"><strong>Pickup:</strong> {selectedRequest.pickupaddress}</p>
-                  </div>
-                  <div className="col-md-6">
-                    <p className="mb-2"><strong>Drop:</strong> {selectedRequest.dropaddress}</p>
-                    <p className="mb-2"><strong>Total Amount:</strong> <span className="text-muted">₹{selectedRequest.price || 0}</span></p>
-                    <p className="mb-2"><strong>Advance Payment (10%):</strong> <span className="text-success">₹{Math.round((selectedRequest.price || 0) * 0.10)}</span></p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-center mb-4">
-                <p className="mb-3">Click below to proceed with Razorpay payment</p>
-                <Button
-                  variant="success"
-                  size="lg"
-                  onClick={handleRazorpayPayment}
-                  disabled={paymentProcessing}
-                  className="px-4"
-                >
-                  {paymentProcessing ? (
-                    <>
-                      <Spinner as="span" animation="border" size="sm" className="me-2" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <FaCreditCard className="me-2" />
-                      Pay with Razorpay ₹{Math.round((selectedRequest.price || 0) * 0.10)}
-                    </>
-                  )}
-                </Button>
+    <>
+      {/* <Amb_Nav ambulancename={ambulance?.fullname} /> */}
+      <Container fluid className="p-0">
+        <Row className="g-0">
+          <Amb_Sidebar ambulance={ambulance} />
+          <Col xs={12} lg={9} className="p-3">
+            <div className="bg-white rounded p-2">
+              <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom py-3">
+                <h4 className="mb-0">
+                  Ambulance Rides
+                </h4>
+                <span className="text-muted small">
+                  {requests.length} {requests.length === 1 ? 'request' : 'requests'} found
+                </span>
               </div>
             </div>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={closePaymentModal} disabled={paymentProcessing}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </Container>
+            <div className="px-2">
+              <div className='appointments-card mb-3'>
+                <div className="appt-tabs d-flex gap-2 mb-3 overflow-x-auto pb-2">
+                  <button
+                    type="button"
+                    className={`appt-tab d-flex align-items-center ${activeTab === "notified" ? "active" : ""
+                      }`}
+                    onClick={() => setActiveTab("notified")}
+                  >
+                    <span>Notified</span>{" "}
+                    <span className="count">{counts.notified}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`appt-tab d-flex align-items-center ${activeTab === "accepted" ? "active" : ""
+                      }`}
+                    onClick={() => setActiveTab("accepted")}
+                  >
+                    <span>Accepted</span>{" "}
+                    <span className="count">{counts.accepted}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`appt-tab d-flex align-items-center ${activeTab === "completed" ? "active" : ""
+                      }`}
+                    onClick={() => setActiveTab("completed")}
+                  >
+                    <span>Completed</span>{" "}
+                    <span className="count">{counts.completed}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`appt-tab d-flex align-items-center ${activeTab === "cancelled" ? "active" : ""
+                      }`}
+                    onClick={() => setActiveTab("cancelled")}
+                  >
+                    <span>Cancelled</span>{" "}
+                    <span className="count">{counts.cancelled}</span>
+                  </button>
+                </div>
+                <SmartDataTable
+                  className="appointments-table"
+                  columns={columns}
+                  data={filteredData}
+                  pagination
+                  customStyles={customTableStyles}
+                />
+              </div>
+            </div>
+          </Col>
+        </Row>
+
+        {/* View Details Modal */}
+        <Modal show={isViewModalOpen} onHide={closeViewModal} size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>Ambulance Details</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-0">
+            {selectedRequest && (
+              <div className="ambulance-details-card">
+                {/* Header */}
+                <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
+                  <div className="text-muted">
+                    {selectedRequest.createdAt ? new Date(selectedRequest.createdAt).toLocaleString('en-US', {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true
+                    }) : "Today, 4:42PM"}
+                  </div>
+                  <Badge bg={selectedRequest?.status === "completed" ? "success" : selectedRequest?.status === "cancelled" ? "danger" : "warning"}>{selectedRequest?.status}</Badge>
+                  <div className="fw-bold text-success">
+                    ₹ {selectedRequest.price || "80"}
+                  </div>
+                </div>
+
+                {/* Patient/Doctor Info */}
+                <div className="d-flex align-items-center p-3 border-bottom">
+                  <div className="flex-grow-1">
+                    <div className="fw-semibold">
+                      {selectedRequest.doctorid?.name || selectedRequest.patientid?.name || "N/A"}
+                    </div>
+                    <div className="text-muted small">
+                      {selectedRequest.requestertype === 'doctor' ? 'Doctor' : 'Patient'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pickup Location */}
+                <div className="p-3 border-bottom">
+                  <div className="d-flex">
+                    <div className="me-3">
+                      <div className="position-relative">
+                        <FaMapPin className="text-success" size={20} />
+                        <div className="vertical-dashed-line"></div>
+                      </div>
+                    </div>
+                    <div className="flex-grow-1">
+                      <div className="text-muted small mb-1">Pickup Location</div>
+                      <div className="fw-medium">
+                        {selectedRequest.pickupaddress || "N/A"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Drop Location */}
+                <div className="p-3 border-bottom">
+                  <div className="d-flex">
+                    <div className="me-3">
+                      <FaMapPin className="text-danger" size={20} />
+                    </div>
+                    <div className="flex-grow-1">
+                      <div className="text-muted small mb-1">Drop Location</div>
+                      <div className="fw-medium">
+                        {selectedRequest.dropaddress || "N/A"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="d-flex justify-content-between align-items-center p-3 bg-light">
+                  <div className="text-muted small">
+                    Total Distance {selectedRequest.distance || "5.2"} Km
+                  </div>
+                  <div className="text-muted small">
+                    Total Duration {Math.round((selectedRequest.distance || 5.2) * 5)} Min
+                  </div>
+                </div>
+              </div>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={closeViewModal}>
+              Close
+            </Button>
+            {selectedRequest?.status === 'notified' && (
+              <Button
+                variant="success"
+                onClick={() => {
+                  closeViewModal();
+                  handleAcceptRequest(selectedRequest);
+                }}
+              >
+                <FaAmbulance className="me-2" />
+                Accept Request
+              </Button>
+            )}
+          </Modal.Footer>
+        </Modal>
+
+        {/* Razorpay Payment Modal */}
+        <Modal show={showPaymentModal} onHide={closePaymentModal} centered size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>
+              <FaCreditCard className="me-2" />
+              Process Payment
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {selectedRequest && (
+              <div>
+                {/* Request Summary */}
+                <div className="mb-4 p-3 border rounded">
+                  <h6 className="mb-3">Request Details</h6>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <p className="mb-2"><strong>Patient:</strong> {selectedRequest.doctorid?.name || selectedRequest.patientid?.name}</p>
+                      <p className="mb-2"><strong>Pickup:</strong> {selectedRequest.pickupaddress}</p>
+                    </div>
+                    <div className="col-md-6">
+                      <p className="mb-2"><strong>Drop:</strong> {selectedRequest.dropaddress}</p>
+                      <p className="mb-2"><strong>Total Amount:</strong> <span className="text-muted">₹{selectedRequest.price || 0}</span></p>
+                      <p className="mb-2"><strong>Advance Payment (10%):</strong> <span className="text-success">₹{Math.round((selectedRequest.price || 0) * 0.10)}</span></p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center mb-4">
+                  <p className="mb-3">Click below to proceed with Razorpay payment</p>
+                  <Button
+                    variant="success"
+                    size="lg"
+                    onClick={handleRazorpayPayment}
+                    disabled={paymentProcessing}
+                    className="px-4"
+                  >
+                    {paymentProcessing ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <FaCreditCard className="me-2" />
+                        Pay with Razorpay ₹{Math.round((selectedRequest.price || 0) * 0.10)}
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={closePaymentModal} disabled={paymentProcessing}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </Container>
+    </>
   );
-};
+}
 
 export default Amb_Request;
+
+// Inline styles for ambulance details card
+const styles = `
+  .ambulance-details-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .vertical-dashed-line {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(to bottom, #10b981 50%, transparent 50%);
+    background-size: 2px 8px;
+    border-left: 2px dashed #10b981;
+  }
+`;
+
+// Inject styles into the document
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = styles;
+  document.head.appendChild(styleSheet);
+}
