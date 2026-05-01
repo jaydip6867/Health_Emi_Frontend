@@ -10,6 +10,9 @@ import {
   Badge,
   Tab,
   Nav,
+  Tabs,
+  Button,
+  Form,
 } from "react-bootstrap";
 import Amb_Sidebar from "./Amb_Sidebar";
 import Amb_Nav from "./Amb_Nav";
@@ -21,6 +24,24 @@ const Amb_Profile = () => {
   const [ambulance, setAmbulance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("personal");
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Form data state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    mobile: '',
+    dob: '',
+    address: '',
+    country: '',
+    state: '',
+    city: '',
+    vehicleNo: '',
+    rcNo: '',
+    vehicleType: '',
+    currentPassword: '',
+    newPassword: ''
+  });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -67,6 +88,73 @@ const Amb_Profile = () => {
     });
   };
 
+  // Handle form data changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle edit button click
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  // Handle cancel button click
+  const handleCancelClick = () => {
+    setIsEditing(false);
+    // Reset form data to original values
+    if (ambulance) {
+      setFormData({
+        name: ambulance.fullname || '',
+        email: ambulance.email || '',
+        mobile: ambulance.mobile || '',
+        dob: ambulance.dob || '',
+        address: ambulance.address || '',
+        country: ambulance.country || '',
+        state: ambulance.state || '',
+        city: ambulance.city || '',
+        vehicleNo: ambulance.vehicle_no || '',
+        rcNo: ambulance.rc_no || '',
+        vehicleType: ambulance.ambulance_type || '',
+        currentPassword: '',
+        newPassword: ''
+      });
+    }
+  };
+
+  // Handle form submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Here you would typically make an API call to update the profile
+    console.log('Form submitted:', formData);
+    // After successful submission, exit edit mode
+    setIsEditing(false);
+  };
+
+  // Initialize form data when ambulance data is loaded
+  useEffect(() => {
+    if (ambulance) {
+      setFormData({
+        name: ambulance.fullname || '',
+        email: ambulance.email || '',
+        mobile: ambulance.mobile || '',
+        dob: ambulance.dob || '',
+        address: ambulance.address || '',
+        country: ambulance.country || '',
+        state: ambulance.state || '',
+        city: ambulance.city || '',
+        vehicleNo: ambulance.vehicle_no || '',
+        rcNo: ambulance.rc_no || '',
+        vehicleType: ambulance.ambulance_type || '',
+        currentPassword: '',
+        newPassword: ''
+      });
+    }
+  }, [ambulance]);
+
   if (loading) {
     return <div className="text-center p-5">Loading profile data...</div>;
   }
@@ -85,8 +173,486 @@ const Amb_Profile = () => {
               <Row>
                 <Col lg={12} md={12} className="p-0">
                   {/* <Amb_Nav ambulancename={ambulance.fullname} /> */}
+                  <div className='appointments-card mb-3 mt-4'>
+                    <div className='d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3'>
+                      <h4 className='mb-0'>Ambulance Profile</h4>
+                    </div>
+                  </div>
+                  {/* <Form className='register_doctor'> */}
+                  <div className="p-3 shadow-sm rounded-4">
+                    <Tabs
+                      defaultActiveKey="personal"
+                      id="uncontrolled-tab-example"
+                      className="mb-3 border-0 setting_tab gap-3"
+                    >
+                      <Tab eventKey="personal" title="Personal Information">
+                        <Form>
+                          <Row className="g-3">
+                            <Col md={6}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Name</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  name="name"
+                                  value={formData.name}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter your name"
+                                  disabled={!isEditing}
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Email</Form.Label>
+                                <Form.Control
+                                  type="email"
+                                  name="email"
+                                  value={formData.email}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter your email"
+                                  disabled
+                                />
+                                <Form.Text className="text-muted">Email cannot be changed</Form.Text>
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Mobile</Form.Label>
+                                <Form.Control
+                                  type="tel"
+                                  name="mobile"
+                                  value={formData.mobile}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter your mobile number"
+                                  disabled
+                                />
+                                <Form.Text className="text-muted">Mobile cannot be changed</Form.Text>
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Date of Birth</Form.Label>
+                                <Form.Control
+                                  type="date"
+                                  name="dob"
+                                  value={formData.dob}
+                                  onChange={handleInputChange}
+                                  disabled={!isEditing}
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col md={12}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Address</Form.Label>
+                                <Form.Control
+                                  as="textarea"
+                                  name="address"
+                                  value={formData.address}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter your address"
+                                  rows={3}
+                                  disabled={!isEditing}
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Country</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  name="country"
+                                  value={formData.country}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter country"
+                                  disabled={!isEditing}
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">State</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  name="state"
+                                  value={formData.state}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter state"
+                                  disabled={!isEditing}
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">City</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  name="city"
+                                  value={formData.city}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter city"
+                                  disabled={!isEditing}
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          <div className="text-center mt-4">
+                            {isEditing && (
+                              <Button variant="primary" type="submit" onClick={handleSubmit}>
+                                Save Personal Information
+                              </Button>
+                            )}
+                          </div>
+                        </Form>
+                      </Tab>
+                      <Tab eventKey="vehicle" title="Vehicle Information">
+                        <Form>
+                          <Row className="g-3">
+                            <Col md={6}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Vehicle Number</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  name="vehicleNo"
+                                  value={formData.vehicleNo}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter vehicle number"
+                                  disabled={!isEditing}
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">RC Number</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  name="rcNo"
+                                  value={formData.rcNo}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter RC number"
+                                  disabled={!isEditing}
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col md={12}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Vehicle Type</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  name="vehicleType"
+                                  value={formData.vehicleType}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter vehicle type"
+                                  disabled={!isEditing}
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col md={12}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Ambulance Photos</Form.Label>
+                                <Row className="g-3">
+                                  <Col md={4}>
+                                    <div className="text-center">
+                                      <h6 className="text-muted mb-2">Front View</h6>
+                                      {ambulance?.ambulance_front_pic ? (
+                                        <Image
+                                          src={ambulance.ambulance_front_pic}
+                                          thumbnail
+                                          className="w-100 mb-2"
+                                          style={{ maxHeight: '150px', objectFit: 'cover' }}
+                                        />
+                                      ) : (
+                                        <div className="bg-light p-4 rounded mb-2">
+                                          <p className="text-muted mb-0">No photo uploaded</p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </Col>
+                                  <Col md={4}>
+                                    <div className="text-center">
+                                      <h6 className="text-muted mb-2">Back View</h6>
+                                      {ambulance?.ambulance_back_pic ? (
+                                        <Image
+                                          src={ambulance.ambulance_back_pic}
+                                          thumbnail
+                                          className="w-100 mb-2"
+                                          style={{ maxHeight: '150px', objectFit: 'cover' }}
+                                        />
+                                      ) : (
+                                        <div className="bg-light p-4 rounded mb-2">
+                                          <p className="text-muted mb-0">No photo uploaded</p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </Col>
+                                  <Col md={4}>
+                                    <div className="text-center">
+                                      <h6 className="text-muted mb-2">Fitness Certificate</h6>
+                                      {ambulance?.ambulance_fitness_pic ? (
+                                        <Image
+                                          src={ambulance.ambulance_fitness_pic}
+                                          thumbnail
+                                          className="w-100 mb-2"
+                                          style={{ maxHeight: '150px', objectFit: 'cover' }}
+                                        />
+                                      ) : (
+                                        <div className="bg-light p-4 rounded mb-2">
+                                          <p className="text-muted mb-0">No photo uploaded</p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </Col>
+                                </Row>
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          <div className="text-center mt-4">
+                            {isEditing && (
+                              <Button variant="primary" type="submit" onClick={handleSubmit}>
+                                Save Vehicle Information
+                              </Button>
+                            )}
+                          </div>
+                        </Form>
+                      </Tab>
+                      <Tab eventKey="document" title="Document Information">
+                        <Form>
+                          <Row className="g-3">
+                            <Col md={6}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Driving License</Form.Label>
+                                {ambulance?.driving_licence_pic ? (
+                                  <div className="mt-2">
+                                    <Image
+                                      src={ambulance.driving_licence_pic}
+                                      fluid
+                                      thumbnail
+                                      className="w-100"
+                                      style={{ maxHeight: '200px', objectFit: 'cover' }}
+                                    />
+                                    <div className="mt-2">
+                                      <Button
+                                        variant="outline-primary"
+                                        size="sm"
+                                        href={ambulance.driving_licence_pic}
+                                        target="_blank"
+                                      >
+                                        View Full Size
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="bg-light p-4 rounded text-center">
+                                    <p className="text-muted mb-0">No document uploaded</p>
+                                  </div>
+                                )}
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">RC Document</Form.Label>
+                                {ambulance?.rc_pic ? (
+                                  <div className="mt-2">
+                                    <Image
+                                      src={ambulance.rc_pic}
+                                      fluid
+                                      thumbnail
+                                      className="w-100"
+                                      style={{ maxHeight: '200px', objectFit: 'cover' }}
+                                    />
+                                    <div className="mt-2">
+                                      <Button
+                                        variant="outline-primary"
+                                        size="sm"
+                                        href={ambulance.rc_pic}
+                                        target="_blank"
+                                      >
+                                        View Full Size
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="bg-light p-4 rounded text-center">
+                                    <p className="text-muted mb-0">No document uploaded</p>
+                                  </div>
+                                )}
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Insurance</Form.Label>
+                                <div className="mb-2">
+                                  <small className="text-muted">
+                                    Expiry: {formatDate(ambulance?.insurance_expiry)}
+                                  </small>
+                                </div>
+                                {ambulance?.insurance_pic ? (
+                                  <div className="mt-2">
+                                    <Image
+                                      src={ambulance.insurance_pic}
+                                      fluid
+                                      thumbnail
+                                      className="w-100"
+                                      style={{ maxHeight: '200px', objectFit: 'cover' }}
+                                    />
+                                    <div className="mt-2">
+                                      <Button
+                                        variant="outline-primary"
+                                        size="sm"
+                                        href={ambulance.insurance_pic}
+                                        target="_blank"
+                                      >
+                                        View Full Size
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="bg-light p-4 rounded text-center">
+                                    <p className="text-muted mb-0">No document uploaded</p>
+                                  </div>
+                                )}
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Pollution Certificate</Form.Label>
+                                <div className="mb-2">
+                                  <small className="text-muted">
+                                    Expiry: {formatDate(ambulance?.polution_expiry)}
+                                  </small>
+                                </div>
+                                {ambulance?.polution_pic ? (
+                                  <div className="mt-2">
+                                    <Image
+                                      src={ambulance.polution_pic}
+                                      fluid
+                                      thumbnail
+                                      className="w-100"
+                                      style={{ maxHeight: '200px', objectFit: 'cover' }}
+                                    />
+                                    <div className="mt-2">
+                                      <Button
+                                        variant="outline-primary"
+                                        size="sm"
+                                        href={ambulance.polution_pic}
+                                        target="_blank"
+                                      >
+                                        View Full Size
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="bg-light p-4 rounded text-center">
+                                    <p className="text-muted mb-0">No document uploaded</p>
+                                  </div>
+                                )}
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          <div className="text-center mt-4">
+                            {isEditing && (
+                              <Button variant="primary" type="submit" onClick={handleSubmit}>
+                                Update Documents
+                              </Button>
+                            )}
+                          </div>
+                        </Form>
+                      </Tab>
+                      <Tab eventKey="password" title="Change Password">
+                        <Form>
+                          <Row className="g-3">
+                            <Col md={8}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Current Password</Form.Label>
+                                <Form.Control
+                                  type="password"
+                                  name="currentPassword"
+                                  value={formData.currentPassword}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter current password"
+                                  disabled={!isEditing}
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col md={8}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">New Password</Form.Label>
+                                <Form.Control
+                                  type="password"
+                                  name="newPassword"
+                                  value={formData.newPassword}
+                                  onChange={handleInputChange}
+                                  placeholder="Enter new password"
+                                  minLength={8}
+                                  disabled={!isEditing}
+                                />
+                                <Form.Text className="text-muted">
+                                  Password must be at least 8 characters long
+                                </Form.Text>
+                              </Form.Group>
+                            </Col>
+                            <Col md={8}>
+                              <Form.Group>
+                                <Form.Label className="fw-semibold">Confirm New Password</Form.Label>
+                                <Form.Control
+                                  type="password"
+                                  placeholder="Confirm new password"
+                                  minLength={8}
+                                />
+                                <Form.Text className="text-muted">
+                                  Re-enter your new password to confirm
+                                </Form.Text>
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          <div className="text-center mt-4">
+                            {isEditing && (
+                              <>
+                                <Button variant="primary" type="submit" onClick={handleSubmit}>
+                                  Change Password
+                                </Button>
+                                <Button variant="secondary" className="ms-2" type="button" onClick={handleCancelClick}>
+                                  Clear
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                          <div className="mt-4">
+                            <h6 className="text-muted mb-2">Password Guidelines:</h6>
+                            <ul className="small text-muted">
+                              <li>Use at least 8 characters</li>
+                              <li>Include uppercase and lowercase letters</li>
+                              <li>Include numbers and special characters</li>
+                              <li>Avoid using personal information</li>
+                              <li>Don't reuse old passwords</li>
+                            </ul>
+                          </div>
+                        </Form>
+                      </Tab>
+                    </Tabs>
+                  </div>
 
-                  <Row>
+                  {/* Edit/Submit/Cancel Buttons */}
+                  <div className="text-center mt-3 mb-4">
+                    {!isEditing ? (
+                      <Button variant="primary" onClick={handleEditClick}>
+                        <i className="bi bi-pencil-square me-2"></i>
+                        Edit Profile
+                      </Button>
+                    ) : (
+                      <>
+                        <Button variant="success" type="submit" onClick={handleSubmit} className="me-2">
+                          <i className="bi bi-check-circle me-2"></i>
+                          Submit Changes
+                        </Button>
+                        <Button variant="secondary" onClick={handleCancelClick}>
+                          <i className="bi bi-x-circle me-2"></i>
+                          Cancel
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                  {/* </Form> */}
+                  {/* <Row>
                     <Col md={4} className="mb-4">
                       <Card className="shadow-sm h-100 border-0">
                         <Card.Body className="text-center p-4">
@@ -381,7 +947,7 @@ const Amb_Profile = () => {
                         </Card.Body>
                       </Card>
                     </Col>
-                  </Row>
+                  </Row> */}
                 </Col>
               </Row>
             </Container>

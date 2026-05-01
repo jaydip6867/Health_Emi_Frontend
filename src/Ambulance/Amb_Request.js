@@ -77,11 +77,18 @@ const Amb_Request = () => {
     name: 'Name',
     selector: row => row.doctorid?.name || row.patientid?.name,
     cell: row => (
-      <div className="">
-        <span className="fw-semibold">{row.doctorid?.name || row.patientid?.name || "N/A"}</span>
-        <div className="small text-muted">
-          {row.requestertype === 'doctor' ? 'Doctor' : 'Patient'}
-        </div>
+      <div className="d-flex align-items-center text-truncate gap-3">
+        <img
+            // src={row.doctorid?.profile_pic}
+            src={
+              row.doctorid?.profile_pic || row.patientid?.profile_pic || require("../Visitor/assets/profile_icon_img.png")
+            }
+            alt={`patient ${row?.patientname}`}
+            className="rounded-circle appt-avatar"
+          />
+        <span className="fw-semibold appt-doctor-name">
+            {row.doctorid?.name || row.patientid?.name || "N/A"}
+          </span>
       </div>
     ),
   }, {
@@ -100,17 +107,27 @@ const Amb_Request = () => {
         <span>{row.dropaddress || "N/A"}</span>
       </div>
     ),
-  }, {
-    name: 'Status',
-    selector: row => row.status,
-    cell: row => renderStatusBadge(row.status),
-  }, {
-    name: 'Price',
-    selector: row => row.price,
+  }, 
+  {
+    name: 'Date & Time',
+    selector: row => row.createdAt,
     cell: row => (
-      <span className="fw-bold text-success">₹{row.price || "80"}</span>
+      <span>{row.createdAt ? new Date(row.createdAt).toLocaleString() : "N/A"}</span>
     ),
-  }, {
+  }, 
+  // {
+  //   name: 'Status',
+  //   selector: row => row.status,
+  //   cell: row => renderStatusBadge(row.status),
+  // }, 
+  // {
+  //   name: 'Price',
+  //   selector: row => row.price,
+  //   cell: row => (
+  //     <span className="fw-bold text-success">₹{row.price || "80"}</span>
+  //   ),
+  // }, 
+  {
     name: 'Actions',
     cell: row => (
       <div className="d-flex gap-2">
