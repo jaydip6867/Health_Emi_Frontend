@@ -58,26 +58,26 @@ const Contact = () => {
                         <Col xs={4}>
                             <h5>Contact</h5>
                             <p className='m-0'>healtheasyemi@gmail.com</p>
-                            <p>+91 8087161522</p>
+                            <p>+91 8855919195</p>
                         </Col>
                         <Col xs={4}>
                             <h5>Social Media</h5>
                             <div className="social-links justify-content-center">
-                                <a className="social-icon">
+                                <a className="social-icon" href='https://www.facebook.com/profile.php?id=61573355822361' target='_blank'>
                                     <FaFacebookF />
                                 </a>
-                                <a className="social-icon" >
-                                    <FaTwitter />
-                                </a>
-                                <a className="social-icon" href="https://www.instagram.com/healtheasyemi/?hl=en">
+                                {/* <a className="social-icon" >
+                                    <FaXTwitter />
+                                </a> */}
+                                <a className="social-icon" href="https://www.instagram.com/healtheasyemi/?hl=en" target='_blank'>
                                     <FaInstagram />
                                 </a>
-                                <a className="social-icon" href="https://www.linkedin.com/company/110338361/admin/dashboard/">
+                                <a className="social-icon" href="https://www.linkedin.com/company/110338361/admin/dashboard/" target="_blank">
                                     <FaLinkedinIn />
                                 </a>
-                                <a className="social-icon" href="https://www.youtube.com/channel/UCKDchxSJb-_GVKBVXI3NOKA">
+                                {/* <a className="social-icon" href="#">
                                     <FaYoutube />
-                                </a>
+                                </a> */}
                             </div>
                         </Col>
                     </Row>

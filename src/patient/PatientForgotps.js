@@ -30,7 +30,7 @@ const PatientForgotps = () => {
             }
         }).then((res) => {
 
-            toast('OTP sent To your mobile...', { className: 'custom-toast-success' })
+            toast('OTP sent To your mobile Number...', { className: 'custom-toast-success' })
             setpatient_email(false);
             setpatient_forgt_otp(true);
         }).catch(function (error) {

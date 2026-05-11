@@ -50,7 +50,7 @@ const NavBar = ({ logindata }) => {
         <Container fluid className="px-3 px-md-5">
           <Link to={"/"} className="navbar-brand me-5">
             <img
-              src={require("../assets/health-easy-emi-logo-dark.png")}
+              src={require("../assets/HEE-logo.png")}
               className="logo-img"
               alt="Health Easy EMI Logo"
             />

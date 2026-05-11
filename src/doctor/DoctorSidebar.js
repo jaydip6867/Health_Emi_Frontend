@@ -42,6 +42,7 @@ const DoctorSidebar = ({ doctor }) => {
                         }).then((res) => {
                             const data = res?.data?.Data || null;
                             setProfile(data);
+                            // console.log("Profile data:", data);
                             setIsAvailable(Boolean(data?.is_available));
                         }).catch(() => {
                             // silently ignore for sidebar
@@ -104,7 +105,7 @@ const DoctorSidebar = ({ doctor }) => {
                     <div className={`${isOpen ? 'd-block position-absolute top-0 end-0 z-3 p-2' : 'd-none'}`}><FiXCircle style={{color:'white'}} onClick={toggleSidebar}/></div>
                     <div>
                         <div className='patient_profile'>
-                            <img src={doctor?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} alt={`${doctor?.name} profile`} />
+                            <img src={profile?.profile_pic || require('../Visitor/assets/profile_icon_img.png')} alt={`${profile?.name} profile`} />
                         </div>
                         <div className='text-center py-3 align-items-center d-flex flex-column gap-2'>
                             <div className='d-flex align-items-center gap-2 mb-2'>
@@ -122,8 +123,8 @@ const DoctorSidebar = ({ doctor }) => {
                                 />
                             </div>
                             <div>
-                                <h5 style={{ color: 'var(--grayscale-color-800)' }}>Dr. {doctor?.name} <TbRosetteDiscountCheckFilled fill='#0E9384'/></h5>
-                                <p className='m-0' style={{ color: '#0E9384' }}>{doctor?.specialty} Psychologist</p>
+                                <h5 style={{ color: 'var(--grayscale-color-800)' }}>Dr. {profile?.name} <TbRosetteDiscountCheckFilled fill='#0E9384'/></h5>
+                                <p className='m-0' style={{ color: '#0E9384' }}>{profile?.sub_specialty}</p>
                             </div>
                         </div>
 

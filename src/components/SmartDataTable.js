@@ -105,7 +105,7 @@ const SmartDataTable = ({ columns = [], data = [], pagination = true, customStyl
 
   return (
     <div style={styles.table} className={`w-100 ${className}`}>
-      <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center px-3 py-2 sdt-toolbar gap-2" style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center py-2 sdt-toolbar gap-2" style={{ borderBottom: '1px solid #E5E7EB' }}>
         <div className="small text-muted text-center text-sm-start">Showing {pagination ? `${start + 1}-${Math.min(end, total)} of ${total}` : total}</div>
         <div className='position-relative'>
           <input

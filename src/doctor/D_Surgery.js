@@ -37,7 +37,6 @@ const D_Surgery = () => {
   const [doctor, setdoctor] = useState(null);
   const [token, settoken] = useState(null);
 
-
   // State for inclusive/exclusive inputs
   const [inclusiveInput, setInclusiveInput] = useState("");
   const [exclusiveInput, setExclusiveInput] = useState("");
@@ -187,9 +186,16 @@ const D_Surgery = () => {
       var cat_list = categories?.filter((x) => x.surgerytypeid._id === value);
       setcategory_list(cat_list);
     }
+    
+    // Allow only numbers for price fields
+    const priceFields = ["general_price", "semiprivate_price", "private_price", "delux_price"];
+    const sanitizedValue = priceFields.includes(name) 
+      ? value.replace(/\D/g, "") 
+      : value;
+    
     setsurgery((surgery) => ({
       ...surgery,
-      [name]: value,
+      [name]: sanitizedValue,
     }));
   };
 
@@ -455,9 +461,16 @@ const D_Surgery = () => {
 
   const seleditsurgery = (e) => {
     const { name, value } = e.target;
+    
+    // Allow only numbers for price fields
+    const priceFields = ["general_price", "semiprivate_price", "private_price", "delux_price"];
+    const sanitizedValue = priceFields.includes(name) 
+      ? value.replace(/\D/g, "") 
+      : value;
+    
     seteditrecord((surgery) => ({
       ...surgery,
-      [name]: value,
+      [name]: sanitizedValue,
     }));
     // console.log(edit_record)
   };
@@ -544,8 +557,22 @@ const D_Surgery = () => {
 
   // show add surgery model
   const [show_ad_sur, setadsur] = useState(false);
-  const handlesurClose = () => setadsur(false);
-  const handlesurShow = () => setadsur(true);
+  const handlesurClose = () => {
+    setadsur(false);
+    // Clear items when closing modal to ensure fresh state for next surgery
+    setInclusiveItems([]);
+    setExclusiveItems([]);
+    setAdditionalItems([]);
+    setInclusiveInput("");
+    setExclusiveInput("");
+    setAdditionalInput("");
+  };
+  const handlesurShow = () => {
+    // Auto-populate inclusive and exclusive items for new surgery
+    setInclusiveItems([...included_item]);
+    setExclusiveItems([...excluded_items]);
+    setadsur(true);
+  };
 
   const [s_type, setstype] = useState(null);
   // get all speciality
@@ -601,12 +628,89 @@ const D_Surgery = () => {
     table: { backgroundColor: 'transparent', borderRadius: 0, boxShadow: 'none' }
   };
   // table data
+  const included_item = [
+    "Bed Charges",
+    "Routine Nursing Care",
+    "Monitoring & Basic Nursing Station Support",
+    "Daily Doctor Visit Charges",
+    "Treating Consultant Rounds",
+    "Ward Doctor Visit Charges",
+    "Basic blood tests as per package protocol",
+    "Basic X-ray (where included)",
+    "Any investigation specified inside package",
+    "Essential ward medicines required during hospitalization",
+    "IV fluids, basic injections",
+    "Syringes, gloves, cannulas, dressings",
+    "General ward-level consumables",
+    "Surgeon Charges",
+    "Assistant Surgeon Charges",
+    "Anesthesia Doctor Charges",
+    "OT Rent / OT Usage Charges",
+    "OT Staff Support",
+    "Standard OT instruments/equipment used in surgery",
+    "Anesthetic drugs (routine)",
+    "Intra-operative medicines",
+    "Routine OT consumables used during surgery",
+    "Basic physiotherapy during hospitalization",
+    "Respiratory/rehab support as required",
+    "Hospital administration fees",
+    "Admission processing, paperwork",
+    "Routine hospital charges"
+  ];
+
+  const excluded_items = [
+    "Packages apply only for hospital IPD patients",
+    "Not applicable for Private/Personal (PP) patients",
+    "No discount applicable",
+    "Cannot be clubbed with any corporate/insurance offer",
+    "Pre-operative lab tests (CBC, LFT, Coag, etc.)",
+    "Pre-operative imaging (X-ray, USG, CT, MRI)",
+    "PAC evaluation tests",
+    "Specialist consultations prior to surgery",
+    "Emergency/trauma charges",
+    "ICU admission",
+    "High-risk anesthesia or management",
+    "Crash cart, ventilator, resuscitation charges",
+    "MRI",
+    "CT Scan",
+    "X-ray (extra views beyond package)",
+    "Sonography",
+    "Colour Doppler",
+    "2D Echo, Fluoroscopy, Interventional radiology",
+    "Blood transfusion",
+    "Plasma, Platelets, FFP, Cryo",
+    "Cross-match, screening fees",
+    "Blood bank consumables (filters, sets)",
+    "Non-routine medicines",
+    "High-end antibiotics",
+    "Immunoglobulins",
+    "Special injections",
+    "Lens cost (ophthalmic)",
+    "Additional consumables beyond package limit",
+    "Any type of implant",
+    "Mesh",
+    "Tacker",
+    "Surgical staplers",
+    "Imported or premium implants",
+    "Specialized instruments (Harmonic, etc.)",
+    "Any extra or repeat investigations",
+    "Intra-operative investigations (ABG, cultures, etc.)",
+    "Post-operative tests not included in package",
+    "Room upgrade",
+    "Extra day stay beyond package",
+    "Dietitian, counseling",
+    "Attender bed, extra meals",
+    "Personal items (kit, toiletries)",
+    "Treatment of complications",
+    "Re-surgery or second procedure",
+    "Extended stay due to complications",
+    "Ambulance / Transportation",
+    "Insurance processing charges",
+    "Any treatment unrelated to surgery"
+  ];
+
+  // table data
   const columns = [
-    {
-      name: "No",
-      selector: (row, index) => index + 1,
-      width: "40px",
-    },
     {
       name: "Surgery Name",
       selector: (row) => row?.name,
@@ -957,6 +1061,14 @@ const D_Surgery = () => {
                                   name="general_price"
                                   value={surgery.general_price}
                                   onChange={selsurgery}
+                                  type="text"
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                  onKeyPress={(e) => {
+                                    if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && e.key !== 'Enter') {
+                                      e.preventDefault();
+                                    }
+                                  }}
                                 />
                               </div>
                             </Form.Group>
@@ -966,12 +1078,20 @@ const D_Surgery = () => {
                               className="mb-3 col-6"
                             >
                               <div className="position-relative">
-                                <Form.Label>Semiprivate Price</Form.Label>
+                                <Form.Label>Semi Private Price</Form.Label>
                                 <Form.Control
                                   placeholder="Ex:- 18000"
                                   name="semiprivate_price"
                                   value={surgery.semiprivate_price}
                                   onChange={selsurgery}
+                                  type="text"
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                  onKeyPress={(e) => {
+                                    if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && e.key !== 'Enter') {
+                                      e.preventDefault();
+                                    }
+                                  }}
                                 />
                               </div>
                             </Form.Group>
@@ -987,6 +1107,14 @@ const D_Surgery = () => {
                                   name="private_price"
                                   value={surgery.private_price}
                                   onChange={selsurgery}
+                                  type="text"
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                  onKeyPress={(e) => {
+                                    if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && e.key !== 'Enter') {
+                                      e.preventDefault();
+                                    }
+                                  }}
                                 />
                               </div>
                             </Form.Group>
@@ -1002,6 +1130,14 @@ const D_Surgery = () => {
                                   name="delux_price"
                                   value={surgery.delux_price}
                                   onChange={selsurgery}
+                                  type="text"
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                  onKeyPress={(e) => {
+                                    if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && e.key !== 'Enter') {
+                                      e.preventDefault();
+                                    }
+                                  }}
                                 />
                               </div>
                             </Form.Group>
@@ -1690,6 +1826,14 @@ const D_Surgery = () => {
                               name="general_price"
                               value={edit_record.general_price}
                               onChange={seleditsurgery}
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              onKeyPress={(e) => {
+                                if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && e.key !== 'Enter') {
+                                  e.preventDefault();
+                                }
+                              }}
                             />
                           </div>
                         </Form.Group>
@@ -1705,6 +1849,14 @@ const D_Surgery = () => {
                               name="semiprivate_price"
                               value={edit_record.semiprivate_price}
                               onChange={seleditsurgery}
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              onKeyPress={(e) => {
+                                if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && e.key !== 'Enter') {
+                                  e.preventDefault();
+                                }
+                              }}
                             />
                           </div>
                         </Form.Group>
@@ -1717,6 +1869,14 @@ const D_Surgery = () => {
                               name="private_price"
                               value={edit_record.private_price}
                               onChange={seleditsurgery}
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              onKeyPress={(e) => {
+                                if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && e.key !== 'Enter') {
+                                  e.preventDefault();
+                                }
+                              }}
                             />
                           </div>
                         </Form.Group>
@@ -1729,6 +1889,14 @@ const D_Surgery = () => {
                               name="delux_price"
                               value={edit_record.delux_price}
                               onChange={seleditsurgery}
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              onKeyPress={(e) => {
+                                if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && e.key !== 'Enter') {
+                                  e.preventDefault();
+                                }
+                              }}
                             />
                           </div>
                         </Form.Group>

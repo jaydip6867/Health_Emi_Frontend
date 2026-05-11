@@ -2581,3 +2581,16 @@ body::-webkit-scrollbar-thumb:hover {
 .home_slider .slick-dots li button::before {
   display: none; /* Hide default dot content */
 }
+
+.hospital_icon{
+  min-width: 40px;
+  min-height: 40px;
+  max-height: 80px;
+  max-width: 80px;
+  border-radius: 6px;
+  border: 1px solid var(--grayscale-color-800);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}

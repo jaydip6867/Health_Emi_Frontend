@@ -21,7 +21,7 @@ const FooterBar = () => {
           <Col lg={3} md={12} className="footer-about">
             <div className="footer-logo mb-3">
               <img
-                src={require("../assets/healthEasyEMIllogo1.png")}
+                src={require("../assets/HEE-logo.png")}
                 alt="Health Easy EMI"
                 className="img-fluid mx-auto"
               />
@@ -99,30 +99,34 @@ const FooterBar = () => {
               </p>
             </div>
             <div className="social-links">
-              <a className="social-icon">
+              <a className="social-icon"
+                href="https://www.facebook.com/profile.php?id=61573355822361" target="_blank"
+              >
                 <FaFacebookF />
               </a>
-              <a className="social-icon">
+              {/* <a className="social-icon"
+              href="https://x.com/HealthEasyEmi" target="_blank"
+              >
                 <FaXTwitter />
-              </a>
+              </a> */}
               <a
                 className="social-icon"
-                href="https://www.instagram.com/healtheasyemi/?hl=en"
+                href="https://www.instagram.com/healtheasyemi/?hl=en" target="_blank"
               >
                 <FaInstagram />
               </a>
               <a
                 className="social-icon"
-                href="https://www.linkedin.com/company/110338361/admin/dashboard/"
+                href="https://www.linkedin.com/company/110338361/admin/dashboard/" target="_blank"
               >
                 <FaLinkedinIn />
               </a>
-              <a
+              {/* <a
                 className="social-icon"
-                href="https://www.youtube.com/channel/UCKDchxSJb-_GVKBVXI3NOKA"
+              href="https://www.youtube.com/channel/UCKDchxSJb-_GVKBVXI3NOKA" target="_blank"
               >
                 <FaYoutube />
-              </a>
+              </a> */}
             </div>
           </Col>
         </Row>

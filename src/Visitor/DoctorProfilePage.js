@@ -420,6 +420,7 @@ const DoctorProfilePage = () => {
       patientname: patient?.name,
       mobile: patient?.mobile,
       hospital_name: null,
+      roomtype: "General", // Set initial room type to General
     };
     setaddsurgery(surg_apt_data);
     setsingle_surg(surgdata);
@@ -1580,7 +1581,7 @@ const DoctorProfilePage = () => {
 
                   {/* Book Consultation Card */}
                   <Card
-                    className="border-0 shadow-sm"
+                    className="border-0 shadow-sm mt-4"
                     style={{ borderRadius: "15px" }}
                   >
                     <Card.Body className="p-4">
@@ -2254,6 +2255,7 @@ const DoctorProfilePage = () => {
                   value="General"
                   id="label-1"
                   onChange={surghandlechange}
+                  checked={addsurgery?.roomtype === "General" || !addsurgery?.roomtype}
                   label={`General - ₹${single_surg?.general_price || "N/A"}`}
                 />
 

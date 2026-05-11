@@ -558,7 +558,7 @@ const DoctorRegister = () => {
       data: frmdoctor,
     })
       .then((res) => {
-        toast("OTP send to your Email...", {
+        toast("OTP send to your Mobile Number...", {
           className: "custom-toast-success",
         });
         setdocreg(false);
@@ -1135,7 +1135,7 @@ const DoctorRegister = () => {
                         ))}
                       </div>
                       <small className="d-block text-center text-muted mt-2">
-                        Enter the 6-digit code sent to your email
+                        Enter the 6-digit code sent to your Mobile Number
                       </small>
                     </div>
                   </Form>
