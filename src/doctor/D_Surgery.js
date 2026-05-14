@@ -1146,7 +1146,7 @@ const D_Surgery = () => {
                       </Row>
                     </div>
                     <hr />
-                    <Form.Group className="mb-4 col-12">
+                    <Form.Group className="mb-4 col-12 col-md-6">
                       <div className="card shadow-sm">
                         <div className="card-header bg-light">
                           <h6 className="mb-0 fw-bold">
@@ -1224,7 +1224,7 @@ const D_Surgery = () => {
                     </Form.Group>
 
                     {/* Exclusive Section */}
-                    <Form.Group className="mb-4 col-12">
+                    <Form.Group className="mb-4 col-12 col-md-6">
                       <div className="card shadow-sm">
                         <div className="card-header bg-light">
                           <h6 className="mb-0 fw-bold">

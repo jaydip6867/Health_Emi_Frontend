@@ -1721,7 +1721,7 @@ const DoctorProfilePage = () => {
                                 {" "}
                                 {selectedConsultationType?.replace("_", " ")}
                               </h6>
-                              <p className="text-cupoon">Add Coupon Code</p>
+                              {/* <p className="text-cupoon">Add Coupon Code</p> */}
                             </div>
                             <div>
                               <h6 className="font-600">₹{consultationPrice}</h6>

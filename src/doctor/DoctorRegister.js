@@ -411,7 +411,7 @@ const DoctorRegister = () => {
 
   // Handle form submission
   const profileadd = async () => {
-    
+
 
     // Then validate the form fields
     if (!validateProfileForm()) {
@@ -929,805 +929,805 @@ const DoctorRegister = () => {
 
   return (
     <>
-    <NavBar />
-    <div className="min-vh-100 d-flex align-items-center panel">
-      <Container className="py-3">
-        <Row className="align-items-center justify-content-center">
-          <DoctorTestimonial />
-          {doc_reg === true ? (
-            <Col md={8} lg={5}>
-              <div className="register_doctor bg-white p-3 py-3 px-4 rounded">
-                <div className="text-center">
-                  <h3>Doctor - Sign up</h3>
-                  <p className="w-75 mx-auto">
-                    Create your doctor profile to manage patients, appointments, and EMI-supported treatments on a secure platform.
-                  </p>
-                </div>
-                <Form autoComplete="off">
-                  <Form.Group as={Col} controlId="fullname" className="mb-3">
-                    <Form.Label>Full Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Full Name"
-                      className={`frm_input ${validationErrors.name ? "is-invalid" : ""
-                        }`}
-                      name="name"
-                      value={frmdoctor.name}
-                      onChange={selfrmdata}
-                    />
-                    {validationErrors.name && (
-                      <div className="invalid-feedback">
-                        {validationErrors.name}
-                      </div>
-                    )}
-                  </Form.Group>
+      <NavBar />
+      <div className="min-vh-100 d-flex align-items-center panel">
+        <Container className="py-3">
+          <Row className="align-items-center justify-content-center">
+            <DoctorTestimonial />
+            {doc_reg === true ? (
+              <Col md={8} lg={5}>
+                <div className="register_doctor bg-white p-3 py-3 px-4 rounded">
+                  <div className="text-center">
+                    <h3>Doctor - Sign up</h3>
+                    <p className="w-75 mx-auto">
+                      Create your doctor profile to manage patients, appointments, and EMI-supported treatments on a secure platform.
+                    </p>
+                  </div>
+                  <Form autoComplete="off">
+                    <Form.Group as={Col} controlId="fullname" className="mb-3">
+                      <Form.Label>Full Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Full Name"
+                        className={`frm_input ${validationErrors.name ? "is-invalid" : ""
+                          }`}
+                        name="name"
+                        value={frmdoctor.name}
+                        onChange={selfrmdata}
+                      />
+                      {validationErrors.name && (
+                        <div className="invalid-feedback">
+                          {validationErrors.name}
+                        </div>
+                      )}
+                    </Form.Group>
 
-                  <Form.Group as={Col} controlId="email" className="mb-3">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                      type="email"
-                      placeholder="Email"
-                      autoComplete="off"
-                      className={`frm_input ${validationErrors.email ? "is-invalid" : ""
-                        }`}
-                      name="email"
-                      value={frmdoctor.email}
-                      onChange={selfrmdata}
-                    />
-                    {validationErrors.email && (
-                      <div className="invalid-feedback">
-                        {validationErrors.email}
-                      </div>
-                    )}
-                  </Form.Group>
+                    <Form.Group as={Col} controlId="email" className="mb-3">
+                      <Form.Label>Email</Form.Label>
+                      <Form.Control
+                        type="email"
+                        placeholder="Email"
+                        autoComplete="off"
+                        className={`frm_input ${validationErrors.email ? "is-invalid" : ""
+                          }`}
+                        name="email"
+                        value={frmdoctor.email}
+                        onChange={selfrmdata}
+                      />
+                      {validationErrors.email && (
+                        <div className="invalid-feedback">
+                          {validationErrors.email}
+                        </div>
+                      )}
+                    </Form.Group>
 
-                  <Form.Group controlId="mobile" className="mb-3">
-                    <Form.Label>Mobile No.</Form.Label>
-                    <Form.Control
-                      placeholder="Mobile No."
-                      className={`frm_input ${validationErrors.mobile ? "is-invalid" : ""
-                        }`}
-                      name="mobile"
-                      value={frmdoctor.mobile}
-                      onChange={selfrmdata}
-                      maxLength="10"
-                      inputMode="numeric"
-                      pattern="[6-9][0-9]{9}"
-                    />
-                    {validationErrors.mobile && (
-                      <div className="invalid-feedback">
-                        {validationErrors.mobile}
-                      </div>
-                    )}
-                  </Form.Group>
+                    <Form.Group controlId="mobile" className="mb-3">
+                      <Form.Label>Mobile No.</Form.Label>
+                      <Form.Control
+                        placeholder="Mobile No."
+                        className={`frm_input ${validationErrors.mobile ? "is-invalid" : ""
+                          }`}
+                        name="mobile"
+                        value={frmdoctor.mobile}
+                        onChange={selfrmdata}
+                        maxLength="10"
+                        inputMode="numeric"
+                        pattern="[6-9][0-9]{9}"
+                      />
+                      {validationErrors.mobile && (
+                        <div className="invalid-feedback">
+                          {validationErrors.mobile}
+                        </div>
+                      )}
+                    </Form.Group>
 
-                  <Form.Group className="mb-3">
-                    <Form.Label>Gender </Form.Label>
-                    <div className="d-flex gap-3">
-                      <label>
-                        <Form.Check
-                          type="radio"
-                          name="gender"
-                          value={"Male"}
-                          className="d-inline-block me-2"
-                          onChange={selfrmdata}
-                          checked={frmdoctor.gender === "Male"}
-                        />{" "}
-                        Male
-                      </label>
-                      <label>
-                        <Form.Check
-                          type="radio"
-                          name="gender"
-                          value={"Female"}
-                          className="d-inline-block me-2"
-                          onChange={selfrmdata}
-                          checked={frmdoctor.gender === "Female"}
-                        />{" "}
-                        Female
-                      </label>
-                      <label>
-                        <Form.Check
-                          type="radio"
-                          name="gender"
-                          value={"Other"}
-                          className="d-inline-block me-2"
-                          onChange={selfrmdata}
-                          checked={frmdoctor.gender === "Other"}
-                        />{" "}
-                        Other
-                      </label>
-                    </div>
-                    {validationErrors.gender && (
-                      <div className="text-danger small mt-1">
-                        {validationErrors.gender}
+                    <Form.Group className="mb-3">
+                      <Form.Label>Gender </Form.Label>
+                      <div className="d-flex gap-3">
+                        <label>
+                          <Form.Check
+                            type="radio"
+                            name="gender"
+                            value={"Male"}
+                            className="d-inline-block me-2"
+                            onChange={selfrmdata}
+                            checked={frmdoctor.gender === "Male"}
+                          />{" "}
+                          Male
+                        </label>
+                        <label>
+                          <Form.Check
+                            type="radio"
+                            name="gender"
+                            value={"Female"}
+                            className="d-inline-block me-2"
+                            onChange={selfrmdata}
+                            checked={frmdoctor.gender === "Female"}
+                          />{" "}
+                          Female
+                        </label>
+                        <label>
+                          <Form.Check
+                            type="radio"
+                            name="gender"
+                            value={"Other"}
+                            className="d-inline-block me-2"
+                            onChange={selfrmdata}
+                            checked={frmdoctor.gender === "Other"}
+                          />{" "}
+                          Other
+                        </label>
                       </div>
-                    )}
-                  </Form.Group>
+                      {validationErrors.gender && (
+                        <div className="text-danger small mt-1">
+                          {validationErrors.gender}
+                        </div>
+                      )}
+                    </Form.Group>
 
-                  <Form.Group controlId="pincode" className="mb-3">
-                    <Form.Label>Pincode</Form.Label>
-                    <Form.Control
-                      placeholder="Pincode"
-                      className={`frm_input ${validationErrors.pincode ? "is-invalid" : ""
-                        }`}
-                      name="pincode"
-                      value={frmdoctor.pincode}
-                      onChange={selfrmdata}
-                      maxLength="6"
-                    />
-                    {validationErrors.pincode && (
-                      <div className="invalid-feedback">
-                        {validationErrors.pincode}
-                      </div>
-                    )}
-                  </Form.Group>
+                    <Form.Group controlId="pincode" className="mb-3">
+                      <Form.Label>Pincode</Form.Label>
+                      <Form.Control
+                        placeholder="Pincode"
+                        className={`frm_input ${validationErrors.pincode ? "is-invalid" : ""
+                          }`}
+                        name="pincode"
+                        value={frmdoctor.pincode}
+                        onChange={selfrmdata}
+                        maxLength="6"
+                      />
+                      {validationErrors.pincode && (
+                        <div className="invalid-feedback">
+                          {validationErrors.pincode}
+                        </div>
+                      )}
+                    </Form.Group>
 
-                  <Form.Group controlId="password" className="mb-3">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                      type="password"
-                      placeholder="Password"
-                      autoComplete="off"
-                      className={`frm_input ${validationErrors.password ? "is-invalid" : ""}`}
-                      name="password"
-                      value={frmdoctor.password}
-                      onChange={selfrmdata}
-                    />
-                    {validationErrors.password && (
-                      <div className="invalid-feedback">
-                        {validationErrors.password}
-                      </div>
-                    )}
-                  </Form.Group>
+                    <Form.Group controlId="password" className="mb-3">
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control
+                        type="password"
+                        placeholder="Password"
+                        autoComplete="off"
+                        className={`frm_input ${validationErrors.password ? "is-invalid" : ""}`}
+                        name="password"
+                        value={frmdoctor.password}
+                        onChange={selfrmdata}
+                      />
+                      {validationErrors.password && (
+                        <div className="invalid-feedback">
+                          {validationErrors.password}
+                        </div>
+                      )}
+                    </Form.Group>
 
-                  <Button
-                    type="button"
-                    onClick={send_doctor_otp}
-                    className="d-block w-100 theme_btn mt-3"
-                  >
-                    Get OTP
-                  </Button>
-                </Form>
-                <div className="form_bottom_div text-center mt-3">
-                  <p>
-                    Already have an Account?{" "}
-                    <Link to={"/doctor"} className="form-link">
-                      Login
-                    </Link>{" "}
-                  </p>
-                </div>
-              </div>
-            </Col>
-          ) : (
-            ""
-          )}
-          {doc_otp === true ? (
-            <Col md={8} lg={5}>
-              <div className="register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100">
-                <div className="text-center">
-                  <h3>OTP Verification</h3>
-                  <Form>
-                    <div className="my-4">
-                      <Form.Label className="d-block text-center mb-3 fw-bold">
-                        Enter 6-Digit OTP
-                      </Form.Label>
-                      <div className="d-flex justify-content-center gap-2">
-                        {otpDigits.map((digit, index) => (
-                          <Form.Control
-                            key={index}
-                            id={`otp-${index}`}
-                            type="text"
-                            value={digit}
-                            onChange={(e) =>
-                              handleOtpChange(index, e.target.value)
-                            }
-                            onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                            className="text-center fw-bold border-2"
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              fontSize: "20px",
-                              borderRadius: "8px",
-                            }}
-                            maxLength="1"
-                          />
-                        ))}
-                      </div>
-                      <small className="d-block text-center text-muted mt-2">
-                        Enter the 6-digit code sent to your Mobile Number
-                      </small>
-                    </div>
+                    <Button
+                      type="button"
+                      onClick={send_doctor_otp}
+                      className="d-block w-100 theme_btn mt-3"
+                    >
+                      Get OTP
+                    </Button>
                   </Form>
-                  <div className="form_bottom_div text-end mt-3">
+                  <div className="form_bottom_div text-center mt-3">
                     <p>
-                      <Link className="form-link">Resend OTP ?</Link>{" "}
+                      Already have an Account?{" "}
+                      <Link to={"/doctor"} className="form-link">
+                        Login
+                      </Link>{" "}
                     </p>
                   </div>
                 </div>
-
-                <Button
-                  type="button"
-                  onClick={otpverifydone}
-                  className="d-block w-100 theme_btn my-3"
-                  disabled={otp.length !== 6}
-                >
-                  {otp.length === 6
-                    ? "Verify OTP"
-                    : `Enter ${6 - otp.length} more digit${6 - otp.length > 1 ? "s" : ""
-                    }`}
-                </Button>
-              </div>
-            </Col>
-          ) : (
-            ""
-          )}
-          {doc_reg2 === true ? (
-            <Col md={8} lg={5}>
-              <div className="register_doctor bg-white p-3 py-3 px-4 rounded">
-                <div className="text-center">
-                  <h3>Doctor Profile Details</h3>
-                </div>
-                <Form as={Row}>
-                  <Form.Group
-                    as={Col}
-                    controlId="Speciality"
-                    className="mb-3 col-6"
-                  >
-                    <div className="position-relative">
-                      <Form.Label>Speciality</Form.Label>
-                      <Form.Select
-                        name="specialty"
-                        value={s_type_name}
-                        onChange={schange}
-                        className={`${profileValidationErrors.specialty ? "is-invalid" : ""
-                          }`}
-                      >
-                        {/* <Form.Control type="text" placeholder="Ex:- Cardiology" className='frm_input' name="specialty" value={frmdocprofile.specialty} onChange={selfrmdata} /> */}
-                        <option value={""}>Select Surgery Type</option>
-                        {s_type?.map((v, i) => {
-                          return (
-                            <option key={i} value={v._id}>
-                              {v.surgerytypename}
-                            </option>
-                          );
-                        })}
-                      </Form.Select>
-                      {profileValidationErrors.specialty && (
-                        <div className="invalid-feedback">
-                          {profileValidationErrors.specialty}
-                        </div>
-                      )}
-                    </div>
-                  </Form.Group>
-
-                  <Form.Group
-                    as={Col}
-                    controlId="SubSpeciality"
-                    className="mb-3 col-6"
-                  >
-                    <div className="position-relative">
-                      <Form.Label>Sub Speciality</Form.Label>
-                      {/* <Form.Control type="email" placeholder="Ex:- Echocardiography" className='frm_input' name="sub_specialty" value={frmdocprofile.sub_specialty} onChange={selfrmdata} /> */}
-                      <Form.Select
-                        name="sub_specialty"
-                        value={sub_type_name}
-                        onChange={subchange}
-                        className={`${profileValidationErrors.sub_specialty
-                            ? "is-invalid"
-                            : ""
-                          }`}
-                      >
-                        <option value="" disabled>
-                          Doctor Category
-                        </option>
-                        {d_sel_cat?.map((v, i) => {
-                          return (
-                            <option key={i} value={v._id}>
-                              {v.categoryname}
-                            </option>
-                          );
-                        })}
-                      </Form.Select>
-                      {profileValidationErrors.sub_specialty && (
-                        <div className="invalid-feedback">
-                          {profileValidationErrors.sub_specialty}
-                        </div>
-                      )}
-                    </div>
-                  </Form.Group>
-
-                  <Form.Group controlId="Degree" className="mb-3 col-6">
-                    <div className="position-relative">
-                      <Form.Label>Degree Registration No.</Form.Label>
-                      <Form.Control
-                        placeholder="Ex:- Dk4567"
-                        className={`frm_input ${profileValidationErrors.degree_registration_no
-                            ? "is-invalid"
-                            : ""
-                          }`}
-                        name="degree_registration_no"
-                        value={frmdocprofile.degree_registration_no}
-                        onChange={selfrmdata}
-                      />
-                      {profileValidationErrors.degree_registration_no && (
-                        <div className="invalid-feedback">
-                          {profileValidationErrors.degree_registration_no}
-                        </div>
-                      )}
-                    </div>
-                  </Form.Group>
-
-                  <Form.Group controlId="Qualification" className="mb-3 col-6">
-                    <div className="position-relative">
-                      <Form.Label>Qualification</Form.Label>
-                      <Form.Control
-                        placeholder="Ex:- D.H.M.S, MD"
-                        className={`frm_input ${profileValidationErrors.qualification
-                            ? "is-invalid"
-                            : ""
-                          }`}
-                        name="qualification"
-                        value={frmdocprofile.qualification}
-                        onChange={selfrmdata}
-                      />
-                      {profileValidationErrors.qualification && (
-                        <div className="invalid-feedback">
-                          {profileValidationErrors.qualification}
-                        </div>
-                      )}
-                    </div>
-                  </Form.Group>
-
-                  <Form.Group controlId="Experience" className="mb-3 col-6">
-                    <div className="position-relative">
-                      <Form.Label>Experience</Form.Label>
-                      <Form.Select
-                        className={`frm_input text-dark ${profileValidationErrors.experience ? "is-invalid" : ""
-                          }`}
-                        name="experience"
-                        value={frmdocprofile.experience}
-                        onChange={selfrmdata}
-                      >
-                        <option value={""} selected disabled>
-                          Select Experiance
-                        </option>
-                        {["0+", "1+", "2+", "3+", "4+", "5+", "10+", "20+"].map(
-                          (level) => (
-                            <option key={level} value={level + " years"}>
-                              {level} years
-                            </option>
-                          )
-                        )}
-                      </Form.Select>
-                      {profileValidationErrors.experience && (
-                        <div className="invalid-feedback">
-                          {profileValidationErrors.experience}
-                        </div>
-                      )}
-                    </div>
-                  </Form.Group>
-
-                  <Form.Group
-                    as={Col}
-                    controlId="Country"
-                    className="mb-3 col-6"
-                  >
-                    <div className="position-relative">
-                      <Form.Label>Country</Form.Label>
-                      <Form.Select
-                        className={`frm-select ${profileValidationErrors.country ? "is-invalid" : ""
-                          }`}
-                        name="country"
-                        onChange={handleCountryChange}
-                        value={selectedCountryCode}
-                      >
-                        <option value={""}>Select Country</option>
-                        {countries.map((country) => (
-                          <option key={country.isoCode} value={country.isoCode}>
-                            {country.name}
-                          </option>
-                        ))}
-                      </Form.Select>
-                      {profileValidationErrors.country && (
-                        <div className="invalid-feedback">
-                          {profileValidationErrors.country}
-                        </div>
-                      )}
-                    </div>
-                  </Form.Group>
-
-                  <Form.Group as={Col} controlId="State" className="mb-3 col-6">
-                    <div className="position-relative">
-                      <Form.Label>State</Form.Label>
-                      <Form.Select
-                        className={`frm-select ${profileValidationErrors.state ? "is-invalid" : ""
-                          }`}
-                        name="state"
-                        onChange={handleStateChange}
-                        value={selectedStateCode}
-                        disabled={!selectedCountryCode}
-                      >
-                        <option value={""}>Select State</option>
-                        {states.map((state) => (
-                          <option key={state.isoCode} value={state.isoCode}>
-                            {state.name}
-                          </option>
-                        ))}
-                      </Form.Select>
-                      {profileValidationErrors.state && (
-                        <div className="invalid-feedback">
-                          {profileValidationErrors.state}
-                        </div>
-                      )}
-                    </div>
-                  </Form.Group>
-
-                  <Form.Group as={Col} controlId="City" className="mb-3 col-6">
-                    <div className="position-relative">
-                      <Form.Label>City</Form.Label>
-                      <Form.Select
-                        className={`frm-select ${profileValidationErrors.city ? "is-invalid" : ""
-                          }`}
-                        name="city"
-                        onChange={selfrmdata}
-                        disabled={!selectedStateCode}
-                      >
-                        <option value={""}>Select City</option>
-                        {cities.map((vc, vi) => {
-                          return (
-                            <option key={vi} value={vc.name}>
-                              {vc.name}
-                            </option>
-                          );
-                        })}
-                      </Form.Select>
-                      {profileValidationErrors.city && (
-                        <div className="invalid-feedback">
-                          {profileValidationErrors.city}
-                        </div>
-                      )}
-                    </div>
-                  </Form.Group>
-
-                  <Form.Group controlId="profilePic" className="mb-3 col-6">
-                    <Form.Label>Upload Profile Picture</Form.Label>
-                    <div className="position-relative">
-                      <input
-                        type="file"
-                        className="form-control"
-                        accept="image/*"
-                        onChange={handleProfilePicChange}
-                        style={{ display: "none" }}
-                        id="profile-pic-upload"
-                      />
-                      <label
-                        htmlFor="profile-pic-upload"
-                        className="btn btn-outline-secondary w-100"
-                        style={{
-                          cursor: "pointer",
-                          padding: "0.375rem 0.75rem",
-                        }}
-                      >
-                        {profilePic
-                          ? "Change Profile Picture"
-                          : "Choose Profile Picture"}
-                      </label>
-                    </div>
-                    {profilePic && (
-                      <div
-                        style={{
-                          position: "relative",
-                          display: "inline-block",
-                          marginTop: "10px",
-                        }}
-                      >
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "-10px",
-                            right: "-10px",
-                            background: "#ff4444",
-                            color: "white",
-                            borderRadius: "50%",
-                            width: "24px",
-                            height: "24px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            cursor: "pointer",
-                            border: "2px solid white",
-                            boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                          }}
-                          onClick={() => setProfilePic(null)}
-                        >
-                          ×
-                        </div>
-                        <img
-                          src={profilePic}
-                          alt="Profile Preview"
-                          style={{
-                            maxWidth: "200px",
-                            maxHeight: "200px",
-                            borderRadius: "4px",
-                            border: "1px solid #ddd",
-                            padding: "4px",
-                          }}
-                        />
-                      </div>
-                    )}
-                  </Form.Group>
-
-                  <Form.Group controlId="identityProof" className="mb-3 col-6">
-                    <Form.Label>Upload Identity Document</Form.Label>
-                    <div className="position-relative">
-                      <input
-                        type="file"
-                        className="form-control"
-                        multiple
-                        accept=".jpg,.pdf,.png"
-                        onChange={handleIdentityProofsChange}
-                        style={{ display: "none" }}
-                        id="identity-proof-upload"
-                      />
-                      <label
-                        htmlFor="identity-proof-upload"
-                        className="btn btn-outline-secondary w-100"
-                        style={{
-                          cursor: "pointer",
-                          padding: "0.375rem 0.75rem",
-                        }}
-                      >
-                        {identityProofs.length > 0
-                          ? `Change Identity Document (${identityProofs.length} files)`
-                          : "Choose Identity Document"}
-                      </label>
-                    </div>
-                    {identityProofs.length > 0 && (
-                      <div className="mt-2">
-                        {identityProofs.map((_, index) => (
-                          <div key={index} className="d-flex align-items-center mb-1">
-                            <span className="me-2">•</span>
-                            <span>Identity Proof {index + 1}</span>
-                            <button
-                              type="button"
-                              className="btn-close btn-sm ms-2"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setIdentityProofs((prev) =>
-                                  prev.filter((_, i) => i !== index)
-                                );
-                                setIdentityProofFiles((prev) =>
-                                  prev.filter((_, i) => i !== index)
-                                );
+              </Col>
+            ) : (
+              ""
+            )}
+            {doc_otp === true ? (
+              <Col md={8} lg={5}>
+                <div className="register_doctor bg-white p-3 py-3 px-4 rounded d-flex flex-column justify-content-between h-100">
+                  <div className="text-center">
+                    <h3>OTP Verification</h3>
+                    <Form>
+                      <div className="my-4">
+                        <Form.Label className="d-block text-center mb-3 fw-bold">
+                          Enter 6-Digit OTP
+                        </Form.Label>
+                        <div className="d-flex justify-content-center gap-2">
+                          {otpDigits.map((digit, index) => (
+                            <Form.Control
+                              key={index}
+                              id={`otp-${index}`}
+                              type="text"
+                              value={digit}
+                              onChange={(e) =>
+                                handleOtpChange(index, e.target.value)
+                              }
+                              onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                              className="text-center fw-bold border-2"
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                fontSize: "20px",
+                                borderRadius: "8px",
                               }}
-                              aria-label="Remove"
+                              maxLength="1"
                             />
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+                        <small className="d-block text-center text-muted mt-2">
+                          Enter the 6-digit code sent to your Mobile Number
+                        </small>
                       </div>
-                    )}
-                  </Form.Group>
-
-                  <Form.Group
-                    controlId="certificateProof"
-                    className="mb-3 col-6"
-                  >
-                    <Form.Label>Upload Certificate Document</Form.Label>
-                    <div className="position-relative">
-                      <input
-                        type="file"
-                        className="form-control"
-                        multiple
-                        accept=".jpg,.pdf,.png"
-                        onChange={handleCertificateProofsChange}
-                        style={{ display: "none" }}
-                        id="certificate-proof-upload"
-                      />
-                      <label
-                        htmlFor="certificate-proof-upload"
-                        className="btn btn-outline-secondary w-100"
-                        style={{
-                          cursor: "pointer",
-                          padding: "0.375rem 0.75rem",
-                        }}
-                      >
-                        {certificateProofs.length > 0
-                          ? `Change Certificate Document (${certificateProofs.length} files)`
-                          : "Choose Certificate Document"}
-                      </label>
+                    </Form>
+                    <div className="form_bottom_div text-end mt-3">
+                      <p>
+                        <Link className="form-link">Resend OTP ?</Link>{" "}
+                      </p>
                     </div>
-                    {certificateProofs.length > 0 && (
-                      <div className="mt-2">
-                        {certificateProofs.map((_, index) => (
-                          <div key={index} className="d-flex align-items-center mb-1">
-                            <span className="me-2">•</span>
-                            <span>Certificate {index + 1}</span>
-                            <button
-                              type="button"
-                              className="btn-close btn-sm ms-2"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setCertificateProofs((prev) =>
-                                  prev.filter((_, i) => i !== index)
-                                );
-                                setCertificateProofFiles((prev) =>
-                                  prev.filter((_, i) => i !== index)
-                                );
-                              }}
-                              aria-label="Remove"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </Form.Group>
+                  </div>
 
-                  <Form.Group className="mb-3">
-                    <Form.Label className="mb-2">Add Hospital Details</Form.Label>
-                    <div className="border rounded p-2" style={{ backgroundColor: '#f8f9fa' }}>
-                      <div className="row g-1 mb-2">
-                        <div className="col-6">
-                          <Form.Control
-                            size="sm"
-                            type="text"
-                            name="name"
-                            placeholder="Hospital Name"
-                            value={hospital_st.name}
-                            onChange={handlehospitalChange}
-                          />
-                        </div>
-                        <div className="col-6">
-                          <Form.Control
-                            size="sm"
-                            type="text"
-                            name="address"
-                            placeholder="Address"
-                            value={hospital_st.address}
-                            onChange={handlehospitalChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="row g-1 mb-2">
-                        <div className="col-4">
-                          <Form.Select
-                            size="sm"
-                            name="country"
-                            value={selectedHospitalCountryCode}
-                            onChange={handleHospitalCountryChange}
-                          >
-                            <option value="">Country</option>
-                            {hospitalCountries.map((country) => (
-                              <option key={country.isoCode} value={country.isoCode}>
-                                {country.name}
-                              </option>
-                            ))}
-                          </Form.Select>
-                        </div>
-                        <div className="col-4">
-                          <Form.Select
-                            size="sm"
-                            name="state"
-                            value={selectedHospitalStateCode}
-                            onChange={handleHospitalStateChange}
-                            disabled={!selectedHospitalCountryCode}
-                          >
-                            <option value="">State</option>
-                            {hospitalStates.map((state) => (
-                              <option key={state.isoCode} value={state.isoCode}>
-                                {state.name}
-                              </option>
-                            ))}
-                          </Form.Select>
-                        </div>
-                        <div className="col-4">
-                          <Form.Select
-                            size="sm"
-                            name="city"
-                            value={hospital_st.city}
-                            onChange={handleHospitalCityChange}
-                            disabled={!selectedHospitalStateCode}
-                          >
-                            <option value="">City</option>
-                            {hospitalCities.map((city, index) => (
-                              <option key={index} value={city.name}>
-                                {city.name}
-                              </option>
-                            ))}
-                          </Form.Select>
-                        </div>
-                      </div>
-                      <div className="row g-1">
-                        <div className="col-4">
-                          <Form.Control
-                            size="sm"
-                            type="text"
-                            name="pincode"
-                            placeholder="Pincode"
-                            value={hospital_st.pincode}
-                            onChange={handlehospitalChange}
-                            maxLength="6"
-                          />
-                        </div>
-                        <div className="col-8 d-flex align-items-end">
-                          <Button
-                            size="sm"
-                            className="theme_btn ms-auto"
-                            onClick={addHospital}
-                            style={{ minWidth: '60px' }}
-                          >
-                            Add
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    {hospitallist.length > 0 && (
-                      <div className="mt-2">
-                        {hospitallist.map((hospital, index) => (
-                          <div key={index} className="d-flex justify-content-between align-items-center p-2 mb-1 bg-light rounded" style={{ fontSize: '0.85rem' }}>
-                            <div className="flex-grow-1">
-                              <strong className="d-block">{hospital.name}</strong>
-                              <small className="text-muted">
-                                {hospital.address}, {hospital.city}, {hospital.state}, {hospital.country} - {hospital.pincode}
-                              </small>
-                            </div>
-                            <Button
-                              variant="outline-danger"
-                              size="sm"
-                              onClick={() => deleteHospital(index)}
-                              className="ms-2"
-                              style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
-                            >
-                              ×
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Check
-                      type="checkbox"
-                      id="termsCheckbox"
-                      checked={termsAccepted}
-                      onChange={(e) => setTermsAccepted(e.target.checked)}
-                      label={
-                        <span>
-                          I agree to the
-                          <a
-                            href="#"
-                            className="text-primary ms-1"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setShowTcModal(true);
-                            }}
-                          >
-                            Terms and Conditions
-                          </a>
-                        </span>
-                      }
-                    />
-                  </Form.Group>
                   <Button
                     type="button"
-                    onClick={profileadd}
+                    onClick={otpverifydone}
                     className="d-block w-100 theme_btn my-3"
+                    disabled={otp.length !== 6}
                   >
-                    Submit Profile
+                    {otp.length === 6
+                      ? "Verify OTP"
+                      : `Enter ${6 - otp.length} more digit${6 - otp.length > 1 ? "s" : ""
+                      }`}
                   </Button>
-                </Form>
-              </div>
-            </Col>
-          ) : (
-            ""
-          )}
-        </Row>
-      </Container>
-      <ToastContainer />
-      {loading ? <Loader /> : ""}
-      <TermsAndConditionsModal />
-    </div>
-    <FooterBar />
+                </div>
+              </Col>
+            ) : (
+              ""
+            )}
+            {doc_reg2 === true ? (
+              <Col md={8} lg={5}>
+                <div className="register_doctor bg-white p-3 py-3 px-4 rounded">
+                  <div className="text-center">
+                    <h3>Doctor Profile Details</h3>
+                  </div>
+                  <Form as={Row}>
+                    <Form.Group
+                      as={Col}
+                      controlId="Speciality"
+                      className="mb-3 col-6"
+                    >
+                      <div className="position-relative">
+                        <Form.Label>Speciality</Form.Label>
+                        <Form.Select
+                          name="specialty"
+                          value={s_type_name}
+                          onChange={schange}
+                          className={`${profileValidationErrors.specialty ? "is-invalid" : ""
+                            }`}
+                        >
+                          {/* <Form.Control type="text" placeholder="Ex:- Cardiology" className='frm_input' name="specialty" value={frmdocprofile.specialty} onChange={selfrmdata} /> */}
+                          <option value={""}>Select Surgery Type</option>
+                          {s_type?.map((v, i) => {
+                            return (
+                              <option key={i} value={v._id}>
+                                {v.surgerytypename}
+                              </option>
+                            );
+                          })}
+                        </Form.Select>
+                        {profileValidationErrors.specialty && (
+                          <div className="invalid-feedback">
+                            {profileValidationErrors.specialty}
+                          </div>
+                        )}
+                      </div>
+                    </Form.Group>
+
+                    <Form.Group
+                      as={Col}
+                      controlId="SubSpeciality"
+                      className="mb-3 col-6"
+                    >
+                      <div className="position-relative">
+                        <Form.Label>Sub Speciality</Form.Label>
+                        {/* <Form.Control type="email" placeholder="Ex:- Echocardiography" className='frm_input' name="sub_specialty" value={frmdocprofile.sub_specialty} onChange={selfrmdata} /> */}
+                        <Form.Select
+                          name="sub_specialty"
+                          value={sub_type_name}
+                          onChange={subchange}
+                          className={`${profileValidationErrors.sub_specialty
+                            ? "is-invalid"
+                            : ""
+                            }`}
+                        >
+                          <option value="" disabled>
+                            Doctor Category
+                          </option>
+                          {d_sel_cat?.map((v, i) => {
+                            return (
+                              <option key={i} value={v._id}>
+                                {v.categoryname}
+                              </option>
+                            );
+                          })}
+                        </Form.Select>
+                        {profileValidationErrors.sub_specialty && (
+                          <div className="invalid-feedback">
+                            {profileValidationErrors.sub_specialty}
+                          </div>
+                        )}
+                      </div>
+                    </Form.Group>
+
+                    <Form.Group controlId="Degree" className="mb-3 col-6">
+                      <div className="position-relative">
+                        <Form.Label>Degree Registration No.</Form.Label>
+                        <Form.Control
+                          placeholder="Ex:- Dk4567"
+                          className={`frm_input ${profileValidationErrors.degree_registration_no
+                            ? "is-invalid"
+                            : ""
+                            }`}
+                          name="degree_registration_no"
+                          value={frmdocprofile.degree_registration_no}
+                          onChange={selfrmdata}
+                        />
+                        {profileValidationErrors.degree_registration_no && (
+                          <div className="invalid-feedback">
+                            {profileValidationErrors.degree_registration_no}
+                          </div>
+                        )}
+                      </div>
+                    </Form.Group>
+
+                    <Form.Group controlId="Qualification" className="mb-3 col-6">
+                      <div className="position-relative">
+                        <Form.Label>Qualification</Form.Label>
+                        <Form.Control
+                          placeholder="Ex:- D.H.M.S, MD"
+                          className={`frm_input ${profileValidationErrors.qualification
+                            ? "is-invalid"
+                            : ""
+                            }`}
+                          name="qualification"
+                          value={frmdocprofile.qualification}
+                          onChange={selfrmdata}
+                        />
+                        {profileValidationErrors.qualification && (
+                          <div className="invalid-feedback">
+                            {profileValidationErrors.qualification}
+                          </div>
+                        )}
+                      </div>
+                    </Form.Group>
+
+                    <Form.Group controlId="Experience" className="mb-3 col-6">
+                      <div className="position-relative">
+                        <Form.Label>Experience</Form.Label>
+                        <Form.Select
+                          className={`frm_input text-dark ${profileValidationErrors.experience ? "is-invalid" : ""
+                            }`}
+                          name="experience"
+                          value={frmdocprofile.experience}
+                          onChange={selfrmdata}
+                        >
+                          <option value={""} selected disabled>
+                            Select Experiance
+                          </option>
+                          {["0+", "1+", "2+", "3+", "4+", "5+", "10+", "20+"].map(
+                            (level) => (
+                              <option key={level} value={level + " years"}>
+                                {level} years
+                              </option>
+                            )
+                          )}
+                        </Form.Select>
+                        {profileValidationErrors.experience && (
+                          <div className="invalid-feedback">
+                            {profileValidationErrors.experience}
+                          </div>
+                        )}
+                      </div>
+                    </Form.Group>
+
+                    <Form.Group
+                      as={Col}
+                      controlId="Country"
+                      className="mb-3 col-6"
+                    >
+                      <div className="position-relative">
+                        <Form.Label>Country</Form.Label>
+                        <Form.Select
+                          className={`frm-select ${profileValidationErrors.country ? "is-invalid" : ""
+                            }`}
+                          name="country"
+                          onChange={handleCountryChange}
+                          value={selectedCountryCode}
+                        >
+                          <option value={""}>Select Country</option>
+                          {countries.map((country) => (
+                            <option key={country.isoCode} value={country.isoCode}>
+                              {country.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                        {profileValidationErrors.country && (
+                          <div className="invalid-feedback">
+                            {profileValidationErrors.country}
+                          </div>
+                        )}
+                      </div>
+                    </Form.Group>
+
+                    <Form.Group as={Col} controlId="State" className="mb-3 col-6">
+                      <div className="position-relative">
+                        <Form.Label>State</Form.Label>
+                        <Form.Select
+                          className={`frm-select ${profileValidationErrors.state ? "is-invalid" : ""
+                            }`}
+                          name="state"
+                          onChange={handleStateChange}
+                          value={selectedStateCode}
+                          disabled={!selectedCountryCode}
+                        >
+                          <option value={""}>Select State</option>
+                          {states.map((state) => (
+                            <option key={state.isoCode} value={state.isoCode}>
+                              {state.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                        {profileValidationErrors.state && (
+                          <div className="invalid-feedback">
+                            {profileValidationErrors.state}
+                          </div>
+                        )}
+                      </div>
+                    </Form.Group>
+
+                    <Form.Group as={Col} controlId="City" className="mb-3 col-6">
+                      <div className="position-relative">
+                        <Form.Label>City</Form.Label>
+                        <Form.Select
+                          className={`frm-select ${profileValidationErrors.city ? "is-invalid" : ""
+                            }`}
+                          name="city"
+                          onChange={selfrmdata}
+                          disabled={!selectedStateCode}
+                        >
+                          <option value={""}>Select City</option>
+                          {cities.map((vc, vi) => {
+                            return (
+                              <option key={vi} value={vc.name}>
+                                {vc.name}
+                              </option>
+                            );
+                          })}
+                        </Form.Select>
+                        {profileValidationErrors.city && (
+                          <div className="invalid-feedback">
+                            {profileValidationErrors.city}
+                          </div>
+                        )}
+                      </div>
+                    </Form.Group>
+
+                    <Form.Group controlId="profilePic" className="mb-3 col-6">
+                      <Form.Label>Upload Profile Picture</Form.Label>
+                      <div className="position-relative">
+                        <input
+                          type="file"
+                          className="form-control"
+                          accept="image/*"
+                          onChange={handleProfilePicChange}
+                          style={{ display: "none" }}
+                          id="profile-pic-upload"
+                        />
+                        <label
+                          htmlFor="profile-pic-upload"
+                          className="btn btn-outline-secondary w-100"
+                          style={{
+                            cursor: "pointer",
+                            padding: "0.375rem 0.75rem",
+                          }}
+                        >
+                          {profilePic
+                            ? "Change Profile Picture"
+                            : "Choose Profile Picture"}
+                        </label>
+                      </div>
+                      {profilePic && (
+                        <div
+                          style={{
+                            position: "relative",
+                            display: "inline-block",
+                            marginTop: "10px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "-10px",
+                              right: "-10px",
+                              background: "#ff4444",
+                              color: "white",
+                              borderRadius: "50%",
+                              width: "24px",
+                              height: "24px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              cursor: "pointer",
+                              border: "2px solid white",
+                              boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                            }}
+                            onClick={() => setProfilePic(null)}
+                          >
+                            ×
+                          </div>
+                          <img
+                            src={profilePic}
+                            alt="Profile Preview"
+                            style={{
+                              maxWidth: "200px",
+                              maxHeight: "200px",
+                              borderRadius: "4px",
+                              border: "1px solid #ddd",
+                              padding: "4px",
+                            }}
+                          />
+                        </div>
+                      )}
+                    </Form.Group>
+
+                    <Form.Group controlId="identityProof" className="mb-3 col-6">
+                      <Form.Label>Upload Identity Document</Form.Label>
+                      <div className="position-relative">
+                        <input
+                          type="file"
+                          className="form-control"
+                          multiple
+                          accept=".jpg,.pdf,.png"
+                          onChange={handleIdentityProofsChange}
+                          style={{ display: "none" }}
+                          id="identity-proof-upload"
+                        />
+                        <label
+                          htmlFor="identity-proof-upload"
+                          className="btn btn-outline-secondary w-100"
+                          style={{
+                            cursor: "pointer",
+                            padding: "0.375rem 0.75rem",
+                          }}
+                        >
+                          {identityProofs.length > 0
+                            ? `Change Identity Document (${identityProofs.length} files)`
+                            : "Choose Identity Document"}
+                        </label>
+                      </div>
+                      {identityProofs.length > 0 && (
+                        <div className="mt-2">
+                          {identityProofs.map((_, index) => (
+                            <div key={index} className="d-flex align-items-center mb-1">
+                              <span className="me-2">•</span>
+                              <span>Identity Proof {index + 1}</span>
+                              <button
+                                type="button"
+                                className="btn-close btn-sm ms-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setIdentityProofs((prev) =>
+                                    prev.filter((_, i) => i !== index)
+                                  );
+                                  setIdentityProofFiles((prev) =>
+                                    prev.filter((_, i) => i !== index)
+                                  );
+                                }}
+                                aria-label="Remove"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </Form.Group>
+
+                    <Form.Group
+                      controlId="certificateProof"
+                      className="mb-3 col-6"
+                    >
+                      <Form.Label>Upload Certificate Document</Form.Label>
+                      <div className="position-relative">
+                        <input
+                          type="file"
+                          className="form-control"
+                          multiple
+                          accept=".jpg,.pdf,.png"
+                          onChange={handleCertificateProofsChange}
+                          style={{ display: "none" }}
+                          id="certificate-proof-upload"
+                        />
+                        <label
+                          htmlFor="certificate-proof-upload"
+                          className="btn btn-outline-secondary w-100"
+                          style={{
+                            cursor: "pointer",
+                            padding: "0.375rem 0.75rem",
+                          }}
+                        >
+                          {certificateProofs.length > 0
+                            ? `Change Certificate Document (${certificateProofs.length} files)`
+                            : "Choose Certificate Document"}
+                        </label>
+                      </div>
+                      {certificateProofs.length > 0 && (
+                        <div className="mt-2">
+                          {certificateProofs.map((_, index) => (
+                            <div key={index} className="d-flex align-items-center mb-1">
+                              <span className="me-2">•</span>
+                              <span>Certificate {index + 1}</span>
+                              <button
+                                type="button"
+                                className="btn-close btn-sm ms-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCertificateProofs((prev) =>
+                                    prev.filter((_, i) => i !== index)
+                                  );
+                                  setCertificateProofFiles((prev) =>
+                                    prev.filter((_, i) => i !== index)
+                                  );
+                                }}
+                                aria-label="Remove"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                      <Form.Label className="mb-2">Add Hospital Details</Form.Label>
+                      <div className="border rounded p-2" style={{ backgroundColor: '#f8f9fa' }}>
+                        <div className="row g-1 mb-2">
+                          <div className="col-6">
+                            <Form.Control
+                              size="sm"
+                              type="text"
+                              name="name"
+                              placeholder="Hospital Name"
+                              value={hospital_st.name}
+                              onChange={handlehospitalChange}
+                            />
+                          </div>
+                          <div className="col-6">
+                            <Form.Control
+                              size="sm"
+                              type="text"
+                              name="address"
+                              placeholder="Address"
+                              value={hospital_st.address}
+                              onChange={handlehospitalChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="row g-1 mb-2">
+                          <div className="col-4">
+                            <Form.Select
+                              size="sm"
+                              name="country"
+                              value={selectedHospitalCountryCode}
+                              onChange={handleHospitalCountryChange}
+                            >
+                              <option value="">Country</option>
+                              {hospitalCountries.map((country) => (
+                                <option key={country.isoCode} value={country.isoCode}>
+                                  {country.name}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          </div>
+                          <div className="col-4">
+                            <Form.Select
+                              size="sm"
+                              name="state"
+                              value={selectedHospitalStateCode}
+                              onChange={handleHospitalStateChange}
+                              disabled={!selectedHospitalCountryCode}
+                            >
+                              <option value="">State</option>
+                              {hospitalStates.map((state) => (
+                                <option key={state.isoCode} value={state.isoCode}>
+                                  {state.name}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          </div>
+                          <div className="col-4">
+                            <Form.Select
+                              size="sm"
+                              name="city"
+                              value={hospital_st.city}
+                              onChange={handleHospitalCityChange}
+                              disabled={!selectedHospitalStateCode}
+                            >
+                              <option value="">City</option>
+                              {hospitalCities.map((city, index) => (
+                                <option key={index} value={city.name}>
+                                  {city.name}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          </div>
+                        </div>
+                        <div className="row g-1">
+                          <div className="col-4">
+                            <Form.Control
+                              size="sm"
+                              type="text"
+                              name="pincode"
+                              placeholder="Pincode"
+                              value={hospital_st.pincode}
+                              onChange={handlehospitalChange}
+                              maxLength="6"
+                            />
+                          </div>
+                          <div className="col-8 d-flex align-items-end">
+                            <Button
+                              size="sm"
+                              className="theme_btn ms-auto"
+                              onClick={addHospital}
+                              style={{ minWidth: '60px' }}
+                            >
+                              Add
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      {hospitallist.length > 0 && (
+                        <div className="mt-2">
+                          {hospitallist.map((hospital, index) => (
+                            <div key={index} className="d-flex justify-content-between align-items-center p-2 mb-1 bg-light rounded" style={{ fontSize: '0.85rem' }}>
+                              <div className="flex-grow-1">
+                                <strong className="d-block">{hospital.name}</strong>
+                                <small className="text-muted">
+                                  {hospital.address}, {hospital.city}, {hospital.state}, {hospital.country} - {hospital.pincode}
+                                </small>
+                              </div>
+                              <Button
+                                variant="outline-danger"
+                                size="sm"
+                                onClick={() => deleteHospital(index)}
+                                className="ms-2"
+                                style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Check
+                        type="checkbox"
+                        id="termsCheckbox"
+                        checked={termsAccepted}
+                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                        label={
+                          <span>
+                            I agree to the
+                            <a
+                              href="#"
+                              className="text-primary ms-1"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setShowTcModal(true);
+                              }}
+                            >
+                              Terms and Conditions
+                            </a>
+                          </span>
+                        }
+                      />
+                    </Form.Group>
+                    <Button
+                      type="button"
+                      onClick={profileadd}
+                      className="d-block w-100 theme_btn my-3"
+                    >
+                      Submit Profile
+                    </Button>
+                  </Form>
+                </div>
+              </Col>
+            ) : (
+              ""
+            )}
+          </Row>
+        </Container>
+        <ToastContainer />
+        {loading ? <Loader /> : ""}
+        <TermsAndConditionsModal />
+      </div>
+      <FooterBar />
     </>
   );
 };
