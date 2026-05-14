@@ -646,10 +646,11 @@ const DoctorProfilePage = () => {
       const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var dataToken = JSON.parse(decrypted);
+      const tenPercentPrice = Math.round(consultationPrice * 0.10); // 10% of total price
       // 1️⃣ Create order from backend
       const { data } = await axios.post(
         `${API_BASE_URL}/user/order/create`,
-        { amount: consultationPrice }, // INR
+        { amount: tenPercentPrice }, // INR 10% of total price
         {
           headers: {
             Authorization: `Bearer ${dataToken.accessToken}`, // REQUIRED
@@ -1732,10 +1733,10 @@ const DoctorProfilePage = () => {
 
                           <div className="d-flex justify-content-between  ">
                             <div>
-                              <h6 className="font-600">Payable Amount</h6>
+                              <h6 className="font-600">Payable Amount (10%)</h6>
                             </div>
                             <div>
-                              <h6 className="font-600">₹{consultationPrice}</h6>
+                              <h6 className="font-600">₹{consultationPrice / 10}</h6>
                             </div>
                           </div>
                         </div>
@@ -1757,7 +1758,7 @@ const DoctorProfilePage = () => {
                                 Pay online
                               </h6>
                               <h6 className="text-center font-600">
-                                ₹{consultationPrice}
+                                ₹{consultationPrice / 10}
                               </h6>
                             </div>
                           </div>

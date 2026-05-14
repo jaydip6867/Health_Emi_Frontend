@@ -1149,9 +1149,9 @@ const D_Surgery = () => {
                     <Form.Group className="mb-4 col-12 col-md-6">
                       <div className="card shadow-sm">
                         <div className="card-header bg-light">
-                          <h6 className="mb-0 fw-bold">
+                          <h5 className="mb-0 fw-bold">
                             Included
-                          </h6>
+                          </h5>
                         </div>
                         <div className="card-body">
                           <div className="d-flex mb-3">
@@ -1227,10 +1227,10 @@ const D_Surgery = () => {
                     <Form.Group className="mb-4 col-12 col-md-6">
                       <div className="card shadow-sm">
                         <div className="card-header bg-light">
-                          <h6 className="mb-0 fw-bold">
+                          <h5 className="mb-0 fw-bold">
                             <i className="fas fa-times-circle text-danger me-2"></i>
                             Excluded
-                          </h6>
+                          </h5>
                         </div>
                         <div className="card-body">
                           <div className="d-flex mb-3">
