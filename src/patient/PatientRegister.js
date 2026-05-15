@@ -10,11 +10,13 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 import { API_BASE_URL, STORAGE_KEYS } from '../config'
 import { FiEdit2 } from 'react-icons/fi'
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const PatientRegister = () => {
 
   var navigate = useNavigate();
-  const [loading, setloading] = useState(false)
+  const [loading, setloading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [pat_reg, setpatreg] = useState(true);
   const [pat_otp, setpatotp] = useState(false);
@@ -323,6 +325,7 @@ const PatientRegister = () => {
                 <div className='register_doctor bg-white p-3 py-3 px-4 rounded-4 shadow'>
                   <div className='text-center'>
                     <h3>Patient - Sign Up</h3>
+                    <p>Create your doctor profile to manage patients, appointments, and EMI-supported treatments on a secure platform.</p>
                   </div>
                   <Form>
 
@@ -421,10 +424,22 @@ const PatientRegister = () => {
 
                     <Form.Group controlId="password" className='position-relative mb-1'>
                       <Form.Label>Password</Form.Label>
-                      <Form.Control type='password' placeholder="Enter Password" name='password' value={patient.password} className={`frm_input ${validationErrors.password ? 'is-invalid' : ''}`} onChange={patientch} />
+                      <Form.Control type={showPassword ? 'text' : 'password'} placeholder="Enter Password" name='password' value={patient.password} className={`frm_input ${validationErrors.password ? 'is-invalid' : ''}`} onChange={patientch} />
                       {validationErrors.password && (
                         <div className="invalid-feedback">{validationErrors.password}</div>
                       )}
+                      <span
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{
+                          position: "absolute",
+                          right: "30px",
+                          top: "36px",
+                          cursor: "pointer",
+                          color: "#555",
+                        }}
+                      >
+                        {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                      </span>
                     </Form.Group>
 
                     <div className="my-3 form-check ps-0">

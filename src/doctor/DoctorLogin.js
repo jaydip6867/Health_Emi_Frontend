@@ -12,13 +12,15 @@ import { toast, ToastContainer } from 'react-toastify';
 import Loader from '../Loader';
 import CryptoJS from "crypto-js";
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const DoctorLogin = () => {
 
     var navigate = useNavigate();
-    const [loading, setloading] = useState(false)
+    const [loading, setloading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
- 
+
     useEffect(() => {
         var getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
         if (getlocaldata != null) {
@@ -86,7 +88,19 @@ const DoctorLogin = () => {
 
                                     <Form.Group controlId="password" className='position-relative mb-1'>
                                         <Form.Label>Password</Form.Label>
-                                        <Form.Control type='password' placeholder="Enter Password" name='password' value={frmdoctor.password} className='frm_input' onChange={selfrmdata} />
+                                        <Form.Control type={showPassword ? 'text' : 'password'} placeholder="Enter Password" name='password' value={frmdoctor.password} className='frm_input' onChange={selfrmdata} />
+                                        <span
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            style={{
+                                                position: "absolute",
+                                                right: "12px",
+                                                top: "50%",
+                                                cursor: "pointer",
+                                                color: "#555",
+                                            }}
+                                        >
+                                            {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                                        </span>
                                     </Form.Group>
                                     <div className='form_bottom_div text-end'>
                                         <p><Link to={'forgotdoctor'} className='form-link'>Forgot Password ?</Link> </p>

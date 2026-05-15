@@ -13,9 +13,12 @@ import { Country, State, City } from "country-state-city";
 import NavBar from "../Visitor/Component/NavBar";
 import FooterBar from "../Visitor/Component/FooterBar";
 import { API_BASE_URL } from '../config';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const DoctorRegister = () => {
   var navigate = useNavigate();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
@@ -1063,10 +1066,10 @@ const DoctorRegister = () => {
                       )}
                     </Form.Group>
 
-                    <Form.Group controlId="password" className="mb-3">
+                    <Form.Group controlId="password" className="mb-3 position-relative">
                       <Form.Label>Password</Form.Label>
                       <Form.Control
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="Password"
                         autoComplete="off"
                         className={`frm_input ${validationErrors.password ? "is-invalid" : ""}`}
@@ -1079,6 +1082,18 @@ const DoctorRegister = () => {
                           {validationErrors.password}
                         </div>
                       )}
+                      <span
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{
+                          position: "absolute",
+                          right: "12px",
+                          top: "50%",
+                          cursor: "pointer",
+                          color: "#555",
+                        }}
+                      >
+                        {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                      </span>
                     </Form.Group>
 
                     <Button

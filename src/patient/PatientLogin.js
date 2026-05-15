@@ -9,11 +9,13 @@ import axios from 'axios'
 import CryptoJS from "crypto-js";
 import DoctorTestimonial from '../doctor/DoctorTestimonial'
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config'
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const PatientLogin = () => {
 
     var navigate = useNavigate();
-    const [loading, setloading] = useState(false)
+    const [loading, setloading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const [email, setemail] = useState('')
     const [password, setps] = useState('')
@@ -63,6 +65,7 @@ const PatientLogin = () => {
                             <div className='register_doctor bg-white p-3 py-3 px-4 rounded-4 shadow'>
                                 <div className='text-center'>
                                     <h3>Patient - Sign In</h3>
+                                    <p>Access your consultations, Surgeries, Ambulance Booking, Manage Your Profile with Health Easy EMI Plateform.</p>
                                 </div>
                                 <Form>
 
@@ -73,7 +76,19 @@ const PatientLogin = () => {
 
                                     <Form.Group controlId="password" className='position-relative mb-1'>
                                         <Form.Label>Password</Form.Label>
-                                        <Form.Control type='password' placeholder="Enter Password" name='password' value={password} className='frm_input' onChange={(e) => setps(e.target.value)} />
+                                        <Form.Control type={showPassword ? 'text' : 'password'} placeholder="Enter Password" name='password' value={password} className='frm_input' onChange={(e) => setps(e.target.value)} />
+                                        <span
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            style={{
+                                                position: "absolute",
+                                                right: "12px",
+                                                top: "50%",
+                                                cursor: "pointer",
+                                                color: "#555",
+                                            }}
+                                        >
+                                            {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                                        </span>
                                     </Form.Group>
                                     <div className='form_bottom_div text-end'>
                                         <p><Link to={'forgotpatient'} className='form-link'>Forgot Password ?</Link> </p>
