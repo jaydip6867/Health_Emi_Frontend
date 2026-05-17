@@ -408,7 +408,10 @@ const DoctorProfilePage = () => {
   const [single_surg, setsingle_surg] = useState(null);
   const [addshow, setaddshow] = useState(false);
   const [surgeryDate, setSurgeryDate] = useState(addDays(new Date(), 3));
-  const [surgeryErrors, setSurgeryErrors] = useState({ alt_mobile: "" });
+  const [surgeryErrors, setSurgeryErrors] = useState({
+    alt_name: "",
+    alt_mobile: "",
+  });
   const [surgeryHospitalError, setSurgeryHospitalError] = useState(false);
 
   const handleAddSurgeryClose = () => setaddshow(false);
@@ -428,6 +431,7 @@ const DoctorProfilePage = () => {
       navigate("/patient");
     } else {
       setSurgeryHospitalError(false);
+      setSurgeryErrors({ alt_name: "", alt_mobile: "" });
       setaddshow(true);
       // setShow(true)
     }
@@ -446,6 +450,9 @@ const DoctorProfilePage = () => {
     }));
     if (name === "alt_mobile" && surgeryErrors.alt_mobile) {
       setSurgeryErrors((prev) => ({ ...prev, alt_mobile: "" }));
+    }
+    if (name === "alt_name" && surgeryErrors.alt_name) {
+      setSurgeryErrors((prev) => ({ ...prev, alt_name: "" }));
     }
   };
 
@@ -709,13 +716,48 @@ const DoctorProfilePage = () => {
     }
   };
 
+  const validateSurgeryAlternateFields = () => {
+    const altName = (addsurgery?.alt_name || "").trim();
+    const altMobile = (addsurgery?.alt_mobile || "").trim();
+    const altErrors = { alt_name: "", alt_mobile: "" };
+    let altSwalTitle = "";
+
+    if (!altName) {
+      altErrors.alt_name = "Please enter alternate name";
+      altSwalTitle = "Please enter Alternate Name";
+    }
+    if (!altMobile) {
+      altErrors.alt_mobile = "Please enter alternate mobile number";
+      if (!altSwalTitle) altSwalTitle = "Please enter Alternate Mobile No";
+    } else if (!/^[6-9]\d{9}$/.test(altMobile)) {
+      altErrors.alt_mobile =
+        "Enter a valid 10-digit Indian mobile (starts with 6-9)";
+      if (!altSwalTitle) altSwalTitle = "Please enter valid Alternate Mobile No";
+    }
+
+    if (altSwalTitle) {
+      setSurgeryErrors(altErrors);
+      Swal.fire({
+        title: altSwalTitle,
+        icon: "warning",
+        confirmButtonText: "Ok",
+      });
+      return false;
+    }
+
+    setSurgeryErrors({ alt_name: "", alt_mobile: "" });
+    return true;
+  };
+
   const handleSurgeryPayment = async () => {
+    if (!validateSurgeryAlternateFields()) return;
+
     try {
       var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
       const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var dataToken = JSON.parse(decrypted);
-      
+
       // Validate surgery data before payment
       if (!addsurgery?.hospital_name) {
         Swal.fire({
@@ -2195,6 +2237,11 @@ const DoctorProfilePage = () => {
                 value={addsurgery?.alt_name}
                 onChange={surghandlechange}
               />
+              {surgeryErrors.alt_name && (
+                <div className="text-danger small mt-1">
+                  {surgeryErrors.alt_name}
+                </div>
+              )}
             </Form.Group>
             <Form.Group className="col-6">
               <Form.Label>Alternate Mobile No</Form.Label>
@@ -2206,10 +2253,9 @@ const DoctorProfilePage = () => {
                 maxLength={10}
                 inputMode="numeric"
                 pattern="[6-9][0-9]{9}"
-                className={surgeryErrors.alt_mobile ? "is-invalid" : ""}
               />
               {surgeryErrors.alt_mobile && (
-                <div className="invalid-feedback">
+                <div className="text-danger small mt-1">
                   {surgeryErrors.alt_mobile}
                 </div>
               )}
