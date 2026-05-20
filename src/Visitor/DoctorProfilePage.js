@@ -274,18 +274,16 @@ const DoctorProfilePage = () => {
         // Upload report file first if exists
         if (apt_data.report && apt_data.report.length > 0) {
           const formData = new FormData();
+          const filesToUpload =
+            apt_data.report instanceof FileList
+              ? Array.from(apt_data.report)
+              : Array.isArray(apt_data.report)
+              ? apt_data.report
+              : [apt_data.report];
 
-          // Handle single or multiple files
-          if (
-            apt_data.report instanceof FileList ||
-            Array.isArray(apt_data.report)
-          ) {
-            Array.from(apt_data.report).forEach((file) => {
-              formData.append("file", file);
-            });
-          } else {
-            formData.append("file", apt_data.report);
-          }
+          filesToUpload.forEach((file) => {
+            formData.append("files", file);
+          });
 
           const uploadResponse = await axios.post(
             `${API_BASE_URL}/user/upload/multiple`,
@@ -297,18 +295,23 @@ const DoctorProfilePage = () => {
             }
           );
 
-          // console.log('Upload Response:', uploadResponse.data);
-
-          // Extract URLs from response
           if (uploadResponse.data.Status === 200 && uploadResponse.data.Data) {
-            reportUrls = uploadResponse.data.Data;
+            reportUrls = uploadResponse.data.Data.map((item) =>
+              typeof item === "string"
+                ? item
+                : item?.path || item?.url || ""
+            ).filter(Boolean);
+          } else {
+            throw new Error(
+              uploadResponse.data?.Message || "Report upload failed"
+            );
           }
         }
 
         // Format report URLs to match API structure
-        const formattedReports = reportUrls.map(url => ({
+        const formattedReports = reportUrls.map((url) => ({
           path: url,
-          type: url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? "IMG" : "DOC"
+          type: /\.(jpg|jpeg|png|gif|webp)$/i.test(url) ? "IMG" : "DOC",
         }));
 
         // console.log('Report URLs to save:', reportUrls);
@@ -328,11 +331,21 @@ const DoctorProfilePage = () => {
 
         setModelPayment(true);
       } catch (error) {
+        console.error("saveAppointmentData error:", error);
+        Swal.fire({
+          title: "Unable to proceed",
+          text:
+            error?.response?.data?.Message ||
+            error?.message ||
+            "Report upload failed. Please try again.",
+          icon: "error",
+          confirmButtonText: "Ok",
+        });
       } finally {
         setloading(false);
       }
     } else {
-      // navigate('/patient')
+      navigate("/patient");
     }
   }
 

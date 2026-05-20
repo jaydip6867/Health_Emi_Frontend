@@ -1264,7 +1264,7 @@ const D_AmbulanceRequest = () => {
                                       className="d-flex align-items-center "
                                       style={{ color: "#374151" }}
                                     >
-                                      <FaMapMarkerAlt className="me-2" color="var(--primary-color-700)" />
+                                      <FaMapMarkerAlt className="me-2" color="#008000" />
                                       <h6 className="m-0">Pickup </h6>
                                     </div>
                                     <Form.Group className="py-2 position-relative">
@@ -1474,7 +1474,7 @@ const D_AmbulanceRequest = () => {
                                       className="d-flex align-items-center mb-2"
                                       style={{ color: "#374151" }}
                                     >
-                                      <FaRoute className="me-2" color="var(--primary-color-700)" />
+                                      <FaMapMarkerAlt className="me-2" color="#ff0000" />
                                       <h6 className="m-0">Drop</h6>
                                     </div>
                                     <Form.Group className=" position-relative">

@@ -58,7 +58,8 @@ const loadGoogleMaps = () => {
   return gmapsPromise;
 };
 
-const DROP_ICON_URL = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
+// const DROP_ICON_URL = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
+const DROP_ICON_URL = "https://img.icons8.com/?size=24&id=13800&format=png&color=000000";
 
 
 const P_AmbulanceRequest = () => {
@@ -1295,7 +1296,7 @@ const P_AmbulanceRequest = () => {
                                         className="d-flex align-items-center "
                                         style={{ color: "#374151" }}
                                       >
-                                        <FaMapMarkerAlt className="me-2" />
+                                        <FaMapMarkerAlt className="me-2" color="#008000" />
                                         <h6 className="m-0">Pickup </h6>
                                       </div>
                                       <Form.Group className="py-2 position-relative">
@@ -1505,7 +1506,7 @@ const P_AmbulanceRequest = () => {
                                         className="d-flex align-items-center mb-2"
                                         style={{ color: "#374151" }}
                                       >
-                                        <FaRoute className="me-2" />
+                                        <FaMapMarkerAlt className="me-2" color="#ff0000" />
                                         <h6 className="m-0">Drop</h6>
                                       </div>
                                       <Form.Group className=" position-relative">
