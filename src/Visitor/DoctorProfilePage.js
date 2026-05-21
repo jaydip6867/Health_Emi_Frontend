@@ -68,6 +68,10 @@ const DoctorProfilePage = () => {
     { time: "08:30 PM", available: true },
   ];
 
+  // Slots state to allow disabling booked slots per selected date
+  const [slots, setSlots] = useState(timeSlots.map((s) => ({ ...s })));
+  const [fetchingSlots, setFetchingSlots] = useState(false);
+
   // Helpers: determine if a slot can be selected relative to now and selected date
   const isSameCalendarDay = (d1, d2) => {
     if (!d1 || !d2) return false;
@@ -108,6 +112,47 @@ const DoctorProfilePage = () => {
     setSelectedTimeSlot(null); // Reset time slot when date changes
   };
 
+  // Fetch booked slots for a given date and mark them unavailable
+  const fetchBookedSlots = async (date) => {
+    if (!date || !d_id) return;
+    try {
+      setFetchingSlots(true);
+      const formatted = format(date, "dd-MM-yyyy");
+      const response = await axios.post(`${API_BASE_URL}/user/doctors/bookedslots`, {
+        doctorid: d_id,
+        date: formatted,
+      }, {
+        headers: token ? { Authorization: token } : {},
+      });
+
+      const data = response?.data?.Data || response?.data || [];
+      if (!Array.isArray(data)) {
+        setSlots(timeSlots.map((s) => ({ ...s, available: true })));
+        return;
+      }
+
+      const bookedTimes = new Set(
+        data
+          .map((it) => {
+            if (!it) return null;
+            if (typeof it === "string") return it;
+            if (typeof it === "object") return it.time || it.slot || it?.timing || null;
+            return null;
+          })
+          .filter(Boolean)
+      );
+
+      setSlots(
+        timeSlots.map((s) => ({ ...s, available: !bookedTimes.has(s.time) }))
+      );
+    } catch (err) {
+      console.error("Error fetching booked slots:", err);
+      setSlots(timeSlots.map((s) => ({ ...s, available: true })));
+    } finally {
+      setFetchingSlots(false);
+    }
+  };
+
   const [patient, setpatient] = useState(null);
   const [token, settoken] = useState(null);
   const [logdata, setlogdata] = useState(null);
@@ -143,6 +188,15 @@ const DoctorProfilePage = () => {
     if (d_id) {
       getdoctordata(d_id);
     }
+  }, [d_id]);
+
+  useEffect(() => {
+    if (d_id && selectedDate) {
+      fetchBookedSlots(selectedDate);
+    }
+    // Only fetch initial booked slots once on load for today's date.
+    // Date changes after this are handled by the DatePicker onChange.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [d_id]);
 
   const getdoctordata = async (d) => {
@@ -1654,6 +1708,7 @@ const DoctorProfilePage = () => {
                             onChange={(date) => {
                               setSelectedDate(date);
                               setSelectedTimeSlot(null); // Reset time slot when date changes
+                              fetchBookedSlots(date);
                             }}
                             inline
                             minDate={new Date()}
@@ -1677,7 +1732,7 @@ const DoctorProfilePage = () => {
                             {selectedDate ? (
                               <div>
                                 <Row className="g-2">
-                                  {timeSlots.map((slot, index) => (
+                                  {slots.map((slot, index) => (
                                     <Col xs={4} key={index}>
                                       <Button
                                         variant={
