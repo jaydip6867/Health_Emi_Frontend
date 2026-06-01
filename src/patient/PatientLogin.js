@@ -17,8 +17,11 @@ const PatientLogin = () => {
     const [loading, setloading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
+
     const [email, setemail] = useState('')
     const [password, setps] = useState('')
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
 
     useEffect(() => {
         var getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
@@ -37,7 +40,40 @@ const PatientLogin = () => {
 
     }, [navigate])
 
+    const validateForm = () => {
+        let isValid = true;
+
+        // Email Validation
+        if (!email.trim()) {
+            setEmailError('Email is required');
+            isValid = false;
+        } else if (
+            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
+        ) {
+            setEmailError('Please enter a valid email');
+            isValid = false;
+        } else {
+            setEmailError('');
+        }
+
+        // Password Validation
+        if (!password) {
+            setPasswordError('Password is required');
+            isValid = false;
+        } else if (password.length < 6) {
+            setPasswordError('Password must be at least 6 characters');
+            isValid = false;
+        } else {
+            setPasswordError('');
+        }
+
+        return isValid;
+    };
+
     function patientsignin() {
+        if (!validateForm()) {
+            return;
+        }
         setloading(true)
         axios({
             method: 'post',
@@ -69,26 +105,61 @@ const PatientLogin = () => {
                                 </div>
                                 <Form>
 
-                                    <Form.Group controlId="mobile" className='position-relative mb-3'>
+                                    <Form.Group className="mb-3">
                                         <Form.Label>Email</Form.Label>
-                                        <Form.Control placeholder="Enter Email" name='email' value={email} className='frm_input' onChange={(e) => setemail(e.target.value)} />
+
+                                        <Form.Control
+                                            type="email"
+                                            placeholder="Enter Email"
+                                            value={email}
+                                            className={`frm_input ${emailError ? 'is-invalid' : ''}`}
+                                            onChange={(e) => {
+                                                setemail(e.target.value);
+                                                setEmailError('');
+                                            }}
+                                        />
+
+                                        {emailError && (
+                                            <div className="text-danger mt-1">
+                                                {emailError}
+                                            </div>
+                                        )}
                                     </Form.Group>
 
-                                    <Form.Group controlId="password" className='position-relative mb-1'>
+                                    <Form.Group controlId="password" className="position-relative mb-1">
                                         <Form.Label>Password</Form.Label>
-                                        <Form.Control type={showPassword ? 'text' : 'password'} placeholder="Enter Password" name='password' value={password} className='frm_input' onChange={(e) => setps(e.target.value)} />
+
+                                        <Form.Control
+                                            type={showPassword ? 'text' : 'password'}
+                                            placeholder="Enter Password"
+                                            value={password}
+                                            maxLength={20}
+                                            // className={`frm_input ${passwordError ? 'is-invalid' : ''}`}
+                                            className={`frm_input`}
+                                            onChange={(e) => {
+                                                setps(e.target.value);
+                                                setPasswordError('');
+                                            }}
+                                        />
+
                                         <span
                                             onClick={() => setShowPassword(!showPassword)}
                                             style={{
                                                 position: "absolute",
                                                 right: "12px",
-                                                top: "50%",
+                                                top: "36px",
                                                 cursor: "pointer",
                                                 color: "#555",
                                             }}
                                         >
                                             {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
                                         </span>
+
+                                        {passwordError && (
+                                            <div className="text-danger mt-1">
+                                                {passwordError}
+                                            </div>
+                                        )}
                                     </Form.Group>
                                     <div className='form_bottom_div text-end'>
                                         <p><Link to={'forgotpatient'} className='form-link'>Forgot Password ?</Link> </p>

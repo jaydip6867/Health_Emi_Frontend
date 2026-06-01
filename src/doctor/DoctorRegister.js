@@ -202,7 +202,7 @@ const DoctorRegister = () => {
   const validatePassword = (p) => {
     const v = (p || "").trim();
     if (!v) return "Password is required";
-    if (v.length < 3) return "Password must be at least 3 characters";
+    if (v.length < 6) return "Password must be at least 6 characters";
     return "";
   };
 

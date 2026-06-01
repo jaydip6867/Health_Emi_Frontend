@@ -112,9 +112,9 @@ const SearchBox = () => {
   useEffect(() => {
     if (states.length > 0 && !locationCalledRef.current) {
       locationCalledRef.current = true;
-  
-        detectUserLocation();
-      
+
+      detectUserLocation();
+
     }
   }, [states]);
 
@@ -127,40 +127,52 @@ const SearchBox = () => {
 
   // -------------------- INPUT HANDLERS --------------------
   const handleStateInputChange = (e) => {
-    const value = e.target.value;
-    setStateInput(value);
-    
-    // Find if the input matches any state
-    const state = states.find(s => s.name.toLowerCase() === value.toLowerCase());
-    if (state) {
-      setSelectedState(state.isoCode);
-      setSelectedCity("");
-      setCityInput("");
-      loadCitiesForState(state.isoCode);
-    } else {
-      setSelectedState("");
-      setSelectedCity("");
-      setCityInput("");
-      setCities([]);
-    }
-    
-    if (inputValue?.trim()) getsuggestion(inputValue);
-  };
+  const value = e.target.value;
+
+  // Numbers not allowed
+  if (/\d/.test(value)) return;
+
+  setStateInput(value);
+
+  const state = states.find(
+    s => s.name.toLowerCase() === value.toLowerCase()
+  );
+
+  if (state) {
+    setSelectedState(state.isoCode);
+    setSelectedCity("");
+    setCityInput("");
+    loadCitiesForState(state.isoCode);
+  } else {
+    setSelectedState("");
+    setSelectedCity("");
+    setCityInput("");
+    setCities([]);
+  }
+
+  if (inputValue?.trim()) getsuggestion(inputValue);
+};
 
   const handleCityInputChange = (e) => {
-    const value = e.target.value;
-    setCityInput(value);
-    
-    // Find if the input matches any city in the current state
-    const city = cities.find(c => c.name.toLowerCase() === value.toLowerCase());
-    if (city) {
-      setSelectedCity(city.name);
-    } else {
-      setSelectedCity(value);
-    }
-    
-    if (inputValue?.trim()) getsuggestion(inputValue);
-  };
+  const value = e.target.value;
+
+  // Numbers not allowed
+  if (/\d/.test(value)) return;
+
+  setCityInput(value);
+
+  const city = cities.find(
+    c => c.name.toLowerCase() === value.toLowerCase()
+  );
+
+  if (city) {
+    setSelectedCity(city.name);
+  } else {
+    setSelectedCity(value);
+  }
+
+  if (inputValue?.trim()) getsuggestion(inputValue);
+};
 
   // Update input values when selected state/city changes
   useEffect(() => {
@@ -225,7 +237,7 @@ const SearchBox = () => {
                       type="text"
                       list="state-list"
                       placeholder={locationLoading ? "Detecting location..." : "Enter State"}
-                      className="ps-5 pe-1 py-2 bg-transparent border-0"
+                      className={`ps-5 pe-1 py-2 bg-transparent border-0 ${locationLoading ? "placeholder-red" : ""}`}
                       value={stateInput}
                       onChange={handleStateInputChange}
                       onFocus={() => setShowList(false)}
@@ -253,7 +265,8 @@ const SearchBox = () => {
                         type="text"
                         list="city-list"
                         placeholder={selectedState ? "Enter City" : "Select State First"}
-                        className="ps-5 pe-1 py-2 bg-transparent border-0"
+                        className={`ps-5 pe-1 py-2 bg-transparent border-0 ${!selectedState ? "placeholder-red" : ""
+                          }`}
                         value={cityInput}
                         onChange={handleCityInputChange}
                         onFocus={() => setShowList(false)}
@@ -326,11 +339,11 @@ const SearchBox = () => {
                               to={
                                 item.type === "surgery"
                                   ? `/surgery/${encodeURIComponent(
-                                      btoa(item.name)
-                                    )}`
+                                    btoa(item.name)
+                                  )}`
                                   : `/doctorprofile/${encodeURIComponent(
-                                      btoa(item.id)
-                                    )}`
+                                    btoa(item.id)
+                                  )}`
                               }
                               onClick={() => handleSelectItem(item.name)}
                             >

@@ -20,6 +20,10 @@ const DoctorLogin = () => {
     const [loading, setloading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
+    const [errors, setErrors] = useState({
+        email: '',
+        password: ''
+    });
 
     useEffect(() => {
         var getlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
@@ -48,7 +52,52 @@ const DoctorLogin = () => {
         }));
     }
 
+    const validateForm = () => {
+        let newErrors = {};
+        let isValid = true;
+
+        // Email Validation
+        if (!frmdoctor.email.trim()) {
+            newErrors.email = 'Email is required';
+            isValid = false;
+        } else if (
+            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(frmdoctor.email)
+        ) {
+            newErrors.email = 'Please enter a valid email';
+            isValid = false;
+        }
+
+        // Password Validation
+        if (!frmdoctor.password) {
+            newErrors.password = 'Password is required';
+            isValid = false;
+        } else if (frmdoctor.password.length < 6) {
+            newErrors.password = 'Password must be at least 6 characters';
+            isValid = false;
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    function selfrmdata(e) {
+        const { name, value } = e.target;
+
+        setfrmdoctor(prev => ({
+            ...prev,
+            [name]: value
+        }));
+
+        setErrors(prev => ({
+            ...prev,
+            [name]: ''
+        }));
+    }
+
     const logindoctor = async () => {
+        if (!validateForm()) {
+            return;
+        }
         setloading(true)
         await axios({
             method: 'post',
@@ -81,26 +130,60 @@ const DoctorLogin = () => {
                                 </div>
                                 <Form>
 
-                                    <Form.Group controlId="mobile" className='position-relative mb-3'>
+                                    <Form.Group controlId="email" className="mb-3">
                                         <Form.Label>Email</Form.Label>
-                                        <Form.Control placeholder="Enter Email" name='email' value={frmdoctor.email} className='frm_input' onChange={selfrmdata} />
+
+                                        <Form.Control
+                                            type="email"
+                                            placeholder="Enter Email"
+                                            name="email"
+                                            value={frmdoctor.email}
+                                            className={`frm_input ${errors.email ? 'is-invalid' : ''}`}
+                                            onChange={selfrmdata}
+                                        />
+
+                                        {errors.email && (
+                                            <div className="text-danger mt-1">
+                                                {errors.email}
+                                            </div>
+                                        )}
                                     </Form.Group>
 
-                                    <Form.Group controlId="password" className='position-relative mb-1'>
+                                    <Form.Group controlId="password" className="position-relative mb-1">
                                         <Form.Label>Password</Form.Label>
-                                        <Form.Control type={showPassword ? 'text' : 'password'} placeholder="Enter Password" name='password' value={frmdoctor.password} className='frm_input' onChange={selfrmdata} />
+
+                                        <Form.Control
+                                            type={showPassword ? 'text' : 'password'}
+                                            placeholder="Enter Password"
+                                            name="password"
+                                            value={frmdoctor.password}
+                                            maxLength={20}
+                                            className={`frm_input ${errors.password ? 'is-invalid' : ''}`}
+                                            onChange={selfrmdata}
+                                        />
+
                                         <span
                                             onClick={() => setShowPassword(!showPassword)}
                                             style={{
                                                 position: "absolute",
                                                 right: "12px",
-                                                top: "50%",
+                                                top: "36px",
                                                 cursor: "pointer",
                                                 color: "#555",
                                             }}
                                         >
-                                            {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                                            {showPassword ? (
+                                                <FaEyeSlash size={18} />
+                                            ) : (
+                                                <FaEye size={18} />
+                                            )}
                                         </span>
+
+                                        {errors.password && (
+                                            <div className="text-danger mt-1">
+                                                {errors.password}
+                                            </div>
+                                        )}
                                     </Form.Group>
                                     <div className='form_bottom_div text-end'>
                                         <p><Link to={'forgotdoctor'} className='form-link'>Forgot Password ?</Link> </p>

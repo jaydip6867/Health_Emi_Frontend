@@ -11,8 +11,8 @@ const AppDownload = () => {
 
                             <Col xs={12} lg={7}>
                                 <div className='app-download-box text-center text-lg-start'>
-                                    <span className='text-white fs-4'>Working for Your Better Health.</span>
-                                    <h2 className='text-white mb-3 fs-1'>Download the App today!</h2>
+                                    <span className='text-white fs-5'>Working for Your Better Health.</span>
+                                    <h2 className='text-white mb-3 fs-1'>Download App Now...</h2>
                                     <div className='scan_sec my-4'>
                                     </div>
                                     <div className='d-flex gap-4 w-100 justify-content-center store_img justify-content-lg-start'>

@@ -80,11 +80,11 @@ const FooterBar = () => {
           <Col lg={3} xs={12} className="footer-contact">
             <h4>Contact Us</h4>
             <div className="contact-info">
-              <span className="py-2">
+              <span>
                 <MdCall className="me-2" />
                 +91 8855919195
               </span>
-              <a href="mailto:healtheasyemi@gmail.com?subject=Inquiry&body=Hello HealthEasy team," className="py-2">
+              <a href="mailto:healtheasyemi@gmail.com?subject=Inquiry&body=Hello HealthEasy team,">
                 <div className="d-flex align-items-center ">
                   <div className="d-flex align-items-center">
                     <MdMail size={18} className=" me-2" />
