@@ -337,7 +337,7 @@ const PatientProfile = () => {
 
                                         <div className='text-center border-top mt-3'>
 
-                                            <Button type="button" className='theme_btn col-3 mt-3' onClick={() => updateprofiledata(profile._id)}>Update Profile</Button>
+                                            <Button type="button" className='theme_btn col-auto mt-3' onClick={() => updateprofiledata(profile._id)}>Update Profile</Button>
                                         </div>
                                     </div> : ''
                                 }

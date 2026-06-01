@@ -55,12 +55,12 @@ const Contact = () => {
                             <h5>Location</h5>
                             <p>Office no.23, 3rd Floor, Aston Plaza, Narhe Ambegaon Rd, above Star Bazaar, Ambegaon Budruk, Pune, Maharashtra 411046</p>
                         </Col>
-                        <Col xs={6} md={4}>
+                        <Col xs={12} md={4}>
                             <h5>Contact</h5>
                             <p className='m-0'>healtheasyemi@gmail.com</p>
                             <p>+91 8855919195</p>
                         </Col>
-                        <Col xs={6} md={4}>
+                        <Col xs={12} md={4}>
                             <h5>Social Media</h5>
                             <div className="social-links justify-content-center">
                                 <a className="social-icon" href='https://www.facebook.com/profile.php?id=61573355822361' target='_blank'>

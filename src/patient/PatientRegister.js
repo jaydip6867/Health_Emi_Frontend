@@ -80,7 +80,7 @@ const PatientRegister = () => {
   const validatePassword = (p) => {
     const v = (p || '').trim();
     if (!v) return 'Password is required';
-    if (v.length < 3) return 'Password must be at least 3 characters';
+    if (v.length < 6) return 'Password must be at least 6 characters';
     return '';
   };
 
@@ -414,6 +414,7 @@ const PatientRegister = () => {
                     <Form.Group controlId="blood_group" className='position-relative mb-3'>
                       <Form.Label>Blood Group</Form.Label>
                       <Form.Select name='blood_group' value={patient.blood_group} className='frm_input' onChange={patientch}>
+                        <option value="">Select Blood Group</option>
                         {
                           blood_g.map((v, i) => {
                             return (<option key={i} value={v}>{v}</option>)
