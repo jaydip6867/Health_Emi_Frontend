@@ -77,7 +77,7 @@ const Surgerydoctorlist = () => {
                 {open && (
                     <div
                         style={{
-                            position: 'absolute',
+                            position: 'static',
                             top: '100%',
                             left: 0,
                             right: 0,
@@ -337,8 +337,8 @@ const Surgerydoctorlist = () => {
             </div>
 
             {/* filter by below list */}
-            <Container className='overflow-auto'>
-                <Row className='justify-content-lg-center pb-3 flex-nowrap align-items-center g-2 mt-3'>
+            <Container className='overflow-x-auto'>
+                <Row className='justify-content-lg-center pb-3 flex-nowrap align-items-start g-2 mt-3'>
                     <Col xs='auto'>
                         <Button variant='secondary' className='rounded-pill'><MdFilterListAlt className='fs-5' /> Filter</Button>
                     </Col>

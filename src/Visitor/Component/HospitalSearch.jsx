@@ -20,8 +20,6 @@ const HospitalSearch = React.forwardRef(
     const [showList, setShowList] = useState(false);
     const locationCalledRef = useRef(false); // 🔒 prevent multiple calls
 
-  
-
     React.useImperativeHandle(ref, () => ({
       resetFilters: () => {
         setInputValue("");
