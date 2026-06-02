@@ -30,6 +30,8 @@ import { RiSecurePaymentLine } from "react-icons/ri";
 
 const DoctorProfilePage = () => {
   var navigate = useNavigate();
+  var { id } = useParams();
+  const d_id = atob(decodeURIComponent(id));
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [endDate, setEndDate] = useState(null);
@@ -88,8 +90,38 @@ const DoctorProfilePage = () => {
     return slotDateTime.getTime() > Date.now();
   };
 
+  const [bookedSlots, setBookedSlots] = useState([]);
+
+  useEffect(() => {
+    const fetchBookedSlots = async () => {
+      if (selectedDate && d_id) {
+        const dateVal = format(selectedDate, "dd-MM-yyyy");
+        try {
+          const res = await axios({
+            method: "post",
+            url: `${API_BASE_URL}/user/appointments/bookedslots`,
+            data: { doctorid: d_id, date: dateVal },
+            headers: {
+               "Content-Type": "application/json"
+            }
+          });
+          if (res.data && res.data.Data && Array.isArray(res.data.Data)) {
+            setBookedSlots(res.data.Data);
+          } else {
+            setBookedSlots([]);
+          }
+        } catch (error) {
+          console.error("Failed to fetch booked slots", error);
+          setBookedSlots([]);
+        }
+      }
+    };
+    fetchBookedSlots();
+  }, [selectedDate, d_id]);
+
   const canSelectSlot = (slot) => {
     if (!slot?.available) return false;
+    if (bookedSlots.includes(slot.time)) return false;
     return isSlotInFutureForSelectedDate(slot.time);
   };
 
@@ -132,8 +164,6 @@ const DoctorProfilePage = () => {
     }
   }, [navigate]);
   const [loading, setloading] = useState(false);
-  var { id } = useParams();
-  const d_id = atob(decodeURIComponent(id));
   // console.log('ID:', id, d_id);
 
   const [doctor_profile, setdocprofile] = useState(null);

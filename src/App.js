@@ -58,10 +58,13 @@ import MedicinePolicy from "./Visitor/T&CPage/MedicinePolicy";
 import DoctorTerm from "./Visitor/T&CPage/DoctorTerm";
 import PnsPolicy from "./Visitor/T&CPage/PnsPolicy";
 import ScrollToTop from "./ScrollToTop";
+import ChatBot from "./components/ChatBot";
+import MedicalLoanForm from "./Visitor/MedicalLoanForm";
 function App() {
   return (
     <div className="App">
       <ScrollToTop />
+      <ChatBot />
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/about" element={<About />}></Route>
@@ -82,6 +85,7 @@ function App() {
         <Route path="/comparedoctor" element={<CompareDoctor />}></Route>
         <Route path="/ambulancepage" element={<AmbulancePage />}></Route>
         <Route path="/surgerypage" element={<SurgeriesPage />}></Route>
+        <Route path="/apply-loan" element={<MedicalLoanForm />}></Route>
         <Route path="/faq" element={<Faq />}></Route>
         <Route path="/blog" element={<Blog />}></Route>
         <Route path="/blog/:id" element={<BlogDetail />}></Route>
