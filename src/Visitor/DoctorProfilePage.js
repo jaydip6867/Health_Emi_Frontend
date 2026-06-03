@@ -96,33 +96,6 @@ const DoctorProfilePage = () => {
 
   const [bookedSlots, setBookedSlots] = useState([]);
 
-  useEffect(() => {
-    const fetchBookedSlots = async () => {
-      if (selectedDate && d_id) {
-        const dateVal = format(selectedDate, "dd-MM-yyyy");
-        try {
-          const res = await axios({
-            method: "post",
-            url: `${API_BASE_URL}/user/appointments/bookedslots`,
-            data: { doctorid: d_id, date: dateVal },
-            headers: {
-               "Content-Type": "application/json"
-            }
-          });
-          if (res.data && res.data.Data && Array.isArray(res.data.Data)) {
-            setBookedSlots(res.data.Data);
-          } else {
-            setBookedSlots([]);
-          }
-        } catch (error) {
-          console.error("Failed to fetch booked slots", error);
-          setBookedSlots([]);
-        }
-      }
-    };
-    fetchBookedSlots();
-  }, [selectedDate, d_id]);
-
   const canSelectSlot = (slot) => {
     if (!slot?.available) return false;
     if (bookedSlots.includes(slot.time)) return false;
@@ -150,16 +123,17 @@ const DoctorProfilePage = () => {
     try {
       setFetchingSlots(true);
       const formatted = format(date, "dd-MM-yyyy");
-      const response = await axios.post(`${API_BASE_URL}/user/doctors/bookedslots`, {
+      const response = await axios.post(`${API_BASE_URL}/user/appointments/bookedslots`, {
         doctorid: d_id,
         date: formatted,
       }, {
-        headers: token ? { Authorization: token } : {},
+        headers: { "Content-Type": "application/json" }
       });
 
       const data = response?.data?.Data || response?.data || [];
       if (!Array.isArray(data)) {
         setSlots(timeSlots.map((s) => ({ ...s, available: true })));
+        setBookedSlots([]);
         return;
       }
 
@@ -174,12 +148,15 @@ const DoctorProfilePage = () => {
           .filter(Boolean)
       );
 
+      const bookedTimesArr = Array.from(bookedTimes);
+      setBookedSlots(bookedTimesArr);
       setSlots(
         timeSlots.map((s) => ({ ...s, available: !bookedTimes.has(s.time) }))
       );
     } catch (err) {
       console.error("Error fetching booked slots:", err);
       setSlots(timeSlots.map((s) => ({ ...s, available: true })));
+      setBookedSlots([]);
     } finally {
       setFetchingSlots(false);
     }
