@@ -31,6 +31,7 @@ import Amb_Forgot from "./Ambulance/Amb_Forgot";
 import Amb_Profile from "./Ambulance/Amb_Profile";
 import D_Consultation from "./doctor/D_Consultation";
 import P_Surgeries from "./patient/P_Surgeries";
+import P_EmiApplications from "./patient/P_EmiApplications";
 import D_SurgeryAppointment from "./doctor/D_SurgeryAppointment";
 import D_AmbulanceRequest from "./doctor/D_AmbulanceRequest";
 import CompareDoctor from "./Visitor/CompareDoctor";
@@ -135,6 +136,7 @@ function App() {
           <Route path="forgotpatient" element={<PatientForgotps />}></Route>
           <Route path="appointment" element={<P_Appointment />}></Route>
           <Route path="surgeries" element={<P_Surgeries />}></Route>
+          <Route path="emiapplications" element={<P_EmiApplications />}></Route>
           <Route
             path="ambulancerequest"
             element={<P_AmbulanceRequest />}
