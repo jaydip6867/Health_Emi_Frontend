@@ -50,6 +50,9 @@ const P_Sidebar = ({ patient }) => {
               <NavLink to={'/patient/surgeries'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
                 <IoCalendarOutline /> Surgeries Appointment
               </NavLink>
+              <NavLink to={'/patient/emiapplications'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
+                <FiSettings /> EMI Applications
+              </NavLink>
               <NavLink to={'/patient/ambulancerequest'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
                 <FiTruck /> Book Ambulance
               </NavLink>

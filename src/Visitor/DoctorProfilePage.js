@@ -30,6 +30,8 @@ import { RiSecurePaymentLine } from "react-icons/ri";
 
 const DoctorProfilePage = () => {
   var navigate = useNavigate();
+  var { id } = useParams();
+  const d_id = atob(decodeURIComponent(id));
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [endDate, setEndDate] = useState(null);
@@ -92,8 +94,11 @@ const DoctorProfilePage = () => {
     return slotDateTime.getTime() > Date.now();
   };
 
+  const [bookedSlots, setBookedSlots] = useState([]);
+
   const canSelectSlot = (slot) => {
     if (!slot?.available) return false;
+    if (bookedSlots.includes(slot.time)) return false;
     return isSlotInFutureForSelectedDate(slot.time);
   };
 
@@ -118,16 +123,17 @@ const DoctorProfilePage = () => {
     try {
       setFetchingSlots(true);
       const formatted = format(date, "dd-MM-yyyy");
-      const response = await axios.post(`${API_BASE_URL}/user/doctors/bookedslots`, {
+      const response = await axios.post(`${API_BASE_URL}/user/appointments/bookedslots`, {
         doctorid: d_id,
         date: formatted,
       }, {
-        headers: token ? { Authorization: token } : {},
+        headers: { "Content-Type": "application/json" }
       });
 
       const data = response?.data?.Data || response?.data || [];
       if (!Array.isArray(data)) {
         setSlots(timeSlots.map((s) => ({ ...s, available: true })));
+        setBookedSlots([]);
         return;
       }
 
@@ -142,12 +148,15 @@ const DoctorProfilePage = () => {
           .filter(Boolean)
       );
 
+      const bookedTimesArr = Array.from(bookedTimes);
+      setBookedSlots(bookedTimesArr);
       setSlots(
         timeSlots.map((s) => ({ ...s, available: !bookedTimes.has(s.time) }))
       );
     } catch (err) {
       console.error("Error fetching booked slots:", err);
       setSlots(timeSlots.map((s) => ({ ...s, available: true })));
+      setBookedSlots([]);
     } finally {
       setFetchingSlots(false);
     }
@@ -177,8 +186,6 @@ const DoctorProfilePage = () => {
     }
   }, [navigate]);
   const [loading, setloading] = useState(false);
-  var { id } = useParams();
-  const d_id = atob(decodeURIComponent(id));
   // console.log('ID:', id, d_id);
 
   const [doctor_profile, setdocprofile] = useState(null);
