@@ -31,6 +31,7 @@ import Amb_Forgot from "./Ambulance/Amb_Forgot";
 import Amb_Profile from "./Ambulance/Amb_Profile";
 import D_Consultation from "./doctor/D_Consultation";
 import P_Surgeries from "./patient/P_Surgeries";
+import P_EmiApplications from "./patient/P_EmiApplications";
 import D_SurgeryAppointment from "./doctor/D_SurgeryAppointment";
 import D_AmbulanceRequest from "./doctor/D_AmbulanceRequest";
 import CompareDoctor from "./Visitor/CompareDoctor";
@@ -58,10 +59,13 @@ import MedicinePolicy from "./Visitor/T&CPage/MedicinePolicy";
 import DoctorTerm from "./Visitor/T&CPage/DoctorTerm";
 import PnsPolicy from "./Visitor/T&CPage/PnsPolicy";
 import ScrollToTop from "./ScrollToTop";
+import ChatBot from "./components/ChatBot";
+import MedicalLoanForm from "./Visitor/MedicalLoanForm";
 function App() {
   return (
     <div className="App">
       <ScrollToTop />
+      <ChatBot />
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/about" element={<About />}></Route>
@@ -82,6 +86,7 @@ function App() {
         <Route path="/comparedoctor" element={<CompareDoctor />}></Route>
         <Route path="/ambulancepage" element={<AmbulancePage />}></Route>
         <Route path="/surgerypage" element={<SurgeriesPage />}></Route>
+        <Route path="/apply-loan" element={<MedicalLoanForm />}></Route>
         <Route path="/faq" element={<Faq />}></Route>
         <Route path="/blog" element={<Blog />}></Route>
         <Route path="/blog/:id" element={<BlogDetail />}></Route>
@@ -131,6 +136,7 @@ function App() {
           <Route path="forgotpatient" element={<PatientForgotps />}></Route>
           <Route path="appointment" element={<P_Appointment />}></Route>
           <Route path="surgeries" element={<P_Surgeries />}></Route>
+          <Route path="emiapplications" element={<P_EmiApplications />}></Route>
           <Route
             path="ambulancerequest"
             element={<P_AmbulanceRequest />}

@@ -297,8 +297,11 @@ const P_AmbulanceRequest = () => {
 
   const ensureMap = async () => {
     if (mapRef.current) return mapRef.current;
+    const mapEl = document.getElementById("ambulanceMap");
+    if (!mapEl) return null;
+
     const google = await loadGoogleMaps();
-    const map = new google.maps.Map(document.getElementById("ambulanceMap"), {
+    const map = new google.maps.Map(mapEl, {
       center: { lat: defaultCenter[0], lng: defaultCenter[1] },
       zoom: 12,
       disableDefaultUI: false,
@@ -361,6 +364,7 @@ const P_AmbulanceRequest = () => {
           async (pos) => {
             const { latitude, longitude } = pos.coords;
             const map = await ensureMap();
+            if (!map) return;
             map.setCenter({ lat: latitude, lng: longitude });
             map.setZoom(14);
             const fix = (n) => Number(n.toFixed(6));
@@ -449,6 +453,7 @@ const P_AmbulanceRequest = () => {
 
     try {
       const map = await ensureMap();
+      if (!map) return;
       const center = map.getCenter();
 
       const service = new window.google.maps.places.AutocompleteService();
@@ -545,6 +550,7 @@ const P_AmbulanceRequest = () => {
       return;
     }
     const map = await ensureMap();
+    if (!map) return;
     map.setCenter({ lat, lng: lon });
     map.setZoom(14);
     if (type === "pickup") {
@@ -614,6 +620,10 @@ const P_AmbulanceRequest = () => {
           const { latitude, longitude } = pos.coords;
 
           const map = await ensureMap();
+          if (!map) {
+            setLoading(false);
+            return;
+          }
           map.setCenter({ lat: latitude, lng: longitude });
           map.setZoom(14);
 
