@@ -120,9 +120,9 @@ const P_EmiApplications = () => {
       selector: (row) => row.estimated_amount || "0",
       cell: (row) => (
         <div>
-          <span className="fw-semibold text-primary">Est: ₹{row.estimated_amount || "0"}</span>
+          <span className="fw-semibold text-primary">Applied: ₹{row.estimated_amount || "0"}</span>
           {row.status === "approved" && (
-            <div className="text-success small fw-semibold">Appr: ₹{row.approved_amount || "0"}</div>
+            <div className="text-success small fw-semibold">Approved: ₹{row.approved_amount || "0"}</div>
           )}
         </div>
       ),
@@ -220,12 +220,12 @@ const P_EmiApplications = () => {
                     <div className="fw-semibold">{singleView.treatment_type || "N/A"}</div>
                   </Col>
                   <Col md={6}>
-                    <div className="text-muted small mb-1">Estimated Amount</div>
+                    <div className="text-muted small mb-1">Applied Amount</div>
                     <div className="fw-semibold text-primary">₹{singleView.estimated_amount || "0"}</div>
                   </Col>
                   {singleView.status === "approved" && (
                     <Col md={6}>
-                      <div className="text-muted small mb-1">Approved Loan Amount</div>
+                      <div className="text-muted small mb-1">Approved Amount</div>
                       <div className="fw-semibold text-success">₹{singleView.approved_amount || "0"}</div>
                     </Col>
                   )}
