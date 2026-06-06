@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CryptoJS from "crypto-js";
 import NavBar from './Component/NavBar';
 import FooterBar from './Component/FooterBar';
@@ -46,7 +46,7 @@ const VideoConsult = () => {
                             <div className='ps-5'>
                                 <h2 className="fw-bold mb-2" style={{ color: 'var(--grayscale-color-900)' }}>Consult Top Doctors Anytime, Anywhere</h2>
                                 <p className=" mb-4" style={{ color: 'var(--grayscale-color-800)' }}>Skip the travel, traffic, and waiting lines. <br /> With E-OPD, you can consult certified doctors via secure video calls — <br />from the comfort of your home.</p>
-
+                                <Link to={'/surgery'} className="btn btn_gradient px-4 py-2">Book EOPD</Link>
                             </div>
                         </Col>
                     </Row>
@@ -107,61 +107,61 @@ const VideoConsult = () => {
             <section className='spacer-y'>
                 <Container>
                     <FadeIn delay={0}>
-                    <h2 className='head_sec mb-4'><HeadTitle title="Why Choose Health Easy EMI’s E-OPD?" /></h2>
+                        <h2 className='head_sec mb-4'><HeadTitle title="Why Choose Health Easy EMI’s E-OPD?" /></h2>
 
-                    <Row className="g-4 justify-content-center feature_icon_sec">
-                        <Col xs={6} md={4} lg className="text-center">
-                            <div className='border rounded p-3 h-100'>
-                                <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                    {/* <FaMapMarkerAlt /> */}
-                                    <img src={require('./assets/icon/24-7.png')} alt={'market icon'} />
+                        <Row className="g-4 justify-content-center feature_icon_sec">
+                            <Col xs={6} md={4} lg className="text-center">
+                                <div className='border rounded p-3 h-100'>
+                                    <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
+                                        {/* <FaMapMarkerAlt /> */}
+                                        <img src={require('./assets/icon/24-7.png')} alt={'market icon'} />
 
+                                    </div>
+                                    <div className="text-muted small">Trusted, verified doctors available 24×7</div>
                                 </div>
-                                <div className="text-muted small">Trusted, verified doctors available 24×7</div>
-                            </div>
-                        </Col>
-                        <Col xs={6} md={4} lg className="text-center">
-                            <div className="border rounded p-3 h-100">
-                                <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                    <img src={require('./assets/icon/user-private.png')} alt="user private icon" />
+                            </Col>
+                            <Col xs={6} md={4} lg className="text-center">
+                                <div className="border rounded p-3 h-100">
+                                    <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
+                                        <img src={require('./assets/icon/user-private.png')} alt="user private icon" />
+                                    </div>
+                                    <div className="text-muted small">Private, encrypted, and confidential video sessions</div>
                                 </div>
-                                <div className="text-muted small">Private, encrypted, and confidential video sessions</div>
-                            </div>
-                        </Col>
-                        <Col xs={6} md={4} lg className="text-center">
-                            <div className="border rounded p-3 h-100">
-                                <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                    <img src={require('./assets/icon/calendar.png')} alt="calendar icon" />
+                            </Col>
+                            <Col xs={6} md={4} lg className="text-center">
+                                <div className="border rounded p-3 h-100">
+                                    <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
+                                        <img src={require('./assets/icon/calendar.png')} alt="calendar icon" />
+                                    </div>
+                                    <div className="text-muted small">Suitable for second opinions, chronic care, and follow-ups</div>
                                 </div>
-                                <div className="text-muted small">Suitable for second opinions, chronic care, and follow-ups</div>
-                            </div>
-                        </Col>
-                        <Col xs={6} md={4} lg className="text-center">
-                            <div className="border rounded p-3 h-100">
-                                <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
-                                    <img src={require('./assets/icon/bed.png')} alt="bed icon" />
+                            </Col>
+                            <Col xs={6} md={4} lg className="text-center">
+                                <div className="border rounded p-3 h-100">
+                                    <div className="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-2" style={{ width: 72, height: 72, fontSize: 28 }}>
+                                        <img src={require('./assets/icon/bed.png')} alt="bed icon" />
+                                    </div>
+                                    <div className="text-muted small">Option to switch to physical visit or surgery with same doctor</div>
                                 </div>
-                                <div className="text-muted small">Option to switch to physical visit or surgery with same doctor</div>
-                            </div>
-                        </Col>
-                    </Row>
+                            </Col>
+                        </Row>
                     </FadeIn>
                 </Container>
             </section>
 
             <section>
                 <FadeIn delay={0}>
-                <Container>
-                    {/* CTA */}
-                    <Card className="border-0 rounded-4 matter_bg">
-                        <Card.Body className="p-4 text-center">
-                            <h2 className='display-5 fw-bold' style={{ color: 'var(--primary-color-500)' }}>Your health, one click away.</h2>
-                            <div className="text-muted fs-5">
-                                Book an <span className="fw-bold ">E-OPD video consultation</span> now through <span className="fw-bold">Health Easy EMI.</span>
-                            </div>
-                        </Card.Body>
-                    </Card>
-                </Container>
+                    <Container>
+                        {/* CTA */}
+                        <Card className="border-0 rounded-4 matter_bg">
+                            <Card.Body className="p-4 text-center">
+                                <h2 className='display-5 fw-bold' style={{ color: 'var(--primary-color-500)' }}>Your health, one click away.</h2>
+                                <div className="text-muted fs-5">
+                                    Book an <span className="fw-bold ">E-OPD video consultation</span> now through <span className="fw-bold">Health Easy EMI.</span>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Container>
                 </FadeIn>
             </section>
 
