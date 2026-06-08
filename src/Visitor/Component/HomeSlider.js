@@ -54,7 +54,7 @@ const HomeSlider = () => {
             <Slider {...settings} className='home_slider'>
                 {banner.map((item, index) => (
                     <div key={index}>
-                        {item.url ? (
+                        {item?.url ? (
                             <a href={item.url} target="_blank" rel="noopener noreferrer">
                                 <img src={item.path} alt={'banner title' + index} className='slider-img d-block' />
                             </a>
