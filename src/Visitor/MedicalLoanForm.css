@@ -1,7 +1,7 @@
 .medical-loan-page {
   background: #f8fafc;
-  min-height: 100vh;
-  padding: 40px 20px;
+  min-height: 80vh;
+  padding: 60px 20px;
   font-family: 'Inter', sans-serif;
 }
 
@@ -29,26 +29,126 @@
   margin: 0 auto;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
   padding: 40px;
+  margin-bottom: 60px;
+  border: 1px solid #e2e8f0;
 }
 
-.form-section {
+/* Stepper Progress Indicator styling */
+.loan-steps-indicator {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 40px;
+  padding: 0 10px;
+}
+
+/* Background grey connecting line */
+.loan-steps-indicator::before {
+  content: '';
+  position: absolute;
+  top: 22px; /* Center of the 44px circle */
+  left: 5%;
+  right: 5%;
+  height: 3px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+/* Active green progress connecting line */
+.loan-progress-line {
+  position: absolute;
+  top: 22px; /* Center of the 44px circle */
+  left: 5%;
+  height: 3px;
+  background: #10b981;
+  z-index: 1;
+  transition: width 0.3s ease;
+}
+
+.loan-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  flex: 1;
+}
+
+.loan-step-number {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white; /* Cover the line behind */
+  border: 2px solid #cbd5e1;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.loan-step-title {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  max-width: 120px;
+  transition: all 0.3s ease;
+}
+
+/* Stepper States */
+.loan-step.active .loan-step-number {
+  background: #0a5ebf;
+  border-color: #0a5ebf;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(10, 94, 191, 0.2);
+}
+
+.loan-step.active .loan-step-title {
+  color: #0a5ebf;
+  font-weight: 700;
+}
+
+.loan-step.completed .loan-step-number {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.loan-step.completed .loan-step-title {
+  color: #10b981;
+}
+
+/* Form Styles */
+.form-section {
+  margin-bottom: 30px;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .form-section h2 {
-  font-size: 1.2rem;
-  color: #1e293b;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
+  font-size: 1.35rem;
+  color: #0f172a;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
   border-bottom: 2px solid #f1f5f9;
+  font-weight: 700;
+}
+
+.required-star {
+  color: #ef4444;
+  margin-left: 2px;
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
 }
 
 .form-group {
@@ -60,7 +160,7 @@
 .form-group label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #475569;
+  color: #334155;
 }
 
 .form-group input[type="text"],
@@ -109,36 +209,268 @@
   background: #cbd5e1;
 }
 
-.form-actions {
-  margin-top: 40px;
-  display: flex;
-  justify-content: flex-end;
+.selected-filename {
+  font-size: 0.8rem;
+  color: #0a5ebf;
+  font-weight: 500;
+  margin-top: 4px;
+  word-break: break-all;
 }
 
-.submit-btn {
-  background: linear-gradient(135deg, #0a5ebf 0%, #064894 100%);
-  color: white;
-  border: none;
-  padding: 16px 40px;
+/* Validation Error Box styling */
+.validation-error-box {
+  background: #fff5f5;
+  border-left: 4px solid #ef4444;
+  border-top: 1px solid #fee2e2;
+  border-right: 1px solid #fee2e2;
+  border-bottom: 1px solid #fee2e2;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.validation-error-box .error-text {
+  color: #b91c1c;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Review Section Summary (Step 5) styling */
+.review-intro {
+  color: #64748b;
+  font-size: 1rem;
+  margin-bottom: 24px;
+}
+
+.review-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.review-card-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.review-card-section h3 {
   font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+.review-grid-data {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.review-grid-data div {
+  line-height: 1.5;
+}
+
+/* Step Navigation button drawer styling */
+.step-navigation {
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 24px;
+}
+
+.step-navigation .prev-btn {
+  background: white;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 14px 32px;
+  font-size: 1rem;
   font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s;
+}
+
+.step-navigation .prev-btn:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.step-navigation .next-btn {
+  background: #0a5ebf;
+  border: 1px solid #0a5ebf;
+  color: white;
+  padding: 14px 36px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba(10, 94, 191, 0.15);
+  margin-left: auto; /* Push to right if no back button is rendered */
+}
+
+.step-navigation .next-btn:hover {
+  background: #064894;
+  border-color: #064894;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(10, 94, 191, 0.25);
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 14px 36px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.submit-btn:disabled {
+  background: #cbd5e1;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Custom Floating Restriction Card / Modal Overlay */
+.restriction-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.restriction-card {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 480px;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(0);
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.restriction-image-wrapper {
+  max-width: 220px;
+  margin: 0 auto 24px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.restriction-svg {
+  width: 100%;
+  height: auto;
+  max-height: 165px;
+}
+
+.restriction-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.restriction-msg {
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.restriction-btn {
+  background: linear-gradient(135deg, #0a5ebf 0%, #064894 100%);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(10, 94, 191, 0.2);
 }
 
-.submit-btn:hover {
-  transform: translateY(-2px);
+.restriction-btn:hover {
+  transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(10, 94, 191, 0.3);
 }
 
+.restriction-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulseIcon {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Responsiveness */
 @media (max-width: 768px) {
+  .medical-loan-page {
+    padding: 30px 15px;
+  }
+
   .medical-loan-container {
-    padding: 20px;
+    padding: 24px 16px;
   }
   
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .loan-steps-indicator {
+    overflow-x: auto;
+    padding-bottom: 12px;
+    justify-content: flex-start;
+    gap: 16px;
+  }
+  
+  .loan-steps-indicator::before,
+  .loan-progress-line {
+    display: none;
+  }
+
+  .loan-step {
+    flex-shrink: 0;
+    flex: none;
+    width: 100px;
   }
 }

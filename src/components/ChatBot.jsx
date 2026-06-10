@@ -2807,6 +2807,18 @@ export default function ChatBot() {
       setAptBookingState(prev => ({ ...prev, isActive: false }));
 
       if (isLoggedIn) {
+        if (userObj.role !== 'patient') {
+          setMessages(prev => [
+            ...prev,
+            {
+              sender: 'ai',
+              text: `⚠️ Only Patients are eligible to apply for a Medical Loan. Please log out and sign in with a Patient account to apply.`,
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }
+          ]);
+          setIsTyping(false);
+          return;
+        }
         setUploadState({
           isActive: true,
           step: 1,
@@ -4299,6 +4311,17 @@ export default function ChatBot() {
     { text: 'Talk to Expert', action: 'expert' }
   ];
 
+  const getHeaderQuickReplies = () => {
+    const userObj = getUserData();
+    const isPatient = !userObj.token || userObj.role === 'patient';
+    if (!isPatient) {
+      return defaultQuickReplies.filter(
+        reply => reply.action !== 'upload' && reply.action !== 'emi'
+      );
+    }
+    return defaultQuickReplies;
+  };
+
   const getQuickReplies = () => {
     if (bookingState.isActive) {
       if (bookingState.step === 12) {
@@ -4391,7 +4414,13 @@ export default function ChatBot() {
 
   const getFilteredSuggestions = () => {
     if (!input.trim() || bookingState.isActive || aptBookingState.isActive || surgBookingState.isActive) return [];
-    return defaultQuickReplies.filter(reply => 
+    const userObj = getUserData();
+    const isPatient = !userObj.token || userObj.role === 'patient';
+    const replies = isPatient 
+      ? defaultQuickReplies 
+      : defaultQuickReplies.filter(reply => reply.action !== 'upload' && reply.action !== 'emi');
+
+    return replies.filter(reply => 
       reply.text.toLowerCase().includes(input.trim().toLowerCase())
     );
   };
@@ -4744,7 +4773,7 @@ export default function ChatBot() {
               </div>
             </div>
             <div className="chatbot-header-chips">
-              {defaultQuickReplies.map((reply, i) => (
+              {getHeaderQuickReplies().map((reply, i) => (
                 <button
                   key={i}
                   className="chatbot-header-chip"
