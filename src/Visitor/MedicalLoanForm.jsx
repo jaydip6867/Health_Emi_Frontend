@@ -394,11 +394,30 @@ const MedicalLoanForm = () => {
                   </div>
                   <div className="form-group">
                     <label>Marital Status <span className="required-star">*</span></label>
-                    <select name="marital_status" value={formData.marital_status} onChange={handleInputChange} required>
-                      <option value="">Select Status</option>
-                      <option value="married">Married</option>
-                      <option value="unmarried">Unmarried</option>
-                    </select>
+                    <div className="radio-group-container">
+                      <label className="radio-label-item">
+                        <input
+                          type="radio"
+                          name="marital_status"
+                          value="married"
+                          checked={formData.marital_status === 'married'}
+                          onChange={handleInputChange}
+                          required
+                        />
+                        <span>Married</span>
+                      </label>
+                      <label className="radio-label-item">
+                        <input
+                          type="radio"
+                          name="marital_status"
+                          value="unmarried"
+                          checked={formData.marital_status === 'unmarried'}
+                          onChange={handleInputChange}
+                          required
+                        />
+                        <span>Unmarried</span>
+                      </label>
+                    </div>
                   </div>
                   <div className="form-group">
                     <label>PAN Card Number <span className="required-star">*</span></label>

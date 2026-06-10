@@ -217,6 +217,62 @@
   word-break: break-all;
 }
 
+.radio-group-container {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.radio-label-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  user-select: none;
+}
+
+.radio-label-item input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #cbd5e1;
+  border-radius: 50%;
+  outline: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: #f8fafc;
+}
+
+.radio-label-item input[type="radio"]:checked {
+  border-color: #0a5ebf;
+  background-color: white;
+}
+
+.radio-label-item input[type="radio"]:checked::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background-color: #0a5ebf;
+  border-radius: 50%;
+  display: block;
+}
+
+.radio-label-item input[type="radio"]:focus {
+  box-shadow: 0 0 0 3px rgba(10, 94, 191, 0.15);
+}
+
+.radio-label-item:hover input[type="radio"] {
+  border-color: #0a5ebf;
+}
+
 /* Validation Error Box styling */
 .validation-error-box {
   background: #fff5f5;
