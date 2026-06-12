@@ -2605,3 +2605,12 @@ body::-webkit-scrollbar-thumb:hover {
     color: red !important;
     opacity: 1;
 }
+
+.location_sec_margin{
+    margin-top: -32px;
+}
+@media screen and (max-width: 768px){
+    .location_sec_margin{
+        margin-top: 32px;
+    }
+}

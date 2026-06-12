@@ -81,7 +81,7 @@ const Home = () => {
       {/* search by city and doctor name or surgery */}
       <section>
         <HomeSlider />
-        <section style={{ marginTop: "-32px" }}>
+        <section className="location_sec_margin">
           <SearchBox />
         </section>
       </section>
