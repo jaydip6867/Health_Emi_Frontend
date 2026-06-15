@@ -106,7 +106,7 @@ const HealthEasy = () => {
           <h1>Medical Care Made <span className="highlight">Affordable & Easy</span></h1>
           <p>Get instant approval for your medical expenses with flexible EMI options. From surgeries to dental care, finance your healthcare with zero hassle.</p>
           <div className="hero-actions">
-            <button className="btn-primary">Get Your Loan Now →</button>
+            <a className="btn-primary" href='/apply-loan'>Get Your Loan Now →</a>
             <button className="btn-outline">Calculate EMI</button>
           </div>
           <div className="hero-stats">
@@ -138,28 +138,28 @@ const HealthEasy = () => {
             <img src={require('./assets/icon/Surgical Procedures.png')} alt='Surgical Procedure icon' className='mb-3' />
             <h3>Surgical Procedures</h3>
             <p>Finance major and minor surgeries with flexible EMI options. Get instant approval for planned procedures.</p>
-            <a href="#apply">Apply Now →</a>
+            <a href="/apply-loan">Apply Now →</a>
           </div>
           <div className="product-card">
             {/* <div className="icon red"></div> */}
             <img src={require('./assets/icon/Hospital Bills.png')} alt='Hospital Bills icon' className='mb-3' />
             <h3>Hospital Bills</h3>
             <p>Cover unexpected hospital expenses instantly. Quick disbursement for emergency medical bills.</p>
-            <a href="#apply">Apply Now →</a>
+            <a href="/apply-loan">Apply Now →</a>
           </div>
           <div className="product-card">
             {/* <div className="icon purple"></div> */}
             <img src={require('./assets/icon/Medical Treatment.png')} alt='Medical Treatment icon' className='mb-3' />
             <h3>Medical Treatment</h3>
             <p>Finance ongoing treatments and therapies. Affordable EMIs for chemotherapy, dialysis, and more.</p>
-            <a href="#apply">Apply Now →</a>
+            <a href="/apply-loan">Apply Now →</a>
           </div>
           <div className="product-card">
             {/* <div className="icon green"></div> */}
             <img src={require('./assets/icon/Dental Care.png')} alt='Dental Care icon' className='mb-3' />
             <h3>Dental Care</h3>
             <p>Make dental treatments affordable. From root canals to cosmetic dentistry, we've got you covered.</p>
-            <a href="#apply">Apply Now →</a>
+            <a href="#/apply-loan">Apply Now →</a>
           </div>
         </div>
       </section>
@@ -192,10 +192,10 @@ const HealthEasy = () => {
             ))}
           </div>
 
-          <div className="cta">
+          {/* <div className="cta">
             <p>Ready to get started?</p>
             <a href="/">Calculate your EMI now →</a>
-          </div>
+          </div> */}
         </div>
       </section>
 

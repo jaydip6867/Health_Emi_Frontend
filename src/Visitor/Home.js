@@ -19,6 +19,8 @@ import FadeIn from "../components/FadeIn";
 import axios from "axios";
 import BlogBox from "./Component/BlogBox";
 import "react-toastify/dist/ReactToastify.css";
+import { FiFileText } from "react-icons/fi";
+import { BsCheckCircle, BsCreditCard } from "react-icons/bs";
 
 const Home = () => {
   var navigate = useNavigate();
@@ -74,9 +76,36 @@ const Home = () => {
       });
   }
 
+  const steps = [
+    {
+      id: 1,
+      icon: <FiFileText size={40} />,
+      title: "Apply Online",
+      description:
+        "Fill out a simple application form with your basic details and loan requirements.",
+      color: "#6EA8FE",
+    },
+    {
+      id: 2,
+      icon: <BsCheckCircle size={40} />,
+      title: "Instant Approval",
+      description:
+        "Get instant approval within 10 minutes. Upload minimal documents for verification.",
+      color: "#4ADE80",
+    },
+    {
+      id: 3,
+      icon: <BsCreditCard size={40} />,
+      title: "Receive Funds",
+      description:
+        "Money credited directly to your bank account. Start your treatment without delays.",
+      color: "#A855F7",
+    },
+  ];
+
   return (
     <>
-   
+
       <NavBar logindata={logdata} />
       {/* search by city and doctor name or surgery */}
       <section>
@@ -88,6 +117,42 @@ const Home = () => {
       <section className="spacer-y">
         <FadeIn delay={0}>
           <FunctionalitySec />
+        </FadeIn>
+      </section>
+      <section className="products-section">
+        <FadeIn delay={0}>
+          <div className="container">
+            <h2 className="loan-title">How to Get Your Medical Loan</h2>
+
+            <p className="loan-subtitle">
+              Simple, fast, and transparent process. Get your healthcare loan in
+              just 3 easy steps.
+            </p>
+
+            <div className="steps-wrapper">
+              {steps.map((step) => (
+                <div className="step-card" key={step.id}>
+                  <div
+                    className="icon-wrapper"
+                    style={{ backgroundColor: step.color }}
+                  >
+                    {step.icon}
+
+                    <span className="step-number">{step.id}</span>
+                  </div>
+
+                  <h3>{step.title}</h3>
+
+                  <p>{step.description}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* <div className="cta">
+            <p>Ready to get started?</p>
+            <a href="/">Calculate your EMI now →</a>
+          </div> */}
+          </div>
         </FadeIn>
       </section>
       {/* Top Specialities */}

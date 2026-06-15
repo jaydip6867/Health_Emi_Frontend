@@ -5,7 +5,7 @@ import HeadTitle from './HeadTitle'
 const Speciality = () => {
     return (
         <>
-            <section className='spacer-b'>
+            <section className='spacer-t'>
                 <Container>
                     <Row className='justify-content-between head_sec mb-3'>
                         <Col xs={'auto'}><HeadTitle title="Top Specialities" /></Col>
