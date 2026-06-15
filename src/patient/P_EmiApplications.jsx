@@ -204,9 +204,9 @@ const P_EmiApplications = () => {
                   </div>
                   <div className="text-end">
                     <div className="mb-1">{getStatusBadge(singleView.status)}</div>
-                    <div className="text-muted small">
+                    {/* <div className="text-muted small">
                       {new Date(singleView.createdAt).toLocaleString()}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 

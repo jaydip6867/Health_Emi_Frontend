@@ -430,7 +430,7 @@ const DoctorProfilePage = () => {
         console.log("Appointment API Response:", response.data);
         
         Swal.fire({
-          title: "Appointment Add Successfully",
+          title: "Appointment Added Successfully",
           icon: "success",
           confirmButtonText: "Ok.",
         }).then((result) => {

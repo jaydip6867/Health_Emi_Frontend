@@ -61,6 +61,7 @@ import PnsPolicy from "./Visitor/T&CPage/PnsPolicy";
 import ScrollToTop from "./ScrollToTop";
 import ChatBot from "./components/ChatBot";
 import MedicalLoanForm from "./Visitor/MedicalLoanForm";
+import Loan from './Visitor/Loan';
 function App() {
   return (
     <div className="App">
@@ -90,6 +91,7 @@ function App() {
         <Route path="/faq" element={<Faq />}></Route>
         <Route path="/blog" element={<Blog />}></Route>
         <Route path="/blog/:id" element={<BlogDetail />}></Route>
+        <Route path="/loan" element={<Loan />}></Route>
         <Route path="/terms" element={<Terms />}></Route>
         <Route path="doctor-tc" element={<DoctorTC />}></Route>
         <Route path="pns-policy" element={<PnsPolicy />}></Route>
