@@ -36,7 +36,6 @@ import D_SurgeryAppointment from "./doctor/D_SurgeryAppointment";
 import D_AmbulanceRequest from "./doctor/D_AmbulanceRequest";
 import CompareDoctor from "./Visitor/CompareDoctor";
 import Amb_Request from "./Ambulance/Amb_Request";
-import "leaflet/dist/leaflet.css";
 import Amb_Ridedetails from "./Ambulance/Amb_Ridedetails";
 import D_StatusAmbulance from "./doctor/D_StatusAmbulance";
 import AmbulancePage from "./Visitor/AmbulancePage";

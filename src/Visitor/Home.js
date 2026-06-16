@@ -148,7 +148,7 @@ const Home = () => {
               ))}
             </div>
 
-            <Link to={'/loan'} className="btn-gradient">Get Instant Approval</Link>
+            <Link to={'/loan'} className="btn btn_gradient">Get Instant Approval</Link>
 
             {/* <div className="cta">
             <p>Ready to get started?</p>

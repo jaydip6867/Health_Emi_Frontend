@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './css/loan.css'; import { LuSparkles, LuWandSparkles } from "react-icons/lu";
 import { FaCalculator } from 'react-icons/fa';
 import { BsCheckCircle, BsCreditCard } from 'react-icons/bs';
@@ -82,6 +82,14 @@ const HealthEasy = () => {
     },
   ];
 
+  const sectionRef = useRef(null);
+
+  const handleScroll = () => {
+    sectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  };
+
   return (
     <div className="health-easy-app">
 
@@ -110,7 +118,7 @@ const HealthEasy = () => {
               <p>Get instant approval for your medical expenses with flexible EMI options. From surgeries to dental care, finance your healthcare with zero hassle.</p>
               <div className="hero-actions">
                 <a className="btn-gradient" href='/apply-loan'>Get Your Loan Now →</a>
-                <button className="btn-outline">Calculate EMI</button>
+                <button className="btn-outline" onClick={handleScroll}>Calculate EMI</button>
               </div>
               <div className="hero-stats">
                 <div><strong>10 min</strong><span>Quick Approval</span></div>
@@ -205,7 +213,7 @@ const HealthEasy = () => {
       </section>
 
       {/* EMI Calculator Section */}
-      <section className="calculator-section" id="calculator">
+      <section className="calculator-section" ref={sectionRef} >
         <div className="calc-header">
           <div className="icon-large purple"><FaCalculator /></div>
           <h2>EMI Calculator</h2>
