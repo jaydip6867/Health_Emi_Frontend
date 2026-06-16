@@ -1,6 +1,6 @@
 /* Base Styles */
 .health-easy-app {
-  font-family: 'Inter', -apple-system, sans-serif;
+  /* font-family: 'Inter', -apple-system, sans-serif; */
   color: #1f2937;
   line-height: 1.5;
 }
@@ -71,15 +71,15 @@ a { text-decoration: none; color: inherit; }
 
 /* Hero Section */
 .hero-section {
-  display: flex;
-  padding: 60px 5%;
-  gap: 40px;
-  align-items: center;
+  /* display: flex; */
+  padding: 60px 0;
+  /* gap: 40px; */
+  /* align-items: center; */
 }
 
-.hero-content {
+/* .hero-content {
   flex: 1;
-}
+} */
 
 .badge {
   display: inline-block;
@@ -143,7 +143,8 @@ a { text-decoration: none; color: inherit; }
 
 .image-placeholder {
   background: url('../assets/laptop-loan.jpeg'); /* Replace with actual image via background-image */
-  height: 400px;
+  min-height: 400px;
+  height: 100%;
   border-radius: 16px;
   background-size: cover;
   background-position: center;
@@ -247,15 +248,8 @@ a { text-decoration: none; color: inherit; }
   color: white;
 }
 
-.calc-container {
-  display: flex;
-  gap: 24px;
-  max-width: 1140px;
-  margin: 0 auto;
-}
-
 .calc-inputs {
-  flex: 1;
+  /* flex: 1; */
   background: white;
   padding: 30px;
   border-radius: 16px;
@@ -293,7 +287,7 @@ input[type=range] {
 }
 
 .calc-result {
-  flex: 1;
+  height: 100%;
   background: var(--gradient);
   color: white;
   padding: 40px;
@@ -326,12 +320,6 @@ input[type=range] {
   background: #fff;
   text-align: center;
 }
-
-.container {
-  max-width: 1200px;
-  margin: auto;
-}
-
 .loan-title {
   font-size: 42px;
   font-weight: 700;

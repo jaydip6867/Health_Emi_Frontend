@@ -4,10 +4,11 @@ import { FaCalculator } from 'react-icons/fa';
 import { BsCheckCircle, BsCreditCard } from 'react-icons/bs';
 import { FiFileText } from 'react-icons/fi';
 import { SECRET_KEY, STORAGE_KEYS } from '../config'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CryptoJS from "crypto-js";
 import NavBar from './Component/NavBar';
 import FooterBar from './Component/FooterBar';
+import { Col, Container, Row } from "react-bootstrap";
 
 const HealthEasy = () => {
 
@@ -101,30 +102,34 @@ const HealthEasy = () => {
 
       {/* Hero Section */}
       <header className="hero-section">
-        <div className="hero-content">
-          <div className="badge"><LuWandSparkles /> India's Trusted Healthcare Financing Platform</div>
-          <h1>Medical Care Made <span className="highlight">Affordable & Easy</span></h1>
-          <p>Get instant approval for your medical expenses with flexible EMI options. From surgeries to dental care, finance your healthcare with zero hassle.</p>
-          <div className="hero-actions">
-            <a className="btn-primary" href='/apply-loan'>Get Your Loan Now →</a>
-            <button className="btn-outline">Calculate EMI</button>
-          </div>
-          <div className="hero-stats">
-            <div><strong>10 min</strong><span>Quick Approval</span></div>
-            <div><strong>12%*</strong><span>Starting Rate</span></div>
-            <div><strong>₹10L</strong><span>Loan Amount</span></div>
-          </div>
-        </div>
-        <div className="hero-image">
-          {/* Placeholder for the laptop/stethoscope image */}
-          <div className="image-placeholder"></div>
-          <div className="floating-badge"><img src={require('./assets/icon/hero right.png')} alt='Hero Right Icon' />
-            <div>
-              <h6 className='mb-0'>Instant Approval</h6>
-              <span>10,000+ patients helped</span>
+        <Container>
+          <Row className='g-4'>
+            <div className="hero-content col-12 col-md-6">
+              <div className="badge"><LuWandSparkles /> India's Trusted Healthcare Financing Platform</div>
+              <h1>Medical Care Made <span className="highlight">Affordable & Easy</span></h1>
+              <p>Get instant approval for your medical expenses with flexible EMI options. From surgeries to dental care, finance your healthcare with zero hassle.</p>
+              <div className="hero-actions">
+                <a className="btn-primary" href='/apply-loan'>Get Your Loan Now →</a>
+                <button className="btn-outline">Calculate EMI</button>
+              </div>
+              <div className="hero-stats">
+                <div><strong>10 min</strong><span>Quick Approval</span></div>
+                <div><strong>12%*</strong><span>Starting Rate</span></div>
+                <div><strong>₹10L</strong><span>Loan Amount</span></div>
+              </div>
             </div>
-          </div>
-        </div>
+            <div className="hero-image col-12 col-md-6">
+              {/* Placeholder for the laptop/stethoscope image */}
+              <div className="image-placeholder"></div>
+              <div className="floating-badge ms-5 ms-lg-0"><img src={require('./assets/icon/hero right.png')} alt='Hero Right Icon' />
+                <div>
+                  <h6 className='mb-0'>Instant Approval</h6>
+                  <span>10,000+ patients helped</span>
+                </div>
+              </div>
+            </div>
+          </Row>
+        </Container>
       </header>
 
       {/* Products Section */}
@@ -138,21 +143,21 @@ const HealthEasy = () => {
             <img src={require('./assets/icon/Surgical Procedures.png')} alt='Surgical Procedure icon' className='mb-3' />
             <h3>Surgical Procedures</h3>
             <p>Finance major and minor surgeries with flexible EMI options. Get instant approval for planned procedures.</p>
-            <a href="/apply-loan">Apply Now →</a>
+            <Link href="/apply-loan">Apply Now →</Link>
           </div>
           <div className="product-card">
             {/* <div className="icon red"></div> */}
             <img src={require('./assets/icon/Hospital Bills.png')} alt='Hospital Bills icon' className='mb-3' />
             <h3>Hospital Bills</h3>
             <p>Cover unexpected hospital expenses instantly. Quick disbursement for emergency medical bills.</p>
-            <a href="/apply-loan">Apply Now →</a>
+            <Link href="/apply-loan">Apply Now →</Link>
           </div>
           <div className="product-card">
             {/* <div className="icon purple"></div> */}
             <img src={require('./assets/icon/Medical Treatment.png')} alt='Medical Treatment icon' className='mb-3' />
             <h3>Medical Treatment</h3>
             <p>Finance ongoing treatments and therapies. Affordable EMIs for chemotherapy, dialysis, and more.</p>
-            <a href="/apply-loan">Apply Now →</a>
+            <Link href="/apply-loan">Apply Now →</Link>
           </div>
           <div className="product-card">
             {/* <div className="icon green"></div> */}
@@ -207,44 +212,49 @@ const HealthEasy = () => {
           <p>Calculate your monthly installments and plan your medical expenses better</p>
         </div>
 
-        <div className="calc-container">
-          <div className="calc-inputs">
-            <h3>Loan Details</h3>
+        <Container className="calc-container">
+          <Row className='g-4'>
+            <Col xs={12} md={6}>
+              <div className="calc-inputs">
+                <h3>Loan Details</h3>
 
-            <div className="input-group">
-              <div className="label-row">
-                <label>Loan Amount</label>
-                <span className="value blue">₹{principal.toLocaleString()}</span>
+                <div className="input-group">
+                  <div className="label-row">
+                    <label>Loan Amount</label>
+                    <span className="value blue">₹{principal.toLocaleString()}</span>
+                  </div>
+                  <input type="range" min="10000" max="1000000" step="10000" value={principal} onChange={(e) => setPrincipal(Number(e.target.value))} />
+                  <div className="range-labels"><span>₹10K</span><span>₹10L</span></div>
+                </div>
+
+                <div className="input-group">
+                  <div className="label-row">
+                    <label>Interest Rate (per annum)</label>
+                    <span className="value purple">{rate}%</span>
+                  </div>
+                  <input type="range" min="8" max="24" step="0.5" value={rate} onChange={(e) => setRate(Number(e.target.value))} />
+                  <div className="range-labels"><span>8%</span><span>24%</span></div>
+                </div>
+
+                <div className="input-group">
+                  <div className="label-row">
+                    <label>Loan Tenure</label>
+                    <span className="value green">{months} months</span>
+                  </div>
+                  <input type="range" min="3" max="60" step="1" value={months} onChange={(e) => setMonths(Number(e.target.value))} />
+                  <div className="range-labels"><span>3 months</span><span>60 months</span></div>
+                </div>
               </div>
-              <input type="range" min="10000" max="1000000" step="10000" value={principal} onChange={(e) => setPrincipal(Number(e.target.value))} />
-              <div className="range-labels"><span>₹10K</span><span>₹10L</span></div>
-            </div>
-
-            <div className="input-group">
-              <div className="label-row">
-                <label>Interest Rate (per annum)</label>
-                <span className="value purple">{rate}%</span>
+            </Col>
+            <Col xs={12} md={6}>
+              <div className="calc-result ">
+                <h3>Your Monthly Installment</h3>
+                <div className="emi-amount">₹{Math.round(emi).toLocaleString()}</div>
+                <p>Calculated based on {rate}% interest over {months} months.</p>
               </div>
-              <input type="range" min="8" max="24" step="0.5" value={rate} onChange={(e) => setRate(Number(e.target.value))} />
-              <div className="range-labels"><span>8%</span><span>24%</span></div>
-            </div>
-
-            <div className="input-group">
-              <div className="label-row">
-                <label>Loan Tenure</label>
-                <span className="value green">{months} months</span>
-              </div>
-              <input type="range" min="3" max="60" step="1" value={months} onChange={(e) => setMonths(Number(e.target.value))} />
-              <div className="range-labels"><span>3 months</span><span>60 months</span></div>
-            </div>
-          </div>
-
-          <div className="calc-result">
-            <h3>Your Monthly Installment</h3>
-            <div className="emi-amount">₹{Math.round(emi).toLocaleString()}</div>
-            <p>Calculated based on {rate}% interest over {months} months.</p>
-          </div>
-        </div>
+            </Col>
+          </Row>
+        </Container>
       </section>
       <FooterBar />
     </div>

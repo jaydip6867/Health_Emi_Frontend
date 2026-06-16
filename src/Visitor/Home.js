@@ -148,6 +148,8 @@ const Home = () => {
               ))}
             </div>
 
+            <Link to={'/loan'} className="btn-primary">Get Instant Approval</Link>
+
             {/* <div className="cta">
             <p>Ready to get started?</p>
             <a href="/">Calculate your EMI now →</a>
