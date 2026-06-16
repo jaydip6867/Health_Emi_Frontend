@@ -49,7 +49,7 @@ a { text-decoration: none; color: inherit; }
   font-size: 0.9rem;
 }
 
-.btn-primary {
+.btn-gradient {
   background: var(--gradient);
   color: white;
   border: none;

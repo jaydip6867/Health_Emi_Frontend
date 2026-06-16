@@ -1418,7 +1418,7 @@ const P_AmbulanceRequest = () => {
                                     <Col md={12} className="py-2">
                                       <Form.Group>
                                         <Form.Label className="text-amb-label m-0">
-                                          Pickup Address.
+                                          Landmark.
                                         </Form.Label>
                                         <Form.Control
                                           value={details.pickup_house_number}

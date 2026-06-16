@@ -97,7 +97,7 @@ const HealthEasy = () => {
           <a href="#ambulance">Ambulance</a>
           <a href="#calculator">EMI Calculator</a>
         </div>
-        <button className="btn-primary">Apply for Loan →</button>
+        <button className="btn-gradient">Apply for Loan →</button>
       </nav> */}
 
       {/* Hero Section */}
@@ -109,7 +109,7 @@ const HealthEasy = () => {
               <h1>Medical Care Made <span className="highlight">Affordable & Easy</span></h1>
               <p>Get instant approval for your medical expenses with flexible EMI options. From surgeries to dental care, finance your healthcare with zero hassle.</p>
               <div className="hero-actions">
-                <a className="btn-primary" href='/apply-loan'>Get Your Loan Now →</a>
+                <a className="btn-gradient" href='/apply-loan'>Get Your Loan Now →</a>
                 <button className="btn-outline">Calculate EMI</button>
               </div>
               <div className="hero-stats">
