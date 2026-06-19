@@ -129,13 +129,14 @@ const P_EmiApplications = () => {
     },
     {
       name: "Date",
-      selector: (row) => row.createdAt,
+      selector: (row) => row.createdAtTimestamps || row.createdAt,
       cell: (row) => {
-        const d = new Date(row.createdAt);
+        const dateVal = row.createdAtTimestamps || row.createdAt;
+        const d = dateVal ? new Date(dateVal) : null;
         return (
           <div className="d-flex align-items-center gap-2 text-muted">
             <FiClock size={16} />
-            <span>{d.toLocaleDateString()}</span>
+            <span>{d ? d.toLocaleDateString() : "N/A"}</span>
           </div>
         );
       },
@@ -204,9 +205,11 @@ const P_EmiApplications = () => {
                   </div>
                   <div className="text-end">
                     <div className="mb-1">{getStatusBadge(singleView.status)}</div>
-                    {/* <div className="text-muted small">
-                      {new Date(singleView.createdAt).toLocaleString()}
-                    </div> */}
+                    <div className="text-muted small">
+                      {singleView.createdAtTimestamps || singleView.createdAt
+                        ? new Date(singleView.createdAtTimestamps || singleView.createdAt).toLocaleString()
+                        : "N/A"}
+                    </div>
                   </div>
                 </div>
 
