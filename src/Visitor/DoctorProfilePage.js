@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import "./css/visitor.css";
 import { FaEnvelope } from "react-icons/fa";
 import { BsStarFill, BsGeoAlt } from "react-icons/bs";
-import { format, addDays } from "date-fns";
+import { format, addDays, differenceInDays, parse } from "date-fns";
 import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -186,7 +186,6 @@ const DoctorProfilePage = () => {
     }
   }, [navigate]);
   const [loading, setloading] = useState(false);
-  // console.log('ID:', id, d_id);
 
   const [doctor_profile, setdocprofile] = useState(null);
 
@@ -201,8 +200,6 @@ const DoctorProfilePage = () => {
     if (d_id && selectedDate) {
       fetchBookedSlots(selectedDate);
     }
-    // Only fetch initial booked slots once on load for today's date.
-    // Date changes after this are handled by the DatePicker onChange.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [d_id]);
 
@@ -216,7 +213,6 @@ const DoctorProfilePage = () => {
     })
       .then((res) => {
         setdocprofile(res.data.Data);
-        // console.log('doctor ', res.data.Data)
       })
       .catch(function (error) {
         // console.log(error);
@@ -235,34 +231,138 @@ const DoctorProfilePage = () => {
   const [surgerySearchTerm, setSurgerySearchTerm] = useState("");
 
   const handleClose = () => setShow(false);
-  const handleShow = () => {
+
+  // Core Implementation: Check 15 days rule based on LAST COMPLETED appointment
+  const handleShow = async () => {
     if (!patient) {
       navigate("/patient");
-    } else {
-      if (!selectedConsultationType) {
-        setConsultError(true);
-      }
-      // if (selectedConsultationType === 'clinic_visit' && !selectedHospital) {
-      if (!selectedHospital) {
-        setHospitalError(true);
-      }
-      if (!selectedConsultationType) {
-        return;
-      }
-      if (selectedConsultationType === "clinic_visit" && !selectedHospital) {
-        return;
+      return;
+    } 
+    
+    if (!selectedConsultationType) {
+      setConsultError(true);
+    }
+    if (!selectedHospital) {
+      setHospitalError(true);
+    }
+    if (!selectedConsultationType) {
+      return;
+    }
+    if (selectedConsultationType === "clinic_visit" && !selectedHospital) {
+      return;
+    }
+
+    if (!selectedDate || !selectedTimeSlot) {
+      Swal.fire({
+        title: "Please Select Date & Time",
+        text: "You must select both date and time slot before booking.",
+        icon: "warning",
+        confirmButtonText: "Ok",
+      });
+      return;
+    }
+
+    try {
+      setloading(true);
+      
+      // Fetch user appointments history
+      const response = await axios.post(
+        `${API_BASE_URL}/user/appointments/list`, 
+        { patientid: patient._id },
+        { headers: { Authorization: token } }
+      );
+      
+      const appointments = response?.data?.Data || [];
+      let isWithin15DaysOfCompleted = false;
+
+      // Filter only "Completed" appointments
+      const completedAppointments = appointments.filter(
+        (apt) => apt && (apt.status === "Completed" || apt.appointment_status === "Completed")
+      );
+
+      if (completedAppointments.length > 0) {
+        // Extract and parse valid dates
+        const completedDates = completedAppointments
+          .map((apt) => apt.date)
+          .filter(Boolean)
+          .map((dateStr) => parse(dateStr, "dd-MM-yyyy", new Date()))
+          .filter((d) => !isNaN(d.getTime()));
+
+        if (completedDates.length > 0) {
+          // Find the most recent completed date
+          const latestCompletedDate = new Date(Math.max(...completedDates));
+          const dayDifference = differenceInDays(new Date(), latestCompletedDate);
+          
+          // If days between today and last completed appointment is between 0 and 15 days
+          if (dayDifference >= 0 && dayDifference <= 15) {
+            isWithin15DaysOfCompleted = true;
+          }
+        }
       }
 
-      if (!selectedDate || !selectedTimeSlot) {
+      setloading(false);
+
+      if (isWithin15DaysOfCompleted) {
+        // Skip Payment completely, trigger Direct Booking with Swal confirmation
         Swal.fire({
-          title: "Please Select Date & Time",
-          text: "You must select both date and time slot before booking.",
-          icon: "warning",
-          confirmButtonText: "Ok",
-        });
-        return;
-      }
+          title: "Direct Booking (Follow-up)",
+          text: "Since your last completed appointment was within 15 days, this consultation is free of advance charges.",
+          icon: "info",
+          showCancelButton: true,
+          confirmButtonText: "Book Now",
+          cancelButtonText: "Cancel"
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            const [datePart, timePart, meridiem] = formattedDateTime.split(" ");
+            const timeWithMeridiem = `${timePart} ${meridiem}`;
+            
+            const directForm = {
+              patientname: patient.name,
+              mobile: patient.mobile,
+              alt_mobile: apt_data.alt_mobile,
+              date: datePart,
+              time: timeWithMeridiem,
+              appointment_reason: apt_data.appointment_reason || "Free Follow-up within 15 Days",
+              doctorid: d_id,
+              hospital_name: selectedHospital || "",
+              visit_types: selectedConsultationType,
+            };
 
+            try {
+              setloading(true);
+              await axios({
+                method: "post",
+                url: `${API_BASE_URL}/user/appointments/save`,
+                headers: { Authorization: token },
+                data: directForm,
+              });
+              
+              Swal.fire({
+                title: "Appointment Added Successfully",
+                icon: "success",
+                confirmButtonText: "Ok.",
+              }).then(() => {
+                navigate("/patient/appointment");
+              });
+            } catch (err) {
+              Swal.fire({
+                title: "Booking Failed",
+                text: err.response?.data?.Message || "This time slot is already booked.",
+                icon: "error",
+              });
+            } finally {
+              setloading(false);
+            }
+          }
+        });
+      } else {
+        // More than 15 days or no completed booking history -> show standard checkout modal
+        setShow(true);
+      }
+    } catch (error) {
+      console.error("Error checking booking history:", error);
+      setloading(false);
+      // Fallback fallback safely to checkout modal on error
       setShow(true);
     }
   };
@@ -314,7 +414,6 @@ const DoctorProfilePage = () => {
     if (patient) {
       try {
         setloading(true);
-        // Validate alt_mobile if filled
         if (
           apt_data.alt_mobile &&
           !/^[6-9]\d{9}$/.test((apt_data.alt_mobile || "").trim())
@@ -332,7 +431,6 @@ const DoctorProfilePage = () => {
 
         let reportUrls = [];
 
-        // Upload report file first if exists
         if (apt_data.report && apt_data.report.length > 0) {
           const formData = new FormData();
           const filesToUpload =
@@ -369,23 +467,20 @@ const DoctorProfilePage = () => {
           }
         }
 
-        // Format report URLs to match API structure
         const formattedReports = reportUrls.map((url) => ({
           path: url,
           type: /\.(jpg|jpeg|png|gif|webp)$/i.test(url) ? "IMG" : "DOC",
         }));
 
-        // console.log('Report URLs to save:', reportUrls);
         setAppointmentForm({
           patientname: patient.name,
           mobile: patient.mobile,
           alt_mobile: apt_data.alt_mobile,
           date: datePart,
           time: timeWithMeridiem,
-          // surgeryid: apt_data.surgeryid || "",
           appointment_reason: apt_data.appointment_reason,
-          ...(formattedReports.length > 0 && { report: formattedReports }), // Only add report if array is not empty
-          doctorid: d_id, // Use decoded doctor ID
+          ...(formattedReports.length > 0 && { report: formattedReports }),
+          doctorid: d_id,
           hospital_name: selectedHospital || "",
           visit_types: selectedConsultationType,
         });
@@ -414,10 +509,6 @@ const DoctorProfilePage = () => {
     if (patient) {
       try {
         setloading(true);
-        
-        console.log("Appointment Form Data:", appointmentForm);
-
-        // Now save appointment with uploaded report URLs
         const response = await axios({
           method: "post",
           url: `${API_BASE_URL}/user/appointments/save`,
@@ -426,8 +517,6 @@ const DoctorProfilePage = () => {
           },
           data: appointmentForm,
         });
-        
-        console.log("Appointment API Response:", response.data);
         
         Swal.fire({
           title: "Appointment Added Successfully",
@@ -497,7 +586,7 @@ const DoctorProfilePage = () => {
       patientname: patient?.name,
       mobile: patient?.mobile,
       hospital_name: null,
-      roomtype: "General", // Set initial room type to General
+      roomtype: "General",
     };
     setaddsurgery(surg_apt_data);
     setsingle_surg(surgdata);
@@ -507,9 +596,7 @@ const DoctorProfilePage = () => {
       setSurgeryHospitalError(false);
       setSurgeryErrors({ alt_name: "", alt_mobile: "" });
       setaddshow(true);
-      // setShow(true)
     }
-    // console.log(patient, surg_apt_data, surgdata)
   }
 
   const surghandlechange = (e) => {
@@ -530,12 +617,10 @@ const DoctorProfilePage = () => {
     }
   };
 
-  // Handle multiple report files selection
   const handleReportFilesChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 0) {
       setReportFiles((prev) => [...prev, ...files]);
-      // Create previews for images
       files.forEach((file) => {
         if (file.type.startsWith("image/")) {
           const reader = new FileReader();
@@ -564,13 +649,11 @@ const DoctorProfilePage = () => {
     }
   };
 
-  // Remove report file
   const removeReportFile = (index) => {
     setReportFiles((prev) => prev.filter((_, i) => i !== index));
     setReportPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Upload multiple report files
   const uploadReportFiles = async (files) => {
     if (files.length === 0) return [];
 
@@ -590,14 +673,12 @@ const DoctorProfilePage = () => {
           },
         }
       );
-      // console.log(response.data)
 
       if (response.data.Status === 200 && response.data.Data) {
         return response.data.Data.map((item) => item.path || item.url);
       }
       return [];
     } catch (error) {
-      // console.error('Error uploading report files:', error);
       Swal.fire({
         title: "Upload Error",
         text: error.response.data.Message,
@@ -611,32 +692,25 @@ const DoctorProfilePage = () => {
 
   async function booksurgery(d_id) {
     if (patient) {
-      // console.log('book surgery : ',addsurgery, d_id)
-      
-      // Build date and time from surgeryDate (independent from consultation selection)
       const datePart = format(surgeryDate, "dd-MM-yyyy");
       const timeWithMeridiem = format(surgeryDate, "hh:mm a");
 
       setloading(true);
 
       try {
-        // Upload report files first
         let reportUrls = [];
         if (reportFiles.length > 0) {
           reportUrls = await uploadReportFiles(reportFiles);
         }
 
-        // Prepare surgery data with uploaded report URLs
         var surg_data = {
           ...addsurgery,
           date: datePart,
           time: timeWithMeridiem,
-          report: reportUrls, // Pass the array of uploaded file URLs
+          report: reportUrls,
         };
 
-        // console.log('Surgery data with reports:', surg_data)
-
-        const response = await axios({
+        await axios({
           method: "post",
           url: `${API_BASE_URL}/user/surgeryappointments/save`,
           headers: {
@@ -650,7 +724,6 @@ const DoctorProfilePage = () => {
           icon: "success",
           confirmButtonText: "Ok.",
         }).then((result) => {
-          // Clear the form data
           setReportFiles([]);
           setReportPreviews([]);
           setaddsurgery(surg_obj);
@@ -662,7 +735,6 @@ const DoctorProfilePage = () => {
           text: "Something Is Missing. Please Check Details...",
           icon: "error",
         });
-        // console.log(error)
       } finally {
         setloading(false);
       }
@@ -671,7 +743,6 @@ const DoctorProfilePage = () => {
     }
   }
 
-  // Get the price based on selected consultation type
   const getConsultationPrice = () => {
     if (!selectedConsultationType || !doctor_profile?.consultationsDetails)
       return 0;
@@ -685,7 +756,6 @@ const DoctorProfilePage = () => {
     return priceMap[selectedConsultationType] || 0;
   };
 
-  // Get the price based on selected surgery room type
   const getSurgeryPrice = () => {
     if (!addsurgery?.roomtype || !single_surg) return 0;
 
@@ -727,33 +797,29 @@ const DoctorProfilePage = () => {
       const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var dataToken = JSON.parse(decrypted);
-      const tenPercentPrice = Math.round(consultationPrice * 0.10); // 10% of total price
-      // 1️⃣ Create order from backend
+      const tenPercentPrice = Math.round(consultationPrice * 0.10);
+      
       const { data } = await axios.post(
         `${API_BASE_URL}/user/order/create`,
-        { amount: tenPercentPrice }, // INR 10% of total price
+        { amount: tenPercentPrice },
         {
           headers: {
-            Authorization: `Bearer ${dataToken.accessToken}`, // REQUIRED
+            Authorization: `Bearer ${dataToken.accessToken}`,
           },
         }
       );
 
-      console.log(data, "data");
       if (data != "") {
         const options = {
           key: "rzp_live_S0smOweosyTmQ8",
-          order_id: data.Data.id, // ✅ MUST
-          amount: data.Data.amount, // from backend (paise)
+          order_id: data.Data.id,
+          amount: data.Data.amount,
           currency: "INR",
           name: "Health Easy Emi",
           description: "Consultation Fee",
 
           handler: async function (response) {
             try {
-              console.log("Payment Success:", response);
-
-              // Payment successful, now book appointment directly
               await saveAppointmentData(d_id);
               await appointmentbtn();
             } catch (err) {
@@ -832,7 +898,6 @@ const DoctorProfilePage = () => {
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var dataToken = JSON.parse(decrypted);
 
-      // Validate surgery data before payment
       if (!addsurgery?.hospital_name) {
         Swal.fire({
           title: "Please select Hospital",
@@ -852,33 +917,28 @@ const DoctorProfilePage = () => {
         return;
       }
 
-      // 1️⃣ Create order from backend - charge only 10% of surgery price
-      const tenPercentPrice = Math.round(surgeryPrice * 0.15); // 10% of total price
+      const tenPercentPrice = Math.round(surgeryPrice * 0.15);
       const { data } = await axios.post(
         `${API_BASE_URL}/user/order/create`,
-        { amount: tenPercentPrice }, // INR - 10% of total
+        { amount: tenPercentPrice },
         {
           headers: {
-            Authorization: `Bearer ${dataToken.accessToken}`, // REQUIRED
+            Authorization: `Bearer ${dataToken.accessToken}`,
           },
         }
       );
 
-      console.log(data, "surgery order data");
       if (data != "") {
         const options = {
           key: "rzp_live_S0smOweosyTmQ8",
-          order_id: data.Data.id, // ✅ MUST
-          amount: data.Data.amount, // from backend (paise)
+          order_id: data.Data.id,
+          amount: data.Data.amount,
           currency: "INR",
           name: "Health Easy Emi",
           description: `10% Advance Payment for Surgery (Total: ₹${surgeryPrice})`,
 
           handler: async function (response) {
             try {
-              console.log("Surgery Payment Success:", response);
-
-              // Show success message about 10% advance payment
               Swal.fire({
                 title: "Payment Successful!",
                 html: ` payment of ₹${Math.round(surgeryPrice * 0.15)} received successfully.`,
@@ -886,7 +946,6 @@ const DoctorProfilePage = () => {
                 confirmButtonText: "Ok",
               });
 
-              // Payment successful, now book surgery appointment directly
               await booksurgery(doctor_profile._id);
             } catch (err) {
               console.error("Surgery payment successful but appointment failed:", err);
@@ -925,7 +984,6 @@ const DoctorProfilePage = () => {
   return (
     <>
       <NavBar logindata={logdata} />
-      {/* doctor profile section */}
       <section
         className="doctor-profile-section"
         style={{ backgroundColor: "#fff", minHeight: "100vh" }}
@@ -933,9 +991,7 @@ const DoctorProfilePage = () => {
         {doctor_profile && (
           <Container className="py-4">
             <Row>
-              {/* Main Content */}
               <Col lg={8}>
-                {/* Header Section */}
                 <Card
                   className="mb-4 border-0 shadow-sm"
                   style={{ backgroundColor: "#fff", borderRadius: "15px" }}
@@ -977,21 +1033,15 @@ const DoctorProfilePage = () => {
                         <h3 className="fw-bold">Dr. {doctor_profile.name}</h3>
                         <hr />
                         <p className="text-dark mb-2">
-                          {doctor_profile.specialty} (
-                          {doctor_profile.qualification})
+                          {doctor_profile.specialty} ({doctor_profile.qualification})
                         </p>
                         <div className="d-flex align-items-center mb-2">
                           <FaLocationDot className="me-2 text-muted" />
-                          <small className="text-muted">
-                            {" "}
-                            {doctor_profile.city},{doctor_profile.state}{" "}
-                          </small>
+                          <small className="text-muted"> {doctor_profile.city},{doctor_profile.state} </small>
                         </div>
                         <div className="d-flex align-items-center mb-2">
                           <FaEnvelope className="me-2 text-muted" />
-                          <small className="text-muted">
-                            {doctor_profile.email}
-                          </small>
+                          <small className="text-muted">{doctor_profile.email}</small>
                         </div>
                       </Col>
                       <Col md={12} xl={4} className="ms-xl-auto mt-3 mt-xl-0">
@@ -1036,9 +1086,7 @@ const DoctorProfilePage = () => {
                                       : doctor_profile?.completedappointment}
                                     +
                                   </span>
-                                  <small className="text-muted">
-                                    Consultant
-                                  </small>
+                                  <small className="text-muted">Consultant</small>
                                 </div>
                               </div>
                             </div>
@@ -1078,12 +1126,9 @@ const DoctorProfilePage = () => {
                                     doctor_profile?.surgeriesDetails?.length ===
                                       0
                                       ? "0"
-                                      : doctor_profile?.surgeriesDetails
-                                          ?.length}
+                                      : doctor_profile?.surgeriesDetails?.length}
                                   </span>
-                                  <small className="text-muted">
-                                    Surgeries
-                                  </small>
+                                  <small className="text-muted">Surgeries</small>
                                 </div>
                               </div>
                             </div>
@@ -1123,9 +1168,7 @@ const DoctorProfilePage = () => {
                                       ? "0 Years"
                                       : doctor_profile?.experience}
                                   </span>
-                                  <small className="text-muted">
-                                    Experience
-                                  </small>
+                                  <small className="text-muted">Experience</small>
                                 </div>
                               </div>
                             </div>
@@ -1285,7 +1328,6 @@ const DoctorProfilePage = () => {
                                       {surgery?.surgerytypeid
                                         ?.surgerytypename || "Surgery Type"}
                                     </p>
-                                    {/* <p className="text-muted small mb-0">{surgery?.days + ' Days of Surgery'}</p> */}
                                   </Col>
                                 </Row>
                               </Card.Body>
@@ -1383,7 +1425,6 @@ const DoctorProfilePage = () => {
               {/* Sidebar - Book Consultation */}
               <Col lg={4}>
                 <div>
-                  {/* Consultation Type Selection */}
                   <Card
                     className="mb-4 border-0 p-4 shadow-sm"
                     style={{
@@ -1615,8 +1656,6 @@ const DoctorProfilePage = () => {
                     </Card.Body>
                   </Card>
 
-                  {/* Select Hospital - only for Clinic Visit */}
-                  {/* {selectedConsultationType === 'clinic_visit' && ( */}
                   <Card
                     className={`border-0 shadow-sm ${
                       hospitalError ? "error-outline" : ""
@@ -1694,9 +1733,7 @@ const DoctorProfilePage = () => {
                       </Row>
                     </Card.Body>
                   </Card>
-                  {/* )} */}
 
-                  {/* Book Consultation Card */}
                   <Card
                     className="border-0 shadow-sm mt-4"
                     style={{ borderRadius: "15px" }}
@@ -1706,7 +1743,6 @@ const DoctorProfilePage = () => {
                         Book Consultation
                       </h5>
 
-                      {/* Select Date with DatePicker */}
                       <div className="mb-4">
                         <h6 className="fw-bold mb-3">Select Date & Time</h6>
                         <div className="custom-datepicker-container w-100">
@@ -1714,7 +1750,7 @@ const DoctorProfilePage = () => {
                             selected={selectedDate}
                             onChange={(date) => {
                               setSelectedDate(date);
-                              setSelectedTimeSlot(null); // Reset time slot when date changes
+                              setSelectedTimeSlot(null);
                               fetchBookedSlots(date);
                             }}
                             inline
@@ -1724,7 +1760,6 @@ const DoctorProfilePage = () => {
                             style={{ width: "100%" }}
                           />
 
-                          {/* Time Slots Below Calendar */}
                           <div
                             className="time-slots-container mt-3 p-3"
                             style={{
@@ -1794,7 +1829,6 @@ const DoctorProfilePage = () => {
                         </div>
                       </div>
 
-                      {/* Book Button */}
                       <Button
                         variant="dark"
                         className="w-100 rounded-pill py-3 fw-bold"
@@ -1839,7 +1873,6 @@ const DoctorProfilePage = () => {
                                 {" "}
                                 {selectedConsultationType?.replace("_", " ")}
                               </h6>
-                              {/* <p className="text-cupoon">Add Coupon Code</p> */}
                             </div>
                             <div>
                               <h6 className="font-600">₹{consultationPrice}</h6>
@@ -2087,29 +2120,11 @@ const DoctorProfilePage = () => {
                             <span className="fw-bold">
                               {selectedService?.yearsof_experience}
                             </span>
-                            <small className="text-muted">
-                              Surgery Experience
-                            </small>
+                            <small className="text-muted">Surgery Experience</small>
                           </div>
                         </div>
                       </div>
                     </Col>
-                    {/* <Col xs={6}>
-                      <div className="text-center p-1  h-100">
-                        <div>
-                          <div className="rounded-circle d-flex mx-auto align-items-center overflow-hidden justify-content-center fw-bold" style={{ width: '40px', height: '40px', backgroundColor: '#D8F3F1', fontSize: '14px' }} >
-                            <svg width="24" height="24" viewBox="0 0 18 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M8.59091 16.5455C13.3355 16.5455 17.1818 12.8416 17.1818 8.27273C17.1818 3.70383 13.3355 0 8.59091 0C3.84628 0 0 3.70383 0 8.27273C0 12.8416 3.84628 16.5455 8.59091 16.5455Z" fill="#12A79D" />
-                              <path d="M13.4147 17.3212C13.8347 17.1048 14.3183 17.423 14.3183 17.8939V24.0667C14.3183 25.2121 13.5165 25.7721 12.5238 25.3012L9.11286 23.6848C8.82013 23.5576 8.36195 23.5576 8.06922 23.6848L4.65831 25.3012C3.66559 25.7594 2.86377 25.1994 2.86377 24.0539L2.88922 17.8939C2.88922 17.423 3.38559 17.1176 3.79286 17.3212C5.23104 18.0467 6.86013 18.4539 8.59104 18.4539C10.322 18.4539 11.9638 18.0467 13.4147 17.3212Z" fill="#12A79D" />
-                            </svg>
-                          </div>
-                          <div className="d-flex flex-column mt-1">
-                            <span className="fw-bold">{selectedService?.days}</span>
-                            <small className="text-muted">Stays</small>
-                          </div>
-                        </div>
-                      </div>
-                    </Col> */}
                   </Row>
                 </Col>
               </Row>
@@ -2131,9 +2146,7 @@ const DoctorProfilePage = () => {
                     </Col>
                     <Col xs={6}>
                       <div className="bg-success-subtle p-2 rounded-3 text-center">
-                        <span className="small text-muted">
-                          Semi-Private Price
-                        </span>
+                        <span className="small text-muted">Semi-Private Price</span>
                         <p className="fw-bold m-0">
                           {selectedService?.semiprivate_price}
                         </p>
@@ -2209,9 +2222,7 @@ const DoctorProfilePage = () => {
                         ))}
                     </ul>
                   ) : (
-                    <p className="text-muted mb-0">
-                      No inclusive items specified
-                    </p>
+                    <p className="text-muted mb-0">No inclusive items specified</p>
                   )}
                 </Col>
                 <Col xs={12} md={6}>
@@ -2252,9 +2263,7 @@ const DoctorProfilePage = () => {
                         ))}
                     </ul>
                   ) : (
-                    <p className="text-muted mb-0">
-                      No exclusive items specified
-                    </p>
+                    <p className="text-muted mb-0">No exclusive items specified</p>
                   )}
                 </Col>
               </Row>

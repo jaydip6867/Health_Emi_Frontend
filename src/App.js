@@ -45,6 +45,7 @@ import BlogDetail from "./Visitor/BlogDetail";
 import Terms from "./Visitor/Terms";
 import DoctorTC from "./Visitor/T&CPage/DoctorTC";
 import DoctorTelemedicineTC from "./Visitor/T&CPage/DoctorTelemedicineTC";
+import FinanceTC from "./Visitor/T&CPage/FinanceTC";
 import D_Review from "./doctor/D_Review";
 import P_AmbulanceRequest from "./patient/P_AmbulanceRequest";
 import P_AmbulanceStatus from "./patient/P_AmbulanceStatus";
@@ -61,6 +62,12 @@ import ScrollToTop from "./ScrollToTop";
 import ChatBot from "./components/ChatBot";
 import MedicalLoanForm from "./Visitor/MedicalLoanForm";
 import Loan from './Visitor/Loan';
+import EmiTC from "./Visitor/T&CPage/EmiTC";
+import AmbulancePolicy from "./Visitor/T&CPage/AmbulancePolicy";
+import AmbulanceRefundPolicy from "./Visitor/T&CPage/AmbulanceRefundPolicy";
+import AmbulanceTerms from "./Visitor/T&CPage/AmbulanceTerms";
+import HealthCookiePolicy from "./Visitor/T&CPage/HealthCookiePolicy";
+import TeleconsultationPolicy from "./Visitor/T&CPage/TeleconsultationPolicy";
 function App() {
   return (
     <div className="App">
@@ -92,16 +99,23 @@ function App() {
         <Route path="/blog/:id" element={<BlogDetail />}></Route>
         <Route path="/loan" element={<Loan />}></Route>
         <Route path="/terms" element={<Terms />}></Route>
-        <Route path="doctor-tc" element={<DoctorTC />}></Route>
+        {/* <Route path="doctor-tc" element={<DoctorTC />}></Route> */}
         <Route path="pns-policy" element={<PnsPolicy />}></Route>
         <Route path="privacy-policy" element={<PrivacyPolicy />}></Route>
-        <Route path="guide-principle" element={<GuidePrinciple />}></Route>
+        {/* <Route path="guide-principle" element={<GuidePrinciple />}></Route> */}
         <Route path="medicine-policy" element={<MedicinePolicy />}></Route>
+        <Route path="finance-policy" element={<FinanceTC />}></Route>
+        <Route path="emi-policy" element={<EmiTC />}></Route>
+        <Route path="ambulance-policy" element={<AmbulancePolicy />}></Route>
+        <Route path="ambulance-refund-policy" element={<AmbulanceRefundPolicy />}></Route>
+        <Route path="ambulance-term" element={<AmbulanceTerms />}></Route>
+        <Route path="cookie-policy" element={<HealthCookiePolicy />}></Route>
+        <Route path="teleconsult-policy" element={<TeleconsultationPolicy />}></Route>
         <Route path="doctor-term" element={<DoctorTerm />}></Route>
-        <Route
+        {/* <Route
           path="doctor-telemedicine-tc"
           element={<DoctorTelemedicineTC />}
-        ></Route>
+        ></Route> */}
         <Route path="/doctor">
           <Route path="" index element={<DoctorLogin />}></Route>
           <Route path="doctorregister" element={<DoctorRegister />}></Route>
