@@ -15,7 +15,7 @@ import "../css/visitor.css";
 const FooterBar = () => {
   var navigate = useNavigate();
   return (
-    <footer className="footer">
+    <footer className="footer" data-develop="developed by Codezil Technologies">
       <Container>
         <Row className="footer-top g-4">
           <Col lg={3} md={12} className="footer-about">

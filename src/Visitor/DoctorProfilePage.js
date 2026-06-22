@@ -981,6 +981,22 @@ const DoctorProfilePage = () => {
     }
   };
 
+  useEffect(() => {
+      document.title =
+        "Partner With Health Easy EMI - Patient Financing for Hospitals & Clinics";
+  
+      const metaDescription = document.querySelector(
+        'meta[name="description"]'
+      );
+  
+      if (metaDescription) {
+        metaDescription.setAttribute(
+          "content",
+          "Offer your patients instant medical EMI approval and grow procedure volume. Partner with Health Easy EMI - fast settlements, zero integration hassle."
+        );
+      }
+    }, []);
+
   return (
     <>
       <NavBar logindata={logdata} />

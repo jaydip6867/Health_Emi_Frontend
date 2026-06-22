@@ -6,7 +6,7 @@ import FooterBar from './Component/FooterBar'
 import { Container, Row, Col, Nav, Accordion } from 'react-bootstrap'
 import { BsEnvelope, BsGlobe } from "react-icons/bs";
 import { MdCall } from 'react-icons/md';
-import {SECRET_KEY, STORAGE_KEYS } from '../config'
+import { SECRET_KEY, STORAGE_KEYS } from '../config'
 
 const Faq = () => {
     var navigate = useNavigate();
@@ -17,26 +17,36 @@ const Faq = () => {
 
     useEffect(() => {
         var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
-                var dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
-                if (pgetlocaldata != null) {
-                    const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
-                    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-                    var data = JSON.parse(decrypted);
-                    setlogdata(data.userData);
-                }
-                else if (dgetlocaldata != null) {
-                    const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
-                    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-                    var data = JSON.parse(decrypted);
-                    setlogdata(data.doctorData);
-                }
-                if (data) {
-                    settoken(`Bearer ${data.accessToken}`)
-                }
+        var dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+        if (pgetlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+            setlogdata(data.userData);
+        }
+        else if (dgetlocaldata != null) {
+            const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            var data = JSON.parse(decrypted);
+            setlogdata(data.doctorData);
+        }
+        if (data) {
+            settoken(`Bearer ${data.accessToken}`)
+        }
     }, [navigate])
 
     useEffect(() => {
-        document.title = "About Health Easy EMI - Our Mission to healthy India"
+        document.title = "How Health Easy EMI Works - Apply for Surgery & Hospital EMI Online"
+        const metaDescription = document.querySelector(
+            'meta[name="description"]'
+        );
+
+        if (metaDescription) {
+            metaDescription.setAttribute(
+                "content",
+                "Apply in minutes for no-cost EMI on surgeries and hospital bills. Check eligibility, get instant approval, and pay in easy monthly installments."
+            );
+        }
     }, [])
     return (
         <>
@@ -240,7 +250,7 @@ const Faq = () => {
                                     <Accordion.Item eventKey="1">
                                         <Accordion.Header>What are the benefits of partnering with Health Easy EMI?</Accordion.Header>
                                         <Accordion.Body>
-                                            <ul className='ps-4' style={{listStyleType: 'disc'}}>
+                                            <ul className='ps-4' style={{ listStyleType: 'disc' }}>
                                                 <li>Increased patient inflow</li>
                                                 <li>Faster payment via EMI financing</li>
                                                 <li>Brand visibility across digital platforms</li>

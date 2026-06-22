@@ -90,6 +90,22 @@ const HealthEasy = () => {
     });
   };
 
+  useEffect(() => {
+    document.title =
+      "FAQs - Health Easy EMI | Medical Loan & Surgery Financing Questions";
+
+    const metaDescription = document.querySelector(
+      'meta[name="description"]'
+    );
+
+    if (metaDescription) {
+      metaDescription.setAttribute(
+        "content",
+        "Answers to common questions about Health Easy EMI's no-cost EMI plans, eligibility, hospital partners, and how medical financing works in India."
+      );
+    }
+  }, []);
+
   return (
     <div className="health-easy-app">
 

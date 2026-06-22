@@ -11,8 +11,8 @@ const Speciality = () => {
                         <Col xs={'auto'}><HeadTitle title="Top Specialities" /></Col>
                         <Col xs={'auto'}><Link to={`/surgery`} className='btn btn_gradient'>View All Specialist</Link></Col>
                     </Row>
-                    <Row className='g-4 justify-content-center'>
-                        <Col xs={6} md={4} lg={3}>
+                    <Row className='g-4'>
+                        <Col xs={6} md={4} lg>
                             <div className='speciality_box_item text-center'>
                                 <div className='speciality_icon'>
                                     <Link to={'/surgery'} className='stretched-link'><img src={require('../assets/SpecialityIcon/heart.png')} className='img-fluid' alt='Cardiology' /></Link>
@@ -20,7 +20,7 @@ const Speciality = () => {
                                 <h6 className='mt-3 fw-bold'>Cardiology</h6>
                             </div>
                         </Col>
-                        <Col xs={6} md={4} lg={3}>
+                        <Col xs={6} md={4} lg>
                             <div className='speciality_box_item text-center'>
                                 <div className='speciality_icon'>
                                     <Link to={'/surgery'} className='stretched-link'><img src={require('../assets/SpecialityIcon/brain.png')} className='img-fluid' alt='Neurology' /></Link>
@@ -28,7 +28,7 @@ const Speciality = () => {
                                 <h6 className='mt-3 fw-bold'>Neurology</h6>
                             </div>
                         </Col>
-                        <Col xs={6} md={4} lg={3}>
+                        <Col xs={6} md={4} lg>
                             <div className='speciality_box_item text-center'>
                                 <div className='speciality_icon'>
                                     <Link to={'/surgery'} className='stretched-link'><img src={require('../assets/SpecialityIcon/gynacology.png')} className='img-fluid' alt='Urology' /></Link>
@@ -36,7 +36,7 @@ const Speciality = () => {
                                 <h6 className='mt-3 fw-bold'>Urology</h6>
                             </div>
                         </Col>
-                        <Col xs={6} md={4} lg={3}>
+                        <Col xs={6} md={4} lg>
                             <div className='speciality_box_item text-center'>
                                 <div className='speciality_icon'>
                                     <Link to={'/surgery'} className='stretched-link'><img src={require('../assets/SpecialityIcon/bones.png')} className='img-fluid' alt='Orthopedic' /></Link>
@@ -44,15 +44,15 @@ const Speciality = () => {
                                 <h6 className='mt-3 fw-bold'>Orthopedic</h6>
                             </div>
                         </Col>
-                        <Col xs={6} md={4} lg={3}>
+                        <Col xs={6} md={4} lg={'auto'}>
                             <div className='speciality_box_item text-center dentist-speciality'>
                                 <div className='speciality_icon'>
                                     <Link to={'/surgery'} className='stretched-link'><img src={require('../assets/SpecialityIcon/dentist.png')} className='img-fluid' alt='Dentist' /></Link>
                                 </div>
-                                <h6 className='mt-3 fw-bold'>Dentist</h6>
+                                <h6 className='mt-3 fw-bold ps-3'>Dentist</h6>
                             </div>
                         </Col>
-                        <Col xs={6} md={4} lg={3}>
+                        <Col xs={6} md={4} className='d-block d-lg-none'>
                             <div className='speciality_box_item text-center ivf-speciality'>
                                 <div className='speciality_icon'>
                                     <Link to={'/surgery'} className='stretched-link'><img src={require('../assets/SpecialityIcon/IVF.png')} className='img-fluid' alt='Dentist' /></Link>
