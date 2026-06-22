@@ -1,56 +1,58 @@
 import { useEffect, useState } from "react";
-import FooterBar from "../Component/FooterBar";
-import { useNavigate } from "react-router-dom";
-import { SECRET_KEY, STORAGE_KEYS } from '../../config'
+import { Container, Accordion } from "react-bootstrap";
 import CryptoJS from "crypto-js";
 import NavBar from "../Component/NavBar";
-import { Container, Accordion } from "react-bootstrap";
+import FooterBar from "../Component/FooterBar";
+import { SECRET_KEY, STORAGE_KEYS } from '../../config';
 
 function FinanceTC() {
-    var navigate = useNavigate();
-
-    const [logdata, setlogdata] = useState(null)
-    const [token, settoken] = useState(null)
+    const [logdata, setlogdata] = useState(null);
+    const [token, settoken] = useState(null);
 
     useEffect(() => {
-        var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
-        var dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+        const pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+        const dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+        let data = null;
+
         if (pgetlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-            var data = JSON.parse(decrypted);
+            data = JSON.parse(decrypted);
             setlogdata(data.userData);
-        }
-        else if (dgetlocaldata != null) {
+        } else if (dgetlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-            var data = JSON.parse(decrypted);
+            data = JSON.parse(decrypted);
             setlogdata(data.doctorData);
         }
-        if (data) {
-            settoken(`Bearer ${data.accessToken}`)
+
+        if (data && data.accessToken) {
+            settoken(`Bearer ${data.accessToken}`);
         }
-    }, [navigate])
+    }, []);
 
     useEffect(() => {
-        document.title = "HealthEasy EMI – Terms & Conditions"
-    }, [])
+        document.title = "HealthEasy EMI – Terms & Conditions";
+    }, []);
 
     return (
         <>
             <NavBar logindata={logdata} />
+            
             {/* breadcrumb section */}
             <section className='breadcrumb_Sec'>
-                <Container className='text-center '>
+                <Container className='text-center'>
                     <h2>HealthEasy EMI – Terms & Conditions</h2>
                 </Container>
             </section>
-            <section className="py-5">
+            
+            <section className="py-5 bg-light">
                 <Container>
-                    <div className="p-3 border rounded">
+                    <div className="p-4 bg-white border rounded shadow-sm">
                         <Accordion defaultActiveKey="0" className='faq-accordion'>
+                            
                             <Accordion.Item eventKey="0">
-                                <Accordion.Header>1. About HealthEasy EMI</Accordion.Header>
+                                <Accordion.Header><strong>1. About HealthEasy EMI</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>HealthEasy EMI ("Platform", "we", "our", "us") is a technology-enabled healthcare financing facilitation platform that acts as a Lending Service Provider ("LSP") for one or more RBI-regulated Banks and/or Non-Banking Financial Companies ("NBFCs").</p>
                                     <p>HealthEasy EMI does not provide loans, does not accept deposits, and does not make credit decisions.</p>
@@ -59,7 +61,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="1">
-                                <Accordion.Header>2. Acceptance of Terms</Accordion.Header>
+                                <Accordion.Header><strong>2. Acceptance of Terms</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>By accessing or using the Platform, you agree to:</p>
                                     <ul>
@@ -73,7 +75,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="2">
-                                <Accordion.Header>3. Eligibility</Accordion.Header>
+                                <Accordion.Header><strong>3. Eligibility</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>To use the Platform, you must:</p>
                                     <ul>
@@ -88,7 +90,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="3">
-                                <Accordion.Header>4. Nature of Services</Accordion.Header>
+                                <Accordion.Header><strong>4. Nature of Services</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>HealthEasy EMI may provide:</p>
                                     <ul>
@@ -111,7 +113,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="4">
-                                <Accordion.Header>5. Lending Partners</Accordion.Header>
+                                <Accordion.Header><strong>5. Lending Partners</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>Loans facilitated through the Platform are provided only by RBI-regulated lending institutions.</p>
                                     <p>The Platform shall clearly disclose:</p>
@@ -129,7 +131,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="5">
-                                <Accordion.Header>6. Loan Application</Accordion.Header>
+                                <Accordion.Header><strong>6. Loan Application</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>Submission of an application does not guarantee approval.</p>
                                     <p>The lender may independently:</p>
@@ -146,7 +148,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="6">
-                                <Accordion.Header>7. Key Fact Statement (KFS)</Accordion.Header>
+                                <Accordion.Header><strong>7. Key Fact Statement (KFS)</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>Prior to loan execution, borrowers shall receive a Key Fact Statement issued by the lender.</p>
                                     <p>The KFS shall contain:</p>
@@ -165,7 +167,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="7">
-                                <Accordion.Header>8. Consent and Credit Bureau Authorization</Accordion.Header>
+                                <Accordion.Header><strong>8. Consent and Credit Bureau Authorization</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>By using the Platform, you expressly authorize HealthEasy EMI and its lending partners to:</p>
                                     <ul>
@@ -187,7 +189,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="8">
-                                <Accordion.Header>9. Healthcare Information</Accordion.Header>
+                                <Accordion.Header><strong>9. Healthcare Information</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>For financing healthcare services, users may voluntarily provide:</p>
                                     <ul>
@@ -202,7 +204,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="9">
-                                <Accordion.Header>10. Data Privacy</Accordion.Header>
+                                <Accordion.Header><strong>10. Data Privacy</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>HealthEasy EMI processes personal data in accordance with its Privacy Policy and applicable Indian laws.</p>
                                     <p>The Platform shall collect only information reasonably necessary for:</p>
@@ -218,7 +220,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="10">
-                                <Accordion.Header>11. Communications</Accordion.Header>
+                                <Accordion.Header><strong>11. Communications</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>Users consent to receiving:</p>
                                     <ul>
@@ -240,7 +242,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="11">
-                                <Accordion.Header>12. User Obligations</Accordion.Header>
+                                <Accordion.Header><strong>12. User Obligations</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>Users agree not to:</p>
                                     <ul>
@@ -255,15 +257,14 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="12">
-                                <Accordion.Header>13. Disbursement and Repayment</Accordion.Header>
+                                <Accordion.Header><strong>13. Disbursement and Repayment</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>Loan disbursement and repayment shall occur directly between the borrower and the lender in accordance with applicable RBI requirements and lender policies.</p>
-                                    <p>HealthEasy EMI is not responsible for repayment processing conducted by the lender.</p>
+                                    <p>Loan disbursement and repayment shall occur directly between the borrower and the lender in accordance with applicable RBI requirements and lender policies. HealthEasy EMI is not responsible for repayment processing conducted by the lender.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="13">
-                                <Accordion.Header>14. Recovery and Collections</Accordion.Header>
+                                <Accordion.Header><strong>14. Recovery and Collections</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>Recovery activities shall be undertaken only by authorized representatives of the lender and in accordance with applicable RBI regulations.</p>
                                     <p>HealthEasy EMI does not authorize harassment, intimidation, abusive communication, or unlawful recovery practices.</p>
@@ -271,7 +272,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="14">
-                                <Accordion.Header>15. Limitation of Liability</Accordion.Header>
+                                <Accordion.Header><strong>15. Limitation of Liability</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>HealthEasy EMI shall not be liable for:</p>
                                     <ul>
@@ -288,7 +289,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="15">
-                                <Accordion.Header>16. Intellectual Property</Accordion.Header>
+                                <Accordion.Header><strong>16. Intellectual Property</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>All trademarks, trade names, logos, software, website content, graphics, and materials are the exclusive property of HealthEasy EMI unless otherwise stated.</p>
                                     <p>Unauthorized use is prohibited.</p>
@@ -296,7 +297,7 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="16">
-                                <Accordion.Header>17. Suspension and Termination</Accordion.Header>
+                                <Accordion.Header><strong>17. Suspension and Termination</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>HealthEasy EMI may suspend or terminate user access for:</p>
                                     <ul>
@@ -310,18 +311,19 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="17">
-                                <Accordion.Header>18. Grievance Redressal</Accordion.Header>
+                                <Accordion.Header><strong>18. Grievance Redressal</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>HealthEasy EMI Grievance Officer</p>
-                                    <p>Email: healtheasyemi@gmail.comPhone: +91 8855919195</p>
-                                    <p>Address: Office no.23, 3rd Floor, Aston Plaza, Narhe Ambegaon Rd, above Star Bazaar, Ambegaon Budruk, Pune, Maharashtra 411046</p>
+                                    <p>HealthEasy EMI Grievance Officer<br />
+                                    Email: healtheasyemi@gmail.com<br />
+                                    Phone: +91 8855919195<br />
+                                    Address: Office no.23, 3rd Floor, Aston Plaza, Narhe Ambegaon Rd, above Star Bazaar, Ambegaon Budruk, Pune, Maharashtra 411046</p>
                                     <p>Complaints may be submitted through email, website, or customer support channels.</p>
                                     <p>For loan-related matters, borrowers may also contact the respective lender's grievance officer.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="18">
-                                <Accordion.Header>19. Governing Law</Accordion.Header>
+                                <Accordion.Header><strong>19. Governing Law</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>These Terms shall be governed by the laws of India.</p>
                                     <p>Any disputes shall be subject to the exclusive jurisdiction of the courts at Pune, Maharashtra, unless otherwise required by applicable law.</p>
@@ -329,22 +331,27 @@ function FinanceTC() {
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="19">
-                                <Accordion.Header>20. Amendments</Accordion.Header>
+                                <Accordion.Header><strong>20. Amendments</strong></Accordion.Header>
                                 <Accordion.Body>
                                     <p>HealthEasy EMI reserves the right to amend these Terms at any time.</p>
                                     <p>Updated Terms shall be published on the Platform and become effective upon publication.</p>
-                                    <p>HealthEasy EMI is a Lending Service Provider (LSP) and does not provide loans.</p>
-                                    <p>All loans are offered and sanctioned solely by RBI-regulated Banks and/or NBFCs subject to eligibility, credit assessment, and lender policies.</p>
-                                    <p>HealthEasy EMI does not guarantee loan approval. Please read the Key Fact Statement (KFS) and loan agreement carefully before accepting any loan offer.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
+
                         </Accordion>
+
+                        {/* BOTTOM DISCLAIMER NOTE */}
+                        <div className="mt-4 p-3 bg-light border rounded small text-muted">
+                            <p>HealthEasy EMI is a Lending Service Provider (LSP) and does not provide loans. All loans are offered and sanctioned solely by RBI-regulated Banks and/or NBFCs subject to eligibility, credit assessment, and lender policies. HealthEasy EMI does not guarantee loan approval. Please read the Key Fact Statement (KFS) and loan agreement carefully before accepting any loan offer.</p>
+                        </div>
+
                     </div>
                 </Container>
             </section>
 
             <FooterBar />
         </>
-    )
+    );
 }
-export default FinanceTC
+
+export default FinanceTC;

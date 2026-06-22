@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
-import FooterBar from "../Component/FooterBar";
-import { useNavigate } from "react-router-dom";
-import { SECRET_KEY, STORAGE_KEYS } from '../../config';
+import { Container, Accordion } from "react-bootstrap";
 import CryptoJS from "crypto-js";
 import NavBar from "../Component/NavBar";
-import { Container, Accordion } from "react-bootstrap";
+import FooterBar from "../Component/FooterBar";
+import { SECRET_KEY, STORAGE_KEYS } from '../../config';
 
 function EmiTC() {
-    const navigate = useNavigate();
-
     const [logdata, setlogdata] = useState(null);
     const [token, settoken] = useState(null);
 
@@ -35,218 +32,499 @@ function EmiTC() {
     }, []);
 
     useEffect(() => {
-        document.title = "HealthEasy EMI – Terms & Conditions, Privacy Policy and FAQs";
+        document.title = "HealthEasy EMI – Terms, Privacy & FAQs";
     }, []);
 
     return (
         <>
             <NavBar logindata={logdata} />
+            
             {/* breadcrumb section */}
             <section className='breadcrumb_Sec'>
-                <Container className='text-center '>
-                    <h2>HealthEasy EMI – Terms & Conditions, Privacy Policy and FAQs</h2>
+                <Container className='text-center'>
+                    <h2>HealthEasy EMI – Documentations</h2>
                 </Container>
             </section>
             
-            <section className="py-5">
+            <section className="py-5 bg-light">
                 <Container>
-                    <div className="p-3 border rounded">
+                    <div className="p-4 bg-white border rounded shadow-sm">
                         <Accordion defaultActiveKey="0" className='faq-accordion'>
                             
-                            {/* --- TERMS & CONDITIONS SECTION --- */}
+                            {/* TERMS & CONDITIONS SECTION */}
                             <Accordion.Item eventKey="0">
-                                <Accordion.Header>1. Introduction & 2. About HealthEasy EMI</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 1. Introduction</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>1. Introduction:</strong> Welcome to HealthEasy EMI ("Platform", "HealthEasy EMI", "we", "our", or "us")[cite: 1428, 1430]. These Terms and Conditions govern your access to and use of the website, applications, services, products, and related features offered through HealthEasy EMI[cite: 1431]. By accessing, browsing, registering on, or using the Platform, you agree to be legally bound by these Terms[cite: 1432]. If you do not agree to these Terms, you should discontinue use of the Platform immediately[cite: 1433].</p>
-                                    <p><strong>2. About HealthEasy EMI:</strong> HealthEasy EMI acts solely as a technology-enabled Lending Service Provider ("LSP") facilitating access to healthcare financing products offered by RBI-regulated Banks and Non-Banking Financial Companies (NBFCs)[cite: 1435]. HealthEasy EMI: Is not a lender[cite: 1436, 1437]; Does not provide loans[cite: 1438]; Does not make credit decisions[cite: 1439]; Does not guarantee loan approval[cite: 1440]; Does not determine interest rates or repayment terms[cite: 1441]. All lending decisions are made exclusively by the respective lender[cite: 1442].</p>
+                                    <p>Welcome to HealthEasy EMI ("Platform", "HealthEasy EMI", "we", "our", or "us"). These Terms and Conditions govern your access to and use of the website, applications, services, products, and related features offered through HealthEasy EMI. By accessing, browsing, registering on, or using the Platform, you agree to be legally bound by these Terms. If you do not agree to these Terms, you should discontinue use of the Platform immediately.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="1">
-                                <Accordion.Header>3. Eligibility & 4. Services Offered</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 2. About HealthEasy EMI</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>3. Eligibility:</strong> You must:</p>
+                                    <p>HealthEasy EMI acts solely as a technology-enabled Lending Service Provider ("LSP") facilitating access to healthcare financing products offered by RBI-regulated Banks and Non-Banking Financial Companies (NBFCs). HealthEasy EMI:</p>
                                     <ul>
-                                        <li>Be at least 18 years old[cite: 1444, 1445].</li>
-                                        <li>Be legally competent to contract under Indian law[cite: 1446].</li>
-                                        <li>Possess valid identification and KYC documents[cite: 1447].</li>
-                                        <li>Provide accurate and complete information[cite: 1448].</li>
-                                        <li>Meet the eligibility criteria of the lender[cite: 1449].</li>
+                                        <li>Is not a lender.</li>
+                                        <li>Does not provide loans.</li>
+                                        <li>Does not make credit decisions.</li>
+                                        <li>Does not guarantee loan approval.</li>
+                                        <li>Does not determine interest rates or repayment terms.</li>
                                     </ul>
-                                    <p><strong>4. Services Offered:</strong> The Platform may facilitate:</p>
-                                    <ul>
-                                        <li>Medical treatment financing[cite: 1451, 1452].</li>
-                                        <li>Hospital bill financing[cite: 1453].</li>
-                                        <li>Surgery financing[cite: 1454].</li>
-                                        <li>Diagnostic and healthcare financing[cite: 1455].</li>
-                                        <li>Loan application submission[cite: 1456].</li>
-                                        <li>Document collection and verification[cite: 1457].</li>
-                                        <li>Communication between borrowers, hospitals, and lenders[cite: 1458].</li>
-                                    </ul>
+                                    <p>All lending decisions are made exclusively by the respective lender.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="2">
-                                <Accordion.Header>5. Loan Applications & 6. Key Fact Statement (KFS)</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 3. Eligibility</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>5. Loan Applications:</strong> Submission of an application does not guarantee approval[cite: 1459, 1460]. Loan approval depends on: Creditworthiness[cite: 1461, 1462]; KYC verification[cite: 1463]; Income assessment[cite: 1464]; Lender policies[cite: 1465]; Regulatory requirements[cite: 1466]. The lender may reject any application without assigning reasons[cite: 1467].</p>
-                                    <p><strong>6. Key Fact Statement (KFS):</strong> Before loan execution, users shall receive a Key Fact Statement from the lender containing: Loan amount[cite: 1469, 1470]; APR[cite: 1471]; Interest rate[cite: 1472]; Processing fees[cite: 1473]; Repayment schedule[cite: 1474]; Penal charges[cite: 1475]; Cooling-off period[cite: 1476]; Grievance details[cite: 1477]. Users should carefully review the KFS before accepting a loan offer[cite: 1478].</p>
+                                    <p>You must:</p>
+                                    <ul>
+                                        <li>Be at least 18 years old.</li>
+                                        <li>Be legally competent to contract under Indian law.</li>
+                                        <li>Possess valid identification and KYC documents.</li>
+                                        <li>Provide accurate and complete information.</li>
+                                        <li>Meet the eligibility criteria of the lender.</li>
+                                    </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="3">
-                                <Accordion.Header>7. User Responsibilities & 8. Electronic Communications</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 4. Services Offered</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>7. User Responsibilities:</strong> You agree that: All information provided is true and accurate[cite: 1479, 1481]; Submitted documents are authentic[cite: 1482]; You will not misuse the Platform[cite: 1483]; You will not engage in fraud or identity misrepresentation[cite: 1484]. Any violation may result in suspension or legal action[cite: 1485].</p>
-                                    <p><strong>8. Electronic Communications:</strong> You consent to receive: Emails[cite: 1487, 1488]; SMS[cite: 1489]; Phone calls[cite: 1490]; WhatsApp messages[cite: 1491]; Push notifications[cite: 1492]. These communications may relate to: Loan applications[cite: 1493, 1494]; Verification[cite: 1495]; EMI reminders[cite: 1496]; Service updates[cite: 1497]; Regulatory notices[cite: 1498].</p>
+                                    <p>The Platform may facilitate:</p>
+                                    <ul>
+                                        <li>Medical treatment financing.</li>
+                                        <li>Hospital bill financing.</li>
+                                        <li>Surgery financing.</li>
+                                        <li>Diagnostic and healthcare financing.</li>
+                                        <li>Loan application submission.</li>
+                                        <li>Document collection and verification.</li>
+                                        <li>Communication between borrowers, hospitals, and lenders.</li>
+                                    </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="4">
-                                <Accordion.Header>9. Intellectual Property & 10. Third-Party Services</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 5. Loan Applications</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>9. Intellectual Property:</strong> All content including: Trademarks[cite: 1500, 1501]; Logos[cite: 1502]; Graphics[cite: 1503]; Website design[cite: 1504]; Software [cite: 1505]; are the property of HealthEasy EMI or its licensors[cite: 1506]. Unauthorized use is prohibited[cite: 1507].</p>
-                                    <p><strong>10. Third-Party Services:</strong> The Platform may contain links to: Hospitals[cite: 1509, 1510]; Payment gateways[cite: 1511]; Lenders[cite: 1512]; Verification providers[cite: 1513]. HealthEasy EMI is not responsible for third-party services or content[cite: 1514].</p>
+                                    <p>Submission of an application does not guarantee approval. Loan approval depends on:</p>
+                                    <ul>
+                                        <li>Creditworthiness.</li>
+                                        <li>KYC verification.</li>
+                                        <li>Income assessment.</li>
+                                        <li>Lender policies.</li>
+                                        <li>Regulatory requirements.</li>
+                                    </ul>
+                                    <p>The lender may reject any application without assigning reasons.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="5">
-                                <Accordion.Header>11. Limitation of Liability & 12. Suspension and Termination</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 6. Key Fact Statement (KFS)</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>11. Limitation of Liability:</strong> HealthEasy EMI shall not be liable for: Loan rejection[cite: 1516, 1517]; Lender decisions[cite: 1518]; Treatment outcomes[cite: 1519]; Hospital services[cite: 1520]; Data inaccuracies provided by users[cite: 1521]; Technical interruptions beyond reasonable control[cite: 1522].</p>
-                                    <p><strong>12. Suspension and Termination:</strong> We reserve the right to suspend or terminate access where: Fraud is suspected[cite: 1524, 1525]; False information is provided[cite: 1526]; Regulatory requirements demand action[cite: 1527]; These Terms are violated[cite: 1528].</p>
+                                    <p>Before loan execution, users shall receive a Key Fact Statement from the lender containing:</p>
+                                    <ul>
+                                        <li>Loan amount.</li>
+                                        <li>APR.</li>
+                                        <li>Interest rate.</li>
+                                        <li>Processing fees.</li>
+                                        <li>Repayment schedule.</li>
+                                        <li>Penal charges.</li>
+                                        <li>Cooling-off period.</li>
+                                        <li>Grievance details.</li>
+                                    </ul>
+                                    <p>Users should carefully review the KFS before accepting a loan offer.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="6">
-                                <Accordion.Header>13. Grievance Redressal, 14. Governing Law & 15. Changes to Terms</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 7. User Responsibilities</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>13. Grievance Redressal:</strong> Users may contact:</p>
-                                    <p>Grievance Officer<br />
-                                    Email: healtheasyemi@gmail.com<br />
-                                    Phone: +91 8855919195<br />
-                                    Address: Office no. 23, 3rd Floor, Aston Plaza, Narhe Ambegaon Rd, above Star Bazaar, Ambegaon Budruk, Pune, Maharashtra 411046 [cite: 1531, 1532, 1533, 1534]</p>
-                                    <p><strong>14. Governing Law:</strong> These Terms shall be governed by the laws of India[cite: 1535, 1536]. Any disputes shall be subject to the exclusive jurisdiction of courts located in Pune, Maharashtra, India[cite: 1537].</p>
-                                    <p><strong>15. Changes to Terms:</strong> We may modify these Terms at any time[cite: 1538, 1539]. Updated versions will be posted on the Platform and become effective immediately upon publication[cite: 1540].</p>
+                                    <p>You agree that:</p>
+                                    <ul>
+                                        <li>All information provided is true and accurate.</li>
+                                        <li>Submitted documents are authentic.</li>
+                                        <li>You will not misuse the Platform.</li>
+                                        <li>You will not engage in fraud or identity misrepresentation.</li>
+                                    </ul>
+                                    <p>Any violation may result in suspension or legal action.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
-                            {/* --- PRIVACY POLICY SECTION --- */}
                             <Accordion.Item eventKey="7">
-                                <Accordion.Header>1. Introduction & 2. Information We Collect</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 8. Electronic Communications</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>1. Introduction:</strong> HealthEasy EMI respects your privacy and is committed to protecting your personal data[cite: 1542, 1544]. This Privacy Policy explains how we collect, use, process, store, and disclose information when you use our services[cite: 1545].</p>
-                                    <p><strong>2. Information We Collect:</strong></p>
-                                    <h6>Personal Information</h6>
+                                    <p>You consent to receive:</p>
                                     <ul>
-                                        <li>Full name [cite: 1547, 1548]</li>
-                                        <li>Date of birth [cite: 1549]</li>
-                                        <li>Gender [cite: 1550]</li>
-                                        <li>Address [cite: 1551]</li>
-                                        <li>Email address [cite: 1552]</li>
-                                        <li>Mobile number [cite: 1553]</li>
+                                        <li>Emails.</li>
+                                        <li>SMS.</li>
+                                        <li>Phone calls.</li>
+                                        <li>WhatsApp messages.</li>
+                                        <li>Push notifications.</li>
                                     </ul>
-                                    <h6>Identity Information</h6>
+                                    <p>These communications may relate to:</p>
                                     <ul>
-                                        <li>PAN [cite: 1554, 1555]</li>
-                                        <li>Aadhaar (where legally permitted) [cite: 1556]</li>
-                                        <li>Driving Licence [cite: 1557]</li>
-                                        <li>Passport [cite: 1558]</li>
-                                        <li>Voter ID [cite: 1559]</li>
-                                    </ul>
-                                    <h6>Financial Information</h6>
-                                    <ul>
-                                        <li>Bank account details [cite: 1560, 1561]</li>
-                                        <li>Income information [cite: 1562]</li>
-                                        <li>Employment information [cite: 1563]</li>
-                                        <li>Credit history information [cite: 1564]</li>
-                                    </ul>
-                                    <h6>Healthcare Financing Information</h6>
-                                    <ul>
-                                        <li>Hospital details [cite: 1565, 1566]</li>
-                                        <li>Medical treatment estimates [cite: 1567]</li>
-                                        <li>Medical invoices [cite: 1568]</li>
-                                        <li>Financing requirements [cite: 1569]</li>
-                                    </ul>
-                                    <h6>Technical Information</h6>
-                                    <ul>
-                                        <li>IP address [cite: 1570, 1571]</li>
-                                        <li>Device information [cite: 1572]</li>
-                                        <li>Browser information [cite: 1573]</li>
-                                        <li>Website usage data [cite: 1574]</li>
+                                        <li>Loan applications.</li>
+                                        <li>Verification.</li>
+                                        <li>EMI reminders.</li>
+                                        <li>Service updates.</li>
+                                        <li>Regulatory notices.</li>
                                     </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="8">
-                                <Accordion.Header>3. How We Use & 4. Sharing of Information</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 9. Intellectual Property</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>3. How We Use Information:</strong> Information may be used to:</p>
+                                    <p>All content including:</p>
                                     <ul>
-                                        <li>Process loan applications[cite: 1576, 1577].</li>
-                                        <li>Verify identity[cite: 1578].</li>
-                                        <li>Conduct KYC[cite: 1579].</li>
-                                        <li>Prevent fraud[cite: 1580].</li>
-                                        <li>Improve services[cite: 1581].</li>
-                                        <li>Comply with legal obligations[cite: 1582].</li>
-                                        <li>Respond to customer requests[cite: 1583].</li>
+                                        <li>Trademarks.</li>
+                                        <li>Logos.</li>
+                                        <li>Graphics.</li>
+                                        <li>Website design.</li>
+                                        <li>Software.</li>
                                     </ul>
-                                    <p><strong>4. Sharing of Information:</strong> Information may be shared with:</p>
-                                    <ul>
-                                        <li><strong>Lending Partners:</strong> For loan assessment and servicing[cite: 1586, 1587].</li>
-                                        <li><strong>Hospitals:</strong> For treatment financing coordination[cite: 1588, 1589].</li>
-                                        <li><strong>Service Providers:</strong> For KYC verification, fraud prevention, technology services, and customer support[cite: 1590, 1592, 1593, 1594, 1595].</li>
-                                        <li><strong>Government Authorities:</strong> Where required by law[cite: 1596, 1597].</li>
-                                    </ul>
+                                    <p>are the property of HealthEasy EMI or its licensors. Unauthorized use is prohibited.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="9">
-                                <Accordion.Header>5. Security, 6. Retention, 7. Rights, 8. Cookies & 9. Children's Privacy</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 10. Third-Party Services</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>5. Data Security:</strong> We implement reasonable security measures including: Encryption[cite: 1599, 1600]; Secure servers[cite: 1601]; Access controls[cite: 1602]; Monitoring systems[cite: 1603]. No internet transmission can be guaranteed to be completely secure[cite: 1604].</p>
-                                    <p><strong>6. Data Retention:</strong> Information shall be retained: For legal compliance[cite: 1606, 1607]; Regulatory requirements[cite: 1608]; Contractual obligations[cite: 1609]; Fraud prevention purposes[cite: 1610]. Thereafter information may be deleted or anonymized[cite: 1611].</p>
-                                    <p><strong>7. User Rights:</strong> Subject to applicable law, users may: Request access to personal data[cite: 1613, 1614]; Request correction of inaccurate data[cite: 1615]; Withdraw consent where applicable[cite: 1616]; Request deletion where legally permissible[cite: 1617].</p>
-                                    <p><strong>8. Cookies:</strong> We use cookies for: Website functionality[cite: 1618, 1620]; Analytics[cite: 1621]; Security[cite: 1622]; User experience improvement[cite: 1623]. Users may manage cookie preferences through browser settings[cite: 1624].</p>
-                                    <p><strong>9. Children's Privacy:</strong> Our services are not intended for persons below 18 years of age[cite: 1625, 1626].</p>
+                                    <p>The Platform may contain links to:</p>
+                                    <ul>
+                                        <li>Hospitals.</li>
+                                        <li>Payment gateways.</li>
+                                        <li>Lenders.</li>
+                                        <li>Verification providers.</li>
+                                    </ul>
+                                    <p>HealthEasy EMI is not responsible for third-party services or content.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
-                            {/* --- FREQUENTLY ASKED QUESTIONS SECTION --- */}
                             <Accordion.Item eventKey="10">
-                                <Accordion.Header>FREQUENTLY ASKED QUESTIONS (FAQs) - Part 1</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 11. Limitation of Liability</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>What is HealthEasy EMI?</strong><br />HealthEasy EMI is a healthcare financing facilitation platform that helps patients access loan products offered by RBI-regulated lenders for eligible medical expenses[cite: 1628, 1629].</p>
-                                    <p><strong>Is HealthEasy EMI a lender?</strong><br />No. HealthEasy EMI is a Lending Service Provider and does not lend money directly. Loans are provided only by partner Banks and NBFCs[cite: 1630, 1632, 1633].</p>
-                                    <p><strong>What medical expenses can be financed?</strong><br />Subject to lender approval: Surgeries[cite: 1634, 1636]; Hospitalization[cite: 1637]; Diagnostic procedures[cite: 1638]; Dental treatments[cite: 1639]; Fertility treatments[cite: 1640]; Cosmetic procedures (where permitted)[cite: 1641]; Emergency medical care[cite: 1642]; Specialist consultations[cite: 1643].</p>
-                                    <p><strong>How do I apply?</strong><br />Submit your application[cite: 1644, 1645]; Upload required documents[cite: 1646]; Complete verification[cite: 1647]; Receive lender decision[cite: 1648]; Review KFS and loan agreement[cite: 1649]; Accept the offer digitally[cite: 1650].</p>
+                                    <p>HealthEasy EMI shall not be liable for:</p>
+                                    <ul>
+                                        <li>Loan rejection.</li>
+                                        <li>Lender decisions.</li>
+                                        <li>Treatment outcomes.</li>
+                                        <li>Hospital services.</li>
+                                        <li>Data inaccuracies provided by users.</li>
+                                        <li>Technical interruptions beyond reasonable control.</li>
+                                    </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="11">
-                                <Accordion.Header>FREQUENTLY ASKED QUESTIONS (FAQs) - Part 2</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 12. Suspension and Termination</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>What documents are required?</strong><br />Typically: PAN Card[cite: 1651, 1653]; Aadhaar Card[cite: 1654]; Address proof[cite: 1655]; Income proof[cite: 1656]; Bank statement[cite: 1657]; Medical estimate or hospital invoice[cite: 1658]. Additional documents may be requested[cite: 1659].</p>
-                                    <p><strong>Will applying affect my credit score?</strong><br />The lender may perform a credit bureau enquiry, which may impact your credit profile according to bureau policies[cite: 1660, 1661].</p>
-                                    <p><strong>How long does approval take?</strong><br />Approval timelines vary based on: Document completeness[cite: 1663, 1664]; Verification requirements[cite: 1665]; Lender processing[cite: 1666]. Some decisions may be available within minutes, while others may take longer[cite: 1667].</p>
-                                    <p><strong>Can I repay early?</strong><br />Prepayment and foreclosure terms depend on the lender and will be disclosed in the loan agreement and KFS[cite: 1668, 1669].</p>
+                                    <p>We reserve the right to suspend or terminate access where:</p>
+                                    <ul>
+                                        <li>Fraud is suspected.</li>
+                                        <li>False information is provided.</li>
+                                        <li>Regulatory requirements demand action.</li>
+                                        <li>These Terms are violated.</li>
+                                    </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="12">
-                                <Accordion.Header>FREQUENTLY ASKED QUESTIONS (FAQs) - Part 3 & Regulatory Disclaimers</Accordion.Header>
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 13. Grievance Redressal</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>How are loan funds disbursed?</strong><br />Depending on the lender and financing arrangement: Directly to the hospital[cite: 1670, 1672]; Directly to the healthcare provider[cite: 1673]; To the borrower where permitted[cite: 1674].</p>
-                                    <p><strong>What if my loan application is rejected?</strong><br />Loan approval remains solely at the lender's discretion. HealthEasy EMI cannot influence or overturn lender decisions[cite: 1675, 1676, 1677].</p>
-                                    <p><strong>How do I protect myself from fraud?</strong><br />Never share OTPs[cite: 1678, 1679]; Never share passwords[cite: 1680]; Verify official communications[cite: 1681]; Contact customer support if suspicious activity is detected[cite: 1682].</p>
-                                    
-                                    <hr />
-                                    
-                                    <p><strong>Important Regulatory Notice:</strong> HealthEasy EMI is a Lending Service Provider (LSP) and not a lender[cite: 1683]. Loan products are offered solely by RBI-regulated Banks and/or NBFCs[cite: 1684]. Approval, disbursement, interest rates, tenure, and repayment terms are determined exclusively by the respective lender[cite: 1685]. Please review the Key Fact Statement (KFS) and loan agreement carefully before accepting any loan offer[cite: 1686].</p>
+                                    <p>Users may contact:</p>
+                                    <p>Grievance Officer<br />
+                                    Email: healtheasyemi@gmail.com<br />
+                                    Phone: +91 8855919195<br />
+                                    Address: Office no. 23, 3rd Floor, Aston Plaza, Narhe Ambegaon Rd, above Star Bazaar, Ambegaon Budruk, Pune, Maharashtra 411046</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="13">
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 14. Governing Law</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>These Terms shall be governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of courts located in Pune, Maharashtra, India.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="14">
+                                <Accordion.Header><strong>TERMS & CONDITIONS - 15. Changes to Terms</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>We may modify these Terms at any time. Updated versions will be posted on the Platform and become effective immediately upon publication.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            {/* PRIVACY POLICY SECTION */}
+                            <Accordion.Item eventKey="15">
+                                <Accordion.Header><strong>PRIVACY POLICY - 1. Introduction</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>HealthEasy EMI respects your privacy and is committed to protecting your personal data. This Privacy Policy explains how we collect, use, process, store, and disclose information when you use our services.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="16">
+                                <Accordion.Header><strong>PRIVACY POLICY - 2. Information We Collect</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <h6>Personal Information</h6>
+                                    <ul>
+                                        <li>Full name</li>
+                                        <li>Date of birth</li>
+                                        <li>Gender</li>
+                                        <li>Address</li>
+                                        <li>Email address</li>
+                                        <li>Mobile number</li>
+                                    </ul>
+                                    <h6>Identity Information</h6>
+                                    <ul>
+                                        <li>PAN</li>
+                                        <li>Aadhaar (where legally permitted)</li>
+                                        <li>Driving Licence</li>
+                                        <li>Passport</li>
+                                        <li>Voter ID</li>
+                                    </ul>
+                                    <h6>Financial Information</h6>
+                                    <ul>
+                                        <li>Bank account details</li>
+                                        <li>Income information</li>
+                                        <li>Employment information</li>
+                                        <li>Credit history information</li>
+                                    </ul>
+                                    <h6>Healthcare Financing Information</h6>
+                                    <ul>
+                                        <li>Hospital details</li>
+                                        <li>Medical treatment estimates</li>
+                                        <li>Medical invoices</li>
+                                        <li>Financing requirements</li>
+                                    </ul>
+                                    <h6>Technical Information</h6>
+                                    <ul>
+                                        <li>IP address</li>
+                                        <li>Device information</li>
+                                        <li>Browser information</li>
+                                        <li>Website usage data</li>
+                                    </ul>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="17">
+                                <Accordion.Header><strong>PRIVACY POLICY - 3. How We Use Information</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Information may be used to:</p>
+                                    <ul>
+                                        <li>Process loan applications.</li>
+                                        <li>Verify identity.</li>
+                                        <li>Conduct KYC.</li>
+                                        <li>Prevent fraud.</li>
+                                        <li>Improve services.</li>
+                                        <li>Comply with legal obligations.</li>
+                                        <li>Respond to customer requests.</li>
+                                    </ul>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="18">
+                                <Accordion.Header><strong>PRIVACY POLICY - 4. Sharing of Information</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Information may be shared with:</p>
+                                    <ul>
+                                        <li>Lending Partners For loan assessment and servicing.</li>
+                                        <li>Hospitals For treatment financing coordination.</li>
+                                        <li>Service Providers For: KYC verification, Fraud prevention, Technology services, Customer support</li>
+                                        <li>Government Authorities Where required by law.</li>
+                                    </ul>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="19">
+                                <Accordion.Header><strong>PRIVACY POLICY - 5. Data Security</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>We implement reasonable security measures including:</p>
+                                    <ul>
+                                        <li>Encryption.</li>
+                                        <li>Secure servers.</li>
+                                        <li>Access controls.</li>
+                                        <li>Monitoring systems.</li>
+                                    </ul>
+                                    <p>No internet transmission can be guaranteed to be completely secure.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="20">
+                                <Accordion.Header><strong>PRIVACY POLICY - 6. Data Retention</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Information shall be retained:</p>
+                                    <ul>
+                                        <li>For legal compliance.</li>
+                                        <li>Regulatory requirements.</li>
+                                        <li>Contractual obligations.</li>
+                                        <li>Fraud prevention purposes.</li>
+                                    </ul>
+                                    <p>Thereafter information may be deleted or anonymized.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="21">
+                                <Accordion.Header><strong>PRIVACY POLICY - 7. User Rights</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Subject to applicable law, users may:</p>
+                                    <ul>
+                                        <li>Request access to personal data.</li>
+                                        <li>Request correction of inaccurate data.</li>
+                                        <li>Withdraw consent where applicable.</li>
+                                        <li>Request deletion where legally permissible.</li>
+                                    </ul>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="22">
+                                <Accordion.Header><strong>PRIVACY POLICY - 8. Cookies</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>We use cookies for:</p>
+                                    <ul>
+                                        <li>Website functionality.</li>
+                                        <li>Analytics.</li>
+                                        <li>Security.</li>
+                                        <li>User experience improvement.</li>
+                                    </ul>
+                                    <p>Users may manage cookie preferences through browser settings.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="23">
+                                <Accordion.Header><strong>PRIVACY POLICY - 9. Children's Privacy</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Our services are not intended for persons below 18 years of age.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            {/* FAQs SECTION */}
+                            <Accordion.Item eventKey="24">
+                                <Accordion.Header><strong>FAQ - What is HealthEasy EMI?</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>HealthEasy EMI is a healthcare financing facilitation platform that helps patients access loan products offered by RBI-regulated lenders for eligible medical expenses.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="25">
+                                <Accordion.Header><strong>FAQ - Is HealthEasy EMI a lender?</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>No. HealthEasy EMI is a Lending Service Provider and does not lend money directly. Loans are provided only by partner Banks and NBFCs.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="26">
+                                <Accordion.Header><strong>FAQ - What medical expenses can be financed?</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Subject to lender approval:</p>
+                                    <ul>
+                                        <li>Surgeries</li>
+                                        <li>Hospitalization</li>
+                                        <li>Diagnostic procedures</li>
+                                        <li>Dental treatments</li>
+                                        <li>Fertility treatments</li>
+                                        <li>Cosmetic procedures (where permitted)</li>
+                                        <li>Emergency medical care</li>
+                                        <li>Specialist consultations</li>
+                                    </ul>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="27">
+                                <Accordion.Header><strong>FAQ - How do I apply?</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <ul>
+                                        <li>Submit your application.</li>
+                                        <li>Upload required documents.</li>
+                                        <li>Complete verification.</li>
+                                        <li>Receive lender decision.</li>
+                                        <li>Review KFS and loan agreement.</li>
+                                        <li>Accept the offer digitally.</li>
+                                    </ul>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="28">
+                                <Accordion.Header><strong>FAQ - What documents are required?</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Typically:</p>
+                                    <ul>
+                                        <li>PAN Card</li>
+                                        <li>Aadhaar Card</li>
+                                        <li>Address proof</li>
+                                        <li>Income proof</li>
+                                        <li>Bank statement</li>
+                                        <li>Medical estimate or hospital invoice</li>
+                                    </ul>
+                                    <p>Additional documents may be requested.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="29">
+                                <Accordion.Header><strong>FAQ - Will applying affect my credit score?</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>The lender may perform a credit bureau enquiry, which may impact your credit profile according to bureau policies.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="30">
+                                <Accordion.Header><strong>FAQ - How long does approval take?</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Approval timelines vary based on:</p>
+                                    <ul>
+                                        <li>Document completeness.</li>
+                                        <li>Verification requirements.</li>
+                                        <li>Lender processing.</li>
+                                    </ul>
+                                    <p>Some decisions may be available within minutes, while others may take longer.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="31">
+                                <Accordion.Header><strong>FAQ - Can I repay early?</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Prepayment and foreclosure terms depend on the lender and will be disclosed in the loan agreement and KFS.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="32">
+                                <Accordion.Header><strong>FAQ - How are loan funds disbursed?</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Depending on the lender and financing arrangement:</p>
+                                    <ul>
+                                        <li>Directly to the hospital.</li>
+                                        <li>Directly to the healthcare provider.</li>
+                                        <li>To the borrower where permitted.</li>
+                                    </ul>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="33">
+                                <Accordion.Header><strong>FAQ - What if my loan application is rejected?</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Loan approval remains solely at the lender's discretion. HealthEasy EMI cannot influence or overturn lender decisions.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="34">
+                                <Accordion.Header><strong>FAQ - How do I protect myself from fraud?</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <ul>
+                                        <li>Never share OTPs.</li>
+                                        <li>Never share passwords.</li>
+                                        <li>Verify official communications.</li>
+                                        <li>Contact customer support if suspicious activity is detected.</li>
+                                    </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                         </Accordion>
+
+                        {/* BOTTOM DISCLAIMER NOTE */}
+                        <div className="mt-4 p-3 bg-light border rounded small text-muted">
+                            <p>HealthEasy EMI is a Lending Service Provider (LSP) and not a lender. Loan products are offered solely by RBI-regulated Banks and/or NBFCs. Approval, disbursement, interest rates, tenure, and repayment terms are determined exclusively by the respective lender. Please review the Key Fact Statement (KFS) and loan agreement carefully before accepting any loan offer.</p>
+                        </div>
+
                     </div>
                 </Container>
             </section>

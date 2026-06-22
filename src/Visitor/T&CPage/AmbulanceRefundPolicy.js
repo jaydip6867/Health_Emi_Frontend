@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
-import FooterBar from "../Component/FooterBar";
-import { useNavigate } from "react-router-dom";
-import { SECRET_KEY, STORAGE_KEYS } from '../../config';
+import { Container, Accordion, Table } from "react-bootstrap";
 import CryptoJS from "crypto-js";
 import NavBar from "../Component/NavBar";
-import { Container, Accordion, Table } from "react-bootstrap";
+import FooterBar from "../Component/FooterBar";
+import { SECRET_KEY, STORAGE_KEYS } from '../../config';
 
 function AmbulanceRefundPolicy() {
-    const navigate = useNavigate();
-
     const [logdata, setlogdata] = useState(null);
     const [token, settoken] = useState(null);
 
@@ -35,86 +32,108 @@ function AmbulanceRefundPolicy() {
     }, []);
 
     useEffect(() => {
-        document.title = "HealthEasy EMI – Ambulance Services Cancellation & Refund Policy";
+        document.title = "HealthEasy EMI – Ambulance Cancellation & Refund Policy";
     }, []);
 
     return (
         <>
             <NavBar logindata={logdata} />
+            
             {/* breadcrumb section */}
             <section className='breadcrumb_Sec'>
-                <Container className='text-center '>
+                <Container className='text-center'>
                     <h2>HealthEasy EMI Ambulance Services – Cancellation & Refund Policy</h2>
                 </Container>
             </section>
             
-            <section className="py-5">
+            <section className="py-5 bg-light">
                 <Container>
-                    <div className="p-3 border rounded">
+                    <div className="p-4 bg-white border rounded shadow-sm">
                         <Accordion defaultActiveKey="0" className='faq-accordion'>
                             
                             <Accordion.Item eventKey="0">
-                                <Accordion.Header>1. Introduction</Accordion.Header>
+                                <Accordion.Header><strong>1. Introduction</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>This Cancellation & Refund Policy ("Policy") governs cancellations, refunds, rescheduling requests, and related matters concerning ambulance transportation services booked through HealthEasy EMI Ambulance Services[cite: 1266]. HealthEasy EMI Ambulance Services is operated by Arogya Mantra Healthtech Private Limited ("HealthEasy EMI", "Company", "we", "our", or "us")[cite: 1267]. By booking ambulance services through our website, mobile application, customer support channels, or any authorized platform, you agree to be bound by this Policy[cite: 1268].</p>
+                                    <p>This Cancellation & Refund Policy ("Policy") governs cancellations, refunds, rescheduling requests, and related matters concerning ambulance transportation services booked through HealthEasy EMI Ambulance Services.</p>
+                                    <p>HealthEasy EMI Ambulance Services is operated by Arogya Mantra Healthtech Private Limited ("HealthEasy EMI", "Company", "we", "our", or "us").</p>
+                                    <p>By booking ambulance services through our website, mobile application, customer support channels, or any authorized platform, you agree to be bound by this Policy.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="1">
-                                <Accordion.Header>2. Scope of Policy</Accordion.Header>
+                                <Accordion.Header><strong>2. Scope of Policy</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>This Policy applies to all ambulance transportation services facilitated through the Platform, including[cite: 1270]:</p>
+                                    <p>This Policy applies to all ambulance transportation services facilitated through the Platform, including:</p>
                                     <ul>
-                                        <li>Advanced Life Support (ALS) Ambulances; [cite: 1271]</li>
-                                        <li>Basic Life Support (BLS) Ambulances; [cite: 1272]</li>
-                                        <li>ICU Ambulances; [cite: 1273]</li>
-                                        <li>Neonatal Ambulances; [cite: 1274]</li>
-                                        <li>Cardiac Ambulances; [cite: 1275]</li>
-                                        <li>Mortuary and Hearse Services; [cite: 1276]</li>
-                                        <li>Inter-Hospital Transfers; [cite: 1277]</li>
-                                        <li>Scheduled Medical Transportation; [cite: 1278]</li>
-                                        <li>Non-Emergency Patient Transfers; [cite: 1279]</li>
-                                        <li>Healthcare Transport Subscription Plans; [cite: 1280]</li>
-                                        <li>EMI or Financing-Based Transportation Services. [cite: 1281]</li>
+                                        <li>Advanced Life Support (ALS) Ambulances;</li>
+                                        <li>Basic Life Support (BLS) Ambulances;</li>
+                                        <li>ICU Ambulances;</li>
+                                        <li>Neonatal Ambulances;</li>
+                                        <li>Cardiac Ambulances;</li>
+                                        <li>Mortuary and Hearse Services;</li>
+                                        <li>Inter-Hospital Transfers;</li>
+                                        <li>Scheduled Medical Transportation;</li>
+                                        <li>Non-Emergency Patient Transfers;</li>
+                                        <li>Healthcare Transport Subscription Plans;</li>
+                                        <li>EMI or Financing-Based Transportation Services.</li>
                                     </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="2">
-                                <Accordion.Header>3. Booking Confirmation</Accordion.Header>
+                                <Accordion.Header><strong>3. Booking Confirmation</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>A booking shall be deemed confirmed only when[cite: 1283]:</p>
+                                    <p>A booking shall be deemed confirmed only when:</p>
                                     <ul>
-                                        <li>A booking reference number is generated; and [cite: 1284]</li>
-                                        <li>Confirmation is communicated through SMS, email, telephone, WhatsApp, mobile application, or other authorized communication channels. [cite: 1285]</li>
+                                        <li>A booking reference number is generated; and</li>
+                                        <li>Confirmation is communicated through SMS, email, telephone, WhatsApp, mobile application, or other authorized communication channels.</li>
                                     </ul>
-                                    <p>All bookings remain subject to ambulance availability, ambulance partner acceptance, serviceability of the requested location, and operational feasibility[cite: 1286, 1287, 1288, 1289, 1290]. Estimated arrival times are indicative only and may vary due to traffic, weather, road conditions, emergencies, or other circumstances beyond reasonable control[cite: 1291].</p>
+                                    <p>All bookings remain subject to:</p>
+                                    <ul>
+                                        <li>Ambulance availability;</li>
+                                        <li>Ambulance partner acceptance;</li>
+                                        <li>Serviceability of the requested location;</li>
+                                        <li>Operational feasibility.</li>
+                                    </ul>
+                                    <p>Estimated arrival times are indicative only and may vary due to traffic, weather, road conditions, emergencies, or other circumstances beyond reasonable control.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="3">
-                                <Accordion.Header>4. Customer Cancellation Policy & Rescheduling</Accordion.Header>
+                                <Accordion.Header><strong>4. Customer Cancellation Policy</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <h5>4.1 Immediate Ambulance Bookings</h5>
-                                    <p>Users may cancel a booking without charge if cancellation occurs within three (3) minutes of booking; and no ambulance has been dispatched[cite: 1294, 1295, 1296]. Once an ambulance has been dispatched, cancellation charges may apply[cite: 1297].</p>
-                                    
-                                    <h5>4.2 Scheduled Ambulance Bookings</h5>
-                                    <p>For scheduled ambulance services[cite: 1299]:</p>
+                                    <h6>4.1 Immediate Ambulance Bookings</h6>
+                                    <p>Users may cancel a booking without charge if:</p>
                                     <ul>
-                                        <li>Cancellation more than one (1) hour before pickup time: No cancellation charges. [cite: 1300]</li>
-                                        <li>Cancellation within one (1) hour before scheduled pickup: Cancellation charges may apply as described below. [cite: 1301]</li>
+                                        <li>Cancellation occurs within three (3) minutes of booking; and</li>
+                                        <li>No ambulance has been dispatched.</li>
+                                    </ul>
+                                    <p>Once an ambulance has been dispatched, cancellation charges may apply.</p>
+                                    
+                                    <h6>4.2 Scheduled Ambulance Bookings</h6>
+                                    <p>For scheduled ambulance services:</p>
+                                    <ul>
+                                        <li>Cancellation more than one (1) hour before pickup time: No cancellation charges.</li>
+                                        <li>Cancellation within one (1) hour before scheduled pickup: Cancellation charges may apply as described below.</li>
                                     </ul>
                                     
-                                    <h5>4.3 Rescheduling Requests</h5>
-                                    <p>Where operationally feasible, HealthEasy EMI may permit rescheduling of ambulance bookings[cite: 1303]. Rescheduling requests are subject to ambulance availability, route feasibility, and ambulance partner acceptance[cite: 1304, 1305, 1306, 1307]. HealthEasy EMI does not guarantee rescheduling availability[cite: 1308].</p>
+                                    <h6>4.3 Rescheduling Requests</h6>
+                                    <p>Where operationally feasible, HealthEasy EMI may permit rescheduling of ambulance bookings.</p>
+                                    <p>Rescheduling requests are subject to:</p>
+                                    <ul>
+                                        <li>Ambulance availability;</li>
+                                        <li>Route feasibility;</li>
+                                        <li>Ambulance partner acceptance.</li>
+                                    </ul>
+                                    <p>HealthEasy EMI does not guarantee rescheduling availability.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="4">
-                                <Accordion.Header>5. Cancellation Charges</Accordion.Header>
+                                <Accordion.Header><strong>5. Cancellation Charges</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>The following cancellation charges may apply[cite: 1309]:</p>
-                                    <Table striped bordered hover responsive>
+                                    <p>The following cancellation charges may apply:</p>
+                                    <Table striped bordered hover responsive size="sm" className="bg-white">
                                         <thead>
                                             <tr>
                                                 <th>Cancellation Stage</th>
@@ -148,71 +167,106 @@ function AmbulanceRefundPolicy() {
                                             </tr>
                                         </tbody>
                                     </Table>
-                                    <p>Cancellation charges may vary depending on ambulance type, distance already travelled, time elapsed, resources allocated, and emergency service category[cite: 1312, 1313, 1314, 1315, 1316, 1317].</p>
+                                    <p>Cancellation charges may vary depending on:</p>
+                                    <ul>
+                                        <li>Ambulance type;</li>
+                                        <li>Distance already travelled;</li>
+                                        <li>Time elapsed;</li>
+                                        <li>Resources allocated;</li>
+                                        <li>Emergency service category.</li>
+                                    </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="5">
-                                <Accordion.Header>6. No-Show Policy</Accordion.Header>
+                                <Accordion.Header><strong>6. No-Show Policy</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>A booking shall be considered a No-Show if[cite: 1319]:</p>
+                                    <p>A booking shall be considered a No-Show if:</p>
                                     <ul>
-                                        <li>The ambulance reaches the designated pickup location and the patient is unavailable; [cite: 1320]</li>
-                                        <li>The patient or representative cannot be contacted after reasonable attempts; [cite: 1321]</li>
-                                        <li>Incorrect pickup information is provided; [cite: 1322]</li>
-                                        <li>The patient refuses transportation after ambulance arrival; [cite: 1323]</li>
-                                        <li>Access to the patient location is not possible due to incorrect details supplied by the User. [cite: 1324]</li>
+                                        <li>The ambulance reaches the designated pickup location and the patient is unavailable;</li>
+                                        <li>The patient or representative cannot be contacted after reasonable attempts;</li>
+                                        <li>Incorrect pickup information is provided;</li>
+                                        <li>The patient refuses transportation after ambulance arrival;</li>
+                                        <li>Access to the patient location is not possible due to incorrect details supplied by the User.</li>
                                     </ul>
-                                    <p>In such circumstances full fare may be charged, no refund shall be payable, and repeated incidents may result in account restrictions[cite: 1325, 1326, 1327, 1328].</p>
+                                    <p>In such circumstances:</p>
+                                    <ul>
+                                        <li>Full fare may be charged;</li>
+                                        <li>No refund shall be payable;</li>
+                                        <li>Repeated incidents may result in account restrictions.</li>
+                                    </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="6">
-                                <Accordion.Header>7. Ambulance Partner or System-Initiated Cancellation</Accordion.Header>
+                                <Accordion.Header><strong>7. Ambulance Partner or System-Initiated Cancellation</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>HealthEasy EMI or the assigned Ambulance Partner may cancel a booking due to vehicle breakdown, medical emergency redeployment, driver unavailability, force majeure events, natural disasters, public safety concerns, regulatory restrictions, incorrect booking information, or technical failures[cite: 1329, 1331, 1332, 1333, 1334, 1335, 1336, 1337, 1338, 1339]. Where such cancellation occurs before commencement of service, any prepaid amount shall be refunded in full, or an alternate ambulance may be arranged where available[cite: 1340, 1341, 1342].</p>
+                                    <p>HealthEasy EMI or the assigned Ambulance Partner may cancel a booking due to:</p>
+                                    <ul>
+                                        <li>Vehicle breakdown;</li>
+                                        <li>Medical emergency redeployment;</li>
+                                        <li>Driver unavailability;</li>
+                                        <li>Force majeure events;</li>
+                                        <li>Natural disasters;</li>
+                                        <li>Public safety concerns;</li>
+                                        <li>Regulatory restrictions;</li>
+                                        <li>Incorrect booking information;</li>
+                                        <li>Technical failures.</li>
+                                    </ul>
+                                    <p>Where such cancellation occurs before commencement of service:</p>
+                                    <ul>
+                                        <li>Any prepaid amount shall be refunded in full; or</li>
+                                        <li>An alternate ambulance may be arranged where available.</li>
+                                    </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="7">
-                                <Accordion.Header>8. Refund Eligibility</Accordion.Header>
+                                <Accordion.Header><strong>8. Refund Eligibility</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>Refunds may be issued under the following circumstances[cite: 1343]:</p>
                                     <h6>Eligible Refund Scenarios</h6>
                                     <ul>
-                                        <li>Cancellation within the free cancellation period; [cite: 1346]</li>
-                                        <li>Duplicate payment transactions; [cite: 1347]</li>
-                                        <li>Duplicate bookings caused by technical errors; [cite: 1348]</li>
-                                        <li>Payment deducted but booking not confirmed; [cite: 1349]</li>
-                                        <li>Ambulance partner cancellation; [cite: 1350]</li>
-                                        <li>Service unavailable after payment collection; [cite: 1351]</li>
-                                        <li>Billing errors verified by HealthEasy EMI. [cite: 1352]</li>
+                                        <li>Cancellation within the free cancellation period;</li>
+                                        <li>Duplicate payment transactions;</li>
+                                        <li>Duplicate bookings caused by technical errors;</li>
+                                        <li>Payment deducted but booking not confirmed;</li>
+                                        <li>Ambulance partner cancellation;</li>
+                                        <li>Service unavailable after payment collection;</li>
+                                        <li>Billing errors verified by HealthEasy EMI.</li>
                                     </ul>
                                     <h6>Non-Refundable Scenarios</h6>
-                                    <p>Refunds will generally not be issued for[cite: 1353, 1354]:</p>
+                                    <p>Refunds will generally not be issued for:</p>
                                     <ul>
-                                        <li>No-show events; [cite: 1355]</li>
-                                        <li>Incorrect booking information provided by the User; [cite: 1356]</li>
-                                        <li>Cancellation after service commencement; [cite: 1357]</li>
-                                        <li>Ambulance arrival at pickup location; [cite: 1358]</li>
-                                        <li>Refusal of transportation after dispatch; [cite: 1359]</li>
-                                        <li>Delays caused by traffic, weather, or external circumstances. [cite: 1360]</li>
+                                        <li>No-show events;</li>
+                                        <li>Incorrect booking information provided by the User;</li>
+                                        <li>Cancellation after service commencement;</li>
+                                        <li>Ambulance arrival at pickup location;</li>
+                                        <li>Refusal of transportation after dispatch;</li>
+                                        <li>Delays caused by traffic, weather, or external circumstances.</li>
                                     </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="8">
-                                <Accordion.Header>9. EMI and Healthcare Financing Refunds</Accordion.Header>
+                                <Accordion.Header><strong>9. EMI and Healthcare Financing Refunds</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>Where payments have been made through EMI facilities, healthcare financing programs, lending partners, or medical credit facilities, refund processing shall additionally be governed by the policies of the respective lender or financing institution[cite: 1361, 1362, 1363, 1364, 1365, 1366, 1367]. HealthEasy EMI cannot guarantee timelines controlled by third-party financial institutions[cite: 1368].</p>
+                                    <p>Where payments have been made through:</p>
+                                    <ul>
+                                        <li>EMI facilities;</li>
+                                        <li>Healthcare financing programs;</li>
+                                        <li>Lending partners;</li>
+                                        <li>Medical credit facilities;</li>
+                                    </ul>
+                                    <p>refund processing shall additionally be governed by the policies of the respective lender or financing institution.</p>
+                                    <p>HealthEasy EMI cannot guarantee timelines controlled by third-party financial institutions.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="9">
-                                <Accordion.Header>10. Refund Processing Timelines</Accordion.Header>
+                                <Accordion.Header><strong>10. Refund Processing Timelines</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>Approved refunds shall generally be processed as follows[cite: 1369, 1370]:</p>
-                                    <Table striped bordered hover responsive>
+                                    <p>Approved refunds shall generally be processed as follows:</p>
+                                    <Table striped bordered hover responsive size="sm" className="bg-white">
                                         <thead>
                                             <tr>
                                                 <th>Payment Method</th>
@@ -246,62 +300,111 @@ function AmbulanceRefundPolicy() {
                                             </tr>
                                         </tbody>
                                     </Table>
-                                    <p>Actual timelines may vary depending upon banking systems and payment service providers[cite: 1372].</p>
+                                    <p>Actual timelines may vary depending upon banking systems and payment service providers.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="10">
-                                <Accordion.Header>11. Disputed Charges</Accordion.Header>
+                                <Accordion.Header><strong>11. Disputed Charges</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>Users who believe a cancellation fee or refund determination is incorrect may submit a dispute request[cite: 1374]. HealthEasy EMI may request booking details, transaction records, communication history, and supporting documentation[cite: 1375, 1376, 1377, 1378, 1379]. All decisions following investigation shall be final and binding, subject to applicable law[cite: 1380].</p>
+                                    <p>Users who believe a cancellation fee or refund determination is incorrect may submit a dispute request.</p>
+                                    <p>HealthEasy EMI may request:</p>
+                                    <ul>
+                                        <li>Booking details;</li>
+                                        <li>Transaction records;</li>
+                                        <li>Communication history;</li>
+                                        <li>Supporting documentation.</li>
+                                    </ul>
+                                    <p>All decisions following investigation shall be final and binding, subject to applicable law.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="11">
-                                <Accordion.Header>12. Force Majeure</Accordion.Header>
+                                <Accordion.Header><strong>12. Force Majeure</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>HealthEasy EMI shall not be liable for delays, cancellations, or service disruptions arising from circumstances beyond reasonable control, including natural disasters, floods, earthquakes, pandemics, government restrictions, civil disturbances, road closures, traffic emergencies, communication failures, or power outages[cite: 1381, 1382, 1383, 1384, 1385, 1386, 1387, 1388, 1389, 1390, 1391, 1392]. Where feasible, HealthEasy EMI shall make reasonable efforts to assist Users with alternate arrangements[cite: 1393].</p>
+                                    <p>HealthEasy EMI shall not be liable for delays, cancellations, or service disruptions arising from circumstances beyond reasonable control, including:</p>
+                                    <ul>
+                                        <li>Natural disasters;</li>
+                                        <li>Floods;</li>
+                                        <li>Earthquakes;</li>
+                                        <li>Pandemics;</li>
+                                        <li>Government restrictions;</li>
+                                        <li>Civil disturbances;</li>
+                                        <li>Road closures;</li>
+                                        <li>Traffic emergencies;</li>
+                                        <li>Communication failures;</li>
+                                        <li>Power outages.</li>
+                                    </ul>
+                                    <p>Where feasible, HealthEasy EMI shall make reasonable efforts to assist Users with alternate arrangements.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="12">
-                                <Accordion.Header>13. Fraudulent Bookings and Misuse</Accordion.Header>
+                                <Accordion.Header><strong>13. Fraudulent Bookings and Misuse</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>HealthEasy EMI reserves the right to suspend accounts, recover losses, restrict future bookings, or initiate legal proceedings against Users involved in false emergency requests, fraudulent transactions, repeated misuse of services, abuse of ambulance personnel, or intentional non-payment[cite: 1394, 1395, 1396, 1397, 1398, 1399, 1400, 1401, 1402, 1403, 1404, 1405].</p>
+                                    <p>HealthEasy EMI reserves the right to:</p>
+                                    <ul>
+                                        <li>Suspend accounts;</li>
+                                        <li>Recover losses;</li>
+                                        <li>Restrict future bookings;</li>
+                                        <li>Initiate legal proceedings against Users involved in:</li>
+                                    </ul>
+                                    <ul>
+                                        <li>False emergency requests;</li>
+                                        <li>Fraudulent transactions;</li>
+                                        <li>Repeated misuse of services;</li>
+                                        <li>Abuse of ambulance personnel;</li>
+                                        <li>Intentional non-payment.</li>
+                                    </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="13">
-                                <Accordion.Header>14. Limitation of Liability & Amendments</Accordion.Header>
+                                <Accordion.Header><strong>14. Limitation of Liability</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p><strong>Limitation of Liability:</strong> To the maximum extent permitted under applicable law, HealthEasy EMI's liability relating to cancellations, refunds, booking disputes, or payment issues shall not exceed the amount paid by the User for the specific booking giving rise to the claim[cite: 1406, 1408]. HealthEasy EMI shall not be liable for any indirect, incidental, consequential, special, or punitive damages[cite: 1409]. Nothing in this Policy limits liability that cannot be excluded under applicable law[cite: 1410].</p>
-                                    <p><strong>Amendments:</strong> HealthEasy EMI may update or modify this Policy at any time[cite: 1412]. The updated version shall become effective immediately upon publication on the Platform[cite: 1413]. Continued use of the Services constitutes acceptance of the revised Policy[cite: 1414].</p>
+                                    <p>To the maximum extent permitted under applicable law:</p>
+                                    <p>HealthEasy EMI's liability relating to cancellations, refunds, booking disputes, or payment issues shall not exceed the amount paid by the User for the specific booking giving rise to the claim.</p>
+                                    <p>HealthEasy EMI shall not be liable for any indirect, incidental, consequential, special, or punitive damages.</p>
+                                    <p>Nothing in this Policy limits liability that cannot be excluded under applicable law.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="14">
-                                <Accordion.Header>15. Governing Law and Jurisdiction</Accordion.Header>
+                                <Accordion.Header><strong>15. Amendments</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>This Policy shall be governed by and interpreted in accordance with the laws of India[cite: 1416]. Any dispute arising from or relating to this Policy shall be subject to the exclusive jurisdiction of the competent courts located in Pune, Maharashtra, India[cite: 1417].</p>
+                                    <p>HealthEasy EMI may update or modify this Policy at any time.</p>
+                                    <p>The updated version shall become effective immediately upon publication on the Platform.</p>
+                                    <p>Continued use of the Services constitutes acceptance of the revised Policy.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="15">
-                                <Accordion.Header>16. Contact Information & Final Notice</Accordion.Header>
+                                <Accordion.Header><strong>16. Governing Law and Jurisdiction</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>HealthEasy EMI Ambulance Services Arogya Mantra Healthtech Private Limited<br />
+                                    <p>This Policy shall be governed by and interpreted in accordance with the laws of India.</p>
+                                    <p>Any dispute arising from or relating to this Policy shall be subject to the exclusive jurisdiction of the competent courts located in Pune, Maharashtra, India.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="16">
+                                <Accordion.Header><strong>17. Contact Information</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>HealthEasy EMI Ambulance Services<br />
+                                    Arogya Mantra Healthtech Private Limited<br />
                                     Email: support@healtheasyemi.com<br />
                                     Customer Support: +91-8855919195<br />
                                     Website: www.healtheasyemi.com<br />
-                                    Registered Office: Office no.23, 3rd Floor, Aston Plaza, Narhe Ambegaon Rd, above Star Bazaar, Ambegaon Budruk, Pune, Maharashtra 411046 [cite: 1419, 1420, 1421, 1422, 1423]</p>
-                                    
-                                    <hr />
-                                    
-                                    <p><strong>Cancellation & Refund Notice:</strong> Ambulance bookings may be subject to cancellation charges once dispatch has commenced or the ambulance has arrived at the pickup location[cite: 1424]. Refund eligibility depends on booking status, service utilization, payment method, and applicable partner policies[cite: 1425]. Users are encouraged to review the full Cancellation & Refund Policy before confirming a booking[cite: 1426].</p>
+                                    Registered Office: Office no.23, 3rd Floor, Aston Plaza, Narhe Ambegaon Rd, above Star Bazaar, Ambegaon Budruk, Pune, Maharashtra 411046</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                         </Accordion>
+
+                        {/* BOTTOM DISCLAIMER NOTE */}
+                        <div className="mt-4 p-3 bg-light border rounded small text-muted">
+                            <p>Cancellation & Refund Notice: Ambulance bookings may be subject to cancellation charges once dispatch has commenced or the ambulance has arrived at the pickup location. Refund eligibility depends on booking status, service utilization, payment method, and applicable partner policies. Users are encouraged to review the full Cancellation & Refund Policy before confirming a booking.</p>
+                        </div>
+
                     </div>
                 </Container>
             </section>
