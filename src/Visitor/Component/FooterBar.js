@@ -141,7 +141,7 @@ const FooterBar = () => {
             </Col>
             <Col xs={12} md={6} lg className="copyright">
               <p>
-                Copyright © 2024 <span>Health Easy EMI</span>
+                Copyright © 2026 <span>Health Easy EMI</span>
               </p>
             </Col>
             <Col xs={12} md={6} lg className="text-lg-end text-center">

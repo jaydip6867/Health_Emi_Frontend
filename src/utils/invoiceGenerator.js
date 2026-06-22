@@ -1,6 +1,7 @@
 import React from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import logo from '../Visitor/assets/HEE-logo.png'
 
 /**
  * Generate Invoice PDF matching the exact Healtheasy EMI Design
@@ -115,10 +116,7 @@ function generateHTMLTemplate(data) {
         <tr>
           <td style="vertical-align:middle; width:50%;">
             <div style="font-size:32px; font-weight:bold; color:#034e7b; letter-spacing:-0.5px;">
-              <span style="color:#0294a5;">+</span> healtheasy
-            </div>
-            <div style="display:inline-block; background:#0294a5; color:#ffffff; font-size:11px; font-weight:bold; padding:2px 14px; border-radius:10px; margin-top:2px; letter-spacing:1px;">
-              EMI
+              <img src="${logo}" style="max-width: 200px" />
             </div>
           </td>
           <td style="text-align:right; vertical-align:middle; width:50%;">
@@ -215,7 +213,7 @@ function generateHTMLTemplate(data) {
         </table>
       </div>
 
-      <table style="width:100%; border-collapse:collapse; margin-bottom:40px;">
+      <!-- <table style="width:100%; border-collapse:collapse; margin-bottom:40px;">
         <tr>
           <td style="width:70%; vertical-align:top; font-size:11px; color:#666666; line-height:1.6; padding-right:20px;">
             <b style="color:#0294a5; font-size:12px;">📝 IMPORTANT NOTES</b><br />
@@ -231,7 +229,7 @@ function generateHTMLTemplate(data) {
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${bookingId}" style="width:90px; height:90px; border:1px solid #dddddd; padding:3px; background:#ffffff;" alt="QR" />
           </td>
         </tr>
-      </table>
+      </table> -->
 
       <div style="position:absolute; bottom:15mm; left:12mm; width:186mm;">
         <hr style="border:none; border-top:1px solid #dddddd; margin-bottom:15px;" />
