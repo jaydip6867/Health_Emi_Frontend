@@ -256,8 +256,8 @@ const HealthEasy = () => {
                     <label>Interest Rate (per annum)</label>
                     <span className="value purple">{rate}%</span>
                   </div>
-                  <input type="range" min="8" max="24" step="0.5" value={rate} onChange={(e) => setRate(Number(e.target.value))} />
-                  <div className="range-labels"><span>8%</span><span>24%</span></div>
+                  <input type="range" min="0" max="24" step="0.5" value={rate} onChange={(e) => setRate(Number(e.target.value))} />
+                  <div className="range-labels"><span>0%</span><span>24%</span></div>
                 </div>
 
                 <div className="input-group">
