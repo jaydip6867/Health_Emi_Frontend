@@ -2004,169 +2004,397 @@ const D_Appointment = () => {
           fontSize: 14,
         }}
       >
-        {/* Header */}
-        <div style={{
-          background: "#1e88e5",
-          color: "white",
-          textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          padding: "30px 20px"
-        }}>
-          <h1 style={{ margin: 0, fontSize: 40, fontWeight: 700, color: 'white' }}>
-            {currentAppointment?.hospital_name?.name || doctor?.hospitalName || "Hospital Name"}
-          </h1>
-          <h3 style={{ margin: "5px 0", fontWeight: 600, color: 'white' }}>
-            Dr. {doctor?.name || "Doctor Name"}
-          </h3>
-          <p style={{ margin: "5px 0", fontSize: 14, color: 'white', verticalAlign: 'middle', display: 'flex', alignItems: 'center' }}>
-            <span><MdLocationOn style={{ marginRight: 5 }} /></span>{currentAppointment?.hospital_name?.address || doctor?.address || "Hospital Address"}
-          </p>
-          <p style={{ margin: "5px 0", fontSize: 14, color: 'white', verticalAlign: 'middle', display: 'flex', alignItems: 'center' }}>
-            <span><MdEmail style={{ marginRight: 5 }} /></span>{doctor?.email || "doctor@email.com"} | <span><MdPhone style={{ marginRight: 5 }} /></span>{doctor?.mobile || "1234567890"}
-          </p>
+        <div className="container border border-secondary p-4 bg-white text-dark small">
+
+          {/* Header */}
+          <div className="d-flex justify-content-between align-items-start border-bottom border-3 border-success pb-3 mb-3">
+
+            <div>
+              <h1 className="fw-bold text-success">healtheasy</h1>
+              <p className="fw-semibold text-success mb-0">EMI</p>
+              <p className="text-muted small">Easy Healthcare, Easy Payments</p>
+            </div>
+
+            <div className="text-end">
+              <h2 className="fw-bold">
+                Dr. {doctor?.name || "Doctor Name"}
+              </h2>
+
+              <p className="mb-1">
+                ({doctor?.qualification || "B.H.M.S"}) – Consulting Homeopath
+              </p>
+
+              <span className="badge bg-light text-success border border-success mb-2">
+                Reg. No.: {doctor?.registrationNo || "G-12345"}
+              </span>
+
+              <p className="text-muted small mb-1">
+                📍 {doctor?.address || "Hospital Address"}
+              </p>
+
+              <p className="mb-0">✉️ {doctor?.email}</p>
+              <p className="mb-0">📞 {doctor?.mobile}</p>
+            </div>
+          </div>
+
+          {/* Patient Details */}
+          <div className="row mb-4">
+
+            <div className="col-md-6">
+              <p><b>Patient Name :</b> {currentAppointment?.patientname || "-"}</p>
+              <p>
+                <b>Age :</b> {currentAppointment?.age || "-"} &nbsp;
+                <b>Gender :</b> {currentAppointment?.gender || "-"}
+              </p>
+
+              <p>
+                <b>DOB :</b> {currentAppointment?.dob || "-"} &nbsp;
+                <b>Mobile :</b> {currentAppointment?.mobile || "-"}
+              </p>
+
+              <p><b>UHID :</b> {currentAppointment?.uhid || "-"}</p>
+              <p><b>Address :</b> {currentAppointment?.address || "-"}</p>
+            </div>
+
+            <div className="col-md-6 text-end">
+              <p>
+                <b>Date :</b> {currentAppointment?.date || "-"} &nbsp;
+                <b>Time :</b> {currentAppointment?.time || "-"}
+              </p>
+
+              <p><b>Prescription No. :</b> {currentAppointment?.prescriptionNo || "-"}</p>
+
+              <p>
+                <b>Follow-Up Date :</b> {currentAppointment?.followUpDate || "-"}
+              </p>
+
+              <p>
+                <b>Follow-Up Time :</b> {currentAppointment?.followUpTime || "-"}
+              </p>
+
+              <p>
+                <b>Mode :</b> {currentAppointment?.mode || "OPD"}
+              </p>
+            </div>
+          </div>
+
+          {/* Vitals */}
+          <div className="d-flex justify-content-between border border-secondary rounded bg-light p-2 mb-4 small">
+            <span>❤️ BP: {prescriptionData?.bp || "-"}</span>
+            <span>⚡ Pulse: {prescriptionData?.pulseRate || "-"}</span>
+            <span>💧 RBS: {prescriptionData?.rbs || "-"}</span>
+            <span>⚖️ WT: {prescriptionData?.wt || "-"}</span>
+            <span>🌡️ Temp: {prescriptionData?.temp || "-"}</span>
+          </div>
+
+          {/* Clinical Sections */}
+          <div className="mb-4">
+            {[
+              "Complaints",
+              "Pathological Test",
+              "Radiological Test",
+              "Past History",
+              "Diagnosis",
+              "Advice"
+            ].map((item, i) => {
+              const keyMap = {
+                "Complaints": prescriptionData?.complain,
+                "Pathological Test": prescriptionData?.pathologyTest,
+                "Radiological Test": prescriptionData?.radiologyTest,
+                "Past History": prescriptionData?.pasHistory,
+                "Diagnosis": prescriptionData?.diagnosis,
+                "Advice": prescriptionData?.instructions,
+              };
+
+              return (
+                <div key={i} className="d-flex mb-2">
+                  <div style={{ width: "160px", fontWeight: "600" }}>
+                    {item} :
+                  </div>
+
+                  <div className="flex-grow-1 border-bottom">
+                    {keyMap[item] || ""}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Medication Table */}
+          <table className="table table-bordered small">
+            <thead className="table-success text-white bg-success">
+              <tr>
+                <th>No.</th>
+                <th>Type</th>
+                <th>Medicine</th>
+                <th>Schedule</th>
+                <th>Instruction</th>
+                <th>Days</th>
+                <th>Qty</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {(prescriptionData?.prescriptionItems || []).map((item, i) => {
+                const times = [];
+                if (item.mo) times.push(`MO(${item.moDose})`);
+                if (item.an) times.push(`AN(${item.anDose})`);
+                if (item.ev) times.push(`EV(${item.evDose})`);
+                if (item.nt) times.push(`NT(${item.ntDose})`);
+
+                return (
+                  <tr key={i}>
+                    <td className="text-center">{i + 1}</td>
+                    <td>{item.type}</td>
+                    <td>{item.medicine}</td>
+                    <td>{times.join(", ")}</td>
+                    <td>{item.instruction || "-"}</td>
+                    <td>{item.days}</td>
+                    <td>{item.quantity}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          {/* Footer */}
+          <div className="row g-3">
+
+            <div className="col-md-6 border p-3 bg-light small">
+              <h6 className="fw-bold">NOTES</h6>
+              <ul className="mb-0">
+                {(prescriptionData?.notes || [
+                  "Take medicines as prescribed by the doctor.",
+                  "Complete full course.",
+                  "Carry prescription on next visit."
+                ]).map((note, i) => (
+                  <li key={i}>{note}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="col-md-3 border p-3 bg-light small">
+              <h6 className="fw-bold">IMPORTANT</h6>
+              <p>💧 {prescriptionData?.important1 || "Take medicines with water."}</p>
+              <p>🚫 {prescriptionData?.important2 || "Avoid junk food."}</p>
+              <p>🌙 {prescriptionData?.important3 || "Take proper rest."}</p>
+            </div>
+
+            <div className="col-md-3 border p-3 text-center small">
+              <p>Doctor Signature</p>
+
+              <div className="fw-bold">
+                Dr. {doctor?.name}
+              </div>
+
+              <p className="small">
+                Reg. No.: {doctor?.registrationNo}
+              </p>
+
+              <div className="border border-dashed p-3 text-muted">
+                Clinic Stamp
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom */}
+          <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top text-muted small">
+
+            <div className="d-flex align-items-center gap-2">
+              <div style={{ width: 50, height: 50, background: "#ddd" }}></div>
+
+              <div>
+                Scan to download<br />
+                Healtheasy EMI App
+              </div>
+            </div>
+
+            <div>
+              📞 Emergency: {doctor?.mobile}
+            </div>
+
+            <div>
+              📅 Generated: {new Date().toLocaleString()}
+            </div>
+          </div>
+
         </div>
 
-        {/* Patient Info */}
-        <div style={{
-          background: "#1f2d3d",
-          color: "white",
-          padding: "15px",
-          margin: "20px",
-          borderRadius: "8px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap"
-        }}>
-          <div style={{ margin: "5px 15px" }}><b>Patient Name:</b> {currentAppointment?.patientname || "-"}</div>
-          <div style={{ margin: "5px 15px" }}><b>BP:</b> {prescriptionData?.bp || "-"}</div>
-          {/* <div style={{ margin: "5px 15px" }}><b>DOB:</b> {currentAppointment?.date || "-"}</div> */}
-          {/* <div style={{ margin: "5px 15px" }}><b>Age:</b> 22 Years</div> */}
-          <div style={{ margin: "5px 15px" }}><b>Date:</b> {currentAppointment?.date || "-"}, {currentAppointment?.time || "-"}</div>
-        </div>
-
-        {/* Vitals */}
-        <div style={{
-          background: "#1f2d3d",
-          color: "white",
-          padding: "10px",
-          margin: "0 20px 20px 20px",
-          borderRadius: "6px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center"
-        }}>
-          <div>Pulse Rate : {prescriptionData?.pulseRate ? `${prescriptionData.pulseRate} /min` : "-/min"}</div>
-          <div>Rbs : {prescriptionData?.rbs ? `${prescriptionData.rbs} mg/dl` : "- mg/dl"}</div>
-          <div>Wt : {prescriptionData?.wt ? `${prescriptionData.wt} kg` : "- kg"}</div>
-        </div>
-
-        {/* Sections */}
-        {prescriptionData?.pathologyTest && (
-          <div style={{
-            border: "1px solid #d0d0d0",
-            margin: "10px 20px",
-            borderRadius: "6px",
-            padding: "4px 12px",
+        {/* HEADER (1st + 2nd merged design) */}
+        {/* <div
+          style={{
             display: "flex",
-            flexDirection: "column"
-          }}>
-            <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Pathological Test :</h6>
-            <p>{prescriptionData.pathologyTest}</p>
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            borderBottom: "3px solid #0f766e",
+            padding: "20px",
+            marginBottom: "15px",
+          }}
+        >
+          <div>
+            <h1 style={{ margin: 0, fontSize: 36, fontWeight: "bold", color: "#115e59" }}>
+              healtheasy
+            </h1>
+
+            <div style={{ color: "#0f766e", fontWeight: 600, fontSize: 18 }}>
+              EMI
+            </div>
+
+            <small style={{ color: "#666" }}>
+              Easy Healthcare, Easy Payments
+            </small>
           </div>
-        )}
 
-        {prescriptionData?.radiologyTest && (
-          <div style={{
-            border: "1px solid #d0d0d0",
-            margin: "10px 20px",
-            borderRadius: "6px",
-            padding: "4px 12px",
-            display: "flex",
-            flexDirection: "column"
-          }}>
-            <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Radiological Test :</h6>
-            <p>{prescriptionData.radiologyTest}</p>
+          <div style={{ textAlign: "right" }}>
+            <h2 style={{ margin: 0 }}>
+              Dr. {doctor?.name || "Doctor Name"}
+            </h2>
+
+            <div>
+              ({doctor?.qualification || "B.H.M.S"}) – Consulting Homeopath
+            </div>
+
+            <div
+              style={{
+                background: "#d1fae5",
+                display: "inline-block",
+                padding: "5px 10px",
+                borderRadius: 4,
+                marginTop: 5,
+                fontWeight: 600,
+              }}
+            >
+              Reg. No.: {doctor?.registrationNo || "G-12345"}
+            </div>
+
+            <div style={{ marginTop: 8 }}>
+              📍 {doctor?.address || "Hospital Address"}
+            </div>
+
+            <div>✉️ {doctor?.email}</div>
+            <div>📞 {doctor?.mobile}</div>
           </div>
-        )}
+        </div> */}
 
-        {prescriptionData?.complain && (
-          <div style={{
-            border: "1px solid #d0d0d0",
-            margin: "10px 20px",
-            borderRadius: "6px",
-            padding: "4px 12px",
+        {/* PATIENT DETAILS (merged style) */}
+        {/* <div
+          style={{
             display: "flex",
-            flexDirection: "column"
-          }}>
-            <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Complains :</h6>
-            <p>{prescriptionData.complain}</p>
+            justifyContent: "space-between",
+            margin: "0 20px 20px",
+            border: "1px solid #e5e7eb",
+            padding: 12,
+            borderRadius: 6,
+            background: "#f9fafb",
+          }}
+        >
+          <div>
+            <p><b>Patient Name :</b> {currentAppointment?.patientname || "-"}</p>
+            <p><b>Mobile :</b> {currentAppointment?.mobile || "-"}</p>
+            <p><b>UHID :</b> {currentAppointment?.uhid || "-"}</p>
           </div>
-        )}
 
-        {prescriptionData?.pasHistory && (
-          <div style={{
-            border: "1px solid #d0d0d0",
-            margin: "10px 20px",
-            borderRadius: "6px",
-            padding: "4px 12px",
-            display: "flex",
-            flexDirection: "column"
-          }}>
-            <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Past History :</h6>
-            <p>{prescriptionData.pasHistory}</p>
+          <div style={{ textAlign: "right" }}>
+            <p><b>Date :</b> {currentAppointment?.date || "-"}</p>
+            <p><b>Time :</b> {currentAppointment?.time || "-"}</p>
+            <p><b>Follow Up :</b> __________</p>
           </div>
-        )}
+        </div> */}
 
-        {prescriptionData?.diagnosis && (
-          <div style={{
-            border: "1px solid #d0d0d0",
-            margin: "10px 20px",
-            borderRadius: "6px",
-            padding: "4px 12px",
+        {/* VITALS (clean 1st design + 2nd styling) */}
+        {/* <div
+          style={{
             display: "flex",
-            flexDirection: "column"
-          }}>
-            <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Diagnosis :</h6>
-            <p>{prescriptionData.diagnosis}</p>
-          </div>
-        )}
+            justifyContent: "space-around",
+            border: "1px solid #ddd",
+            background: "#f8fafc",
+            padding: 12,
+            margin: "0 20px 20px",
+            borderRadius: 6,
+          }}
+        >
+          <div>❤️ BP: {prescriptionData?.bp || "-"}</div>
+          <div>⚡ Pulse: {prescriptionData?.pulseRate || "-"}</div>
+          <div>💧 RBS: {prescriptionData?.rbs || "-"}</div>
+          <div>⚖️ WT: {prescriptionData?.wt || "-"}</div>
+        </div> */}
 
-        {prescriptionData?.instructions && (
-          <div style={{
-            border: "1px solid #d0d0d0",
-            margin: "10px 20px",
-            borderRadius: "6px",
-            padding: "4px 12px",
-            display: "flex",
-            flexDirection: "column"
-          }}>
-            <h6 style={{ margin: "0 0 5px 0", color: "#666" }}>Advice :</h6>
-            <ul style={{ margin: 0, paddingLeft: "18px", paddingBottom: "5px" }}>
+        {/* CLINICAL SECTIONS (1st code structure + 2nd UI) */}
+        {/* {[
+          ["Complaints", prescriptionData?.complain],
+          ["Pathological Test", prescriptionData?.pathologyTest],
+          ["Radiological Test", prescriptionData?.radiologyTest],
+          ["Past History", prescriptionData?.pasHistory],
+          ["Diagnosis", prescriptionData?.diagnosis],
+        ].map(
+          ([title, value]) =>
+            value && (
+              <div
+                key={title}
+                style={{
+                  margin: "10px 20px",
+                  padding: 12,
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 6,
+                  background: "#fafafa",
+                }}
+              >
+                <h6
+                  style={{
+                    marginBottom: 8,
+                    color: "#0f766e",
+                    fontWeight: 700,
+                  }}
+                >
+                  {title} :
+                </h6>
+                <p>{value}</p>
+              </div>
+            )
+        )} */}
+
+        {/* ADVICE */}
+        {/* {prescriptionData?.instructions && (
+          <div
+            style={{
+              margin: "10px 20px",
+              padding: 12,
+              border: "1px solid #e5e7eb",
+              borderRadius: 6,
+              background: "#fafafa",
+            }}
+          >
+            <h6 style={{ color: "#0f766e", fontWeight: 700 }}>Advice :</h6>
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
               {prescriptionData.instructions.split("\n").map((ln, i) => (
                 <li key={i}>{ln}</li>
               ))}
             </ul>
           </div>
-        )}
+        )} */}
 
-        {/* Prescription Table */}
-        {(prescriptionData?.prescriptionItems || []).length > 0 && (
+        {/* PRESCRIPTION TABLE (1st structure + 2nd design) */}
+        {/* {(prescriptionData?.prescriptionItems || []).length > 0 && (
           <div style={{ margin: "20px" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, borderSpacing: 0 }} cellSpacing={0}>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontSize: 14,
+              }}
+            >
               <thead>
-                <tr style={{ background: "#1f2d3d", color: "white" }}>
-                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>No.</th>
-                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Type</th>
-                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Medicine</th>
-                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Schedule</th>
-                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Instruction</th>
-                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Days</th>
-                  <th style={{ padding: "5px 10px", border: "1px solid #ddd", textAlign: "left", verticalAlign: "middle" }}>Qty</th>
+                <tr style={{ background: "#115e59", color: "white" }}>
+                  <th>No.</th>
+                  <th>Type</th>
+                  <th>Medicine</th>
+                  <th>Schedule</th>
+                  <th>Instruction</th>
+                  <th>Days</th>
+                  <th>Qty</th>
                 </tr>
               </thead>
+
               <tbody>
                 {(prescriptionData.prescriptionItems || []).map((item, idx) => {
                   const times = [];
@@ -2174,47 +2402,99 @@ const D_Appointment = () => {
                   if (item.an) times.push(`AN(${item.anDose})`);
                   if (item.ev) times.push(`EV(${item.evDose})`);
                   if (item.nt) times.push(`NT(${item.ntDose})`);
+
                   return (
-                    <tr key={idx} style={{ margin: 0, lineHeight: "normal" }}>
-                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{idx + 1}</td>
-                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{item.type}</td>
-                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{item.medicine}</td>
-                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{times.join(", ")}</td>
-                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>
-                        {item.instruction && item.instruction !== "-SELECT-" ? item.instruction : "-"}
-                      </td>
-                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{item.days}</td>
-                      <td style={{ padding: "5px 10px", borderBottom: "1px solid #ddd", verticalAlign: "middle", margin: 0 }}>{item.quantity}</td>
+                    <tr key={idx}>
+                      <td>{idx + 1}</td>
+                      <td>{item.type}</td>
+                      <td>{item.medicine}</td>
+                      <td>{times.join(", ")}</td>
+                      <td>{item.instruction || "-"}</td>
+                      <td>{item.days}</td>
+                      <td>{item.quantity}</td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
           </div>
-        )}
+        )} */}
 
-        {/* Footer */}
-        <div style={{ textAlign: "center", fontSize: 12, color: "#666", marginTop: 20 }}>
-          <p>This is a digitally generated prescription from Health EMI Clinic System</p>
-          <p>Generated on: {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString()}</p>
-        </div>
+        {/* FOOTER BLOCK (1st + 2nd merged) */}
+        {/* <div
+          style={{
+            display: "flex",
+            gap: 15,
+            margin: 20,
+          }}
+        >
+          <div style={{ flex: 1, border: "1px solid #ddd", padding: 12, background: "#f9fafb" }}>
+            <h4>NOTES</h4>
+            <ul>
+              <li>Take medicines as prescribed.</li>
+              <li>Complete full course.</li>
+              <li>Carry prescription next visit.</li>
+            </ul>
+          </div>
 
-        {/* Signature */}
-        <div style={{ width: 200, float: "right", textAlign: "center", marginTop: 30 }}>
-          <div style={{ borderTop: "1px solid #000", marginTop: 40 }}></div>
-          <p>Dr. {doctor?.name || "-"}<br />({doctor?.qualification || "B.H.M.S"})</p>
-        </div>
+          <div style={{ width: 180, border: "1px solid #ddd", padding: 12, background: "#f9fafb" }}>
+            <h4>IMPORTANT</h4>
+            <p>💧 Drink water</p>
+            <p>🚫 Avoid junk food</p>
+            <p>🌙 Rest well</p>
+          </div>
 
-        {/* Brand */}
-        <div style={{
-          textAlign: "center",
-          fontSize: 60,
-          color: "#e8f0f7",
-          fontWeight: "bold",
-          marginTop: 40
-        }}>
+          <div style={{ width: 180, textAlign: "center", border: "1px solid #ddd", padding: 12 }}>
+            <p>Doctor Signature</p>
+            <h4 style={{ fontFamily: "cursive" }}>
+              Dr. {doctor?.name}
+            </h4>
+            <div style={{ border: "2px dashed #ccc", padding: 20 }}>
+              Clinic Stamp
+            </div>
+          </div>
+        </div> */}
+
+        {/* BOTTOM FOOTER */}
+        {/* <div
+          style={{
+            borderTop: "1px solid #ddd",
+            marginTop: 20,
+            padding: "15px 20px",
+            display: "flex",
+            justifyContent: "space-between",
+            fontSize: 12,
+            color: "#666",
+          }}
+        >
+          <div>
+            Scan to download
+            <br />
+            Healtheasy EMI App
+          </div>
+
+          <div>
+            Emergency: {doctor?.mobile}
+          </div>
+
+          <div>
+            Generated: {new Date().toLocaleDateString()}
+          </div>
+        </div> */}
+
+        {/* BRAND */}
+        {/* <div
+          style={{
+            textAlign: "center",
+            fontSize: 60,
+            color: "#e8f0f7",
+            fontWeight: "bold",
+            marginTop: 40,
+          }}
+        >
           HEALTH EASY EMI
-        </div>
+        </div> */}
+
       </div>
       <FooterBar />
       {loading ? <Loader /> : ""}

@@ -4,17 +4,17 @@
   "description": "A platform that makes healthcare payments simple and affordable through easy EMI options.",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "favicon.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.ico",
+      "src": "favicon.png",
       "type": "image/icon",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.ico",
+      "src": "favicon.png",
       "type": "image/icon",
       "sizes": "512x512"
     }
