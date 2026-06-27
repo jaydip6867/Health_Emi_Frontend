@@ -1,433 +1,425 @@
 import { useEffect, useState } from "react";
-import FooterBar from "../Component/FooterBar";
-import { useNavigate } from "react-router-dom";
-import { SECRET_KEY, STORAGE_KEYS } from '../../config'
+import { Container, Accordion } from "react-bootstrap";
 import CryptoJS from "crypto-js";
 import NavBar from "../Component/NavBar";
-import { Container, Accordion } from "react-bootstrap";
+import FooterBar from "../Component/FooterBar";
+import { SECRET_KEY, STORAGE_KEYS } from '../../config';
 
 function PrivacyPolicy() {
-    var navigate = useNavigate();
-
-    const [logdata, setlogdata] = useState(null)
-    const [token, settoken] = useState(null)
+    const [logdata, setlogdata] = useState(null);
+    const [token, settoken] = useState(null);
 
     useEffect(() => {
-        var pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
-        var dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+        const pgetlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+        const dgetlocaldata = localStorage.getItem(STORAGE_KEYS.DOCTOR);
+        let data = null;
+
         if (pgetlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(pgetlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-            var data = JSON.parse(decrypted);
+            data = JSON.parse(decrypted);
             setlogdata(data.userData);
-        }
-        else if (dgetlocaldata != null) {
+        } else if (dgetlocaldata != null) {
             const bytes = CryptoJS.AES.decrypt(dgetlocaldata, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-            var data = JSON.parse(decrypted);
+            data = JSON.parse(decrypted);
             setlogdata(data.doctorData);
         }
-        if (data) {
-            settoken(`Bearer ${data.accessToken}`)
+
+        if (data && data.accessToken) {
+            settoken(`Bearer ${data.accessToken}`);
         }
-    }, [navigate])
+    }, []);
 
     useEffect(() => {
-        document.title = "Patient No-Show (PNS) Policy"
-    }, [])
+        document.title = "HealthEasy EMI – Privacy Policy";
+    }, []);
+
     return (
         <>
             <NavBar logindata={logdata} />
+            
             {/* breadcrumb section */}
             <section className='breadcrumb_Sec'>
-                <Container className='text-center '>
-                    <h2>Doctor Terms & Conditions</h2>
+                <Container className='text-center'>
+                    <h2>Privacy Policy</h2>
                 </Container>
             </section>
-            <section className="py-5">
+            
+            <section className="py-5 bg-light">
                 <Container>
-                    <div className="p-3 border rounded">
-                        <p>Arogya Mantra Healthtech Private Limited (“we”, “our”, or “Healtheasy EMI”, including its affiliates) is the author and publisher of the internet resource www.healtheasyemi.com (“Website”) as well as the software, services, and applications under the brand name Healtheasy EMI, including but not limited to the mobile application “Healtheasy EMI”.
-                            <br /><br />
-                            This Privacy Policy explains how we collect, use, share, disclose, and protect personal information of users (“you”, “your”, or “Users”) of our services, including Practitioners (as defined in the Terms of Use), End-Users, and visitors to the Website.
-                            <br /><br />
-                            By accessing or using our Services, or by providing your information to us, you are deemed to have read, understood, and agreed to this Privacy Policy and our Terms of Use. You also consent to the collection, use, and disclosure of your information as described herein.
-                            <br /><br />
-                            If you do not agree with this Privacy Policy at any time, please discontinue using our Services and refrain from sharing any information with us. If you use the Services on behalf of another individual or an organization (such as your child or employer), you represent that you are authorized to accept this Privacy Policy and consent to our use of such individual’s or entity’s information as stated herein.
-                        </p>
+                    <div className="p-4 bg-white border rounded shadow-sm">
                         <Accordion defaultActiveKey="0" className='faq-accordion'>
+                            
                             <Accordion.Item eventKey="0">
-                                <Accordion.Header>1. Why This Privacy Policy</Accordion.Header>
+                                <Accordion.Header><strong>1. Introduction</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>This Privacy Policy is published in accordance with:</p>
-                                    <ul className="list_disc">
-                                        <li>Section 43A of the Information Technology Act, 2000</li>
-                                        <li>Regulation 4 of the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011 (“SPI Rules”)</li>
-                                        <li>Regulation 3(1) of the Information Technology (Intermediaries Guidelines) Rules, 2011.</li>
-                                    </ul>
-                                    <p>This document outlines:</p>
-                                    <ul className="list_disc">
-                                        <li>The types of information collected from Users, including Personal Information and Sensitive Personal Data or Information;</li>
-                                        <li>The purpose, means, and method of collection, usage, processing, retention, and destruction of such information; and</li>
-                                        <li>How and to whom Healtheasy EMI will disclose such information.</li>
-                                    </ul>
+                                    <p>Arogya Mantra Healthtech Private Limited, operating under the brand name "HealthEasy EMI" ("HealthEasy EMI", "Company", "we", "our", or "us"), respects your privacy and is committed to protecting your personal data.</p>
+                                    <p>This Privacy Policy explains how we collect, use, store, process, share, disclose, retain, and protect information relating to users of our website, mobile applications, teleconsultation services, appointment booking services, healthcare financing services, and related offerings (collectively, the "Services").</p>
+                                    <p>By accessing or using our Services, you acknowledge that you have read, understood, and agree to this Privacy Policy and our Terms & Conditions.</p>
+                                    <p>If you do not agree with this Privacy Policy, please discontinue use of the Services.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="1">
-                                <Accordion.Header>2. Collection of Personal Information</Accordion.Header>
+                                <Accordion.Header><strong>2. Applicability</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>Certain Services require us to know who you are to serve you effectively. When you access or interact with our Services—through the Website, App, email, or phone—we may ask you to voluntarily provide information that personally identifies you.</p>
-                                    <p>You hereby consent to our collection of such information. This may include (but is not limited to):</p>
-                                    <ul className="list_disc">
-                                        <li>Contact information such as your email address and phone number</li>
-                                        <li>Demographic information such as your gender, date of birth, and postal code</li>
-                                        <li>Data regarding your use of our Services and appointment history;</li>
-                                        <li>Insurance details such as your insurance carrier and policy information</li>
-                                        <li>Information voluntarily shared by you through email, letters, or uploads, including images and other documents</li>
-                                        <li>Data shared by Practitioners relating to treatment you have received</li>
+                                    <p>This Privacy Policy applies to:</p>
+                                    <ul>
+                                        <li>Patients and healthcare consumers;</li>
+                                        <li>Registered medical practitioners;</li>
+                                        <li>Clinics, hospitals, diagnostic centers, and healthcare establishments;</li>
+                                        <li>Visitors to the HealthEasy EMI website;</li>
+                                        <li>Users of mobile applications and digital platforms operated by HealthEasy EMI.</li>
                                     </ul>
-                                    <p>The information collected may qualify as Personal Information or Sensitive Personal Data or Information under the SPI Rules.</p>
-                                    <ul className="list_disc">
-                                        <li><strong>Personal Information</strong> means any data that relates to a natural person, which either directly or indirectly, in combination with other information, can identify that person.</li>
-                                        <li><strong>Sensitive Personal Data or Information</strong> includes information related to:</li>
-                                        <ul className="list_disc">
-                                            <li>Passwords</li>
-                                            <li>Financial details such as bank account or card information</li>
-                                            <li>Physical, physiological, and mental health condition</li>
-                                            <li>Sexual orientation</li>
-                                            <li>Medical records and history;</li>
-                                            <li>Biometric Data</li>
-                                            <li>Information received under lawful contract</li>
-                                            <li>Visitor details provided at registration; and</li>
-                                            <li>Call data records</li>
-                                        </ul>
-                                    </ul>
-                                    <p>Healtheasy EMI may freely use, collect, and disclose information that is publicly available without your consent.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="2">
-                                <Accordion.Header>3. Privacy Statements</Accordion.Header>
+                                <Accordion.Header><strong>3. Legal Basis for Processing</strong></Accordion.Header>
                                 <Accordion.Body>
-
-                                    <table className="table table-bordered privacy-table">
-                                        <tbody>
-
-                                            {/* 3.1 */}
-                                            <tr>
-                                                <th colSpan="2" className="table-heading">3.1 For All Users</th>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.1 Acceptance</td>
-                                                <td>
-                                                    By using our Services, you agree to our Terms of Use and this Privacy
-                                                    Policy. If you disagree, you must immediately discontinue use of the
-                                                    Services.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.2 Information Required</td>
-                                                <td>
-                                                    An indicative list of information we may collect to enable your use
-                                                    of the Services is included in the Schedule annexed to this Policy.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.3 Voluntary Disclosure and Use</td>
-                                                <td>
-                                                    <p>All information you provide is voluntary. Healtheasy EMI may use
-                                                        your Personal or Sensitive Information for:</p>
-
-                                                    <ul className="list_disc">
-                                                        <li>Providing Services</li>
-                                                        <li>Commercial or analytical purposes in anonymized form</li>
-                                                        <li>Communication and feedback collection</li>
-                                                        <li>Debugging or resolving support issues</li>
-                                                        <li>Completing pending transactions</li>
-                                                    </ul>
-
-                                                    <p>We may use your information to:</p>
-                                                    <ul className="list_disc">
-                                                        <li>Identify you</li>
-                                                        <li>Publish necessary details on the Website</li>
-                                                        <li>Offer new products or services</li>
-                                                        <li>Request feedback</li>
-                                                        <li>Analyze usage for improvement</li>
-                                                        <li>Conduct research and analytics</li>
-                                                        <li>Process payments via third-party providers</li>
-                                                    </ul>
-
-                                                    <p>
-                                                        By verifying your contact details, you consent to receive calls,
-                                                        SMS, or emails (including promotional), even if registered on
-                                                        DND/NCPR lists.
-                                                    </p>
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.4 Consent</td>
-                                                <td>
-                                                    Collection, use, or disclosure of Sensitive Personal Data requires
-                                                    your explicit consent. By affirming this Policy, you grant such
-                                                    consent.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.5 Third-Party Content</td>
-                                                <td>
-                                                    Healtheasy EMI does not control third-party services and disclaims
-                                                    liability arising from such interactions.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.6 Data Accuracy</td>
-                                                <td>
-                                                    You are responsible for maintaining accurate data. Corrections can
-                                                    be made via your account or by emailing
-                                                    privacy@healtheasyemi.com.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.7 Account Deletion</td>
-                                                <td>
-                                                    To cancel your account or withdraw consent, email
-                                                    support@healtheasyemi.com. Data may be retained as required by law
-                                                    and anonymized thereafter.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.8 Opt-Out</td>
-                                                <td>
-                                                    You may opt out of marketing communications by contacting
-                                                    support@healtheasyemi.com.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.9 Payments</td>
-                                                <td>
-                                                    Limited payment data is collected and processed securely via
-                                                    authorized payment gateways.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.10 Technical Data</td>
-                                                <td>
-                                                    We automatically collect IP address, browser type, device details,
-                                                    and usage patterns for service improvement.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.11 Cookies</td>
-                                                <td>
-                                                    Temporary cookies are used for analytics and administration. Disabling
-                                                    cookies may affect functionality.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.12 Account Registration</td>
-                                                <td>
-                                                    Some features require registration, including name, contact, email,
-                                                    and financial details.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.13 External Links</td>
-                                                <td>
-                                                    We are not responsible for privacy practices of third-party websites.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.14 User-Generated Content</td>
-                                                <td>
-                                                    Users posting public content do so at their own risk.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.15 Third-Party Data Sources</td>
-                                                <td>
-                                                    We do not collect data from external sources unless legally permitted.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.16 No-Spam Policy</td>
-                                                <td>
-                                                    We do not sell or rent your email address without consent.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.17 Security Practices</td>
-                                                <td>
-                                                    Global security standards are implemented, though absolute security
-                                                    cannot be guaranteed.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.18 Data Protection Measures</td>
-                                                <td>
-                                                    We maintain technical, operational, and physical safeguards based on
-                                                    data sensitivity.
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.1.19 Legal Disclosure</td>
-                                                <td>
-                                                    Information may be disclosed to comply with legal obligations or
-                                                    protect rights and safety.
-                                                </td>
-                                            </tr>
-
-                                            {/* 3.2 */}
-                                            <tr>
-                                                <th colSpan="2" className="table-heading">3.2 Practitioners Note</th>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.2.5</td>
-                                                <td>
-                                                    Practitioner data is collected during registration, used for listings,
-                                                    services, analysis, and may include non-registered practitioners with
-                                                    consent.
-                                                </td>
-                                            </tr>
-
-                                            {/* 3.3 */}
-                                            <tr>
-                                                <th colSpan="2" className="table-heading">3.3 End-Users Note</th>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.3.1 – 3.3.11</td>
-                                                <td>
-                                                    End-User data is collected with consent, used for service delivery,
-                                                    research, communication, surveys, quality assurance, and secure
-                                                    transfers during restructuring.
-                                                </td>
-                                            </tr>
-
-                                            {/* 3.4 */}
-                                            <tr>
-                                                <th colSpan="2" className="table-heading">3.4 Casual Visitors Note</th>
-                                            </tr>
-
-                                            <tr>
-                                                <td className="section-title">3.4.1 – 3.4.4</td>
-                                                <td>
-                                                    No sensitive data is automatically collected. Visitors submitting
-                                                    information are treated as Users under this Policy.
-                                                </td>
-                                            </tr>
-
-                                        </tbody>
-                                    </table>
-
+                                    <p>HealthEasy EMI processes personal data in accordance with applicable Indian laws, including:</p>
+                                    <ul>
+                                        <li>Digital Personal Data Protection Act, 2023;</li>
+                                        <li>Information Technology Act, 2000;</li>
+                                        <li>Information Technology Rules, as applicable;</li>
+                                        <li>Telemedicine Practice Guidelines;</li>
+                                        <li>Other applicable healthcare, financial, and consumer protection regulations.</li>
+                                    </ul>
+                                    <p>By using our Services, you consent to the processing of your personal information for the purposes described in this Privacy Policy where consent is required under applicable law.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
-
 
                             <Accordion.Item eventKey="3">
-                                <Accordion.Header>4. Confidentiality and Security</Accordion.Header>
+                                <Accordion.Header><strong>4. Information We Collect</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>All personal data is stored securely in electronic or physical form.</p>
-                                    <p>4.2 No administrator has access to your password. Protect your login credentials at all times.</p>
-                                    <p>4.3 Access to data is limited to authorized personnel under confidentiality obligations.</p>
-                                    <p>4.4 Records may be shared with medical authorities or practitioners when required.</p>
-                                    <p>4.5 Healtheasy EMI is not responsible for breaches outside its reasonable control (e.g., hacking, internet failure).</p>
+                                    <h6>4.1 Personal Information</h6>
+                                    <p>We may collect:</p>
+                                    <ul>
+                                        <li>Full name;</li>
+                                        <li>Date of birth;</li>
+                                        <li>Age;</li>
+                                        <li>Gender;</li>
+                                        <li>Residential address;</li>
+                                        <li>Email address;</li>
+                                        <li>Mobile number;</li>
+                                        <li>Emergency contact details.</li>
+                                    </ul>
+
+                                    <h6>4.2 Identity Verification Information</h6>
+                                    <p>Where applicable, we may collect:</p>
+                                    <ul>
+                                        <li>PAN details;</li>
+                                        <li>Aadhaar details (where legally permitted);</li>
+                                        <li>Government-issued identity documents;</li>
+                                        <li>Healthcare professional registration information.</li>
+                                    </ul>
+
+                                    <h6>4.3 Healthcare Information</h6>
+                                    <p>To provide healthcare-related services, we may collect:</p>
+                                    <ul>
+                                        <li>Medical history;</li>
+                                        <li>Symptoms and diagnoses;</li>
+                                        <li>Consultation records;</li>
+                                        <li>Prescriptions;</li>
+                                        <li>Diagnostic reports;</li>
+                                        <li>Laboratory reports;</li>
+                                        <li>Hospital records;</li>
+                                        <li>Healthcare provider information.</li>
+                                    </ul>
+
+                                    <h6>4.4 Appointment and Consultation Information</h6>
+                                    <p>We may collect:</p>
+                                    <ul>
+                                        <li>Appointment details;</li>
+                                        <li>Teleconsultation records;</li>
+                                        <li>Consultation summaries;</li>
+                                        <li>Communication history;</li>
+                                        <li>Follow-up information.</li>
+                                    </ul>
+
+                                    <h6>4.5 Financial Information</h6>
+                                    <p>For healthcare financing and payment services, we may collect:</p>
+                                    <ul>
+                                        <li>Payment information;</li>
+                                        <li>Transaction records;</li>
+                                        <li>Bank account details where required;</li>
+                                        <li>Insurance information where applicable.</li>
+                                    </ul>
+                                    <p>Payment card information is generally processed through authorized payment service providers and is not stored by HealthEasy EMI except where required for lawful business purposes.</p>
+
+                                    <h6>4.6 Technical Information</h6>
+                                    <p>We may automatically collect:</p>
+                                    <ul>
+                                        <li>Device information;</li>
+                                        <li>IP address;</li>
+                                        <li>Browser type;</li>
+                                        <li>Operating system;</li>
+                                        <li>Mobile device identifiers;</li>
+                                        <li>Log files;</li>
+                                        <li>Usage statistics;</li>
+                                        <li>Session information.</li>
+                                    </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
-
                             <Accordion.Item eventKey="4">
-                                <Accordion.Header>5. Changes to Privacy Policy</Accordion.Header>
+                                <Accordion.Header><strong>5. How We Use Information</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>Healtheasy EMI may modify this Policy at any time. Updates will be posted on the Website. Continued use after such changes constitutes acceptance of the revised Policy.</p>
+                                    <p>We may use personal information for the following purposes:</p>
+                                    <h6>Service Delivery</h6>
+                                    <ul>
+                                        <li>Appointment booking;</li>
+                                        <li>Teleconsultation services;</li>
+                                        <li>Healthcare coordination;</li>
+                                        <li>Healthcare financing facilitation;</li>
+                                        <li>Customer support.</li>
+                                    </ul>
+                                    <h6>Identity Verification</h6>
+                                    <ul>
+                                        <li>User authentication;</li>
+                                        <li>Fraud prevention;</li>
+                                        <li>Security monitoring;</li>
+                                        <li>Regulatory compliance.</li>
+                                    </ul>
+                                    <h6>Communication</h6>
+                                    <ul>
+                                        <li>Appointment reminders;</li>
+                                        <li>Service notifications;</li>
+                                        <li>Customer support communications;</li>
+                                        <li>Transaction updates;</li>
+                                        <li>Account-related notifications.</li>
+                                    </ul>
+                                    <h6>Product Improvement</h6>
+                                    <ul>
+                                        <li>Service enhancement;</li>
+                                        <li>Platform analytics;</li>
+                                        <li>User experience optimization;</li>
+                                        <li>Research and statistical analysis.</li>
+                                    </ul>
+                                    <h6>Legal and Regulatory Compliance</h6>
+                                    <ul>
+                                        <li>Compliance with applicable laws;</li>
+                                        <li>Dispute resolution;</li>
+                                        <li>Enforcement of agreements;</li>
+                                        <li>Audit and risk management.</li>
+                                    </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="5">
-                                <Accordion.Header>6. Children’s and Minor’s Privacy</Accordion.Header>
+                                <Accordion.Header><strong>6. Consent and Communication Preferences</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>Our Services are not intended for minors under 18. Parents and guardians are encouraged to monitor online activity. If a child’s data has been shared, please contact us for removal.</p>
+                                    <p>Where required by law, HealthEasy EMI seeks consent before sending marketing communications.</p>
+                                    <p>Users may:</p>
+                                    <ul>
+                                        <li>Opt out of promotional communications;</li>
+                                        <li>Withdraw marketing consent;</li>
+                                        <li>Update communication preferences through account settings or customer support.</li>
+                                    </ul>
+                                    <p>Transactional and service-related communications may continue where necessary for service delivery, security, legal compliance, or account administration.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="6">
-                                <Accordion.Header>7. Consent</Accordion.Header>
+                                <Accordion.Header><strong>7. Sharing of Information</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>By using the Website or Services, you consent to the terms of this Privacy Policy and authorize Healtheasy EMI to use your data as described.</p>
+                                    <p>HealthEasy EMI does not sell personal information.</p>
+                                    <p>We may share information with:</p>
+                                    <h6>Healthcare Providers</h6>
+                                    <p>Including:</p>
+                                    <ul>
+                                        <li>Doctors;</li>
+                                        <li>Clinics;</li>
+                                        <li>Hospitals;</li>
+                                        <li>Diagnostic centers;</li>
+                                        <li>Healthcare establishments involved in providing healthcare services.</li>
+                                    </ul>
+                                    <h6>Service Providers</h6>
+                                    <p>Authorized vendors assisting with:</p>
+                                    <ul>
+                                        <li>Technology infrastructure;</li>
+                                        <li>Payment processing;</li>
+                                        <li>Cloud hosting;</li>
+                                        <li>Communication services;</li>
+                                        <li>Customer support;</li>
+                                        <li>Security services.</li>
+                                    </ul>
+                                    <h6>Lending and Financial Partners</h6>
+                                    <p>Where users apply for healthcare financing, information may be shared with authorized lenders, financial institutions, and verification agencies subject to applicable consent and legal requirements.</p>
+                                    <h6>Government Authorities</h6>
+                                    <p>Where required by law, regulation, court order, or lawful governmental request.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="7">
-                                <Accordion.Header>8. Contact Information</Accordion.Header>
+                                <Accordion.Header><strong>8. Teleconsultation Data</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <p>For any privacy-related questions, please contact our <strong>Data Protection Officer</strong>:</p>
-                                    <p><strong>Name:</strong> Balaji Kharte</p>
-                                    <p><strong>Company:</strong> Healtheasy EMI – Arogya Mantra Healthtech Pvt. Ltd.</p>
-                                    <p><strong>Email:</strong> privacy@healtheasyemi.com</p>
+                                    <p>Teleconsultation interactions may involve:</p>
+                                    <ul>
+                                        <li>Text communications;</li>
+                                        <li>Audio communications;</li>
+                                        <li>Video consultations;</li>
+                                        <li>Uploaded images;</li>
+                                        <li>Medical documents;</li>
+                                        <li>Prescriptions.</li>
+                                    </ul>
+                                    <p>Such information may be retained for:</p>
+                                    <ul>
+                                        <li>Continuity of care;</li>
+                                        <li>Regulatory compliance;</li>
+                                        <li>Quality assurance;</li>
+                                        <li>Patient safety;</li>
+                                        <li>Dispute resolution.</li>
+                                    </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
 
                             <Accordion.Item eventKey="8">
-                                <Accordion.Header>Schedule: Indicative List of Information</Accordion.Header>
+                                <Accordion.Header><strong>9. Cookies and Similar Technologies</strong></Accordion.Header>
                                 <Accordion.Body>
-                                    <div>
-                                        <strong>1. End-Users (Registered Accounts):</strong>
-                                        <p>Name, mobile number, email address, and health data for appointment bookings.</p>
-                                    </div>
-                                    <div>
-                                        <strong>2. Guest End-Users:</strong>
-                                        <p>Mobile number and minimal information for booking confirmation.</p>
-                                    </div>
-                                    <div>
-                                        <strong>3. Practitioners (Registered):</strong>
-                                        <p>Name, contact details, and professional credentials.</p>
-                                    </div>
-                                    <div>
-                                        <strong>4. Practitioners (Unregistered):</strong>
-                                        <p>Basic contact details collected through Healtheasy EMI representatives.</p>
-                                    </div>
-                                    <div>
-                                        <strong>5. Practitioners using Healtheasy EMI Reach:</strong>
-                                        <p>Name, mobile number, email, and related registration details.</p>
-                                    </div>
-                                    <div>
-                                        <strong>6. End-Users and Practitioners using Consult Platform:</strong>
-                                        <p>Information such as name, contact, and consultation details.</p>
-                                    </div>
-                                    <div>
-                                        <strong>7. Assured Services Users:</strong>
-                                        <p>Medical data shared solely for service delivery purposes.</p>
-                                    </div>
-                                    
+                                    <p>HealthEasy EMI uses cookies and similar technologies to:</p>
+                                    <ul>
+                                        <li>Maintain website functionality;</li>
+                                        <li>Improve user experience;</li>
+                                        <li>Analyze platform performance;</li>
+                                        <li>Enhance security.</li>
+                                    </ul>
+                                    <p>Users may disable cookies through browser settings; however, certain website functions may become unavailable.</p>
                                 </Accordion.Body>
                             </Accordion.Item>
+
+                            <Accordion.Item eventKey="9">
+                                <Accordion.Header><strong>10. Data Retention</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>We retain information only for as long as reasonably necessary for:</p>
+                                    <ul>
+                                        <li>Service delivery;</li>
+                                        <li>Healthcare continuity;</li>
+                                        <li>Legal compliance;</li>
+                                        <li>Regulatory obligations;</li>
+                                        <li>Fraud prevention;</li>
+                                        <li>Business operations.</li>
+                                    </ul>
+                                    <p>Following expiry of applicable retention periods, information may be securely deleted, anonymized, or aggregated.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="10">
+                                <Accordion.Header><strong>11. Data Security</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>HealthEasy EMI implements reasonable technical, administrative, and organizational safeguards designed to protect information from:</p>
+                                    <ul>
+                                        <li>Unauthorized access;</li>
+                                        <li>Disclosure;</li>
+                                        <li>Alteration;</li>
+                                        <li>Loss;</li>
+                                        <li>Misuse;</li>
+                                        <li>Destruction.</li>
+                                    </ul>
+                                    <p>Despite our efforts, no internet-based transmission or storage system can be guaranteed to be completely secure.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="11">
+                                <Accordion.Header><strong>12. Your Rights</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Subject to applicable law, users may have the right to:</p>
+                                    <ul>
+                                        <li>Access their personal information;</li>
+                                        <li>Request correction of inaccurate information;</li>
+                                        <li>Update profile information;</li>
+                                        <li>Withdraw consent where applicable;</li>
+                                        <li>Request deletion of information where legally permissible;</li>
+                                        <li>Raise privacy-related grievances.</li>
+                                    </ul>
+                                    <p>Requests may be submitted to the contact details provided below.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="12">
+                                <Accordion.Header><strong>13. Account Closure and Deletion Requests</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Users may request account closure by contacting our support team.</p>
+                                    <p>Certain information may continue to be retained where required for:</p>
+                                    <ul>
+                                        <li>Legal compliance;</li>
+                                        <li>Healthcare record obligations;</li>
+                                        <li>Financial recordkeeping;</li>
+                                        <li>Fraud prevention;</li>
+                                        <li>Regulatory requirements.</li>
+                                    </ul>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="13">
+                                <Accordion.Header><strong>14. Third-Party Websites</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Our Services may contain links to third-party websites or services.</p>
+                                    <p>HealthEasy EMI is not responsible for the privacy practices, content, security, or policies of third-party websites.</p>
+                                    <p>Users should independently review the privacy policies of such third parties.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="14">
+                                <Accordion.Header><strong>15. Children's Privacy</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>Our Services are not intended for individuals below eighteen (18) years of age acting independently.</p>
+                                    <p>Parents or legal guardians may use the Services on behalf of minors where permitted by law.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="15">
+                                <Accordion.Header><strong>16. International Access</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>The Services are intended primarily for users located in India.</p>
+                                    <p>Users accessing the Services from outside India acknowledge that their information may be processed and stored in India in accordance with this Privacy Policy and applicable laws.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="16">
+                                <Accordion.Header><strong>17. Changes to this Privacy Policy</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>HealthEasy EMI may modify this Privacy Policy from time to time.</p>
+                                    <p>Updated versions shall be posted on the website and become effective upon publication unless otherwise stated.</p>
+                                    <p>Continued use of the Services after publication constitutes acceptance of the revised Privacy Policy.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="17">
+                                <Accordion.Header><strong>18. Grievance and Privacy Contact</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>For privacy-related questions, concerns, requests, or complaints, please contact:</p>
+                                    <p>Privacy Officer<br />
+                                    Arogya Mantra Healthtech Private Limited<br />
+                                    Email: privacy@healtheasyemi.com<br />
+                                    Customer Support: support@healtheasyemi.com<br />
+                                    Website: www.healtheasyemi.com</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
+                            <Accordion.Item eventKey="18">
+                                <Accordion.Header><strong>19. Governing Law</strong></Accordion.Header>
+                                <Accordion.Body>
+                                    <p>This Privacy Policy shall be governed by and construed in accordance with the laws of India.</p>
+                                    <p>Any disputes arising from this Privacy Policy shall be subject to the exclusive jurisdiction of the competent courts located at Latur, Maharashtra, India.</p>
+                                </Accordion.Body>
+                            </Accordion.Item>
+
                         </Accordion>
+
+                        {/* BOTTOM DISCLAIMER NOTE */}
+                        <div className="mt-4 p-3 bg-light border rounded small text-muted">
+                            <p>HealthEasy EMI is committed to protecting personal and health-related information through lawful, transparent, and secure processing practices. By using our Services, you acknowledge and agree to the collection and use of information as described in this Privacy Policy. Users may contact privacy@healtheasyemi.com for privacy-related requests or concerns.</p>
+                        </div>
+
                     </div>
                 </Container>
             </section>
 
             <FooterBar />
         </>
-    )
+    );
 }
-export default PrivacyPolicy
+
+export default PrivacyPolicy;

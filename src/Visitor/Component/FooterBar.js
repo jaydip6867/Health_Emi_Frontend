@@ -15,7 +15,7 @@ import "../css/visitor.css";
 const FooterBar = () => {
   var navigate = useNavigate();
   return (
-    <footer className="footer">
+    <footer className="footer" data-develop="developed by Codezil Technologies">
       <Container>
         <Row className="footer-top g-4">
           <Col lg={3} md={12} className="footer-about">
@@ -141,7 +141,7 @@ const FooterBar = () => {
             </Col>
             <Col xs={12} md={6} lg className="copyright">
               <p>
-                Copyright © 2024 <span>Health Easy EMI</span>
+                Copyright © 2026 <span>Health Easy EMI</span>
               </p>
             </Col>
             <Col xs={12} md={6} lg className="text-lg-end text-center">

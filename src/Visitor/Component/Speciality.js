@@ -44,12 +44,20 @@ const Speciality = () => {
                                 <h6 className='mt-3 fw-bold'>Orthopedic</h6>
                             </div>
                         </Col>
-                        <Col xs={6} md={4} lg>
+                        <Col xs={6} md={4} lg={'auto'}>
                             <div className='speciality_box_item text-center dentist-speciality'>
                                 <div className='speciality_icon'>
                                     <Link to={'/surgery'} className='stretched-link'><img src={require('../assets/SpecialityIcon/dentist.png')} className='img-fluid' alt='Dentist' /></Link>
                                 </div>
-                                <h6 className='mt-3 fw-bold'>Dentist</h6>
+                                <h6 className='mt-3 fw-bold ps-3'>Dentist</h6>
+                            </div>
+                        </Col>
+                        <Col xs={6} md={4} className='d-block d-lg-none'>
+                            <div className='speciality_box_item text-center ivf-speciality'>
+                                <div className='speciality_icon'>
+                                    <Link to={'/surgery'} className='stretched-link'><img src={require('../assets/SpecialityIcon/IVF.png')} className='img-fluid' alt='Dentist' /></Link>
+                                </div>
+                                <h6 className='mt-3 fw-bold ms-3'>IVF</h6>
                             </div>
                         </Col>
                     </Row>
