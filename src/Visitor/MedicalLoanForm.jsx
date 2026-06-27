@@ -226,6 +226,24 @@ const MedicalLoanForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Intercept Enter key or premature submission if not on the final step
+    if (currentStep < 5) {
+      handleNextStep();
+      return;
+    }
+
+    // Double check that all steps are valid before starting the submission
+    for (let stepNum = 1; stepNum <= 4; stepNum++) {
+      const stepError = validateStep(stepNum);
+      if (stepError) {
+        setValidationError(`[Step ${stepNum}] ${stepError}`);
+        setCurrentStep(stepNum);
+        const formEl = document.querySelector('.medical-loan-container');
+        if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+    }
+    
     const token = getUserToken();
     if (!token) {
       alert("You must be logged in to submit an EMI application.");
