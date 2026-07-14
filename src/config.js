@@ -7,6 +7,7 @@ export const STORAGE_KEYS = {
   PATIENT: process.env.REACT_APP_STORAGE_KEY_PATIENT || 'PatientLogin',
   DOCTOR: process.env.REACT_APP_STORAGE_KEY_DOCTOR || 'healthdoctor',
   AMBULANCE: process.env.REACT_APP_STORAGE_KEY_AMBULANCE || 'healthambulance',
+  HOSPITAL: process.env.REACT_APP_STORAGE_KEY_HOSPITAL || 'healthhospital', 
 };
 
 // Google Maps API key (set REACT_APP_GOOGLE_MAPS_API_KEY in .env)

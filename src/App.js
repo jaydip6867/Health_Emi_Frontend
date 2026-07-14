@@ -68,6 +68,9 @@ import AmbulanceRefundPolicy from "./Visitor/T&CPage/AmbulanceRefundPolicy";
 import AmbulanceTerms from "./Visitor/T&CPage/AmbulanceTerms";
 import HealthCookiePolicy from "./Visitor/T&CPage/HealthCookiePolicy";
 import TeleconsultationPolicy from "./Visitor/T&CPage/TeleconsultationPolicy";
+import HospitalLogin from "./hospital/HospitalLogin";
+import HospitalRegister from "./hospital/HospitalRegister";
+import HospitalDashboard from "./hospital/HospitalDashboard";
 function App() {
   return (
     <div className="App">
@@ -171,6 +174,13 @@ function App() {
           <Route path="ambrequests" element={<Amb_Request />}></Route>
           <Route path="rides/:id" element={<Amb_Ridedetails />} />
         </Route>
+        <Route path="hospitalregister" element={<HospitalRegister />}></Route>
+        <Route path="/hospital">
+          <Route path="" index element={<HospitalLogin />}></Route>
+          {/* <Route path="hospitalprofile" element={<HospitalProfile />}></Route> */}
+          <Route path="hospitaldashboard" element={<HospitalDashboard />}></Route>
+        </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
