@@ -35,7 +35,7 @@ const HospitalLogin = () => {
             navigate('/hospital')
         }
         else {
-            navigate('/hospitalprofile')
+            navigate('/hospitaldashboard')
         }
 
     }, [navigate])

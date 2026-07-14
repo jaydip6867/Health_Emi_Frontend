@@ -166,6 +166,7 @@
 .form-group input[type="text"],
 .form-group input[type="number"],
 .form-group input[type="date"],
+.form-group input[type="password"],
 .form-group select,
 .form-group textarea,
 .form-group input[type="email"] {

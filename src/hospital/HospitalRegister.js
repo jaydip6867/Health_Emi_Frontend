@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
-import axios from 'axios';
+import axios from '../utils/axiosConfig';
 import { Container } from 'react-bootstrap';
 import NavBar from '../Visitor/Component/NavBar';
 import FooterBar from '../Visitor/Component/FooterBar';
@@ -73,7 +73,7 @@ const HospitalRegister = () => {
 
     const getStoredHospitalToken = () => {
         try {
-            const localData = localStorage.getItem(STORAGE_KEYS.HOSPITAL) || localStorage.getItem('HospitalLogin');
+            const localData = localStorage.getItem(STORAGE_KEYS.HOSPITAL);
             if (!localData) return null;
 
             try {
@@ -619,7 +619,7 @@ const HospitalRegister = () => {
                     password: formData.password,
                 };
 
-                const response = await axios.post(`${API_BASE_URL}/hospital/signup`, signupPayload);
+                const response = await axios.post('/hospital/signup', signupPayload);
                 const responseData = response?.data?.Data || response?.data || {};
 
                 if (response?.data?.Status === 200 || response?.data?.status === 200 || responseData) {
@@ -651,7 +651,7 @@ const HospitalRegister = () => {
                     otp: formData.otp.trim(),
                 };
 
-                const response = await axios.post(`${API_BASE_URL}/hospital/signup/otpverification`, otpPayload);
+                const response = await axios.post('/hospital/signup/otpverification', otpPayload);
                 const responseData = response?.data?.Data || response?.data || {};
                 const token = responseData.accessToken || responseData.token || response?.headers?.authorization;
 
