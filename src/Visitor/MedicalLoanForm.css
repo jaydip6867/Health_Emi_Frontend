@@ -716,3 +716,61 @@
 .add-branch-btn {
     margin-top: 10px;
 }
+.branch-todo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.branch-todo-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px 15px;
+}
+
+/* Left side fields */
+.branch-todo-item > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    flex: 1;
+}
+
+.branch-todo-item strong {
+    font-size: 15px;
+    color: #222;
+}
+
+.branch-todo-item span {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Buttons */
+.branch-todo-item > div:last-child {
+    display: flex;
+    gap: 8px;
+}
+
+.branch-todo-item button {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    font-size: 13px;
+}
+
+.branch-todo-item button:first-child {
+    background: #2563eb;
+}
+
+.branch-todo-item button:last-child {
+    background: #dc2626;
+}

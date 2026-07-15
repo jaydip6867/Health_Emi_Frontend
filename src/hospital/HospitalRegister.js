@@ -7,7 +7,7 @@ import NavBar from '../Visitor/Component/NavBar';
 import FooterBar from '../Visitor/Component/FooterBar';
 import '../Visitor/MedicalLoanForm.css';
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
-import { FaRegTrashCan } from 'react-icons/fa6';
+import { FaRegPenToSquare, FaRegTrashCan } from 'react-icons/fa6';
 
 const normalizeDownPayment = (value) => {
     if (value === true || value === 1 || value === '1') return 'Yes';
@@ -73,6 +73,20 @@ const HospitalRegister = () => {
     const [validationError, setValidationError] = useState('');
     const [statusMessage, setStatusMessage] = useState('');
     const [formData, setFormData] = useState(initialFormData);
+    const emptyBranch = {
+        id: '',
+        branchname: '',
+        summary: '',
+        photos: [],
+        locationurl: '',
+        city: '',
+        state: '',
+        pincode: '',
+        landmark: '',
+    };
+
+    const [currentBranch, setCurrentBranch] = useState(emptyBranch);
+    const [editingBranchIndex, setEditingBranchIndex] = useState(null);
 
     const stepsList = [
         { number: 1, title: 'Basic Information' },
@@ -122,13 +136,13 @@ const HospitalRegister = () => {
 
     const getsurgerytype = () => {
         axios.post(`${API_BASE_URL}/doctor/surgerytypes/list`)
-        .then(response => {
-            console.log(response.data);
-            setsurgerytypes(response.data.Data);
-        })
-        .catch(error => {
-            console.error('Error fetching surgery types:', error);
-        });
+            .then(response => {
+                console.log(response.data);
+                setsurgerytypes(response.data.Data);
+            })
+            .catch(error => {
+                console.error('Error fetching surgery types:', error);
+            });
     };
     useEffect(() => {
         getsurgerytype();
@@ -413,22 +427,37 @@ const HospitalRegister = () => {
     };
 
     const addBranchItem = () => {
-        updateFormData({
-            branchdetails: [
-                ...formData.branchdetails,
-                {
-                    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-                    branchname: '',
-                    summary: '',
-                    photos: [],
-                    locationurl: '',
-                    city: '',
-                    state: '',
-                    pincode: '',
-                    landmark: '',
-                },
-            ],
-        });
+        if (!currentBranch.branchname.trim())
+            return;
+        if (!currentBranch.summary.trim())
+            return;
+        const newBranch = {
+            ...currentBranch,
+            id:
+                currentBranch.id ||
+                `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+        };
+        if (editingBranchIndex !== null) {
+            const updated = [...formData.branchdetails];
+            updated[editingBranchIndex] = newBranch;
+            updateFormData({
+                branchdetails: updated
+            });
+            setEditingBranchIndex(null);
+        } else {
+            updateFormData({
+                branchdetails: [
+                    ...formData.branchdetails,
+                    newBranch
+                ]
+            });
+        }
+        setCurrentBranch(emptyBranch);
+    };
+
+    const editBranchItem = (index) => {
+        setCurrentBranch(formData.branchdetails[index]);
+        setEditingBranchIndex(index);
     };
 
     const updateBranchItem = (index, field, value) => {
@@ -445,22 +474,21 @@ const HospitalRegister = () => {
         });
     };
 
-    const updateBranchPhotos = async (index, files) => {
-        if (!files || files.length === 0) return;
+    const updateBranchPhotos = async (files) => {
+        if (!files.length) return;
         setLoading(true);
         try {
-            const uploadPromises = Array.from(files).map((f) => uploadFile(f));
-            const uploadedUrls = await Promise.all(uploadPromises);
-
-            updateFormData({
-                branchdetails: formData.branchdetails.map((item, idx) =>
-                    idx === index ? { ...item, photos: [...(item.photos || []), ...uploadedUrls] } : item
-                ),
-            });
-        } catch (err) {
-            console.error('Branch photo upload error:', err);
-            setValidationError('Unable to upload branch photos. Please try again.');
-        } finally {
+            const uploadPromises = Array.from(files).map(uploadFile);
+            const uploaded = await Promise.all(uploadPromises);
+            setCurrentBranch(prev => ({
+                ...prev,
+                photos: [
+                    ...prev.photos,
+                    ...uploaded
+                ]
+            }));
+        }
+        finally {
             setLoading(false);
         }
     };
@@ -635,15 +663,15 @@ const HospitalRegister = () => {
             registeredaddress: uploadedValues.registeredaddress,
             branchdetails: Array.isArray(uploadedValues.branchdetails)
                 ? uploadedValues.branchdetails.map((branch) => ({
-                      branchname: branch.branchname?.trim() || '',
-                      summary: branch.summary?.trim() || '',
-                      photos: Array.isArray(branch.photos) ? branch.photos : [],
-                      locationurl: branch.locationurl?.trim() || '',
-                      city: branch.city?.trim() || '',
-                      state: branch.state?.trim() || '',
-                      pincode: branch.pincode?.trim() || '',
-                      landmark: branch.landmark?.trim() || '',
-                  }))
+                    branchname: branch.branchname?.trim() || '',
+                    summary: branch.summary?.trim() || '',
+                    photos: Array.isArray(branch.photos) ? branch.photos : [],
+                    locationurl: branch.locationurl?.trim() || '',
+                    city: branch.city?.trim() || '',
+                    state: branch.state?.trim() || '',
+                    pincode: branch.pincode?.trim() || '',
+                    landmark: branch.landmark?.trim() || '',
+                }))
                 : [],
             email: uploadedValues.email,
             contactpersonname: uploadedValues.contactpersonname,
@@ -874,7 +902,7 @@ const HospitalRegister = () => {
                     )}
 
                     <form onSubmit={handleSubmit} className="medical-loan-form">
-                        {currentStep === 3 && (
+                        {currentStep === 1 && (
                             <section className="form-section">
                                 <h2>1. Basic Information</h2>
                                 <div className="form-grid">
@@ -919,7 +947,7 @@ const HospitalRegister = () => {
                             </section>
                         )}
 
-                        {currentStep === 1 && (
+                        {currentStep === 3 && (
                             <section className="form-section">
                                 <h2>3. Primary Contact</h2>
                                 <div className="form-grid">
@@ -975,117 +1003,173 @@ const HospitalRegister = () => {
                                     </div>
                                     <div className="form-group branch-section">
                                         <label>Branch Details <span className="required-star">*</span></label>
+                                        <div className="branch-todo-list">
+                                            {formData.branchdetails.map((branch, index) => (
+                                                <div className="branch-todo-item" key={branch.id || index}>
+                                                    <div>
+                                                        <strong>{branch.branchname}</strong>
+                                                        <span>{branch.city}</span>
+                                                        <span>{branch.state}</span>
+                                                        <span>{branch.pincode}</span>
+                                                    </div>
+                                                    <div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => editBranchItem(index)}
+                                                        >
+                                                            <FaRegPenToSquare />
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeBranchItem(index)}
+                                                        >
+                                                            <FaRegTrashCan />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                         <div className="branch-list">
-                                            {(Array.isArray(formData.branchdetails) ? formData.branchdetails : []).length === 0 ? (
-                                                <div className="branch-empty">No branches added yet. Click below to add one.</div>
-                                            ) : (
-                                                (Array.isArray(formData.branchdetails) ? formData.branchdetails : []).map((branch, index) => (
-                                                    <div key={branch.id || index} className="branch-card">
-                                                        <div className="branch-card-header">
-                                                            <div>
-                                                                <strong>Branch {index + 1}</strong>
-                                                                <div className="branch-card-meta">{branch.branchname || 'Unnamed branch'}</div>
-                                                            </div>
-                                                            <button
-                                                                type="button"
-                                                                className="array-item-remove branch-remove-button"
-                                                                onClick={() => removeBranchItem(index)}
-                                                                aria-label={`Remove branch ${index + 1}`}
-                                                            >
-                                                                <FaRegTrashCan />
-                                                            </button>
-                                                        </div>
-                                                        <div className="branch-card-body">
-                                                            <div className="form-group branch-field-half">
-                                                                <label>Branch Name</label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={branch.branchname}
-                                                                    onChange={(e) => updateBranchItem(index, 'branchname', e.target.value)}
-                                                                    placeholder="Enter branch name"
-                                                                />
-                                                            </div>
-                                                            <div className="form-group branch-field-half">
-                                                                <label>Location URL</label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={branch.locationurl}
-                                                                    onChange={(e) => updateBranchItem(index, 'locationurl', e.target.value)}
-                                                                    placeholder="Enter location URL"
-                                                                />
-                                                            </div>
-                                                            <div className="form-group branch-field-full">
-                                                                <label>Summary</label>
-                                                                <textarea
-                                                                    value={branch.summary}
-                                                                    onChange={(e) => updateBranchItem(index, 'summary', e.target.value)}
-                                                                    rows="3"
-                                                                    placeholder="Enter branch summary"
-                                                                />
-                                                            </div>
-                                                            <div className="form-group branch-field-full">
-                                                                <label>Photos</label>
-                                                                <input
-                                                                    type="file"
-                                                                    multiple
-                                                                    accept="image/*"
-                                                                    onChange={(e) => updateBranchPhotos(index, e.target.files)}
-                                                                />
-                                                                {branch.photos && branch.photos.length > 0 && (
-                                                                    <div className="branch-photo-list">
-                                                                        {branch.photos.map((photo, photoIndex) => (
-                                                                            <span key={photoIndex} className="branch-photo-chip">
-                                                                                {typeof photo === 'string' ? photo.split('/').pop() : photo?.name || `Photo ${photoIndex + 1}`}
-                                                                            </span>
-                                                                        ))}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                            <div className="branch-location-row branch-field-full">
-                                                                <div className="form-group">
-                                                                    <label>City</label>
-                                                                    <input
-                                                                        type="text"
-                                                                        value={branch.city}
-                                                                        onChange={(e) => updateBranchItem(index, 'city', e.target.value)}
-                                                                        placeholder="Enter city"
-                                                                    />
-                                                                </div>
-                                                                <div className="form-group">
-                                                                    <label>State</label>
-                                                                    <input
-                                                                        type="text"
-                                                                        value={branch.state}
-                                                                        onChange={(e) => updateBranchItem(index, 'state', e.target.value)}
-                                                                        placeholder="Enter state"
-                                                                    />
-                                                                </div>
-                                                                <div className="form-group">
-                                                                    <label>Pincode</label>
-                                                                    <input
-                                                                        type="text"
-                                                                        value={branch.pincode}
-                                                                        onChange={(e) => updateBranchItem(index, 'pincode', e.target.value)}
-                                                                        placeholder="Enter pincode"
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                            <div className="form-group branch-field-full">
-                                                                <label>Landmark</label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={branch.landmark}
-                                                                    onChange={(e) => updateBranchItem(index, 'landmark', e.target.value)}
-                                                                    placeholder="Enter landmark"
-                                                                />
-                                                            </div>
+                                            <div className="branch-card">
+                                                <div className="branch-card-header">
+                                                    <div>
+                                                        <strong>Branch</strong>
+                                                        <div className="branch-card-meta">
+                                                            {currentBranch.branchname || "Unnamed Branch"}
                                                         </div>
                                                     </div>
-                                                ))
-                                            )}
+                                                </div>
+                                                <div className="branch-card-body">
+                                                    <div className="form-group branch-field-half">
+                                                        <label>Branch Name</label>
+                                                        <input
+                                                            type="text"
+                                                            value={currentBranch.branchname}
+                                                            onChange={(e) =>
+                                                                setCurrentBranch({
+                                                                    ...currentBranch,
+                                                                    branchname: e.target.value,
+                                                                })
+                                                            }
+                                                            placeholder="Enter branch name"
+                                                        />
+                                                    </div>
+                                                    <div className="form-group branch-field-half">
+                                                        <label>Location URL</label>
+                                                        <input
+                                                            type="text"
+                                                            value={currentBranch.locationurl}
+                                                            onChange={(e) =>
+                                                                setCurrentBranch({
+                                                                    ...currentBranch,
+                                                                    locationurl: e.target.value,
+                                                                })
+                                                            }
+                                                            placeholder="Enter location URL"
+                                                        />
+                                                    </div>
+                                                    <div className="form-group branch-field-full">
+                                                        <label>Summary</label>
+                                                        <textarea
+                                                            rows="3"
+                                                            value={currentBranch.summary}
+                                                            onChange={(e) =>
+                                                                setCurrentBranch({
+                                                                    ...currentBranch,
+                                                                    summary: e.target.value,
+                                                                })
+                                                            }
+                                                            placeholder="Enter branch summary"
+                                                        />
+                                                    </div>
+                                                    <div className="form-group branch-field-full">
+                                                        <label>Photos</label>
+                                                        <input
+                                                            type="file"
+                                                            multiple
+                                                            accept="image/*"
+                                                            onChange={(e) => updateBranchPhotos(e.target.files)}
+                                                        />
+                                                        {currentBranch.photos?.length > 0 && (
+                                                            <div className="branch-photo-list">
+                                                                {currentBranch.photos.map((photo, photoIndex) => (
+                                                                    <span
+                                                                        key={photoIndex}
+                                                                        className="branch-photo-chip"
+                                                                    >
+                                                                        {typeof photo === "string"
+                                                                            ? photo.split("/").pop()
+                                                                            : photo?.name || `Photo ${photoIndex + 1}`}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="branch-location-row branch-field-full">
+                                                        <div className="form-group">
+                                                            <label>City</label>
+                                                            <input
+                                                                type="text"
+                                                                value={currentBranch.city}
+                                                                onChange={(e) =>
+                                                                    setCurrentBranch({
+                                                                        ...currentBranch,
+                                                                        city: e.target.value,
+                                                                    })
+                                                                }
+                                                                placeholder="Enter city"
+                                                            />
+                                                        </div>
+                                                        <div className="form-group">
+                                                            <label>State</label>
+                                                            <input
+                                                                type="text"
+                                                                value={currentBranch.state}
+                                                                onChange={(e) =>
+                                                                    setCurrentBranch({
+                                                                        ...currentBranch,
+                                                                        state: e.target.value,
+                                                                    })
+                                                                }
+                                                                placeholder="Enter state"
+                                                            />
+                                                        </div>
+                                                        <div className="form-group">
+                                                            <label>Pincode</label>
+                                                            <input
+                                                                type="text"
+                                                                value={currentBranch.pincode}
+                                                                onChange={(e) =>
+                                                                    setCurrentBranch({
+                                                                        ...currentBranch,
+                                                                        pincode: e.target.value,
+                                                                    })
+                                                                }
+                                                                placeholder="Enter pincode"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-group branch-field-full">
+                                                        <label>Landmark</label>
+                                                        <input
+                                                            type="text"
+                                                            value={currentBranch.landmark}
+                                                            onChange={(e) =>
+                                                                setCurrentBranch({
+                                                                    ...currentBranch,
+                                                                    landmark: e.target.value,
+                                                                })
+                                                            }
+                                                            placeholder="Enter landmark"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <button type="button" className="array-item-add branch-add-button btn btn-primary" onClick={addBranchItem}>
-                                            Add Branch
+                                            {editingBranchIndex !== null
+                                                ? "Update Branch"
+                                                : "Add Branch"}
                                         </button>
                                     </div>
                                     <div className="form-group">
