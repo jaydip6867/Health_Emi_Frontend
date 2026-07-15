@@ -1,0 +1,73 @@
+REPLACE THE validateStep FUNCTION IN HospitalRegister.js WITH THIS:
+
+    const validateStep = (step) => {
+        const requiredText = (value) => (typeof value === 'string' ? value.trim() : '');
+
+        if (step === 1) {
+            if (!requiredText(formData.hospitalname)) return 'Hospital name is required';
+            if (!requiredText(formData.email)) return 'Email is required';
+            if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)) return 'Please enter a valid email';
+            if (!requiredText(formData.mobile)) return 'Mobile number is required';
+            if (!/^\d{10}$/.test(formData.mobile)) return 'Please enter a valid 10-digit mobile number';
+            if (!formData.logo) return 'Hospital logo is required';
+            if (!requiredText(formData.password)) return 'Password is required';
+            if (formData.password.length < 6) return 'Password must be at least 6 characters';
+            return null;
+        }
+
+        if (step === 2) {
+            if (!requiredText(formData.mobile)) return 'Mobile number is required';
+            if (!/^\d{10}$/.test(formData.mobile)) return 'Please enter a valid 10-digit mobile number';
+            if (!requiredText(formData.otp)) return 'OTP is required';
+            if (!/^\d{4,6}$/.test(formData.otp)) return 'Please enter a valid OTP';
+            return null;
+        }
+
+        if (step === 3) {
+            if (!requiredText(formData.legalentityname)) return 'Legal entity name is required';
+            if (!requiredText(formData.hospitaltype)) return 'Hospital type is required';
+            if (!requiredText(formData.registrationnumber)) return 'Registration number is required';
+            if (!requiredText(formData.gstnumber)) return 'GST number is required';
+            if (!requiredText(formData.pannumber)) return 'PAN number is required';
+            if (!requiredText(formData.establishmentyear)) return 'Establishment year is required';
+            if (!requiredText(formData.websiteurl)) return 'Website URL is required';
+            if (!requiredText(formData.summary)) return 'Summary is required';
+            if (!requiredText(formData.registeredaddress)) return 'Registered address is required';
+            // Branch details are optional - will pass blank array if not provided
+            if (!requiredText(formData.contactpersonname)) return 'Contact person name is required';
+            if (!requiredText(formData.designation)) return 'Designation is required';
+            if (!requiredText(formData.contactpersonmobile)) return 'Contact person mobile is required';
+            if (!/^\d{10}$/.test(formData.contactpersonmobile)) return 'Please enter a valid 10-digit contact mobile number';
+            if (!requiredText(formData.contactpersonemail)) return 'Contact person email is required';
+            if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.contactpersonemail)) return 'Please enter a valid contact person email';
+            return null;
+        }
+
+        if (step === 4) {
+            if (!requiredText(formData.bankname)) return 'Bank name is required';
+            if (!requiredText(formData.accountholdername)) return 'Account holder name is required';
+            if (!requiredText(formData.accountnumber)) return 'Account number is required';
+            if (!requiredText(formData.ifsccode)) return 'IFSC code is required';
+            if (!requiredText(formData.bankbranchname)) return 'Bank branch name is required';
+            if (!formData.cancelledchequenupload) return 'Cancelled cheque upload is required';
+            return null;
+        }
+
+        if (step === 5) {
+            if (!requiredText(formData.availabletenures)) return 'Available tenures are required';
+            if (!Array.isArray(formData.interesttype) || formData.interesttype.length === 0 || formData.interesttype.every((item) => !requiredText(item))) return 'At least one interest type is required';
+            if (!requiredText(formData.downpaymentrequired)) return 'Down payment is required';
+            return null;
+        }
+
+        if (step === 6) {
+            // Treatment is optional - will pass blank array if not provided
+            // Treatment documents are optional
+            if (!requiredText(formData.nabhaccreditation)) return 'NABH accreditation status is required';
+            if (!requiredText(formData.nabhnumber)) return 'NABH number is required';
+            if (!requiredText(formData.password)) return 'Password is required';
+            return null;
+        }
+
+        return null;
+    };
