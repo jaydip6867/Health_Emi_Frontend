@@ -11,6 +11,18 @@ import Loader from '../Loader';
 import '../doctor/css/doctor.css';
 import '../Visitor/css/visitor.css';
 
+const normalizeDownPayment = (value) => {
+  if (value === true || value === 1 || value === '1') return 'Yes';
+  if (value === false || value === 0 || value === '0') return 'No';
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (/^yes$/i.test(trimmed)) return 'Yes';
+    if (/^no$/i.test(trimmed)) return 'No';
+    return trimmed;
+  }
+  return '';
+};
+
 const TREATMENT_CHIP_COLORS = [
   { bg: '#E8F5E9', color: '#2E7D32' },
   { bg: '#FFF3E0', color: '#E65100' },
@@ -128,10 +140,7 @@ const HospitalProfile = () => {
             data.establishmentyear != null && data.establishmentyear !== ''
               ? String(data.establishmentyear).replace(/\D/g, '')
               : '',
-          downpaymentrequired:
-            data.downpaymentrequired != null && data.downpaymentrequired !== ''
-              ? String(data.downpaymentrequired).replace(/\D/g, '')
-              : '',
+          downpaymentrequired: normalizeDownPayment(data.downpaymentrequired),
           treatment: normalizeTreatment(data.treatment),
           interesttype: normalizeInterestType(data.interesttype),
         });
@@ -388,7 +397,7 @@ const HospitalProfile = () => {
         interesttype: Array.isArray(uploadedValues.interesttype)
           ? uploadedValues.interesttype.map((type) => type.trim()).filter(Boolean)
           : [],
-        downpaymentrequired: Number(uploadedValues.downpaymentrequired) || 0,
+        downpaymentrequired: uploadedValues.downpaymentrequired || '',
         treatment: Array.isArray(uploadedValues.treatment) ? uploadedValues.treatment.filter(Boolean) : [],
         hospitalregistrationcertificate: uploadedValues.hospitalregistrationcertificate || '',
         nabhaccreditation: uploadedValues.nabhaccreditation || '',
@@ -550,7 +559,7 @@ const HospitalProfile = () => {
                           />
                         </Form.Group>
                       </Col>
-                      <Col md={6} lg={4}>
+                      {/* <Col md={6} lg={4}>
                         <Form.Group>
                           <Form.Label className="fw-semibold">Email</Form.Label>
                           <Form.Control type="email" name="email" value={profile.email || ''} disabled />
@@ -564,7 +573,7 @@ const HospitalProfile = () => {
                       </Col>
                       <Col md={6} lg={4}>
                         {renderFilePreview('logo', 'Hospital Logo')}
-                      </Col>
+                      </Col> 
                       <Col xs={12}>
                         <Form.Group>
                           <Form.Label className="fw-semibold">Summary</Form.Label>
@@ -592,7 +601,7 @@ const HospitalProfile = () => {
                             placeholder="Enter registered address"
                           />
                         </Form.Group>
-                      </Col>
+                      </Col>*/}
                     </Row>
 
                     <h5 className="fw-bold mb-3">Registration Details</h5>
@@ -657,7 +666,7 @@ const HospitalProfile = () => {
 
                     <h5 className="fw-bold mb-3">NABH Details</h5>
                     <Row className="g-3">
-                      <Col md={6} lg={4}>
+                      <Col md={6} lg={2}>
                         <Form.Group>
                           <Form.Label className="fw-semibold">NABH Accreditation</Form.Label>
                           <Form.Select
@@ -672,7 +681,7 @@ const HospitalProfile = () => {
                           </Form.Select>
                         </Form.Group>
                       </Col>
-                      <Col md={6} lg={4}>
+                      <Col md={6} lg={3}>
                         <Form.Group>
                           <Form.Label className="fw-semibold">NABH Number</Form.Label>
                           <Form.Control
@@ -688,9 +697,9 @@ const HospitalProfile = () => {
                       <Col md={6} lg={4}>
                         {renderFilePreview('nabhcertificate', 'NABH Certificate')}
                       </Col>
-                      <Col md={6} lg={4}>
+                      {/* <Col md={6} lg={4}>
                         {renderFilePreview('authorizedsignatoryidproof', 'Authorized Signatory ID Proof')}
-                      </Col>
+                      </Col> */}
                     </Row>
                   </Tab>
 
@@ -877,20 +886,21 @@ const HospitalProfile = () => {
                       <Col md={6} lg={4}>
                         <Form.Group>
                           <Form.Label className="fw-semibold">Down Payment Required</Form.Label>
-                          <Form.Control
-                            type="text"
-                            inputMode="numeric"
+                          <Form.Select
                             name="downpaymentrequired"
                             value={profile.downpaymentrequired || ''}
                             disabled={IsDisable}
-                            onChange={handleNumericChange}
-                            placeholder="Enter down payment amount"
-                          />
+                            onChange={handleChange}
+                          >
+                            <option value="">Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </Form.Select>
                         </Form.Group>
                       </Col>
                       <Col xs={12}>
                         <Form.Label className="fw-semibold">Interest Type</Form.Label>
-                        <div className="d-flex flex-column gap-2">
+                        <div className="d-flex gap-2">
                           {(profile.interesttype || []).length === 0 && IsDisable ? (
                             <Form.Text className="text-muted">No interest type added</Form.Text>
                           ) : (

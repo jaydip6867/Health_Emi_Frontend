@@ -9,6 +9,18 @@ import '../Visitor/MedicalLoanForm.css';
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 import { FaRegTrashCan } from 'react-icons/fa6';
 
+const normalizeDownPayment = (value) => {
+    if (value === true || value === 1 || value === '1') return 'Yes';
+    if (value === false || value === 0 || value === '0') return 'No';
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (/^yes$/i.test(trimmed)) return 'Yes';
+        if (/^no$/i.test(trimmed)) return 'No';
+        return trimmed;
+    }
+    return '';
+};
+
 const initialFormData = {
     hospitalname: '',
     email: '',
@@ -248,7 +260,7 @@ const HospitalRegister = () => {
                 : '',
         downpaymentrequired:
             data.downpaymentrequired != null && data.downpaymentrequired !== ''
-                ? String(data.downpaymentrequired).replace(/\D/g, '')
+                ? normalizeDownPayment(data.downpaymentrequired)
                 : '',
         branchdetails: normalizeBranchDetails(data.branchdetails),
         interesttype: normalizeInterestType(data.interesttype),
@@ -539,7 +551,7 @@ const HospitalRegister = () => {
             if (!requiredText(formData.availabletenures)) return 'Available tenures are required';
             if (!Array.isArray(formData.interesttype) || formData.interesttype.length === 0 || formData.interesttype.every((item) => !requiredText(item))) return 'At least one interest type is required';
             if (!requiredText(formData.downpaymentrequired)) return 'Down payment is required';
-            if (!/^\d+$/.test(formData.downpaymentrequired)) return 'Down payment must be a numeric value';
+            if (!['Yes', 'No'].includes(formData.downpaymentrequired)) return 'Please select Yes or No for down payment';
             return null;
         }
 
@@ -650,7 +662,7 @@ const HospitalRegister = () => {
             interesttype: Array.isArray(uploadedValues.interesttype)
                 ? uploadedValues.interesttype.map((type) => type.trim()).filter(Boolean)
                 : [],
-            downpaymentrequired: Number(uploadedValues.downpaymentrequired),
+            downpaymentrequired: uploadedValues.downpaymentrequired,
             treatment: Array.isArray(uploadedValues.treatment)
                 ? uploadedValues.treatment.filter(Boolean)
                 : parseArrayValue(uploadedValues.treatment),
@@ -862,7 +874,7 @@ const HospitalRegister = () => {
                     )}
 
                     <form onSubmit={handleSubmit} className="medical-loan-form">
-                        {currentStep === 1 && (
+                        {currentStep === 3 && (
                             <section className="form-section">
                                 <h2>1. Basic Information</h2>
                                 <div className="form-grid">
@@ -907,7 +919,7 @@ const HospitalRegister = () => {
                             </section>
                         )}
 
-                        {currentStep === 3 && (
+                        {currentStep === 1 && (
                             <section className="form-section">
                                 <h2>3. Primary Contact</h2>
                                 <div className="form-grid">
@@ -961,7 +973,7 @@ const HospitalRegister = () => {
                                         <label>Registered Address <span className="required-star">*</span></label>
                                         <textarea name="registeredaddress" value={formData.registeredaddress} onChange={handleInputChange} rows="3" placeholder="Enter registered address" />
                                     </div>
-                                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                                    <div className="form-group branch-section">
                                         <label>Branch Details <span className="required-star">*</span></label>
                                         <div className="branch-list">
                                             {(Array.isArray(formData.branchdetails) ? formData.branchdetails : []).length === 0 ? (
@@ -978,12 +990,13 @@ const HospitalRegister = () => {
                                                                 type="button"
                                                                 className="array-item-remove branch-remove-button"
                                                                 onClick={() => removeBranchItem(index)}
+                                                                aria-label={`Remove branch ${index + 1}`}
                                                             >
                                                                 <FaRegTrashCan />
                                                             </button>
                                                         </div>
                                                         <div className="branch-card-body">
-                                                            <div className="form-group">
+                                                            <div className="form-group branch-field-half">
                                                                 <label>Branch Name</label>
                                                                 <input
                                                                     type="text"
@@ -992,31 +1005,7 @@ const HospitalRegister = () => {
                                                                     placeholder="Enter branch name"
                                                                 />
                                                             </div>
-                                                            <div className="form-group">
-                                                                <label>Summary</label>
-                                                                <textarea
-                                                                    value={branch.summary}
-                                                                    onChange={(e) => updateBranchItem(index, 'summary', e.target.value)}
-                                                                    rows="2"
-                                                                    placeholder="Enter branch summary"
-                                                                />
-                                                            </div>
-                                                            <div className="form-group">
-                                                                <label>Photos</label>
-                                                                <input
-                                                                    type="file"
-                                                                    multiple
-                                                                    onChange={(e) => updateBranchPhotos(index, e.target.files)}
-                                                                />
-                                                                {branch.photos && branch.photos.length > 0 && (
-                                                                    <div className="selected-filenames">
-                                                                        {branch.photos.map((photo, photoIndex) => (
-                                                                            <span key={photoIndex}>{photo?.name || photo}</span>
-                                                                        ))}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                            <div className="form-group">
+                                                            <div className="form-group branch-field-half">
                                                                 <label>Location URL</label>
                                                                 <input
                                                                     type="text"
@@ -1025,7 +1014,34 @@ const HospitalRegister = () => {
                                                                     placeholder="Enter location URL"
                                                                 />
                                                             </div>
-                                                            <div className="form-row branch-location-row">
+                                                            <div className="form-group branch-field-full">
+                                                                <label>Summary</label>
+                                                                <textarea
+                                                                    value={branch.summary}
+                                                                    onChange={(e) => updateBranchItem(index, 'summary', e.target.value)}
+                                                                    rows="3"
+                                                                    placeholder="Enter branch summary"
+                                                                />
+                                                            </div>
+                                                            <div className="form-group branch-field-full">
+                                                                <label>Photos</label>
+                                                                <input
+                                                                    type="file"
+                                                                    multiple
+                                                                    accept="image/*"
+                                                                    onChange={(e) => updateBranchPhotos(index, e.target.files)}
+                                                                />
+                                                                {branch.photos && branch.photos.length > 0 && (
+                                                                    <div className="branch-photo-list">
+                                                                        {branch.photos.map((photo, photoIndex) => (
+                                                                            <span key={photoIndex} className="branch-photo-chip">
+                                                                                {typeof photo === 'string' ? photo.split('/').pop() : photo?.name || `Photo ${photoIndex + 1}`}
+                                                                            </span>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <div className="branch-location-row branch-field-full">
                                                                 <div className="form-group">
                                                                     <label>City</label>
                                                                     <input
@@ -1054,7 +1070,7 @@ const HospitalRegister = () => {
                                                                     />
                                                                 </div>
                                                             </div>
-                                                            <div className="form-group">
+                                                            <div className="form-group branch-field-full">
                                                                 <label>Landmark</label>
                                                                 <input
                                                                     type="text"
@@ -1164,14 +1180,15 @@ const HospitalRegister = () => {
                                     </div>
                                     <div className="form-group">
                                         <label>Down Payment Required <span className="required-star">*</span></label>
-                                        <input
-                                            type="text"
-                                            inputMode="numeric"
+                                        <select
                                             name="downpaymentrequired"
                                             value={formData.downpaymentrequired}
-                                            onChange={handleNumericInputChange}
-                                            placeholder="Enter down payment amount"
-                                        />
+                                            onChange={handleInputChange}
+                                        >
+                                            <option value="">Select</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
                                     </div>
                                 </div>
                             </section>
