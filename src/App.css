@@ -1,0 +1,350 @@
+/* hanken-grotesk-regular - latin */
+@font-face {
+  font-display: swap;
+  /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Hanken Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./assets/fonts/hanken-grotesk-v11-latin-regular.woff2') format('woff2');
+  /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* hanken-grotesk-500 - latin */
+@font-face {
+  font-display: swap;
+  /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Hanken Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  src: url('./assets/fonts/hanken-grotesk-v11-latin-500.woff2') format('woff2');
+  /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* hanken-grotesk-700 - latin */
+@font-face {
+  font-display: swap;
+  /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Hanken Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./assets/fonts/hanken-grotesk-v11-latin-700.woff2') format('woff2');
+  /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+html {
+  scroll-behavior: smooth;
+}
+
+
+/* loader css */
+/* HTML: <div class="loader"></div> */
+.loader_box {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, .7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+}
+
+.loader {
+  width: 50px;
+  --b: 8px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 1px;
+  background: conic-gradient(#0000 10%, #f03355) content-box;
+  -webkit-mask:
+    repeating-conic-gradient(#0000 0deg, #000 1deg 20deg, #0000 21deg 36deg),
+    radial-gradient(farthest-side, #0000 calc(100% - var(--b) - 1px), #000 calc(100% - var(--b)));
+  -webkit-mask-composite: destination-in;
+  mask-composite: intersect;
+  animation: loader_content 1s infinite steps(10);
+}
+
+@keyframes loader_content {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+
+.doctor_profile .dropdown-menu {
+  border: none;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+  padding: 10px 5px 5px 5px;
+  border-top: 2px solid #223F99;
+}
+
+.doctor_profile .dropdown-menu>* {
+  display: block;
+  width: 100%;
+  padding: 5px;
+  font-size: 12px;
+}
+
+@media screen and (max-width: 767.98px) {
+  /* .sidebar_nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  } */
+
+  .sidebar_nav a {
+    padding: 5px 12px;
+    margin: 0;
+  }
+}
+
+/* main page navbar toggler */
+.navbar-toggler {
+  border: none !important;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none !important;
+}
+
+.shadow-img {
+  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.3));
+}
+
+
+/* speciality section css */
+.sec_head {
+  margin-bottom: 30px;
+}
+
+.speciality_box_item {
+  padding: 12px 30px;
+}
+
+.speciality_box_item a {
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #223F99;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* app download css */
+.input-container {
+  display: flex;
+  flex: 1 1;
+  max-width: 314px;
+  background-color: #fff;
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid #f0f0f5;
+}
+
+.input-container .country-code {
+  font-weight: 700;
+  min-width: 63px;
+  text-align: center;
+  color: #000;
+  line-height: 44px;
+  position: relative;
+}
+
+.input-container .country-code:after {
+  content: "";
+  display: block;
+  height: 31px;
+  width: 1px;
+  background: #cacad3;
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  right: 0;
+}
+
+.input-container input {
+  -ms-flex: 1 1;
+  flex: 1 1;
+  padding: 0 20px;
+  font-size: 16px;
+  color: #000;
+  border: none;
+}
+
+.input-container input:focus {
+  outline: none;
+}
+
+.send-app-link-button {
+  font-size: 16px;
+  padding: 10px 25px;
+  margin-left: 10px;
+  background-color: #223F99;
+  color: #fff;
+  border: 0;
+}
+
+/* offer box css */
+.offer_box_content {
+  max-width: 350px;
+}
+
+/* doctor slider css */
+.doctor_slider img {
+  max-width: 70px;
+}
+
+/* surgery page list css */
+.surgery_list_box img {
+  max-width: 70px;
+  min-width: 70px;
+  min-height: 70px;
+  max-height: 70px;
+  padding: 10px;
+  border-radius: 50%;
+  background-color: #22409941;
+}
+
+.surgery_list_box {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  width: 120px;
+}
+
+.surgery_list_box p {
+  margin: 10px 0 0 0;
+  font-size: 14px;
+  color: #2c2c2c;
+}
+
+.surgery_list_box:hover img {
+  box-shadow: 0 4px 10px rgba(34, 64, 153, 0.2);
+}
+
+.benefit_img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+/* doctor list box css */
+.doctor_list>div {
+  display: flex;
+  place-content: center;
+}
+
+/* footer css */
+.footer_bg {
+  background-color: #223F99;
+  color: #fff;
+}
+
+/* admin panel data-table header css */
+.rdt_TableHeadRow {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+
+/* patients sidebar css */
+@media screen and (min-width: 767.98px) {
+  .patient_sticky {
+    position: sticky;
+  }
+
+  .patient_side_height {
+    min-height: 100vh;
+  }
+}
+
+/* OTP input design */
+.otp-inputs {
+  gap: 12px; /* fallback spacing alongside Bootstrap gap utilities */
+}
+
+.otp-box {
+  width: 56px;
+  height: 56px;
+  font-size: 20px;
+  border: 2px solid #e5e7eb; /* gray-200 */
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.otp-box:focus {
+  outline: none;
+  border-color: #5b8cff; /* brand blue */
+  box-shadow: 0 0 0 4px rgba(91,140,255,0.18);
+}
+
+.otp-box::-webkit-outer-spin-button,
+.otp-box::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.truncate-8 {
+  max-width: 10ch; /* roughly ~8 words */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;   /* number of lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sky-blue{
+  color: #5b8cff;
+}
+
+
+.p-border{
+  width: 98%;
+  margin: auto;
+  opacity: 0.08;
+}
+
+
+/* Mobile (default) */
+.w-20 {
+    width: 100%;
+}
+
+/* Medium devices (≥768px) */
+@media (min-width: 768px) {
+    .w-20 {
+        width: 50%;
+    }
+}
+
+/* Large devices (≥992px) */
+@media (min-width: 992px) {
+    .w-20 {
+        width: 25%;
+    }
+}
+
+/* Extra large devices (≥1200px) */
+@media (min-width: 1200px) {
+    .w-20 {
+        width: 20%;
+    }
+}
+
+.circle-logo{
+  width: 50px;
+  height: 50px;
+}

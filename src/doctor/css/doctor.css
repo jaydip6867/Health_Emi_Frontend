@@ -1,0 +1,775 @@
+.panel {
+    background: #EDF6FF;
+}
+
+.slider_doctor img {
+    display: block;
+    margin: auto;
+    width: 60%;
+}
+
+.bg-secondary-muted{
+    background-color: #e1e6ea;
+}
+.text-amb-label{
+    font-size: 14px;
+    color: #9CA3AF;
+}
+
+.text-amb-control{
+    font-size: 14px;
+}
+
+.doctor_testi_content h4 {
+    color: #223F99;
+    font-size: 32px;
+}
+
+.doctor_testi_content p {
+    color: #757575;
+    font-size: 22px;
+}
+
+.theme_btn {
+    background-color: var(--primary-color-600);
+    color: white;
+    font-size: 14px;
+    border: 0;
+}
+.theme_btn:hover{
+    background-color: var(--primary-color-900);
+}
+
+.modal-header .btn-close{
+    height: 36px;
+    width: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 50%;
+    padding: 0;
+    box-sizing: border-box;
+    margin-right: 4px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
+    opacity: 1;
+    border: 1px solid var(--primary-color-500);
+    box-shadow: none;
+    /* Circle with X (stroke in primary) */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'><path d='M12 12 L24 24 M24 12 L12 24' stroke='%230084E9' stroke-width='2' stroke-linecap='round'/></svg>");
+}
+
+.modal-header .btn-close:hover,
+.modal-header .btn-close:focus {
+    background-color: var(--primary-color-900);
+    border-color: var(--primary-color-900);
+    outline: none;
+    /* White X over primary background */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'><path d='M12 12 L24 24 M24 12 L12 24' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round'/></svg>");
+}
+
+.modal-header .btn-close:active {
+    opacity: 0.9;
+}
+
+.register_doctor .form-label{
+    color: var(--grayscale-color-600);
+}
+.register_doctor .form-label,
+.frm-select {
+    font-size: 14px;
+}
+
+select.frm_input {
+    font-size: 14px;
+    padding-left: 12px !important;
+}
+
+.register_doctor .frm_input,
+.register_doctor input::placeholder {
+    font-size: 14px;
+    color: var(--grayscale-color-800);
+    border-color: var(--grayscale-color-300);
+}
+
+.register_doctor input::placeholder,
+.register_doctor textarea::placeholder {
+    color: #bfbfbf;
+    padding-left: 10px;
+}
+
+.register_doctor .form-control:focus{
+    box-shadow: none;
+    border-color: var(--grayscale-color-700);
+}
+
+.register_doctor input.upload_file_doc {
+    padding-left: 10px;
+}
+
+.register_doctor .icon_input {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    /* color: #8c8c8c; */
+}
+
+.form-link {
+    color: #223F99;
+    font-weight: 500;
+}
+
+.register_doctor h3 {
+    color: #223F99;
+    font-weight: 700;
+    font-size: 24px;
+}
+
+.register_doctor p {
+    color: var(--grayscale-color-400);
+    font-size: 13px;
+}
+
+.slider_doctor .slick-dots {
+    display: flex !important;
+    justify-content: center;
+}
+
+.slider_doctor .slick-dots .slick-active {
+    width: 30px;
+}
+
+.slider_doctor .slick-dots button::before {
+    content: '';
+    height: 5px;
+    width: 5px;
+    border-radius: 5px;
+    background-color: #223f99;
+    transition: .3s ease-in-out;
+}
+
+.slider_doctor .slick-dots .slick-active button::before {
+    content: '';
+    width: 100%;
+    position: absolute;
+    background-color: #223F99;
+    border-radius: 5px;
+    transition: .3s ease-in-out;
+}
+
+.slider_doctor .slick-dots li button,
+.slider_doctor .slick-dots li {
+    height: 5px;
+    width: 5px;
+    padding: 0;
+    margin: 0 5px;
+}
+
+.register_doctor input.otpfield {
+    font-size: 30px;
+}
+
+.register_doctor .eye_btn{
+    background-color: transparent;
+    border: none;
+}
+.register_doctor .eye_btn:focus{
+    background-color: transparent;
+}
+/* styles.css or in your component's CSS module */
+.sticky-md-up {
+  position: sticky;
+  top: 0; /* or any offset you want */
+  z-index: 1020; /* optional, to stay on top */
+}
+
+/* Hide on smaller devices */
+@media (max-width: 767.98px) {
+  .sticky-md-up {
+    position: static; /* disable sticky for small devices */
+  }
+}
+
+
+/* tostify color change */
+.custom-toast-error {
+    background-color: #e74c3c;
+    color: #fff;
+}
+
+.custom-toast-success {
+    background-color: #2acc01;
+    color: #fff;
+}
+.profile_nav:hover{
+    background-color: #EDF6FF;
+    color: #223f99;
+    border-radius: 4px;
+}
+.truncaate_description {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: #757575;
+}
+.truncaate_description_3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: #757575;
+}
+ .icon_doctor{
+    font-size: 50px;
+ }
+ .btnradio-app.btn-group>.btn:not(:last-child):not(.dropdown-toggle), .btnradio-app.btn-group>:not(.btn-check:first-child)+.btn{
+    border-radius: 0;
+ }
+
+/* calender modify css */
+.fc-scrollgrid-sync-inner a{
+    color: #222;
+    text-decoration: none;
+}
+
+/* datepicker css */
+/* Make the main datepicker look modern */
+.react-datepicker {
+  font-family: 'Segoe UI', sans-serif;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 0 !important;
+  background: #fff;
+}
+
+/* Header style */
+.react-datepicker__header {
+  background: linear-gradient(to right, #00bfff, #00bfff);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  color: white;
+  padding-top: 10px;
+}
+
+/* Month and year navigation */
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker-year-header {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.react-datepicker__navigation {
+  top: 12px;
+}
+.react-datepicker__navigation-icon{
+    color: white;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: white;
+}
+
+/* Day cells */
+.react-datepicker__day {
+  font-weight: 500;
+  padding: 0.1em;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.react-datepicker__day:hover {
+  background: #e0f0ff;
+  color: #007bff;
+}
+
+/* Selected day */
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background: #007bff;
+  color: white;
+  border-radius: 8px;
+}
+
+/* Today highlight */
+.react-datepicker__day--today {
+  border: 1px solid #007bff;
+  font-weight: 700;
+}
+
+/* Time picker styles */
+.react-datepicker__time-container {
+  border-left: none;
+  background: #f4f8ff;
+}
+
+.react-datepicker__time {
+  background: #f4f8ff;
+}
+
+.react-datepicker__time-list-item {
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.react-datepicker__time-list-item--selected {
+  background: #007bff;
+  color: white;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 4px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.react-datepicker__input-container input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle{
+    fill: #00bfff !important;
+    color: #00bfff !important;
+}
+.react-datepicker-popper .react-datepicker__triangle{
+    stroke: #fff !important;
+}
+.react-datepicker__navigation-icon::before{
+    border-color: #fff !important;
+}
+.react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle{
+    stroke: #00bfff !important;
+}
+
+/* ======================== DOCTOR CARD HOVER EFFECTS ======================== */
+
+/* Doctor Card Hover Animation */
+.hover-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.hover-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 132, 233, 0.1), transparent);
+    transition: left 0.6s ease;
+    z-index: 1;
+}
+
+.hover-card:hover::before {
+    left: 100%;
+}
+
+.hover-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 35, 61, 0.15);
+    border-color: rgba(0, 132, 233, 0.3);
+}
+
+/* Doctor Image Hover Effect */
+.hover-card:hover .rounded-circle {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+/* Badge Hover Animation */
+.hover-card:hover .badge {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+/* Button Hover Enhancement */
+.hover-card:hover .btn {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 132, 233, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* Card Body Content Animation */
+.hover-card .card-body {
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.hover-card:hover .card-body {
+    transform: translateY(-2px);
+}
+
+/* Specialty Badge Glow Effect */
+.hover-card:hover .badge-primary-subtle {
+    box-shadow: 0 0 15px rgba(0, 132, 233, 0.4);
+    transition: box-shadow 0.3s ease;
+}
+
+/* Text Color Animation on Hover */
+.hover-card:hover .card-title {
+    color: #0084E9 !important;
+    transition: color 0.3s ease;
+}
+
+/* Icon Animation */
+.hover-card:hover .text-muted {
+    color: #0084E9 !important;
+    transition: color 0.3s ease;
+}
+
+/* Verified Badge Pulse Animation */
+.hover-card:hover .position-absolute.badge {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(25%, 25%) scale(1);
+    }
+    50% {
+        transform: translate(25%, 25%) scale(1.1);
+    }
+    100% {
+        transform: translate(25%, 25%) scale(1);
+    }
+}
+
+/* Card Border Glow Effect */
+.hover-card:hover {
+    border: 1px solid rgba(0, 132, 233, 0.3);
+    background: linear-gradient(145deg, #ffffff 0%, #f8fbff 100%);
+}
+
+/* Smooth Transition for All Elements */
+.hover-card * {
+    transition: all 0.3s ease;
+}
+
+/* Mobile Hover Effects (Touch Devices) */
+@media (hover: none) and (pointer: coarse) {
+    .hover-card:active {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 30px rgba(0, 35, 61, 0.12);
+    }
+    
+    .hover-card:active .btn {
+        transform: translateY(-1px);
+    }
+}
+
+/* Accessibility - Focus States */
+.hover-card:focus-within {
+    outline: 2px solid #0084E9;
+    outline-offset: 2px;
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(0, 35, 61, 0.12);
+}
+
+/* Loading State Animation */
+.hover-card.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.hover-card.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #0084E9;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+
+/* sidebar css */
+/* DoctorSidebar.css */
+
+.sidebar-wrapper {
+    position: relative;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+}
+
+@media (max-width: 992px) {
+    .sidebar-wrapper {
+        position: absolute !important;
+        top: 0 !important;
+        left: -100vw;
+        width: 100%;
+        height: auto;
+        /* max-height: 100vh; */
+        background-color: white;
+        transform: translateX(-100%);
+        display: block !important; /* override d-none */
+        border-radius: 8px;
+        transition: ease-in-out;
+        /* overflow-y: auto; */
+    }
+    .sidebar-wrapper.blackarea::before{
+        height: 400vh;
+        width: 500vw;
+        background-color: rgba(0, 0, 0, 0.7);
+        position: fixed;
+        top: -100vh;
+        left: -100vw;
+        content: '';
+    }
+
+
+    .sidebar-wrapper.open {
+        transform: translateX(0);
+        left: 0;
+    }
+
+    .sidebar-inner {
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 20px;
+    }
+}
+
+.review_profile img{
+    height: 60px;
+    width: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.dashboard-card svg{
+    color: var(--primary-color-600);
+    font-size: 38px;
+}
+
+/* display modal data */
+.label_head{
+    margin-bottom: 24px;
+    text-align: center;
+}
+.label_box .label_title{
+    margin-bottom: 4px;
+    display: block;
+    color: #9CA3AF;
+}
+.label_box p{
+    padding: 8px 12px;
+    border: 1px solid #D1D5DB;
+    background-color: #F9FAFB;
+    margin-bottom: 16px;
+    color: #6B7280;
+    border-radius: 8px;
+}
+
+/* appointment model design */
+.appointment_model{
+    font-weight: 400;
+}
+.appointment_model p{
+    font-size: 16px;
+    color: var(--grayscale-color-400);
+}
+.appointment_model span{
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.appt-doctor-name{
+    font-size: 16px;
+}
+
+.apt_status_btn{
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    color: var(--white);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.apt_status_btn.success , .apt_status_btn:active.success{
+    background: #04BD6C;
+}
+.apt_status_btn.danger , .apt_status_btn:active.danger{
+    background: #ff0000;
+}
+.apt_status_btn.dark , .apt_status_btn:active.dark{
+    background: var(--grayscale-color-900);
+}
+.apt_status_btn:focus , .apt_status_btn:active{
+    color: var(--white) !important;
+    outline: none;
+}
+.apt_accept_btn{
+    background: var(--primary-gradient);
+    color: var(--white);
+    white-space: nowrap;
+    padding: 6px 20px;
+    border-radius: 5rem;
+    border: none;
+}
+.apt_accept_btn:hover{
+    color: var(--white);
+}
+.apt_complete_btn{
+    white-space: nowrap;
+    padding: 6px 20px;
+    color: #04BD6C;
+    background-color: #EDF9F0;
+    border-radius: 5rem;
+    font-weight: 500;
+}
+.apt_cancel_btn{
+    white-space: nowrap;
+    padding: 6px 20px;
+    color: #ff0000;
+    background-color: #F9EDED;
+    border-radius: 5rem;
+    font-weight: 500;
+}
+.apt_dark_btn{
+    white-space: nowrap;
+    padding: 6px 20px;
+    color: var(--grayscale-color-800);
+    background-color: var(--grayscale-color-100);
+    border-radius: 5rem;
+    font-weight: 500;
+}
+
+.surgery_model img{
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+.btn-primary{
+    background-color: var(--primary-color-600);
+}
+
+/* Income Widgets Styles */
+.income-widget {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+    border-left: 4px solid var(--primary-color-600);
+}
+
+.income-widget:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 132, 233, 0.15);
+    border-left-color: var(--primary-color-800);
+}
+
+.income-widget .card-body {
+    padding: 0.75rem 1.5rem;
+}
+
+.income-widget-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color-100) 0%, var(--primary-color-200) 100%);
+}
+
+.income-widget-icon.current-month {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.income-widget-icon.last-7-days {
+    background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+}
+
+.income-widget-icon.last-month {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+.widget-icon {
+    font-size: 24px;
+    color: white;
+}
+
+.income-widget-period {
+    font-size: 12px;
+    color: var(--grayscale-color-500);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.income-widget-amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--grayscale-color-900);
+    margin: 12px 0;
+    line-height: 1.2;
+}
+
+.income-widget-label {
+    font-size: 14px;
+    color: var(--grayscale-color-600);
+    font-weight: 500;
+}
+
+/* Responsive adjustments for income widgets */
+@media (max-width: 768px) {
+    .income-widget-amount {
+        font-size: 24px;
+    }
+    
+    .income-widget .card-body {
+        padding: 1.25rem;
+    }
+    
+    .income-widget-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .widget-icon {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .income-widget-amount {
+        font-size: 20px;
+    }
+    
+    .income-widget-label {
+        font-size: 12px;
+    }
+    
+    .income-widget-period {
+        font-size: 11px;
+    }
+}
+

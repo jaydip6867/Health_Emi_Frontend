@@ -1,0 +1,191 @@
+import { Route, Routes } from "react-router-dom";
+import "./App.css";
+import "leaflet/dist/leaflet.css";
+import DoctorRegister from "./doctor/DoctorRegister";
+import DoctorLogin from "./doctor/DoctorLogin";
+import DoctorForgot from "./doctor/DoctorForgot";
+import DoctorDashboard from "./doctor/DoctorDashboard";
+import NotFound from "./Visitor/NotFound";
+import D_Appointment from "./doctor/D_Appointment";
+import DoctorProfile from "./doctor/DoctorProfile";
+import PatientRegister from "./patient/PatientRegister";
+import PatientLogin from "./patient/PatientLogin";
+import D_Surgery from "./doctor/D_Surgery";
+import PatientForgotps from "./patient/PatientForgotps";
+import PatientProfile from "./patient/PatientProfile";
+import P_Appointment from "./patient/P_Appointment";
+import D_Calender from "./doctor/D_Calender";
+import D_Blog from "./doctor/D_Blog";
+import Home from "./Visitor/Home";
+import About from "./Visitor/About";
+import Contact from "./Visitor/Contact";
+import VideoConsult from "./Visitor/VideoConsult";
+// import Surgeries from "./Visitor/Surgeries";
+import Doctors from "./Visitor/Doctors";
+import DoctorProfilePage from "./Visitor/DoctorProfilePage";
+import Surgerydoctorlist from "./Visitor/Surgerydoctorlist";
+import Amb_register from "./Ambulance/Amb_register";
+import Amb_login from "./Ambulance/Amb_login";
+import Amb_dashboard from "./Ambulance/Amb_dashboard";
+import Amb_Forgot from "./Ambulance/Amb_Forgot";
+import Amb_Profile from "./Ambulance/Amb_Profile";
+import D_Consultation from "./doctor/D_Consultation";
+import P_Surgeries from "./patient/P_Surgeries";
+import P_EmiApplications from "./patient/P_EmiApplications";
+import D_SurgeryAppointment from "./doctor/D_SurgeryAppointment";
+import D_AmbulanceRequest from "./doctor/D_AmbulanceRequest";
+import CompareDoctor from "./Visitor/CompareDoctor";
+import Amb_Request from "./Ambulance/Amb_Request";
+import Amb_Ridedetails from "./Ambulance/Amb_Ridedetails";
+import D_StatusAmbulance from "./doctor/D_StatusAmbulance";
+import AmbulancePage from "./Visitor/AmbulancePage";
+import Faq from "./Visitor/Faq";
+import Blog from "./Visitor/Blog";
+import BlogDetail from "./Visitor/BlogDetail";
+import Terms from "./Visitor/Terms";
+import DoctorTC from "./Visitor/T&CPage/DoctorTC";
+import DoctorTelemedicineTC from "./Visitor/T&CPage/DoctorTelemedicineTC";
+import FinanceTC from "./Visitor/T&CPage/FinanceTC";
+import D_Review from "./doctor/D_Review";
+import P_AmbulanceRequest from "./patient/P_AmbulanceRequest";
+import P_AmbulanceStatus from "./patient/P_AmbulanceStatus";
+import SurgeriesPage from "./Visitor/SurgeriesPage";
+import D_AmbulanceHistory from "./doctor/D_AmbulanceHistory";
+import HospitalList from "./Visitor/HospitalList";
+import HospitalDoctorList from "./Visitor/HospitalDoctorList";
+import PrivacyPolicy from "./Visitor/T&CPage/PrivacyPolicy";
+import GuidePrinciple from "./Visitor/T&CPage/GuidePrinciple";
+import MedicinePolicy from "./Visitor/T&CPage/MedicinePolicy";
+import DoctorTerm from "./Visitor/T&CPage/DoctorTerm";
+import PnsPolicy from "./Visitor/T&CPage/PnsPolicy";
+import ScrollToTop from "./ScrollToTop";
+import ChatBot from "./components/ChatBot";
+import MedicalLoanForm from "./Visitor/MedicalLoanForm";
+import Loan from './Visitor/Loan';
+import EmiTC from "./Visitor/T&CPage/EmiTC";
+import AmbulancePolicy from "./Visitor/T&CPage/AmbulancePolicy";
+import AmbulanceRefundPolicy from "./Visitor/T&CPage/AmbulanceRefundPolicy";
+import AmbulanceTerms from "./Visitor/T&CPage/AmbulanceTerms";
+import HealthCookiePolicy from "./Visitor/T&CPage/HealthCookiePolicy";
+import TeleconsultationPolicy from "./Visitor/T&CPage/TeleconsultationPolicy";
+import HospitalLogin from "./hospital/HospitalLogin";
+import HospitalRegister from "./hospital/HospitalRegister";
+import HospitalDashboard from "./hospital/HospitalDashboard";
+import HospitalProfile from "./hospital/HospitalProfile";
+function App() {
+  return (
+    <div className="App">
+      <ScrollToTop />
+      <ChatBot />
+      <Routes>
+        <Route path="/" element={<Home />}></Route>
+        <Route path="/about" element={<About />}></Route>
+        <Route path="/contact" element={<Contact />}></Route>
+        <Route path="/consult" element={<VideoConsult />}></Route>
+        <Route path="/doctorfind" element={<Doctors />}></Route>
+        <Route
+          path="/doctorprofile/:id"
+          element={<DoctorProfilePage />}
+        ></Route>
+        <Route path="/surgery" element={<Surgerydoctorlist />}></Route>
+        <Route path="/hospitallist" element={<HospitalList />}></Route>
+        <Route
+          path="/hospital-doctors/:hospitalTitle"
+          element={<HospitalDoctorList />}
+        ></Route>
+        <Route path="/surgery/:id" element={<Surgerydoctorlist />}></Route>
+        <Route path="/comparedoctor" element={<CompareDoctor />}></Route>
+        <Route path="/ambulancepage" element={<AmbulancePage />}></Route>
+        <Route path="/surgerypage" element={<SurgeriesPage />}></Route>
+        <Route path="/apply-loan" element={<MedicalLoanForm />}></Route>
+        <Route path="/faq" element={<Faq />}></Route>
+        <Route path="/blog" element={<Blog />}></Route>
+        <Route path="/blog/:id" element={<BlogDetail />}></Route>
+        <Route path="/loan" element={<Loan />}></Route>
+        <Route path="/terms" element={<Terms />}></Route>
+        {/* <Route path="doctor-tc" element={<DoctorTC />}></Route> */}
+        <Route path="pns-policy" element={<PnsPolicy />}></Route>
+        <Route path="privacy-policy" element={<PrivacyPolicy />}></Route>
+        {/* <Route path="guide-principle" element={<GuidePrinciple />}></Route> */}
+        <Route path="medicine-policy" element={<MedicinePolicy />}></Route>
+        <Route path="finance-policy" element={<FinanceTC />}></Route>
+        <Route path="emi-policy" element={<EmiTC />}></Route>
+        <Route path="ambulance-policy" element={<AmbulancePolicy />}></Route>
+        <Route path="ambulance-refund-policy" element={<AmbulanceRefundPolicy />}></Route>
+        <Route path="ambulance-term" element={<AmbulanceTerms />}></Route>
+        <Route path="cookie-policy" element={<HealthCookiePolicy />}></Route>
+        <Route path="teleconsult-policy" element={<TeleconsultationPolicy />}></Route>
+        <Route path="doctor-term" element={<DoctorTerm />}></Route>
+        {/* <Route
+          path="doctor-telemedicine-tc"
+          element={<DoctorTelemedicineTC />}
+        ></Route> */}
+        <Route path="/doctor">
+          <Route path="" index element={<DoctorLogin />}></Route>
+          <Route path="doctorregister" element={<DoctorRegister />}></Route>
+          <Route path="forgotdoctor" element={<DoctorForgot />}></Route>
+          <Route path="doctordashboard" element={<DoctorDashboard />}></Route>
+          <Route path="doctorprofile" element={<DoctorProfile />}></Route>
+          <Route path="doctorappointment" element={<D_Appointment />}></Route>
+          <Route
+            path="doctorsurgeryappointment"
+            element={<D_SurgeryAppointment />}
+          ></Route>
+          <Route path="doctorblog" element={<D_Blog />}></Route>
+          <Route path="doctorsurgery" element={<D_Surgery />}></Route>
+          <Route path="doctorconsultation" element={<D_Consultation />}></Route>
+          <Route path="doctorreviews" element={<D_Review />}></Route>
+          <Route path="calender" element={<D_Calender />}></Route>
+          <Route
+            path="ambulance-request"
+            element={<D_AmbulanceRequest />}
+          ></Route>
+          <Route
+            path="ambulance-history"
+            element={<D_AmbulanceHistory />}
+          ></Route>
+          <Route
+            path="ambulance-request/status/:id"
+            element={<D_StatusAmbulance />}
+          />
+        </Route>
+        <Route path="/patientregister" element={<PatientRegister />}></Route>
+        <Route path="/patient">
+          <Route path="" index element={<PatientLogin />}></Route>
+          <Route path="forgotpatient" element={<PatientForgotps />}></Route>
+          <Route path="appointment" element={<P_Appointment />}></Route>
+          <Route path="surgeries" element={<P_Surgeries />}></Route>
+          <Route path="emiapplications" element={<P_EmiApplications />}></Route>
+          <Route
+            path="ambulancerequest"
+            element={<P_AmbulanceRequest />}
+          ></Route>
+          <Route
+            path="ambulance-request/status/:id"
+            element={<P_AmbulanceStatus />}
+          />
+          <Route path="patientprofile" element={<PatientProfile />}></Route>
+        </Route>
+        <Route path="/ambulance">
+          <Route path="" index element={<Amb_login />}></Route>
+          <Route path="ambregister" element={<Amb_register />}></Route>
+          <Route path="ambdashboard" element={<Amb_dashboard />}></Route>
+          <Route path="forgotambulance" element={<Amb_Forgot />}></Route>
+          <Route path="profileambulance" element={<Amb_Profile />}></Route>
+          <Route path="ambrequests" element={<Amb_Request />}></Route>
+          <Route path="rides/:id" element={<Amb_Ridedetails />} />
+        </Route>
+        <Route path="hospitalregister" element={<HospitalRegister />}></Route>
+        <Route path="/hospital">
+          <Route path="" index element={<HospitalLogin />}></Route>
+          <Route path="hospitalprofile" element={<HospitalProfile />}></Route>
+          <Route path="hospitaldashboard" element={<HospitalDashboard />}></Route>
+        </Route>
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </div>
+  );
+}
+
+export default App;
