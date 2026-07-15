@@ -1447,6 +1447,7 @@ body::-webkit-scrollbar-thumb:hover {
     }
 }
 
+
 /* ======================== ANIMATION ENHANCEMENTS ======================== */
 
 @keyframes fadeInUp {
@@ -2613,4 +2614,8 @@ body::-webkit-scrollbar-thumb:hover {
     .location_sec_margin{
         margin-top: 32px;
     }
+}
+
+.table-responsive .badge{
+    color: white !important;
 }

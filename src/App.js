@@ -72,6 +72,7 @@ import HospitalLogin from "./hospital/HospitalLogin";
 import HospitalRegister from "./hospital/HospitalRegister";
 import HospitalDashboard from "./hospital/HospitalDashboard";
 import HospitalProfile from "./hospital/HospitalProfile";
+import HospitalDoctor from "./hospital/HospitalDoctor";
 function App() {
   return (
     <div className="App">
@@ -180,6 +181,7 @@ function App() {
           <Route path="" index element={<HospitalLogin />}></Route>
           <Route path="hospitalprofile" element={<HospitalProfile />}></Route>
           <Route path="hospitaldashboard" element={<HospitalDashboard />}></Route>
+          <Route path="hospitaldoctors" element={<HospitalDoctor />}></Route>
         </Route>
 
         <Route path="*" element={<NotFound />} />
