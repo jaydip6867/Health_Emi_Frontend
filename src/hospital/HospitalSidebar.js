@@ -50,12 +50,15 @@ const HospitalSidebar = ({ hospital }) => {
                <NavLink to={'/hospital/hospitaldoctors'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
                 <IoCalendarOutline /> My Doctors
               </NavLink>
-              {/*<NavLink to={'/patient/emiapplications'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
-                <FiSettings /> EMI Applications
+              <NavLink to={'/hospital/hospitalappointment'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
+                <FiSettings /> Consultation Appointment
               </NavLink>
-              <NavLink to={'/patient/ambulancerequest'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
-                <FiTruck /> Book Ambulance
-              </NavLink> */}
+              <NavLink to={'/hospital/hospitalsurgeryappointment'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
+                <FiTruck /> Surgery Appointment
+              </NavLink>
+              <NavLink to={'/hospital/hospitalblogs'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
+                <FiTruck /> Blogs
+              </NavLink>
               <NavLink to={'/hospital/hospitalprofile'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
                 <FiSettings /> Settings
               </NavLink>
