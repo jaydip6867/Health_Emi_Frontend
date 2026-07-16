@@ -66,7 +66,7 @@ const HospitalBlog = () => {
 
     }, [navigate])
 
-    const getBlogs = async () => {
+    const getBlogs = async (authToken = token) => {
         setLoading(true);
         try {
             const response = await axios.post(
@@ -76,7 +76,7 @@ const HospitalBlog = () => {
                 },
                 {
                     headers: {
-                        Authorization: token
+                        Authorization: authToken
                     }
                 }
             );
@@ -213,14 +213,20 @@ const HospitalBlog = () => {
             return [];
         }
     }
+    const formatDate = (date) => {
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, "0");
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const year = d.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
 
     const saveBlog = async () => {
         setLoading(true)
         try {
             // First Image Upload
             const uploadedImages = await uploadImages();
-            console.log(uploadedImages)
-            return false;
+
             const payload = {
                 blogid: blogForm.blogid,
                 image:
@@ -244,7 +250,7 @@ const HospitalBlog = () => {
                 tags:
                     blogForm.tags,
                 expirydate:
-                    blogForm.expirydate
+                    blogForm.expirydate ? formatDate(blogForm.expirydate) : ""
             };
             console.log("Final Payload", payload);
             await axios.post(
@@ -263,9 +269,10 @@ const HospitalBlog = () => {
             );
             setShowModal(false);
             getBlogs();
-            setLoading(false)
         } catch (err) {
             console.log(err);
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -291,17 +298,23 @@ const HospitalBlog = () => {
         } catch (err) {
             console.log(err);
             return null;
+        } finally {
+            setLoading(false)
         }
-        setLoading(false)
     }
     const viewBlog = async (id) => {
-        setLoading(true)
         const data = await getOneBlog(id);
         if (data) {
             setLoading(false)
             setSelectedBlog(data);
             setShowViewModal(true);
         }
+    }
+
+    const convertToInputDate = (date) => {
+        if (!date) return "";
+        const [d, m, y] = date.split("-");
+        return `${y}-${m}-${d}`;
     }
 
     const editBlog = async (id) => {
@@ -317,11 +330,10 @@ const HospitalBlog = () => {
                 url: data.url || "",
                 meta_title: data.meta_title || "",
                 meta_description: data.meta_description || "",
-                meta_keywords:
-                    (data.meta_keywords || []).join(","),
-                tags:
-                    (data.tags || []).join(","),
-                expirydate: data.expirydate || ""
+                meta_keywords: data.meta_keywords || [],
+                tags: data.tags || [],
+                expirydate:
+                    convertToInputDate(data.expirydate)
             });
             setImagePreview(
                 data.image || []
@@ -531,7 +543,7 @@ const HospitalBlog = () => {
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>
-                                    Image URL
+                                    Blog Images
                                 </Form.Label>
                                 <Form.Control
                                     type="file"
@@ -670,7 +682,7 @@ const HospitalBlog = () => {
                     <Modal.Footer>
                         <Button
                             variant="secondary"
-                            onClick={() => setShowModal(false)}
+                            onClick={closeBlogModal}
                         >
                             Close
                         </Button>
