@@ -455,7 +455,7 @@ const HospitalProfile = () => {
 
   return (
     <>
-      <Container fluid className="p-0">
+      <Container>
         <Row className="g-0">
           <HospitalSidebar hospital={hospital} />
           <Col xs={12} sm={9} className="p-3 mt-3">
@@ -470,7 +470,7 @@ const HospitalProfile = () => {
                 <Tabs
                   defaultActiveKey="basic"
                   id="hospital-profile-tabs"
-                  className="mb-3 border-0 setting_tab gap-3 flex-wrap"
+                  className="mb-3 border-0 setting_tab hospital_tab gap-3 flex-wrap"
                 >
                   <Tab eventKey="basic" title="Basic Information">
                     <h5 className="fw-bold mb-3">Basic Details</h5>

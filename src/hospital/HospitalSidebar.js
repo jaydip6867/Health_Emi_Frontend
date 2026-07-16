@@ -24,7 +24,7 @@ const HospitalSidebar = ({ hospital }) => {
 
       {/* Sidebar */}
       <Col xs={12} sm={4} md={3} className={`sidebar-wrapper ${isOpen ? 'open blackarea' : 'min-vh-100'} d-none d-md-block d-sm-block position-sticky top-0 mt-4`}>
-        <div className="bg-white rounded sidebar-inner position-relative">
+        <div className="bg-white rounded sidebar-inner position-relative shadow-sm border border-top-0">
           <div className={`${isOpen ? 'd-block position-absolute top-0 end-0 z-3 p-2' : 'd-none'}`}>
             <FiXCircle style={{color:'white'}} onClick={toggleSidebar}/>
           </div>

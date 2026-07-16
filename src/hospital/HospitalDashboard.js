@@ -32,7 +32,7 @@ const HospitalDashboard = () => {
 
   return (
     <>
-      <Container fluid className='p-0'>
+      <Container >
         <Row className='g-0'>
           <HospitalSidebar hospital={hospital} />
           <Col xs={12} sm={9} className='p-3'>
