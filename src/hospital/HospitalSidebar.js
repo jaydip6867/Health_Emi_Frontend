@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Col } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { MdOutlineLogout } from "react-icons/md";
+import { MdOutlineLogout, MdVaccines } from "react-icons/md";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FiSettings, FiTruck, FiXCircle } from "react-icons/fi";
 const HospitalSidebar = ({ hospital }) => {
@@ -58,6 +58,9 @@ const HospitalSidebar = ({ hospital }) => {
               </NavLink>
               <NavLink to={'/hospital/hospitalblogs'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
                 <FiTruck /> Blogs
+              </NavLink>
+              <NavLink to={'/hospital/hospitalsurgery'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
+                <MdVaccines /> Surgery
               </NavLink>
               <NavLink to={'/hospital/hospitalprofile'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
                 <FiSettings /> Settings

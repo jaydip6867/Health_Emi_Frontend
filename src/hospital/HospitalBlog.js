@@ -7,7 +7,7 @@ import HospitalSidebar from './HospitalSidebar';
 import SmartDataTable from "../components/SmartDataTable";
 import Swal from "sweetalert2";
 import axios from 'axios';
-import { MdClear } from 'react-icons/md';
+import { MdClear, MdDelete, MdOutlineEditCalendar, MdOutlineRemoveRedEye } from 'react-icons/md';
 import Loader from '../Loader';
 
 const HospitalBlog = () => {
@@ -56,7 +56,7 @@ const HospitalBlog = () => {
             navigate('/hospital')
         }
         else {
-            console.log(data)
+            // console.log(data)
             sethospital(data.hospitalData);
             const authToken = `Bearer ${data.accessToken}`;
             // console.log(authToken)
@@ -414,33 +414,33 @@ const HospitalBlog = () => {
             selector: (row) => row.title,
             sortable: true
         },
-        {
-            name: "Patient",
-            cell: (row) =>
-                row.showto_patient
-                    ?
-                    <span className="badge bg-success">
-                        Yes
-                    </span>
-                    :
-                    <span className="badge bg-danger">
-                        No
-                    </span>
-        },
-        {
-            name: "Doctor",
-            cell: (row) =>
+        // {
+        //     name: "Patient",
+        //     cell: (row) =>
+        //         row.showto_patient
+        //             ?
+        //             <span className="badge bg-success">
+        //                 Yes
+        //             </span>
+        //             :
+        //             <span className="badge bg-danger">
+        //                 No
+        //             </span>
+        // },
+        // {
+        //     name: "Doctor",
+        //     cell: (row) =>
 
-                row.showto_doctor
-                    ?
-                    <span className="badge bg-success">
-                        Yes
-                    </span>
-                    :
-                    <span className="badge bg-danger">
-                        No
-                    </span>
-        },
+        //         row.showto_doctor
+        //             ?
+        //             <span className="badge bg-success">
+        //                 Yes
+        //             </span>
+        //             :
+        //             <span className="badge bg-danger">
+        //                 No
+        //             </span>
+        // },
         {
             name: "Expiry Date",
             selector: (row) => row.expirydate
@@ -453,22 +453,25 @@ const HospitalBlog = () => {
                         size="sm"
                         variant="info"
                         onClick={() => viewBlog(row._id)}
+                        className='btn btn-sm p-1 appt-view-btn'
                     >
-                        View
+                        <MdOutlineRemoveRedEye size={18} />
                     </Button>
                     <Button
                         size="sm"
                         variant="warning"
                         onClick={() => editBlog(row._id)}
-                    >
-                        Edit
+                        className='btn btn-sm p-1 appt-view-btn'
+                        >
+                        <MdOutlineEditCalendar size={18} />
                     </Button>
                     <Button
                         size="sm"
                         variant="danger"
                         onClick={() => deleteBlog(row._id)}
+                        className='btn btn-sm p-1 appt-view-btn dark'
                     >
-                        Delete
+                        <MdDelete />
                     </Button>
                 </div>
             )
@@ -728,23 +731,20 @@ const HospitalBlog = () => {
                                 </p>
                                 <hr />
                                 <p>
-                                    <b>Meta Title :</b>
-                                    {" "}
+                                    <b>Meta Title : </b>
                                     {selectedBlog.meta_title}
                                 </p>
                                 <p>
-                                    <b>URL :</b>
-                                    {" "}
+                                    <b>URL : </b>
                                     {selectedBlog.url}
                                 </p>
                                 <p>
-                                    <b>Tags :</b>
-                                    {" "}
+                                    <b>Tags : </b>
                                     {
                                         selectedBlog.tags?.map((tag, i) => (
                                             <span
                                                 key={i}
-                                                className="badge bg-primary me-1"
+                                                className="badge text-white bg-primary me-1"
                                             >
                                                 {tag}
                                             </span>
@@ -752,13 +752,12 @@ const HospitalBlog = () => {
                                     }
                                 </p>
                                 <p>
-                                    <b>Keywords :</b>
-                                    {" "}
+                                    <b>Keywords : </b>
                                     {
                                         selectedBlog.meta_keywords?.map((tag, i) => (
                                             <span
                                                 key={i}
-                                                className="badge bg-secondary me-1"
+                                                className="badge text-white bg-secondary me-1"
                                             >
                                                 {tag}
                                             </span>

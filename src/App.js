@@ -76,6 +76,7 @@ import HospitalDoctor from "./hospital/HospitalDoctor";
 import HospitalAppointment from "./hospital/HospitalAppointment";
 import HospitalSurgeryAppointment from "./hospital/HospitalSurgeryAppointment";
 import HospitalBlog from "./hospital/HospitalBlog";
+import HospitalSurgery from "./hospital/HospitalSurgery";
 function App() {
   return (
     <div className="App">
@@ -188,6 +189,7 @@ function App() {
           <Route path="hospitalappointment" element={<HospitalAppointment />}></Route>
           <Route path="hospitalsurgeryappointment" element={<HospitalSurgeryAppointment />}></Route>
           <Route path="hospitalblogs" element={<HospitalBlog />}></Route>
+          <Route path="hospitalsurgery" element={<HospitalSurgery />}></Route>
         </Route>
 
         <Route path="*" element={<NotFound />} />
