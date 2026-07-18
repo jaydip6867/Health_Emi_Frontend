@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Col } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { MdEditCalendar, MdOutlineAssignment, MdOutlineLogout, MdVaccines } from "react-icons/md";
+import { MdEditCalendar, MdOutlineAssignment, MdOutlineHomeWork, MdOutlineLogout, MdVaccines } from "react-icons/md";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FiSettings, FiXCircle } from "react-icons/fi";
 import { FaUserDoctor } from "react-icons/fa6";
@@ -51,6 +51,9 @@ const HospitalSidebar = ({ hospital }) => {
               </NavLink>
                <NavLink to={'/hospital/hospitaldoctors'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
                 <FaUserDoctor /> My Doctors
+              </NavLink>
+              <NavLink to={'/hospital/hospitalbranch'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
+                <MdOutlineHomeWork /> Branch
               </NavLink>
               <NavLink to={'/hospital/hospitalappointment'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
                 <MdEditCalendar /> Consultation Appointment

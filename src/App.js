@@ -77,6 +77,7 @@ import HospitalAppointment from "./hospital/HospitalAppointment";
 import HospitalSurgeryAppointment from "./hospital/HospitalSurgeryAppointment";
 import HospitalBlog from "./hospital/HospitalBlog";
 import HospitalSurgery from "./hospital/HospitalSurgery";
+import HospitalBranch from "./hospital/HospitalBranch";
 function App() {
   return (
     <div className="App">
@@ -186,6 +187,7 @@ function App() {
           <Route path="hospitalprofile" element={<HospitalProfile />}></Route>
           <Route path="hospitaldashboard" element={<HospitalDashboard />}></Route>
           <Route path="hospitaldoctors" element={<HospitalDoctor />}></Route>
+          <Route path="hospitalbranch" element={<HospitalBranch />}></Route>
           <Route path="hospitalappointment" element={<HospitalAppointment />}></Route>
           <Route path="hospitalsurgeryappointment" element={<HospitalSurgeryAppointment />}></Route>
           <Route path="hospitalblogs" element={<HospitalBlog />}></Route>
