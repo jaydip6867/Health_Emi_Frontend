@@ -7,7 +7,7 @@ import HospitalSidebar from './HospitalSidebar';
 import SmartDataTable from "../components/SmartDataTable";
 import Swal from "sweetalert2";
 import axios from 'axios';
-import { MdClear, MdDelete, MdOutlineEditCalendar, MdOutlineRemoveRedEye } from 'react-icons/md';
+import { MdClear, MdDelete, MdDeleteOutline, MdOutlineEditCalendar, MdOutlineRemoveRedEye } from 'react-icons/md';
 import Loader from '../Loader';
 
 const HospitalBlog = () => {
@@ -95,36 +95,39 @@ const HospitalBlog = () => {
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
-        if (files.length > 0) {
-            // Old + New images merge
-            setSelectedImages((prev) => [
-                ...prev,
-                ...files
-            ]);
-            // Old + New preview merge
-            const newPreviews = files.map((file) =>
-                URL.createObjectURL(file)
-            );
-            setImagePreview((prev) => [
-                ...prev,
-                ...newPreviews
-            ]);
-        }
-        // same file again select karva mate input reset
+        if (!files.length) return;
+        setSelectedImages(prev => [...prev, ...files]);
+        const previews = files.map(file => ({
+            url: URL.createObjectURL(file),
+            isOld: false
+        }));
+        setImagePreview(prev => [...prev, ...previews]);
         e.target.value = "";
     };
     const removePreviewImage = (index) => {
-        setSelectedImages((prev) => {
-            const updated = [...prev];
-            updated.splice(index, 1);
-            return updated;
-        });
-        setImagePreview((prev) => {
-            const updated = [...prev];
-            updated.splice(index, 1);
-            return updated;
-        });
-    }
+        const removed = imagePreview[index];
+        setImagePreview(prev =>
+            prev.filter((_, i) => i !== index)
+        );
+        if (removed.isOld) {
+            setBlogForm(prev => ({
+                ...prev,
+                image: prev.image.filter(
+                    item => item.path !== removed.url
+                )
+            }));
+        } else {
+            setSelectedImages(prev => {
+                const files = [...prev];
+                const newIndex = imagePreview
+                    .slice(0, index)
+                    .filter(item => !item.isOld)
+                    .length;
+                files.splice(newIndex, 1);
+                return files;
+            });
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -179,40 +182,28 @@ const HospitalBlog = () => {
 
     const uploadImages = async () => {
         if (selectedImages.length === 0) {
-            return blogForm.image;
+            return [];
         }
         try {
-            let uploadedUrls = [];
-            for (const image of selectedImages) {
-                const uploadPayload = new FormData();
-                uploadPayload.append(
-                    "image",
-                    image
-                );
-                const response = await axios.post(
-                    `${API_BASE_URL}/user/upload`,
-                    uploadPayload,
-                    {
-                        headers: {
-                            "Content-Type":
-                                "multipart/form-data"
-                        }
+            const formData = new FormData();
+            selectedImages.forEach(file => {
+                formData.append("files", file);
+            });
+            const response = await axios.post(
+                `${API_BASE_URL}/user/upload/multiple`,
+                formData,
+                {
+                    headers: {
+                        Authorization: token
                     }
-                );
-                const url =
-                    response?.data?.url ||
-                    response?.data?.Data ||
-                    response?.data?.data;
-                if (url) {
-                    uploadedUrls.push(url);
                 }
-            }
-            return uploadedUrls;
+            );
+            return response?.data?.Data || [];
         } catch (err) {
             console.log(err);
             return [];
         }
-    }
+    };
     const formatDate = (date) => {
         const d = new Date(date);
         const day = String(d.getDate()).padStart(2, "0");
@@ -229,30 +220,23 @@ const HospitalBlog = () => {
 
             const payload = {
                 blogid: blogForm.blogid,
-                image:
-                    uploadedImages.length > 0
-                        ?
-                        uploadedImages
-                        :
-                        blogForm.image,
+                image: [
+                    ...blogForm.image,
+                    ...uploadedImages
+                ],
                 title: blogForm.title,
                 description: blogForm.description,
-                showto_doctor:
-                    blogForm.showto_doctor,
-                showto_patient:
-                    blogForm.showto_patient,
+                showto_doctor: blogForm.showto_doctor,
+                showto_patient: blogForm.showto_patient,
                 url: blogForm.url,
                 meta_title: blogForm.meta_title,
-                meta_description:
-                    blogForm.meta_description,
-                meta_keywords:
-                    blogForm.meta_keywords,
-                tags:
-                    blogForm.tags,
-                expirydate:
-                    blogForm.expirydate ? formatDate(blogForm.expirydate) : ""
+                meta_description: blogForm.meta_description,
+                meta_keywords: blogForm.meta_keywords,
+                tags: blogForm.tags,
+                expirydate: blogForm.expirydate ? formatDate(blogForm.expirydate) : ""
             };
-            console.log("Final Payload", payload);
+            // console.log("Final Payload", payload);
+            // return false;
             await axios.post(
                 `${API_BASE_URL}/hospital/blogs/save`,
                 payload,
@@ -262,11 +246,13 @@ const HospitalBlog = () => {
                     }
                 }
             );
-            Swal.fire(
-                "Success",
-                "Blog Saved Successfully",
-                "success"
-            );
+            Swal.fire({
+                icon: "Success",
+                text: "Blog Saved Successfully",
+                title: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
             setShowModal(false);
             getBlogs();
         } catch (err) {
@@ -335,9 +321,12 @@ const HospitalBlog = () => {
                 expirydate:
                     convertToInputDate(data.expirydate)
             });
-            setImagePreview(
-                data.image || []
-            );
+            const previews = (data.image || []).map((item) => ({
+                url: `${item.path}`,
+                isOld: true
+            }));
+            setImagePreview(previews);
+            setSelectedImages([]);
             setShowModal(true);
         }
     }
@@ -382,14 +371,20 @@ const HospitalBlog = () => {
                         }
                     }
                 );
-                Swal.fire(
-                    "Deleted!",
-                    "Blog removed successfully",
-                    "success"
-                );
+                Swal.fire({
+                    icon: "success",
+                    title: "Deleted!",
+                    text: "Blog removed successfully",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
                 getBlogs();
             } catch (err) {
-                console.log(err);
+                Swal.fire({
+                    icon: "error",
+                    title: "Delete Failed",
+                    text: "Unable to delete Blog."
+                });
             }
         }
     }
@@ -399,12 +394,13 @@ const HospitalBlog = () => {
             name: "Image",
             cell: (row) => (
                 <img
-                    src={row.image?.[0]}
+                    src={row.image?.[0]?.path}
                     width="70"
                     height="50"
                     style={{
                         objectFit: "cover",
-                        borderRadius: "5px"
+                        borderRadius: "12px",
+                        overflow: 'hidden'
                     }}
                 />
             )
@@ -414,33 +410,6 @@ const HospitalBlog = () => {
             selector: (row) => row.title,
             sortable: true
         },
-        // {
-        //     name: "Patient",
-        //     cell: (row) =>
-        //         row.showto_patient
-        //             ?
-        //             <span className="badge bg-success">
-        //                 Yes
-        //             </span>
-        //             :
-        //             <span className="badge bg-danger">
-        //                 No
-        //             </span>
-        // },
-        // {
-        //     name: "Doctor",
-        //     cell: (row) =>
-
-        //         row.showto_doctor
-        //             ?
-        //             <span className="badge bg-success">
-        //                 Yes
-        //             </span>
-        //             :
-        //             <span className="badge bg-danger">
-        //                 No
-        //             </span>
-        // },
         {
             name: "Expiry Date",
             selector: (row) => row.expirydate
@@ -448,30 +417,27 @@ const HospitalBlog = () => {
         {
             name: "Action",
             cell: (row) => (
-                <div className="d-flex gap-2">
+                <div className="d-flex align-items-center gap-1">
                     <Button
                         size="sm"
-                        variant="info"
                         onClick={() => viewBlog(row._id)}
-                        className='btn btn-sm p-1 appt-view-btn'
+                        className='btn btn-sm p-1 apt_status_btn dark'
                     >
                         <MdOutlineRemoveRedEye size={18} />
                     </Button>
                     <Button
                         size="sm"
-                        variant="warning"
                         onClick={() => editBlog(row._id)}
-                        className='btn btn-sm p-1 appt-view-btn'
-                        >
+                        className="btn btn-sm p-1 apt_status_btn success"
+                    >
                         <MdOutlineEditCalendar size={18} />
                     </Button>
                     <Button
                         size="sm"
-                        variant="danger"
                         onClick={() => deleteBlog(row._id)}
-                        className='btn btn-sm p-1 appt-view-btn dark'
+                        className="btn btn-sm p-1 apt_status_btn danger"
                     >
-                        <MdDelete />
+                        <MdDeleteOutline size={18} />
                     </Button>
                 </div>
             )
@@ -561,8 +527,8 @@ const HospitalBlog = () => {
                                             className="position-relative"
                                         >
                                             <img
-                                                src={img}
-                                                alt="preview"
+                                                src={img.url}
+                                                alt=""
                                                 style={{
                                                     width: "120px",
                                                     height: "90px",
@@ -571,22 +537,22 @@ const HospitalBlog = () => {
                                                     border: "1px solid #ddd"
                                                 }}
                                             />
+
                                             <Button
                                                 size="sm"
                                                 variant="danger"
                                                 style={{
                                                     position: "absolute",
-                                                    top: "3px",
-                                                    right: "3px",
-                                                    borderRadius: "50%",
+                                                    top: 3,
+                                                    right: 3,
+                                                    borderRadius: "50%"
                                                 }}
                                                 onClick={() => removePreviewImage(index)}
                                             >
                                                 <MdClear size={14} />
                                             </Button>
                                         </div>
-                                    ))
-                                    }
+                                    ))}
                                 </div>
                             </Form.Group>
                             <Form.Group className="mb-3">
@@ -657,6 +623,43 @@ const HospitalBlog = () => {
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>
+                                    Meta Title
+                                </Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="meta_title"
+                                    value={blogForm.meta_title}
+                                    onChange={handleChange}
+                                    placeholder="Enter meta title"
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>
+                                    Meta Description
+                                </Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={3}
+                                    name="meta_description"
+                                    value={blogForm.meta_description}
+                                    onChange={handleChange}
+                                    placeholder="Enter meta description"
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>
+                                    URL
+                                </Form.Label>
+                                <Form.Control
+                                    type="url"
+                                    name="url"
+                                    value={blogForm.url}
+                                    onChange={handleChange}
+                                    placeholder="Enter blog URL"
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>
                                     Expiry Date
                                 </Form.Label>
                                 <Form.Control
@@ -713,16 +716,22 @@ const HospitalBlog = () => {
                         {
                             selectedBlog &&
                             <div>
-                                <img
-                                    src={selectedBlog.image?.[0]}
-                                    className="img-fluid rounded mb-3"
-                                    style={{
-                                        height: "250px",
-                                        width: "100%",
-                                        objectFit: "cover"
-                                    }}
-
-                                />
+                                <div className="d-flex flex-wrap gap-3 mb-3">
+                                    {selectedBlog.image?.map((img, index) => (
+                                        <img
+                                            key={index}
+                                            src={img.path}
+                                            alt={`Blog ${index + 1}`}
+                                            style={{
+                                                width: "180px",
+                                                height: "130px",
+                                                objectFit: "cover",
+                                                borderRadius: "8px",
+                                                border: "1px solid #ddd"
+                                            }}
+                                        />
+                                    ))}
+                                </div>
                                 <h4>
                                     {selectedBlog.title}
                                 </h4>
@@ -733,6 +742,10 @@ const HospitalBlog = () => {
                                 <p>
                                     <b>Meta Title : </b>
                                     {selectedBlog.meta_title}
+                                </p>
+                                <p>
+                                    <b>Meta Description : </b>
+                                    {selectedBlog.meta_description}
                                 </p>
                                 <p>
                                     <b>URL : </b>

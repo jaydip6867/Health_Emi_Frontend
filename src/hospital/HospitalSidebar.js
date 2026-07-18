@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Button, Col } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { MdOutlineLogout, MdVaccines } from "react-icons/md";
+import { MdEditCalendar, MdOutlineAssignment, MdOutlineLogout, MdVaccines } from "react-icons/md";
 import { IoCalendarOutline } from "react-icons/io5";
-import { FiSettings, FiTruck, FiXCircle } from "react-icons/fi";
+import { FiSettings, FiXCircle } from "react-icons/fi";
+import { FaUserDoctor } from "react-icons/fa6";
+
 const HospitalSidebar = ({ hospital }) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
@@ -48,16 +50,16 @@ const HospitalSidebar = ({ hospital }) => {
                 <IoCalendarOutline /> Dashboard
               </NavLink>
                <NavLink to={'/hospital/hospitaldoctors'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
-                <IoCalendarOutline /> My Doctors
+                <FaUserDoctor /> My Doctors
               </NavLink>
               <NavLink to={'/hospital/hospitalappointment'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
-                <FiSettings /> Consultation Appointment
+                <MdEditCalendar /> Consultation Appointment
               </NavLink>
               <NavLink to={'/hospital/hospitalsurgeryappointment'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
-                <FiTruck /> Surgery Appointment
+                <MdEditCalendar /> Surgery Appointment
               </NavLink>
               <NavLink to={'/hospital/hospitalblogs'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
-                <FiTruck /> Blogs
+                <MdOutlineAssignment /> Blogs
               </NavLink>
               <NavLink to={'/hospital/hospitalsurgery'} className={({ isActive }) => (isActive ? 'active' : '')} onClick={() => setIsOpen(false)}>
                 <MdVaccines /> Surgery

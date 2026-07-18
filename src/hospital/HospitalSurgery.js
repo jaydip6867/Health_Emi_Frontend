@@ -390,10 +390,10 @@ const HospitalSurgery = () => {
             setInclusiveList(data.inclusive ? data.inclusive.split(",").map(x => x.trim()) : []);
             setExclusiveList(data.exclusive ? data.exclusive.split(",").map(x => x.trim()) : []);
             setFormData({
-                groupId: data._id || "",
+                groupId: data.groupId || "",
                 surgery_photo: data.surgery_photo || "",
                 name: data.name || "",
-                surgerytypeid: data.surgerytypeid || "",
+                surgerytypeid: data.surgerytypeid?._id || "",
                 inclusive: inclusiveList,
                 exclusive: exclusiveList,
                 yearsof_experience: data.yearsof_experience || "",
@@ -408,7 +408,9 @@ const HospitalSurgery = () => {
                 private_price: data.private_price || "",
                 delux_price: data.delux_price || "",
                 categoryname: data.categoryname || "",
-                doctorids: data.doctorids || []
+                doctorids: data.doctorids
+                    ? data.doctorids.map(item => item._id)
+                    : []
             });
             setSelectedFile(null);
             setShowModal(true);
@@ -468,34 +470,50 @@ const HospitalSurgery = () => {
 
     const columns = [
         {
+            name: "Image",
+            cell: (row) => (
+                <img
+                    src={row?.surgery_photo}
+                    width="50"
+                    height="50"
+                    style={{
+                        height: "50px",
+                        objectFit: "cover",
+                        borderRadius: "25px",
+                        overflow: 'hidden'
+                    }}
+                />
+            )
+        },
+        {
             name: "Name",
             selector: row => row.name,
             sortable: true,
         },
-        {
-            name: "Experience",
-            selector: row => row.yearsof_experience,
-        },
-        {
-            name: "Completed",
-            selector: row => row.completed_surgery,
-        },
-        {
-            name: "Days",
-            selector: row => row.days,
-        },
-        {
-            name: "General Price",
-            selector: row => row.general_price,
-        },
+        // {
+            //     name: "Completed",
+            //     selector: row => row.completed_surgery,
+            // },
+            // {
+                //     name: "Days",
+                //     selector: row => row.days,
+                // },
+                // {
+                    //     name: "General Price",
+        //     selector: row => row.general_price,
+        // },
         {
             name: "Category",
             selector: row => row.categoryname,
         },
         {
-            name: "Doctors",
-            cell: row => row.doctorids?.length || 0,
+            name: "Experience",
+            selector: row => row.yearsof_experience,
         },
+        // {
+        //     name: "Doctors",
+        //     cell: row => row.doctorids?.length || 0,
+        // },
         {
             name: "Action",
             cell: row => (
@@ -872,7 +890,8 @@ const HospitalSurgery = () => {
                                                     style={{
                                                         width: "150px",
                                                         height: "150px",
-                                                        objectFit: "cover"
+                                                        objectFit: "cover",
+                                                        margin: 'auto'
                                                     }} />
                                                 :
                                                 <div
@@ -887,7 +906,7 @@ const HospitalSurgery = () => {
                                             <h5 className="fw-bold">
                                                 {viewData.name}
                                             </h5>
-                                            <span className="badge bg-success">
+                                            <span className="badge bg-success text-white">
                                                 {viewData.categoryname || "General"}
                                             </span>
                                         </div>
@@ -907,7 +926,7 @@ const HospitalSurgery = () => {
                                                         Surgery Type
                                                     </small>
                                                     <h6>
-                                                        {viewData.surgerytypename || "-"}
+                                                        {viewData.surgerytype || "-"}
                                                     </h6>
                                                 </Col>
                                                 <Col md={6} className="mb-3">
@@ -937,6 +956,70 @@ const HospitalSurgery = () => {
                                             </Row>
                                         </div>
                                     </div>
+                                    <div className="card shadow-sm border-0 mb-3">
+                                        <div className="card-header bg-white">
+                                            <h6 className="mb-0 fw-bold">
+                                                Doctor Information
+                                            </h6>
+                                        </div>
+                                        <div className="card-body">
+                                            <Row>
+                                                {viewData?.doctorids?.map((item, index) => (
+                                                    <Col md={6} className="mb-3" key={item._id || index}>
+                                                        <div className="border rounded p-3 h-100">
+                                                            <div className="d-flex align-items-center mb-3">
+                                                                <img
+                                                                    src={item?.profile_pic}
+                                                                    alt={item?.name}
+                                                                    style={{
+                                                                        width: "70px",
+                                                                        height: "70px",
+                                                                        borderRadius: "50%",
+                                                                        objectFit: "cover",
+                                                                        border: "1px solid #ddd"
+                                                                    }}
+                                                                />
+                                                                <div className="ms-3">
+                                                                    <small className="text-muted">
+                                                                        Doctor Name
+                                                                    </small>
+                                                                    <h6 className="mb-0">
+                                                                        {item?.name || "-"}
+                                                                    </h6>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <small className="text-muted">
+                                                                    Email
+                                                                </small>
+                                                                <p className="mb-2">
+                                                                    {item?.email || "-"}
+                                                                </p>
+                                                                <small className="text-muted">
+                                                                    Mobile
+                                                                </small>
+                                                                <p className="mb-2">
+                                                                    {item?.mobile || "-"}
+                                                                </p>
+                                                                <small className="text-muted">
+                                                                    Specialty
+                                                                </small>
+                                                                <p className="mb-2">
+                                                                    {item?.specialty || "-"}
+                                                                </p>
+                                                                <small className="text-muted">
+                                                                    Sub Specialty
+                                                                </small>
+                                                                <p className="mb-0">
+                                                                    {item?.sub_specialty || "-"}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </Col>
+                                                ))}
+                                            </Row>
+                                        </div>
+                                    </div>
                                 </Col>
                             </Row>
                             <Row>
@@ -950,9 +1033,6 @@ const HospitalSurgery = () => {
                                         <div className="card-body">
                                             <p>
                                                 {viewData.features || "-"}
-                                            </p>
-                                            <p>
-                                                {viewData.additional_features || "-"}
                                             </p>
                                         </div>
                                     </div>
