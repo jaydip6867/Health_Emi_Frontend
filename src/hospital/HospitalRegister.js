@@ -8,6 +8,7 @@ import FooterBar from '../Visitor/Component/FooterBar';
 import '../Visitor/MedicalLoanForm.css';
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 import { FaRegPenToSquare, FaRegTrashCan } from 'react-icons/fa6';
+import { Country, State, City } from "country-state-city";
 
 const normalizeDownPayment = (value) => {
     if (value === true || value === 1 || value === '1') return 'Yes';
@@ -84,6 +85,16 @@ const HospitalRegister = () => {
         pincode: '',
         landmark: '',
     };
+
+    const INDIA_CODE = "IN";
+    const states = State.getStatesOfCountry(INDIA_CODE);
+    const cities = currentBranch.state
+        ? City.getCitiesOfState(
+            INDIA_CODE,
+            State.getStatesOfCountry(INDIA_CODE)
+                .find(s => s.name === currentBranch.state)?.isoCode || ""
+        )
+        : [];
 
     const [currentBranch, setCurrentBranch] = useState(emptyBranch);
     const [editingBranchIndex, setEditingBranchIndex] = useState(null);
@@ -456,7 +467,9 @@ const HospitalRegister = () => {
     };
 
     const editBranchItem = (index) => {
-        setCurrentBranch(formData.branchdetails[index]);
+        setCurrentBranch({
+            ...formData.branchdetails[index]
+        });
         setEditingBranchIndex(index);
     };
 
@@ -1107,32 +1120,55 @@ const HospitalRegister = () => {
                                                     </div>
                                                     <div className="branch-location-row branch-field-full">
                                                         <div className="form-group">
-                                                            <label>City</label>
-                                                            <input
-                                                                type="text"
-                                                                value={currentBranch.city}
-                                                                onChange={(e) =>
-                                                                    setCurrentBranch({
-                                                                        ...currentBranch,
-                                                                        city: e.target.value,
-                                                                    })
-                                                                }
-                                                                placeholder="Enter city"
-                                                            />
-                                                        </div>
-                                                        <div className="form-group">
                                                             <label>State</label>
-                                                            <input
-                                                                type="text"
+                                                            <select
                                                                 value={currentBranch.state}
-                                                                onChange={(e) =>
+                                                                onChange={(e) => {
                                                                     setCurrentBranch({
                                                                         ...currentBranch,
                                                                         state: e.target.value,
-                                                                    })
-                                                                }
-                                                                placeholder="Enter state"
-                                                            />
+                                                                        city: "",
+                                                                        pincode: ""
+                                                                    });
+                                                                }}>
+                                                                <option value="">Select State</option>
+                                                                {states.map(state => (
+                                                                    <option
+                                                                        key={state.isoCode}
+                                                                        value={state.name}>
+                                                                        {state.name}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                        <div className="form-group">
+                                                            <label>City</label>
+                                                            <select
+                                                                value={currentBranch.city}
+                                                                onChange={(e) => {
+                                                                    const city = cities.find(
+                                                                        c => c.name === e.target.value
+                                                                    );
+                                                                    setCurrentBranch({
+                                                                        ...currentBranch,
+                                                                        city: e.target.value,
+                                                                        pincode: city?.zipCode || ""
+                                                                    });
+                                                                }}
+                                                                disabled={!currentBranch.state}
+                                                            >
+                                                                <option value="">
+                                                                    Select City
+                                                                </option>
+                                                                {cities.map(city => (
+                                                                    <option
+                                                                        key={city.name}
+                                                                        value={city.name}
+                                                                    >
+                                                                        {city.name}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
                                                         </div>
                                                         <div className="form-group">
                                                             <label>Pincode</label>

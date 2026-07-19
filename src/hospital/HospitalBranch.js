@@ -10,6 +10,7 @@ import { FiX } from 'react-icons/fi';
 import Loader from '../Loader';
 import { MdDeleteOutline, MdOutlineEditCalendar, MdOutlineRemoveRedEye } from 'react-icons/md';
 import Swal from 'sweetalert2';
+import { Country, State, City } from "country-state-city";
 
 const HospitalBranch = () => {
 
@@ -30,6 +31,9 @@ const HospitalBranch = () => {
     const [showViewModal, setShowViewModal] = useState(false);
     const [selectedBranch, setSelectedBranch] = useState(null);
 
+    const [states, setStates] = useState([]);
+    const [cities, setCities] = useState([]);
+
     const [branchForm, setBranchForm] = useState({
         branchname: "",
         summary: "",
@@ -40,6 +44,21 @@ const HospitalBranch = () => {
         pincode: "",
         landmark: ""
     });
+
+    useEffect(() => {
+        const indiaStates = State.getStatesOfCountry("IN");
+        setStates(indiaStates);
+    }, []);
+
+    const loadCities = (stateCode) => {
+        if (!stateCode) {
+            setCities([]);
+            return;
+        }
+
+        const cityList = City.getCitiesOfState("IN", stateCode);
+        setCities(cityList);
+    };
 
     useEffect(() => {
         var getlocaldata = localStorage.getItem(STORAGE_KEYS.HOSPITAL);
@@ -72,13 +91,13 @@ const HospitalBranch = () => {
         };
     }, [imagePreview]);
 
-    const getProfile = async () => {
+    const getProfile = async (authToken) => {
         setloading(true)
         try {
             const response = await axios.get(`${API_BASE_URL}/hospital/profile`,
                 {
                     headers: {
-                        Authorization: token
+                        Authorization: authToken
                     }
                 }
             );
@@ -94,6 +113,7 @@ const HospitalBranch = () => {
     }
 
     const openAddModal = () => {
+
         setEditingIndex(null);
 
         setBranchForm({
@@ -107,11 +127,11 @@ const HospitalBranch = () => {
             landmark: ""
         });
 
+        setCities([]);
         setSelectedImages([]);
         setImagePreview([]);
-
         setShowModal(true);
-    }
+    };
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
@@ -235,6 +255,7 @@ const HospitalBranch = () => {
                 setShowModal(false);
                 setSelectedImages([]);
                 setImagePreview([]);
+                getProfile(token);
             }
             else {
                 Swal.fire({
@@ -269,6 +290,19 @@ const HospitalBranch = () => {
             ...row,
             photos: [...(row.photos || [])]
         });
+        const selectedState = State.getStatesOfCountry("IN").find(
+            x => x.name === row.state
+        )
+        if (selectedState) {
+            const cityList = City.getCitiesOfState(
+                "IN",
+                selectedState.isoCode
+            );
+            setCities(cityList);
+        }
+        else {
+            setCities([]);
+        }
         setImagePreview(
             (row.photos || []).map(img => ({
                 url: img,
@@ -277,7 +311,7 @@ const HospitalBranch = () => {
         );
         setSelectedImages([]);
         setShowModal(true);
-    }
+    };
 
     const deleteBranch = async (index) => {
         const result = await Swal.fire({
@@ -326,6 +360,7 @@ const HospitalBranch = () => {
                 response.data?.Status === true
             ) {
                 setBranches(arr);
+                getProfile(token);
                 Swal.fire({
                     icon: "success",
                     title: "Deleted Successfully",
@@ -548,6 +583,92 @@ const HospitalBranch = () => {
                                     />
                                 </Col>
 
+                                <Col md={4} className="mb-3">
+                                    <Form.Label>State</Form.Label>
+                                    <Form.Select
+                                        value={branchForm.state}
+                                        onChange={(e) => {
+                                            const stateName = e.target.value;
+                                            const selectedState = states.find(
+                                                x => x.name === stateName
+                                            );
+                                            setBranchForm({
+                                                ...branchForm,
+                                                state: stateName,
+                                                city: ""
+                                            });
+                                            if (selectedState) {
+                                                loadCities(selectedState.isoCode);
+                                            }
+                                            else {
+                                                setCities([]);
+                                            }
+                                        }}>
+                                        <option value="">Select State</option>
+                                        {states.map((state) => (
+                                            <option
+                                                key={state.isoCode}
+                                                value={state.name}
+                                            >
+                                                {state.name}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                </Col>
+
+                                <Col md={4} className="mb-3">
+                                    <Form.Label>City</Form.Label>
+                                    <Form.Select
+                                        value={branchForm.city}
+                                        onChange={(e) =>
+                                            setBranchForm({
+                                                ...branchForm,
+                                                city: e.target.value
+                                            })
+                                        }   
+                                    >
+                                        <option value="">Select City</option>
+                                        {cities.map(city => (
+                                            <option
+                                                key={city.name}
+                                                value={city.name}
+                                            >
+                                                {city.name}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                </Col>
+
+                                <Col md={4} className="mb-3">
+                                    <Form.Label>Pincode</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={branchForm.pincode}
+                                        onChange={(e) =>
+                                            setBranchForm({
+                                                ...branchForm,
+                                                pincode: e.target.value,
+                                            })
+                                        }
+                                        placeholder="Pincode"
+                                    />
+                                </Col>
+
+                                <Col md={12} className="mb-3">
+                                    <Form.Label>Landmark</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={branchForm.landmark}
+                                        onChange={(e) =>
+                                            setBranchForm({
+                                                ...branchForm,
+                                                landmark: e.target.value,
+                                            })
+                                        }
+                                        placeholder="Nearest Landmark"
+                                    />
+                                </Col>
+
                                 <Col md={12} className="mb-3">
                                     <Form.Label>Branch Photos</Form.Label>
 
@@ -587,66 +708,6 @@ const HospitalBranch = () => {
                                             </div>
                                         ))}
                                     </div>
-                                </Col>
-
-                                <Col md={4} className="mb-3">
-                                    <Form.Label>City</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        value={branchForm.city}
-                                        onChange={(e) =>
-                                            setBranchForm({
-                                                ...branchForm,
-                                                city: e.target.value,
-                                            })
-                                        }
-                                        placeholder="City"
-                                    />
-                                </Col>
-
-                                <Col md={4} className="mb-3">
-                                    <Form.Label>State</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        value={branchForm.state}
-                                        onChange={(e) =>
-                                            setBranchForm({
-                                                ...branchForm,
-                                                state: e.target.value,
-                                            })
-                                        }
-                                        placeholder="State"
-                                    />
-                                </Col>
-
-                                <Col md={4} className="mb-3">
-                                    <Form.Label>Pincode</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        value={branchForm.pincode}
-                                        onChange={(e) =>
-                                            setBranchForm({
-                                                ...branchForm,
-                                                pincode: e.target.value,
-                                            })
-                                        }
-                                        placeholder="Pincode"
-                                    />
-                                </Col>
-
-                                <Col md={12} className="mb-3">
-                                    <Form.Label>Landmark</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        value={branchForm.landmark}
-                                        onChange={(e) =>
-                                            setBranchForm({
-                                                ...branchForm,
-                                                landmark: e.target.value,
-                                            })
-                                        }
-                                        placeholder="Nearest Landmark"
-                                    />
                                 </Col>
                             </Row>
                         </Form>
