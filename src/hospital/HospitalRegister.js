@@ -86,6 +86,9 @@ const HospitalRegister = () => {
         landmark: '',
     };
 
+    const [currentBranch, setCurrentBranch] = useState(emptyBranch);
+    const [editingBranchIndex, setEditingBranchIndex] = useState(null);
+
     const INDIA_CODE = "IN";
     const states = State.getStatesOfCountry(INDIA_CODE);
     const cities = currentBranch.state
@@ -95,9 +98,6 @@ const HospitalRegister = () => {
                 .find(s => s.name === currentBranch.state)?.isoCode || ""
         )
         : [];
-
-    const [currentBranch, setCurrentBranch] = useState(emptyBranch);
-    const [editingBranchIndex, setEditingBranchIndex] = useState(null);
 
     const stepsList = [
         { number: 1, title: 'Basic Information' },
@@ -148,7 +148,6 @@ const HospitalRegister = () => {
     const getsurgerytype = () => {
         axios.post(`${API_BASE_URL}/doctor/surgerytypes/list`)
             .then(response => {
-                console.log(response.data);
                 setsurgerytypes(response.data.Data);
             })
             .catch(error => {
