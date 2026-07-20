@@ -9,6 +9,7 @@ import '../Visitor/MedicalLoanForm.css';
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 import { FaRegPenToSquare, FaRegTrashCan } from 'react-icons/fa6';
 import { Country, State, City } from "country-state-city";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const normalizeDownPayment = (value) => {
     if (value === true || value === 1 || value === '1') return 'Yes';
@@ -141,6 +142,8 @@ const HospitalRegister = () => {
             return null;
         }
     };
+
+    const [showPassword, setShowPassword] = useState(false);
 
     const [surgerytypes, setsurgerytypes] = useState([]);
     const [selectedSurgeryType, setSelectedSurgeryType] = useState('');
@@ -556,11 +559,11 @@ const HospitalRegister = () => {
             if (!requiredText(formData.legalentityname)) return 'Legal entity name is required';
             if (!requiredText(formData.hospitaltype)) return 'Hospital type is required';
             if (!requiredText(formData.registrationnumber)) return 'Registration number is required';
-            if (!requiredText(formData.gstnumber)) return 'GST number is required';
+            // if (!requiredText(formData.gstnumber)) return 'GST number is required';
             if (!requiredText(formData.pannumber)) return 'PAN number is required';
             if (!requiredText(formData.establishmentyear)) return 'Establishment year is required';
             if (!/^\d{4}$/.test(formData.establishmentyear)) return 'Please enter a valid 4-digit establishment year';
-            if (!requiredText(formData.websiteurl)) return 'Website URL is required';
+            // if (!requiredText(formData.websiteurl)) return 'Website URL is required';
             if (!requiredText(formData.summary)) return 'Summary is required';
             if (!requiredText(formData.registeredaddress)) return 'Registered address is required';
             if (!Array.isArray(formData.branchdetails) || formData.branchdetails.length === 0) return 'At least one branch detail is required';
@@ -935,9 +938,21 @@ const HospitalRegister = () => {
                                         <input type="file" name="logo" onChange={handleFileChange} />
                                         {formData.logo && <span className="selected-filename">{getDisplayValue(formData.logo)}</span>}
                                     </div>
-                                    <div className="form-group">
+                                    <div className="form-group position-relative">
                                         <label>Password <span className="required-star">*</span></label>
-                                        <input type="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="Create password" />
+                                        <input type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleInputChange} placeholder="Create password" />
+                                        <span
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            style={{
+                                                position: "absolute",
+                                                right: "12px",
+                                                top: "36px",
+                                                cursor: "pointer",
+                                                color: "#555",
+                                            }}
+                                        >
+                                            {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                                        </span>
                                     </div>
                                 </div>
                             </section>
@@ -982,7 +997,9 @@ const HospitalRegister = () => {
                                         <input type="text" name="registrationnumber" value={formData.registrationnumber} onChange={handleInputChange} placeholder="Enter registration number" />
                                     </div>
                                     <div className="form-group">
-                                        <label>GST Number <span className="required-star">*</span></label>
+                                        <label>GST Number
+                                            {/* <span className="required-star">*</span> */}
+                                        </label>
                                         <input type="text" name="gstnumber" value={formData.gstnumber} onChange={handleInputChange} placeholder="Enter GST number" />
                                     </div>
                                     <div className="form-group">
@@ -1002,7 +1019,9 @@ const HospitalRegister = () => {
                                         />
                                     </div>
                                     <div className="form-group">
-                                        <label>Website URL <span className="required-star">*</span></label>
+                                        <label>Website URL 
+                                            {/* <span className="required-star">*</span> */}
+                                        </label>
                                         <input type="text" name="websiteurl" value={formData.websiteurl} onChange={handleInputChange} placeholder="Enter website URL" />
                                     </div>
                                     <div className="form-group" style={{ gridColumn: '1 / -1' }}>

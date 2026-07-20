@@ -1724,8 +1724,8 @@ const DoctorProfilePage = () => {
                                   <div className="d-flex align-items-center mb-1">
                                     <div className="hospital-dot me-2"></div>
                                     <div>
-                                      <h6 className="mb-0">{hospital.name}</h6>
-                                      <small>{hospital.address}</small>
+                                      <h6 className="mb-0">{hospital.hospitalname}</h6>
+                                      {/* <small>{hospital.address}</small> */}
                                     </div>
                                   </div>
                                 </div>
@@ -1733,7 +1733,7 @@ const DoctorProfilePage = () => {
                                   <span
                                     className={`badge ${
                                       selectedHospital?.name === hospital.name
-                                        ? "bg-primary"
+                                        ? "bg-primary text-white"
                                         : "bg-light text-dark border"
                                     }`}
                                   >
