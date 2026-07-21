@@ -237,8 +237,8 @@ const DoctorProfilePage = () => {
     if (!patient) {
       navigate("/patient");
       return;
-    } 
-    
+    }
+
     if (!selectedConsultationType) {
       setConsultError(true);
     }
@@ -264,14 +264,14 @@ const DoctorProfilePage = () => {
 
     try {
       setloading(true);
-      
+
       // Fetch user appointments history
       const response = await axios.post(
-        `${API_BASE_URL}/user/appointments/list`, 
+        `${API_BASE_URL}/user/appointments/list`,
         { patientid: patient._id },
         { headers: { Authorization: token } }
       );
-      
+
       const appointments = response?.data?.Data || [];
       let isWithin15DaysOfCompleted = false;
 
@@ -292,7 +292,7 @@ const DoctorProfilePage = () => {
           // Find the most recent completed date
           const latestCompletedDate = new Date(Math.max(...completedDates));
           const dayDifference = differenceInDays(new Date(), latestCompletedDate);
-          
+
           // If days between today and last completed appointment is between 0 and 15 days
           if (dayDifference >= 0 && dayDifference <= 15) {
             isWithin15DaysOfCompleted = true;
@@ -315,7 +315,7 @@ const DoctorProfilePage = () => {
           if (result.isConfirmed) {
             const [datePart, timePart, meridiem] = formattedDateTime.split(" ");
             const timeWithMeridiem = `${timePart} ${meridiem}`;
-            
+
             const directForm = {
               patientname: patient.name,
               mobile: patient.mobile,
@@ -336,7 +336,7 @@ const DoctorProfilePage = () => {
                 headers: { Authorization: token },
                 data: directForm,
               });
-              
+
               Swal.fire({
                 title: "Appointment Added Successfully",
                 icon: "success",
@@ -437,8 +437,8 @@ const DoctorProfilePage = () => {
             apt_data.report instanceof FileList
               ? Array.from(apt_data.report)
               : Array.isArray(apt_data.report)
-              ? apt_data.report
-              : [apt_data.report];
+                ? apt_data.report
+                : [apt_data.report];
 
           filesToUpload.forEach((file) => {
             formData.append("files", file);
@@ -481,10 +481,9 @@ const DoctorProfilePage = () => {
           appointment_reason: apt_data.appointment_reason,
           ...(formattedReports.length > 0 && { report: formattedReports }),
           doctorid: d_id,
-          hospital_name: selectedHospital || "",
+          hospital_name: selectedHospital?.hospitalname || "",
           visit_types: selectedConsultationType,
         });
-
         setModelPayment(true);
       } catch (error) {
         console.error("saveAppointmentData error:", error);
@@ -517,7 +516,7 @@ const DoctorProfilePage = () => {
           },
           data: appointmentForm,
         });
-        
+
         Swal.fire({
           title: "Appointment Added Successfully",
           icon: "success",
@@ -547,8 +546,8 @@ const DoctorProfilePage = () => {
     selectedDate && selectedTimeSlot
       ? format(selectedDate, "dd-MM-yyyy") + " " + selectedTimeSlot
       : selectedDate
-      ? format(selectedDate, "dd-MM-yyyy hh:mm a")
-      : "";
+        ? format(selectedDate, "dd-MM-yyyy hh:mm a")
+        : "";
 
   var surg_obj = {
     patientname: "",
@@ -781,11 +780,11 @@ const DoctorProfilePage = () => {
 
   const filteredSurgeries = useMemo(() => {
     if (!doctor_profile?.surgeriesDetails) return [];
-    
+
     if (!surgerySearchTerm.trim()) return doctor_profile.surgeriesDetails;
-    
+
     const searchTerm = surgerySearchTerm.toLowerCase().trim();
-    return doctor_profile.surgeriesDetails.filter(surgery => 
+    return doctor_profile.surgeriesDetails.filter(surgery =>
       surgery?.name?.toLowerCase().includes(searchTerm) ||
       surgery?.surgerytypeid?.surgerytypename?.toLowerCase().includes(searchTerm)
     );
@@ -798,7 +797,7 @@ const DoctorProfilePage = () => {
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var dataToken = JSON.parse(decrypted);
       const tenPercentPrice = Math.round(consultationPrice * 0.10);
-      
+
       const { data } = await axios.post(
         `${API_BASE_URL}/user/order/create`,
         { amount: tenPercentPrice },
@@ -907,7 +906,7 @@ const DoctorProfilePage = () => {
         setSurgeryHospitalError(true);
         return;
       }
-      
+
       if (!addsurgery?.roomtype) {
         Swal.fire({
           title: "Please select Room Type",
@@ -982,20 +981,20 @@ const DoctorProfilePage = () => {
   };
 
   useEffect(() => {
-      document.title =
-        "Partner With Health Easy EMI - Patient Financing for Hospitals & Clinics";
-  
-      const metaDescription = document.querySelector(
-        'meta[name="description"]'
+    document.title =
+      "Partner With Health Easy EMI - Patient Financing for Hospitals & Clinics";
+
+    const metaDescription = document.querySelector(
+      'meta[name="description"]'
+    );
+
+    if (metaDescription) {
+      metaDescription.setAttribute(
+        "content",
+        "Offer your patients instant medical EMI approval and grow procedure volume. Partner with Health Easy EMI - fast settlements, zero integration hassle."
       );
-  
-      if (metaDescription) {
-        metaDescription.setAttribute(
-          "content",
-          "Offer your patients instant medical EMI approval and grow procedure volume. Partner with Health Easy EMI - fast settlements, zero integration hassle."
-        );
-      }
-    }, []);
+    }
+  }, []);
 
   return (
     <>
@@ -1139,7 +1138,7 @@ const DoctorProfilePage = () => {
                                 <div className="d-flex flex-column mt-1">
                                   <span className="fw-bold">
                                     {!doctor_profile?.surgeriesDetails ||
-                                    doctor_profile?.surgeriesDetails?.length ===
+                                      doctor_profile?.surgeriesDetails?.length ===
                                       0
                                       ? "0"
                                       : doctor_profile?.surgeriesDetails?.length}
@@ -1302,7 +1301,7 @@ const DoctorProfilePage = () => {
                     </div>
                     <Row className="g-4">
                       {!doctor_profile?.surgeriesDetails ||
-                      doctor_profile?.surgeriesDetails.length === 0 ? (
+                        doctor_profile?.surgeriesDetails.length === 0 ? (
                         <p className="text-muted">Surgery not added...</p>
                       ) : filteredSurgeries.length === 0 ? (
                         <p className="text-muted">No surgeries found matching your search...</p>
@@ -1475,11 +1474,10 @@ const DoctorProfilePage = () => {
 
                           <label
                             htmlFor="clinic_visit"
-                            className={`text-center check_room_type p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${
-                              selectedConsultationType === "clinic_visit"
+                            className={`text-center check_room_type p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === "clinic_visit"
                                 ? "active"
                                 : ""
-                            }`}
+                              }`}
                             style={{ cursor: "pointer" }}
                           >
                             <div>
@@ -1514,7 +1512,7 @@ const DoctorProfilePage = () => {
                                   {doctor_profile?.consultationsDetails === null
                                     ? 0
                                     : doctor_profile?.consultationsDetails
-                                        ?.clinic_visit_price}
+                                      ?.clinic_visit_price}
                                 </small>
                               </div>
                             </div>
@@ -1542,11 +1540,10 @@ const DoctorProfilePage = () => {
 
                           <label
                             htmlFor="eopd"
-                            className={`text-center p-3 bg-white check_room_type rounded-3 h-100 shadow-sm d-block cursor-pointer ${
-                              selectedConsultationType === "eopd"
+                            className={`text-center p-3 bg-white check_room_type rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === "eopd"
                                 ? "active"
                                 : ""
-                            }`}
+                              }`}
                             style={{ cursor: "pointer" }}
                           >
                             <div>
@@ -1589,7 +1586,7 @@ const DoctorProfilePage = () => {
                                   {doctor_profile?.consultationsDetails === null
                                     ? 0
                                     : doctor_profile?.consultationsDetails
-                                        ?.eopd_price}
+                                      ?.eopd_price}
                                 </small>
                               </div>
                             </div>
@@ -1617,11 +1614,10 @@ const DoctorProfilePage = () => {
 
                           <label
                             htmlFor="home_visit"
-                            className={`text-center p-3 bg-white check_room_type rounded-3 h-100 shadow-sm d-block cursor-pointer ${
-                              selectedConsultationType === "home_visit"
+                            className={`text-center p-3 bg-white check_room_type rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === "home_visit"
                                 ? "active"
                                 : ""
-                            }`}
+                              }`}
                             style={{ cursor: "pointer" }}
                           >
                             <div>
@@ -1657,7 +1653,7 @@ const DoctorProfilePage = () => {
                                   {doctor_profile?.consultationsDetails === null
                                     ? 0
                                     : doctor_profile?.consultationsDetails
-                                        ?.home_visit_price}
+                                      ?.home_visit_price}
                                 </small>
                               </div>
                             </div>
@@ -1673,9 +1669,8 @@ const DoctorProfilePage = () => {
                   </Card>
 
                   <Card
-                    className={`border-0 shadow-sm ${
-                      hospitalError ? "error-outline" : ""
-                    }`}
+                    className={`border-0 shadow-sm ${hospitalError ? "error-outline" : ""
+                      }`}
                     style={{ borderRadius: "15px" }}
                   >
                     <Card.Body className="p-4">
@@ -1695,19 +1690,18 @@ const DoctorProfilePage = () => {
                           <Col xs={12} key={index}>
                             <label
                               htmlFor={`hospital_${index}`}
-                              className={`hospital-option w-100 ${
-                                selectedHospital?.name === hospital.name
+                              className={`hospital-option w-100 ${selectedHospital?.hospitalname === hospital.hospitalname
                                   ? "selected"
                                   : ""
-                              }`}
+                                }`}
                             >
                               <input
                                 type="radio"
                                 id={`hospital_${index}`}
-                                name="hospital"
+                                name="hospital_name"
                                 value={JSON.stringify(hospital)}
                                 checked={
-                                  selectedHospital?.name === hospital.name
+                                  selectedHospital?.hospitalname === hospital.hospitalname
                                 }
                                 onChange={(e) => {
                                   const hospitalObj = JSON.parse(
@@ -1731,13 +1725,12 @@ const DoctorProfilePage = () => {
                                 </div>
                                 <div className="ms-2 align-self-start">
                                   <span
-                                    className={`badge ${
-                                      selectedHospital?.name === hospital.name
+                                    className={`badge ${selectedHospital?.hospitalname === hospital.hospitalname
                                         ? "bg-primary text-white"
                                         : "bg-light text-dark border"
-                                    }`}
+                                      }`}
                                   >
-                                    {selectedHospital?.name === hospital.name
+                                    {selectedHospital?.hospitalname === hospital.hospitalname
                                       ? "Selected"
                                       : "Choose"}
                                   </span>
@@ -1797,8 +1790,8 @@ const DoctorProfilePage = () => {
                                           selectedTimeSlot === slot.time
                                             ? "dark"
                                             : canSelectSlot(slot)
-                                            ? "light"
-                                            : "outline-secondary"
+                                              ? "light"
+                                              : "outline-secondary"
                                         }
                                         size="sm"
                                         className="w-100 btn-hour"
@@ -2362,31 +2355,30 @@ const DoctorProfilePage = () => {
             </Form.Group>
             <Form.Group className="col-6">
               <Form.Label>Hospital</Form.Label>
+
               <Form.Select
                 name="hospital_name"
-                value={
-                  addsurgery?.hospital_name
-                    ? JSON.stringify(addsurgery.hospital_name)
-                    : ""
-                }
+                value={addsurgery?.hospital_name || ""}
                 onChange={(e) => {
-                  const hospitalObj = e.target.value
-                    ? JSON.parse(e.target.value)
-                    : null;
                   setaddsurgery((prev) => ({
                     ...prev,
-                    hospital_name: hospitalObj,
+                    hospital_name: e.target.value,
                   }));
                   setSurgeryHospitalError(false);
                 }}
               >
                 <option value="">Select Hospital</option>
-                {doctor_profile?.hospitals?.map((v, i) => (
-                  <option key={i} value={JSON.stringify(v)}>
-                    {v?.name}
+
+                {doctor_profile?.hospitals?.map((hospital) => (
+                  <option
+                    key={hospital.hospitalid}
+                    value={hospital.hospitalname}
+                  >
+                    {hospital.hospitalname}
                   </option>
                 ))}
               </Form.Select>
+
               {surgeryHospitalError && (
                 <div className="text-danger small mt-1">
                   Please select hospital
@@ -2412,9 +2404,8 @@ const DoctorProfilePage = () => {
                   value="SemiPrivate"
                   id="label-2"
                   onChange={surghandlechange}
-                  label={`SemiPrivate - ₹${
-                    single_surg?.semiprivate_price
-                  }`}
+                  label={`SemiPrivate - ₹${single_surg?.semiprivate_price
+                    }`}
                 />
                 <Form.Check
                   name="roomtype"
@@ -2520,8 +2511,8 @@ const DoctorProfilePage = () => {
             {isUploadingReports
               ? "Uploading Reports..."
               : addsurgery?.roomtype
-              ? `Pay Advance ₹${Math.round(surgeryPrice * 0.15)} (Total: ₹${surgeryPrice})`
-              : "Select Room Type"}
+                ? `Pay Advance ₹${Math.round(surgeryPrice * 0.15)} (Total: ₹${surgeryPrice})`
+                : "Select Room Type"}
           </Button>
         </Modal.Footer>
       </Modal>
