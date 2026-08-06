@@ -1263,12 +1263,29 @@ const DoctorProfilePage = () => {
                               <Card.Body className="p-3">
                                 <div>
                                   <h6 className="fw-bold mb-1 pb-2 border-bottom">
-                                    {v.name}
+                                    {v.hospitalname}
                                   </h6>
-                                  <p className="text-muted small m-0">
+                                  {/* <p className="text-muted small m-0">
                                     <BsGeoAlt className="text-dark me-2" />{" "}
                                     {v.address}
-                                  </p>
+                                  </p> */}
+                                  {v.branches.map((branch, index) => (
+                                    <div key={branch.branchid} className="mb-2">
+                                      <p className="text-muted fw-bold mb-1 small">
+                                        {branch.branchname}
+                                      </p>
+
+                                      <a
+                                        href={branch.locationurl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-decoration-none small"
+                                      >
+                                        <BsGeoAlt className="me-1" />
+                                        {branch.landmark}, {branch.city}, {branch.state} - {branch.pincode}
+                                      </a>
+                                    </div>
+                                  ))}
                                 </div>
                               </Card.Body>
                             </Card>
@@ -1475,8 +1492,8 @@ const DoctorProfilePage = () => {
                           <label
                             htmlFor="clinic_visit"
                             className={`text-center check_room_type p-3 bg-white rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === "clinic_visit"
-                                ? "active"
-                                : ""
+                              ? "active"
+                              : ""
                               }`}
                             style={{ cursor: "pointer" }}
                           >
@@ -1541,8 +1558,8 @@ const DoctorProfilePage = () => {
                           <label
                             htmlFor="eopd"
                             className={`text-center p-3 bg-white check_room_type rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === "eopd"
-                                ? "active"
-                                : ""
+                              ? "active"
+                              : ""
                               }`}
                             style={{ cursor: "pointer" }}
                           >
@@ -1615,8 +1632,8 @@ const DoctorProfilePage = () => {
                           <label
                             htmlFor="home_visit"
                             className={`text-center p-3 bg-white check_room_type rounded-3 h-100 shadow-sm d-block cursor-pointer ${selectedConsultationType === "home_visit"
-                                ? "active"
-                                : ""
+                              ? "active"
+                              : ""
                               }`}
                             style={{ cursor: "pointer" }}
                           >
@@ -1691,8 +1708,8 @@ const DoctorProfilePage = () => {
                             <label
                               htmlFor={`hospital_${index}`}
                               className={`hospital-option w-100 ${selectedHospital?.hospitalname === hospital.hospitalname
-                                  ? "selected"
-                                  : ""
+                                ? "selected"
+                                : ""
                                 }`}
                             >
                               <input
@@ -1726,8 +1743,8 @@ const DoctorProfilePage = () => {
                                 <div className="ms-2 align-self-start">
                                   <span
                                     className={`badge ${selectedHospital?.hospitalname === hospital.hospitalname
-                                        ? "bg-primary text-white"
-                                        : "bg-light text-dark border"
+                                      ? "bg-primary text-white"
+                                      : "bg-light text-dark border"
                                       }`}
                                   >
                                     {selectedHospital?.hospitalname === hospital.hospitalname
