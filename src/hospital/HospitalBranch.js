@@ -45,6 +45,14 @@ const HospitalBranch = () => {
         landmark: ""
     });
 
+    const [errors, setErrors] = useState({
+        branchname: "",
+        state: "",
+        city: "",
+        pincode: "",
+        landmark: ""
+    });
+
     useEffect(() => {
         const indiaStates = State.getStatesOfCountry("IN");
         setStates(indiaStates);
@@ -189,7 +197,43 @@ const HospitalBranch = () => {
         }
     };
 
+    const validateBranch = () => {
+
+        const newErrors = {};
+
+        if (!branchForm.branchname.trim()) {
+            newErrors.branchname = "Branch Name is required";
+        }
+
+        if (!branchForm.state.trim()) {
+            newErrors.state = "State is required";
+        }
+
+        if (!branchForm.city.trim()) {
+            newErrors.city = "City is required";
+        }
+
+        if (!branchForm.pincode.trim()) {
+            newErrors.pincode = "Pincode is required";
+        }
+        else if (!/^[0-9]{6}$/.test(branchForm.pincode)) {
+            newErrors.pincode = "Enter valid 6 digit pincode";
+        }
+
+        if (!branchForm.landmark.trim()) {
+            newErrors.landmark = "Landmark is required";
+        }
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    };
+
     const saveBranch = async () => {
+
+        if (!validateBranch()) {
+            return;
+        }
         Swal.fire({
             title: "Saving Branch...",
             text: "Please wait while branch details are being saved.",
@@ -542,14 +586,24 @@ const HospitalBranch = () => {
                                     <Form.Control
                                         type="text"
                                         value={branchForm.branchname}
-                                        onChange={(e) =>
+                                        isInvalid={!!errors.branchname}
+                                        onChange={(e) => {
                                             setBranchForm({
                                                 ...branchForm,
                                                 branchname: e.target.value,
-                                            })
-                                        }
+                                            });
+
+                                            setErrors(prev => ({
+                                                ...prev,
+                                                branchname: ""
+                                            }));
+                                        }}
                                         placeholder="Enter Branch Name"
                                     />
+
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.branchname}
+                                    </Form.Control.Feedback>
                                 </Col>
 
                                 <Col md={6} className="mb-3">
@@ -587,24 +641,35 @@ const HospitalBranch = () => {
                                     <Form.Label>State</Form.Label>
                                     <Form.Select
                                         value={branchForm.state}
+                                        isInvalid={!!errors.state}
                                         onChange={(e) => {
+
                                             const stateName = e.target.value;
                                             const selectedState = states.find(
                                                 x => x.name === stateName
                                             );
+
                                             setBranchForm({
                                                 ...branchForm,
                                                 state: stateName,
                                                 city: ""
                                             });
+
+                                            setErrors(prev => ({
+                                                ...prev,
+                                                state: "",
+                                                city: ""
+                                            }));
+
                                             if (selectedState) {
                                                 loadCities(selectedState.isoCode);
-                                            }
-                                            else {
+                                            } else {
                                                 setCities([]);
                                             }
-                                        }}>
+                                        }}
+                                    >
                                         <option value="">Select State</option>
+
                                         {states.map((state) => (
                                             <option
                                                 key={state.isoCode}
@@ -614,20 +679,32 @@ const HospitalBranch = () => {
                                             </option>
                                         ))}
                                     </Form.Select>
+
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.state}
+                                    </Form.Control.Feedback>
                                 </Col>
 
                                 <Col md={4} className="mb-3">
                                     <Form.Label>City</Form.Label>
                                     <Form.Select
                                         value={branchForm.city}
-                                        onChange={(e) =>
+                                        isInvalid={!!errors.city}
+                                        onChange={(e) => {
+
                                             setBranchForm({
                                                 ...branchForm,
                                                 city: e.target.value
-                                            })
-                                        }   
+                                            });
+
+                                            setErrors(prev => ({
+                                                ...prev,
+                                                city: ""
+                                            }));
+                                        }}
                                     >
                                         <option value="">Select City</option>
+
                                         {cities.map(city => (
                                             <option
                                                 key={city.name}
@@ -637,6 +714,10 @@ const HospitalBranch = () => {
                                             </option>
                                         ))}
                                     </Form.Select>
+
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.city}
+                                    </Form.Control.Feedback>
                                 </Col>
 
                                 <Col md={4} className="mb-3">
@@ -644,14 +725,28 @@ const HospitalBranch = () => {
                                     <Form.Control
                                         type="text"
                                         value={branchForm.pincode}
-                                        onChange={(e) =>
+                                        isInvalid={!!errors.pincode}
+                                        maxLength={6}
+                                        onChange={(e) => {
+
+                                            const value = e.target.value.replace(/\D/g, "");
+
                                             setBranchForm({
                                                 ...branchForm,
-                                                pincode: e.target.value,
-                                            })
-                                        }
+                                                pincode: value,
+                                            });
+
+                                            setErrors(prev => ({
+                                                ...prev,
+                                                pincode: ""
+                                            }));
+                                        }}
                                         placeholder="Pincode"
                                     />
+
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.pincode}
+                                    </Form.Control.Feedback>
                                 </Col>
 
                                 <Col md={12} className="mb-3">
@@ -659,14 +754,25 @@ const HospitalBranch = () => {
                                     <Form.Control
                                         type="text"
                                         value={branchForm.landmark}
-                                        onChange={(e) =>
+                                        isInvalid={!!errors.landmark}
+                                        onChange={(e) => {
+
                                             setBranchForm({
                                                 ...branchForm,
                                                 landmark: e.target.value,
-                                            })
-                                        }
+                                            });
+
+                                            setErrors(prev => ({
+                                                ...prev,
+                                                landmark: ""
+                                            }));
+                                        }}
                                         placeholder="Nearest Landmark"
                                     />
+
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.landmark}
+                                    </Form.Control.Feedback>
                                 </Col>
 
                                 <Col md={12} className="mb-3">

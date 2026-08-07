@@ -1274,7 +1274,6 @@ const DoctorProfilePage = () => {
                                       <p className="text-muted fw-bold mb-1 small">
                                         {branch.branchname}
                                       </p>
-
                                       <a
                                         href={branch.locationurl}
                                         target="_blank"

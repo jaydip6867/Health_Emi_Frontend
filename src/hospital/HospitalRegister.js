@@ -10,6 +10,7 @@ import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 import { FaRegPenToSquare, FaRegTrashCan } from 'react-icons/fa6';
 import { Country, State, City } from "country-state-city";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import Swal from "sweetalert2";
 
 const normalizeDownPayment = (value) => {
     if (value === true || value === 1 || value === '1') return 'Yes';
@@ -559,7 +560,7 @@ const HospitalRegister = () => {
             if (!requiredText(formData.legalentityname)) return 'Legal entity name is required';
             if (!requiredText(formData.hospitaltype)) return 'Hospital type is required';
             if (!requiredText(formData.registrationnumber)) return 'Registration number is required';
-            // if (!requiredText(formData.gstnumber)) return 'GST number is required';
+            // if (!requiredText(formData.gstnumber)) return 'GST number is required';  
             if (!requiredText(formData.pannumber)) return 'PAN number is required';
             if (!requiredText(formData.establishmentyear)) return 'Establishment year is required';
             if (!/^\d{4}$/.test(formData.establishmentyear)) return 'Please enter a valid 4-digit establishment year';
@@ -602,11 +603,11 @@ const HospitalRegister = () => {
             if (!Array.isArray(formData.treatment) || formData.treatment.length === 0) return 'Please select at least one surgery type';
             if (!formData.hospitalregistrationcertificate) return 'Hospital registration certificate is required';
             if (!requiredText(formData.nabhaccreditation)) return 'NABH accreditation status is required';
-            if (!requiredText(formData.nabhnumber)) return 'NABH number is required';
+            // if (!requiredText(formData.nabhnumber)) return 'NABH number is required';
             if (!formData.nabhcertificate) return 'NABH certificate is required';
-            if (!formData.gstcertificate) return 'GST certificate is required';
+            // if (!formData.gstcertificate) return 'GST certificate is required';
             if (!formData.pancopy) return 'PAN copy is required';
-            if (!formData.authorizedsignatoryidproof) return 'Authorized signatory ID proof is required';
+            // if (!formData.authorizedsignatoryidproof) return 'Authorized signatory ID proof is required';
             if (!requiredText(formData.password)) return 'Password is required';
             return null;
         }
@@ -833,6 +834,14 @@ const HospitalRegister = () => {
                     setStatusMessage('Registration completed successfully.');
                     setFormData(initialFormData);
                     setCurrentStep(1);
+                    await Swal.fire({
+                        icon: "success",
+                        title: "Profile Submitted",
+                        text: "Profile is under verification. We will notify you within 24 hours once approved.",
+                        confirmButtonText: "OK",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false
+                    });
                     navigate('/hospital');
                 } else {
                     throw new Error(response?.data?.Message || 'Profile update failed');
@@ -1019,7 +1028,7 @@ const HospitalRegister = () => {
                                         />
                                     </div>
                                     <div className="form-group">
-                                        <label>Website URL 
+                                        <label>Website URL
                                             {/* <span className="required-star">*</span> */}
                                         </label>
                                         <input type="text" name="websiteurl" value={formData.websiteurl} onChange={handleInputChange} placeholder="Enter website URL" />
