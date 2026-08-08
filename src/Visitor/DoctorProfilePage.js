@@ -38,8 +38,10 @@ const DoctorProfilePage = () => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [selectedConsultationType, setSelectedConsultationType] = useState("");
   const [selectedHospital, setSelectedHospital] = useState(null);
+  const [selectedBranch, setSelectedBranch] = useState(null);
   const [consultError, setConsultError] = useState(false);
   const [hospitalError, setHospitalError] = useState(false);
+  const [branchError, setBranchError] = useState(false);
   const [modelpayment, setModelPayment] = useState(false);
   const [appointmentForm, setAppointmentForm] = useState(null);
   // Available time slots
@@ -245,10 +247,19 @@ const DoctorProfilePage = () => {
     if (!selectedHospital) {
       setHospitalError(true);
     }
+
+    if (!selectedBranch) {
+      setBranchError(true);
+    }
+
     if (!selectedConsultationType) {
       return;
     }
-    if (selectedConsultationType === "clinic_visit" && !selectedHospital) {
+
+    if (
+      selectedConsultationType === "clinic_visit" &&
+      (!selectedHospital || !selectedBranch)
+    ) {
       return;
     }
 
@@ -322,9 +333,21 @@ const DoctorProfilePage = () => {
               alt_mobile: apt_data.alt_mobile,
               date: datePart,
               time: timeWithMeridiem,
-              appointment_reason: apt_data.appointment_reason || "Free Follow-up within 15 Days",
+
+              appointment_reason:
+                apt_data.appointment_reason ||
+                "Free Follow-up within 15 Days",
+
               doctorid: d_id,
-              hospital_name: selectedHospital || "",
+
+              // Existing hospital name
+              hospital_name: selectedHospital?.hospitalname || "",
+
+              // New IDs
+              hospitalid: selectedHospital?.hospitalid || "",
+              branchid: selectedBranch?.branchid || "",
+
+              // Existing consultation type
               visit_types: selectedConsultationType,
             };
 
@@ -479,9 +502,21 @@ const DoctorProfilePage = () => {
           date: datePart,
           time: timeWithMeridiem,
           appointment_reason: apt_data.appointment_reason,
-          ...(formattedReports.length > 0 && { report: formattedReports }),
+
+          ...(formattedReports.length > 0 && {
+            report: formattedReports,
+          }),
+
           doctorid: d_id,
+
+          // Existing field
           hospital_name: selectedHospital?.hospitalname || "",
+
+          // New fields
+          hospitalid: selectedHospital?.hospitalid || "",
+          branchid: selectedBranch?.branchid || "",
+
+          // Existing field
           visit_types: selectedConsultationType,
         });
         setModelPayment(true);
@@ -562,6 +597,8 @@ const DoctorProfilePage = () => {
     doctorid: "",
     roomtype: "",
     hospital_name: null,
+    hospitalid: "",
+    branchid: "",
   };
   const [addsurgery, setaddsurgery] = useState(surg_obj);
   const [reportFiles, setReportFiles] = useState([]);
@@ -704,9 +741,16 @@ const DoctorProfilePage = () => {
 
         var surg_data = {
           ...addsurgery,
+
           date: datePart,
           time: timeWithMeridiem,
           report: reportUrls,
+
+          hospitalid: addsurgery?.hospitalid || "",
+          branchid: addsurgery?.branchid || "",
+          hospital_name: addsurgery?.hospital_name || "",
+
+          doctorid: doctor_profile?._id || d_id || "",
         };
 
         await axios({
@@ -897,13 +941,24 @@ const DoctorProfilePage = () => {
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       var dataToken = JSON.parse(decrypted);
 
-      if (!addsurgery?.hospital_name) {
+      if (!addsurgery?.hospitalid) {
         Swal.fire({
           title: "Please select Hospital",
           icon: "warning",
           confirmButtonText: "Ok",
         });
+
         setSurgeryHospitalError(true);
+        return;
+      }
+
+      if (!addsurgery?.branchid) {
+        Swal.fire({
+          title: "Please select Branch",
+          icon: "warning",
+          confirmButtonText: "Ok",
+        });
+
         return;
       }
 
@@ -1479,6 +1534,11 @@ const DoctorProfilePage = () => {
                             onChange={(e) => {
                               setSelectedConsultationType(e.target.value);
                               setConsultError(false);
+                              setSelectedHospital(null);
+                              setSelectedBranch(null);
+                              setHospitalError(false);
+                              setBranchError(false);
+
                               setaptdata({
                                 ...apt_data,
                                 visit_types: e.target.value,
@@ -1543,8 +1603,10 @@ const DoctorProfilePage = () => {
                             onChange={(e) => {
                               setSelectedConsultationType(e.target.value);
                               setConsultError(false);
-                              setSelectedHospital("");
+                              setSelectedHospital(null);
+                              setSelectedBranch(null);
                               setHospitalError(false);
+                              setBranchError(false);
                               setaptdata({
                                 ...apt_data,
                                 visit_types: e.target.value,
@@ -1617,8 +1679,10 @@ const DoctorProfilePage = () => {
                             onChange={(e) => {
                               setSelectedConsultationType(e.target.value);
                               setConsultError(false);
-                              setSelectedHospital("");
+                              setSelectedHospital(null);
+                              setSelectedBranch(null);
                               setHospitalError(false);
+                              setBranchError(false);
                               setaptdata({
                                 ...apt_data,
                                 visit_types: e.target.value,
@@ -1684,7 +1748,7 @@ const DoctorProfilePage = () => {
                     </Card.Body>
                   </Card>
 
-                  <Card
+                  {/* <Card
                     className={`border-0 shadow-sm ${hospitalError ? "error-outline" : ""
                       }`}
                     style={{ borderRadius: "15px" }}
@@ -1735,7 +1799,6 @@ const DoctorProfilePage = () => {
                                     <div className="hospital-dot me-2"></div>
                                     <div>
                                       <h6 className="mb-0">{hospital.hospitalname}</h6>
-                                      {/* <small>{hospital.address}</small> */}
                                     </div>
                                   </div>
                                 </div>
@@ -1753,6 +1816,167 @@ const DoctorProfilePage = () => {
                                 </div>
                               </div>
                             </label>
+                          </Col>
+                        ))}
+                      </Row>
+                    </Card.Body>
+                  </Card> */}
+
+                  <Card
+                    className={`border-0 shadow-sm ${hospitalError ? "error-outline" : ""
+                      }`}
+                    style={{ borderRadius: "15px" }}
+                  >
+                    <Card.Body className="p-4">
+                      <h5 className="fw-bold mb-4 text-center">
+                        Select Hospital
+                      </h5>
+
+                      {hospitalError && (
+                        <div className="text-danger small text-center mb-4">
+                          Please select hospital
+                        </div>
+                      )}
+
+                      <Row
+                        className="g-3"
+                        style={{ maxHeight: "400px", overflowY: "auto" }}
+                      >
+                        {doctor_profile?.hospitals?.map((hospital, index) => (
+                          <Col xs={12} key={hospital.hospitalid || index}>
+                            <div
+                              className={`hospital-option w-100 ${selectedHospital?.hospitalid === hospital.hospitalid
+                                ? "selected"
+                                : ""
+                                }`}
+                            >
+                              {/* Hospital */}
+                              <div
+                                className="d-flex align-items-start p-3"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => {
+                                  setSelectedHospital(hospital);
+                                  setSelectedBranch(null);
+                                  setHospitalError(false);
+                                  setBranchError(false);
+                                }}
+                              >
+                                <div className="flex-grow-1">
+                                  <div className="d-flex align-items-center">
+                                    <div className="hospital-dot me-2"></div>
+
+                                    <div>
+                                      <h6 className="mb-0 fw-bold">
+                                        {hospital.hospitalname}
+                                      </h6>
+
+                                      <small className="text-muted">
+                                        {hospital.branches?.length || 0} Branch
+                                        {hospital.branches?.length === 1 ? "" : "es"}
+                                      </small>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="ms-2 align-self-start">
+                                  <span
+                                    className={`badge ${selectedHospital?.hospitalid === hospital.hospitalid
+                                      ? "bg-primary text-white"
+                                      : "bg-light text-dark border"
+                                      }`}
+                                  >
+                                    {selectedHospital?.hospitalid === hospital.hospitalid
+                                      ? "Selected"
+                                      : "Choose"}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Branches */}
+                              {selectedHospital?.hospitalid === hospital.hospitalid && (
+                                <div className="px-3 pb-3">
+                                  <div className="border-top pt-3">
+                                    <h6 className="fw-bold mb-3">
+                                      Select Branch
+                                    </h6>
+
+                                    {hospital.branches?.length > 0 ? (
+                                      <Row className="g-2">
+                                        {hospital.branches.map((branch, branchIndex) => (
+                                          <Col xs={12} key={branch.branchid || branchIndex}>
+                                            <label
+                                              className={`d-block border rounded-3 p-3 ${selectedBranch?.branchid === branch.branchid
+                                                ? "border-primary bg-primary bg-opacity-10"
+                                                : "border-light bg-light"
+                                                }`}
+                                              style={{ cursor: "pointer" }}
+                                            >
+                                              <div className="d-flex align-items-start">
+                                                <Form.Check
+                                                  type="radio"
+                                                  name="branch"
+                                                  value={branch.branchid}
+                                                  checked={
+                                                    selectedBranch?.branchid ===
+                                                    branch.branchid
+                                                  }
+                                                  onChange={() => {
+                                                    setSelectedBranch(branch);
+                                                    setBranchError(false);
+                                                  }}
+                                                  className="me-2 mt-1"
+                                                />
+
+                                                <div>
+                                                  <div className="fw-bold">
+                                                    {branch.branchname}
+                                                  </div>
+
+                                                  {/* <div className="text-muted small mt-1">
+                                                    {branch.landmark
+                                                      ? `${branch.landmark}, `
+                                                      : ""}
+                                                    {branch.city}, {branch.state}
+                                                    {branch.pincode
+                                                      ? ` - ${branch.pincode}`
+                                                      : ""}
+                                                  </div> */}
+
+                                                  {/* {branch.locationurl && (
+                                                    <a
+                                                      href={branch.locationurl}
+                                                      target="_blank"
+                                                      rel="noopener noreferrer"
+                                                      className="small text-decoration-none"
+                                                      onClick={(e) =>
+                                                        e.stopPropagation()
+                                                      }
+                                                    >
+                                                      <BsGeoAlt className="me-1" />
+                                                      View Location
+                                                    </a>
+                                                  )} */}
+                                                </div>
+                                              </div>
+                                            </label>
+                                          </Col>
+                                        ))}
+                                      </Row>
+                                    ) : (
+                                      <div className="text-muted small">
+                                        No branches available for this hospital.
+                                      </div>
+                                    )}
+
+                                    {branchError && (
+                                      <div className="text-danger small mt-2">
+                                        Please select branch
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </Col>
                         ))}
                       </Row>
@@ -2369,7 +2593,7 @@ const DoctorProfilePage = () => {
                 </div>
               )}
             </Form.Group>
-            <Form.Group className="col-6">
+            {/* <Form.Group className="col-6">
               <Form.Label>Hospital</Form.Label>
 
               <Form.Select
@@ -2400,6 +2624,93 @@ const DoctorProfilePage = () => {
                   Please select hospital
                 </div>
               )}
+            </Form.Group> */}
+            <Form.Group className="col-md-6">
+              <Form.Label>Hospital</Form.Label>
+
+              <Form.Select
+                name="hospitalid"
+                value={addsurgery?.hospitalid || ""}
+                onChange={(e) => {
+                  const hospital = doctor_profile?.hospitals?.find(
+                    (h) => h?.hospitalid === e.target.value
+                  );
+
+                  setaddsurgery((prev) => ({
+                    ...prev,
+                    hospitalid: hospital?.hospitalid || "",
+                    hospital_name: hospital?.hospitalname || "",
+                    branchid: "",
+                  }));
+
+                  setSurgeryHospitalError(false);
+                }}
+              >
+                <option value="">Select Hospital</option>
+
+                {doctor_profile?.hospitals?.map((hospital) => (
+                  <option
+                    key={hospital?.hospitalid}
+                    value={hospital?.hospitalid}
+                  >
+                    {hospital?.hospitalname}
+                  </option>
+                ))}
+              </Form.Select>
+
+              {surgeryHospitalError && (
+                <div className="text-danger small mt-1">
+                  Please select hospital
+                </div>
+              )}
+            </Form.Group>
+            <Form.Group className="col-md-6">
+              <Form.Label>Branch</Form.Label>
+
+              <Form.Select
+                name="branchid"
+                value={addsurgery?.branchid || ""}
+                disabled={!addsurgery?.hospitalid}
+                onChange={(e) => {
+                  setaddsurgery((prev) => ({
+                    ...prev,
+                    branchid: e.target.value,
+                  }));
+                }}
+              >
+                <option value="">
+                  {!addsurgery?.hospitalid
+                    ? "First Select Hospital"
+                    : "Select Branch"}
+                </option>
+
+                {doctor_profile?.hospitals
+                  ?.find(
+                    (hospital) =>
+                      hospital?.hospitalid === addsurgery?.hospitalid
+                  )
+                  ?.branches?.map((branch) => (
+                    <option
+                      key={branch?.branchid}
+                      value={branch?.branchid}
+                    >
+                      {branch?.branchname}
+                      {branch?.city ? ` - ${branch.city}` : ""}
+                    </option>
+                  ))}
+              </Form.Select>
+
+              {addsurgery?.hospitalid &&
+                doctor_profile?.hospitals
+                  ?.find(
+                    (hospital) =>
+                      hospital?.hospitalid === addsurgery?.hospitalid
+                  )
+                  ?.branches?.length === 0 && (
+                  <div className="text-muted small mt-1">
+                    No branch available for this hospital.
+                  </div>
+                )}
             </Form.Group>
             <Form.Group className="col-md-4">
               <Form.Label>Room Type</Form.Label>
