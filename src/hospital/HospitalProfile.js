@@ -666,7 +666,7 @@ const HospitalProfile = () => {
 
                     <h5 className="fw-bold mb-3">NABH Details</h5>
                     <Row className="g-3">
-                      <Col md={6} lg={2}>
+                      <Col md={6} lg={4}>
                         <Form.Group>
                           <Form.Label className="fw-semibold">NABH Accreditation</Form.Label>
                           <Form.Select
@@ -681,7 +681,8 @@ const HospitalProfile = () => {
                           </Form.Select>
                         </Form.Group>
                       </Col>
-                      <Col md={6} lg={3}>
+                      {profile.nabhaccreditation === 'Yes' && ( <>
+                      <Col md={6} lg={4}>
                         <Form.Group>
                           <Form.Label className="fw-semibold">NABH Number</Form.Label>
                           <Form.Control
@@ -697,6 +698,7 @@ const HospitalProfile = () => {
                       <Col md={6} lg={4}>
                         {renderFilePreview('nabhcertificate', 'NABH Certificate')}
                       </Col>
+                      </>)}
                       {/* <Col md={6} lg={4}>
                         {renderFilePreview('authorizedsignatoryidproof', 'Authorized Signatory ID Proof')}
                       </Col> */}
@@ -867,7 +869,7 @@ const HospitalProfile = () => {
                     </Row>
                   </Tab>
 
-                  <Tab eventKey="emi" title="EMI Program Configuration">
+                  {/* <Tab eventKey="emi" title="EMI Program Configuration">
                     <h5 className="fw-bold mb-3">EMI Program Configuration</h5>
                     <Row className="g-3">
                       <Col md={6} lg={4}>
@@ -936,7 +938,7 @@ const HospitalProfile = () => {
                         </div>
                       </Col>
                     </Row>
-                  </Tab>
+                  </Tab> */}
 
                   <Tab eventKey="treatment" title="Treatment & Department">
                     <h5 className="fw-bold mb-3">Treatment & Department</h5>

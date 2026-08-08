@@ -190,7 +190,7 @@ const HospitalList = () => {
   // =========================================================
   const showAllHospitals = () => {
     setHospitalList([...hospitalAllList]);
-
+    console.log(hospitalAllList);
     if (searchRef.current) {
       searchRef.current.resetFilters();
     }
@@ -373,7 +373,7 @@ const HospitalList = () => {
                           {/* Hospital Name */}
                           <div>
                             <h2 className="title-hospital mb-0">
-                              {hospitalName}
+                              <Link to={`/hospitalprofile/${encodeURIComponent(btoa(hospital.hospitalid))}`}> {hospitalName} </Link>
                             </h2>
 
                             {branches.length > 0 && (
@@ -394,9 +394,6 @@ const HospitalList = () => {
                            ================================================= */}
                         {branches.length > 0 ? (
                           <div className="mt-3">
-                            <h6 className="fw-bold mb-3">
-                              Hospital Branches
-                            </h6>
 
                             <div
                               style={{
@@ -404,7 +401,7 @@ const HospitalList = () => {
                                 overflowY: "auto",
                               }}
                             >
-                              {branches.map((branch, branchIndex) => (
+                              {branches.slice(0, 5).map((branch, branchIndex) => (
                                 <div
                                   key={
                                     branch?.branchid ||
@@ -426,29 +423,6 @@ const HospitalList = () => {
                                         {branch?.branchname ||
                                           "Branch"}
                                       </div>
-
-                                      <div className="small text-muted">
-                                        {[
-                                          branch?.landmark,
-                                          branch?.city,
-                                          branch?.state,
-                                          branch?.pincode,
-                                        ]
-                                          .filter(Boolean)
-                                          .join(", ")}
-                                      </div>
-
-                                      {/* Branch Location */}
-                                      {branch?.locationurl && (
-                                        <a
-                                          href={branch.locationurl}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="small text-decoration-none"
-                                        >
-                                          View Location
-                                        </a>
-                                      )}
                                     </div>
                                   </div>
                                 </div>
@@ -461,21 +435,6 @@ const HospitalList = () => {
                           </div>
                         )}
                       </div>
-
-                      {/* =================================================
-                          See All Doctors
-                         ================================================= */}
-                      {/* <div className="d-flex justify-content-end h-100 mt-2">
-                        <Link
-                          to={`/hospital-doctors/${encodeURIComponent(
-                            hospitalName
-                          )}`}
-                          className="text-primary see-all-doc"
-                        >
-                          See All Doctors{" "}
-                          <TbChevronRight size={18} />
-                        </Link>
-                      </div> */}
                     </div>
                   </Col>
                 );

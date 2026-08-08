@@ -132,25 +132,25 @@ const HospitalAppointment = () => {
     const columns = [
         {
             name: "Patient",
-            selector: row => row.patient_name,
+            selector: row => row.patientname,
             sortable: true,
         },
         {
             name: "Doctor",
-            selector: row => row.doctor_name,
+            selector: row => row.doctorid.name,
             sortable: true,
         },
         {
             name: "Branch",
-            selector: row => row.branch_name,
+            selector: row => row.branchdetails.branchname,
         },
         {
             name: "Date",
-            selector: row => row.appointment_date,
+            selector: row => row.date,
         },
         {
             name: "Time",
-            selector: row => row.appointment_time,
+            selector: row => row.time,
         },
         {
             name: "Status",

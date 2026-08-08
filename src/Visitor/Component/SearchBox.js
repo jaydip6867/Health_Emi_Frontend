@@ -291,7 +291,7 @@ const SearchBox = () => {
                       style={{ left: 12, top: 12 }}
                     />
                     <Form.Control
-                      placeholder="Search doctor & Surgery here"
+                      placeholder="Search Doctor, Surgery Name, Hospital Name & Speciality"
                       autoComplete="off"
                       value={inputValue}
                       onChange={handleInputChange}

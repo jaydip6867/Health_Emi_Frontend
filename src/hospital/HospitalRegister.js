@@ -106,8 +106,9 @@ const HospitalRegister = () => {
         { number: 2, title: 'OTP Verification' },
         { number: 3, title: 'Primary Contact' },
         { number: 4, title: 'Banking & Settlement' },
-        { number: 5, title: 'EMI Program' },
-        { number: 6, title: 'Treatment & Department' },
+        { number: 5, title: 'Treatment & Department' },
+        { number: 6, title: 'Documents' },
+        // { number: 7, title: 'EMI Program' },
     ];
 
     const getStoredHospitalToken = () => {
@@ -591,15 +592,15 @@ const HospitalRegister = () => {
             return null;
         }
 
-        if (step === 5) {
-            if (!requiredText(formData.availabletenures)) return 'Available tenures are required';
-            if (!Array.isArray(formData.interesttype) || formData.interesttype.length === 0 || formData.interesttype.every((item) => !requiredText(item))) return 'At least one interest type is required';
-            if (!requiredText(formData.downpaymentrequired)) return 'Down payment is required';
-            if (!['Yes', 'No'].includes(formData.downpaymentrequired)) return 'Please select Yes or No for down payment';
-            return null;
-        }
+        // if (step === 7) {
+        //     if (!requiredText(formData.availabletenures)) return 'Available tenures are required';
+        //     if (!Array.isArray(formData.interesttype) || formData.interesttype.length === 0 || formData.interesttype.every((item) => !requiredText(item))) return 'At least one interest type is required';
+        //     if (!requiredText(formData.downpaymentrequired)) return 'Down payment is required';
+        //     if (!['Yes', 'No'].includes(formData.downpaymentrequired)) return 'Please select Yes or No for down payment';
+        //     return null;
+        // }
 
-        if (step === 6) {
+        if (step === 5) {
             if (!Array.isArray(formData.treatment) || formData.treatment.length === 0) return 'Please select at least one surgery type';
             if (!formData.hospitalregistrationcertificate) return 'Hospital registration certificate is required';
             if (!requiredText(formData.nabhaccreditation)) return 'NABH accreditation status is required';
@@ -944,7 +945,7 @@ const HospitalRegister = () => {
                                     </div>
                                     <div className="form-group">
                                         <label>Hospital Logo <span className="required-star">*</span></label>
-                                        <input type="file" name="logo" onChange={handleFileChange} />
+                                        <input type="file" name="logo" onChange={handleFileChange} accept='image/*' />
                                         {formData.logo && <span className="selected-filename">{getDisplayValue(formData.logo)}</span>}
                                     </div>
                                     <div className="form-group position-relative">
@@ -1296,9 +1297,9 @@ const HospitalRegister = () => {
                             </section>
                         )}
 
-                        {currentStep === 5 && (
+                        {currentStep === 7 && (
                             <section className="form-section">
-                                <h2>5. EMI Program</h2>
+                                <h2>7. EMI Program</h2>
                                 <div className="form-grid">
                                     <div className="form-group">
                                         <label>Available Tenures <span className="required-star">*</span></label>
@@ -1341,7 +1342,7 @@ const HospitalRegister = () => {
                             </section>
                         )}
 
-                        {currentStep === 6 && (
+                        {currentStep === 5 && (
                             <section className="form-section">
                                 <h2>6. Treatment & Department</h2>
                                 <div className="form-grid">
@@ -1364,7 +1365,7 @@ const HospitalRegister = () => {
                                         {Array.isArray(formData.treatment) && formData.treatment.length > 0 && (
                                             <div className="array-field-list" style={{ marginTop: '12px' }}>
                                                 {formData.treatment.map((typeId) => (
-                                                    <div key={typeId} className="array-field-item interest-item">
+                                                    <div key={typeId} className="array-field-item interest-item mb-2">
                                                         <input type="text" value={getSurgeryTypeName(typeId)} readOnly />
                                                         <button
                                                             type="button"
@@ -1378,6 +1379,15 @@ const HospitalRegister = () => {
                                             </div>
                                         )}
                                     </div>
+
+                                </div>
+                            </section>
+                        )}
+
+                        {currentStep === 6 && (
+                            <section className="form-section">
+                                <h2>6. Documents</h2>
+                                <div className="form-grid">
                                     <div className="form-group">
                                         <label>Hospital Registration Certificate <span className="required-star">*</span></label>
                                         <input type="file" name="hospitalregistrationcertificate" onChange={handleFileChange} />
@@ -1391,17 +1401,20 @@ const HospitalRegister = () => {
                                             <option value="No">No</option>
                                         </select>
                                     </div>
+                                    {formData.nabhaccreditation === "Yes" && (
+                                        <>
+                                            <div className="form-group">
+                                                <label>NABH Number</label>
+                                                <input type="text" name="nabhnumber" value={formData.nabhnumber} onChange={handleInputChange} placeholder="Enter NABH number" />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>NABH Certificate <span className="required-star">*</span></label>
+                                                <input type="file" name="nabhcertificate" onChange={handleFileChange} />
+                                                {formData.nabhcertificate && <span className="selected-filename">{getDisplayValue(formData.nabhcertificate)}</span>}
+                                            </div>
+                                        </>)}
                                     <div className="form-group">
-                                        <label>NABH Number <span className="required-star">*</span></label>
-                                        <input type="text" name="nabhnumber" value={formData.nabhnumber} onChange={handleInputChange} placeholder="Enter NABH number" />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>NABH Certificate <span className="required-star">*</span></label>
-                                        <input type="file" name="nabhcertificate" onChange={handleFileChange} />
-                                        {formData.nabhcertificate && <span className="selected-filename">{getDisplayValue(formData.nabhcertificate)}</span>}
-                                    </div>
-                                    <div className="form-group">
-                                        <label>GST Certificate <span className="required-star">*</span></label>
+                                        <label>GST Certificate</label>
                                         <input type="file" name="gstcertificate" onChange={handleFileChange} />
                                         {formData.gstcertificate && <span className="selected-filename">{getDisplayValue(formData.gstcertificate)}</span>}
                                     </div>
@@ -1411,14 +1424,14 @@ const HospitalRegister = () => {
                                         {formData.pancopy && <span className="selected-filename">{getDisplayValue(formData.pancopy)}</span>}
                                     </div>
                                     <div className="form-group">
-                                        <label>Authorized Signatory ID Proof <span className="required-star">*</span></label>
+                                        <label>Authorized Signatory ID Proof</label>
                                         <input type="file" name="authorizedsignatoryidproof" onChange={handleFileChange} />
                                         {formData.authorizedsignatoryidproof && <span className="selected-filename">{getDisplayValue(formData.authorizedsignatoryidproof)}</span>}
                                     </div>
-                                    <div className="form-group">
+                                    {/* <div className="form-group">
                                         <label>Password <span className="required-star">*</span></label>
                                         <input type="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="Confirm password" />
-                                    </div>
+                                    </div> */}
                                 </div>
                             </section>
                         )}

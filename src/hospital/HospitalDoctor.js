@@ -9,6 +9,7 @@ import axios from 'axios';
 import Select from "react-select";
 import Swal from 'sweetalert2';
 import { MdAssignmentAdd, MdOutlineRemoveRedEye } from 'react-icons/md';
+import { BsGeoAlt } from 'react-icons/bs';
 
 const HospitalDoctor = () => {
 
@@ -26,6 +27,17 @@ const HospitalDoctor = () => {
     const [assignLoading, setAssignLoading] = useState(false);
     const [showProfileModal, setShowProfileModal] = useState(false);
     const [doctorProfile, setDoctorProfile] = useState(null);
+    const [showAddDoctorModal, setShowAddDoctorModal] = useState(false);
+
+    const [allDoctors, setAllDoctors] = useState([]);
+    const [doctorSearch, setDoctorSearch] = useState("");
+    const [addDoctorList, setAddDoctorList] = useState([]);
+    const [selectedAddDoctor, setSelectedAddDoctor] = useState(null);
+    const [selectedAddBranches, setSelectedAddBranches] = useState([]);
+    const [addDoctorLoading, setAddDoctorLoading] = useState(false);
+
+    const [showDoctorResults, setShowDoctorResults] = useState(false);
+    const [doctorType, setDoctorType] = useState("existing");
 
     useEffect(() => {
         const getLocalData = localStorage.getItem(STORAGE_KEYS.HOSPITAL);
@@ -34,22 +46,29 @@ const HospitalDoctor = () => {
             const bytes = CryptoJS.AES.decrypt(getLocalData, SECRET_KEY);
             const decrypted = bytes.toString(CryptoJS.enc.Utf8);
             const data = JSON.parse(decrypted);
+
             if (!data) {
                 navigate("/hospital");
                 return;
             }
+
             sethospital(data.hospitalData);
+
             const authToken = `Bearer ${data.accessToken}`;
             settoken(authToken);
-            // Call API after token is available
-            getdoctors(authToken);
-            getHospitalProfile(authToken);
+
+            initializeData(authToken);
         } else {
             navigate("/hospital");
         }
     }, [navigate]);
 
-    const getdoctors = async (authToken) => {
+    const initializeData = async (authToken) => {
+        const hospitalBranches = await getHospitalProfile(authToken);
+        await getdoctors(authToken, hospitalBranches);
+    };
+
+    const getdoctors = async (authToken, hospitalBranches = []) => {
         setloading(true);
 
         try {
@@ -64,10 +83,43 @@ const HospitalDoctor = () => {
                     },
                 }
             );
-            console.log(response.data);
-            setdoctorlist(response?.data?.Data || response?.data?.data || []);
+
+            const allDoctorsData =
+                response?.data?.Data ||
+                response?.data?.data ||
+                [];
+
+            // All doctors store for Add Doctor search
+            setAllDoctors(allDoctorsData);
+
+            // Hospital na branch IDs
+            const hospitalBranchIds = hospitalBranches.map(
+                (branch) => String(branch._id)
+            );
+
+            // Only doctors assigned to this hospital's branches
+            const filteredDoctors = allDoctorsData.filter((doctor) => {
+
+                const assignedBranches =
+                    doctor?.assignedBranches || [];
+
+                return assignedBranches.some((branch) => {
+
+                    const doctorBranchId =
+                        branch?.branchid || branch?._id;
+
+                    return hospitalBranchIds.includes(
+                        String(doctorBranchId)
+                    );
+                });
+            });
+
+            setdoctorlist(filteredDoctors);
+
         } catch (error) {
             console.error("Error fetching doctors:", error);
+            setdoctorlist([]);
+            setAllDoctors([]);
         } finally {
             setloading(false);
         }
@@ -83,19 +135,24 @@ const HospitalDoctor = () => {
                     },
                 }
             );
-            console.log(response.data);
-            setBranches(
-                response?.data?.Data?.branchdetails ||
-                []
-            );
+
+            const branchDetails =
+                response?.data?.Data?.branchdetails || [];
+
+            setBranches(branchDetails);
+
+            return branchDetails;
         } catch (err) {
             console.log(err);
+            setBranches([]);
+            return [];
         }
     };
 
     const openProfileModal = (doctor) => {
         setDoctorProfile(doctor);
         setShowProfileModal(true);
+        console.log("Doctor Profile:", doctor);
     };
 
     const openAssignModal = (doctor) => {
@@ -143,7 +200,7 @@ const HospitalDoctor = () => {
             setSelectedBranches([]);
             setSelectedDoctor(null);
 
-            getdoctors(token);
+            getdoctors(token, branches);
 
         } catch (err) {
             console.log(err);
@@ -157,6 +214,109 @@ const HospitalDoctor = () => {
 
         } finally {
             setAssignLoading(false);
+        }
+    };
+
+    // search doctor for add doctor modal
+    const handleDoctorSearch = (value) => {
+        setDoctorSearch(value);
+
+        if (!value.trim()) {
+            setAddDoctorList(allDoctors);
+            setShowDoctorResults(true);
+            return;
+        }
+
+        const searchValue = value.toLowerCase().trim();
+
+        const filtered = allDoctors.filter((doctor) =>
+            doctor?.name?.toLowerCase().includes(searchValue) ||
+            doctor?.email?.toLowerCase().includes(searchValue) ||
+            doctor?.mobile?.toLowerCase().includes(searchValue)
+        );
+
+        setAddDoctorList(filtered);
+        setShowDoctorResults(true);
+    };
+
+    const handleSelectAddDoctor = (doctor) => {
+        setSelectedAddDoctor(doctor);
+
+        const assignedIds =
+            doctor?.assignedBranches?.map(
+                (branch) => branch.branchid || branch._id
+            ) || [];
+
+        setSelectedAddBranches(assignedIds);
+    };
+
+    const assignDoctorBranches = async () => {
+        if (!selectedAddDoctor) {
+            Swal.fire({
+                icon: "warning",
+                title: "Select Doctor",
+                text: "Please select a doctor first.",
+            });
+            return;
+        }
+
+        if (selectedAddBranches.length === 0) {
+            Swal.fire({
+                icon: "warning",
+                title: "Select Branch",
+                text: "Please select at least one branch.",
+            });
+            return;
+        }
+
+        setAddDoctorLoading(true);
+
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}/hospital/doctors/assign-branches`,
+                {
+                    doctorid: selectedAddDoctor._id,
+                    branchids: selectedAddBranches,
+                },
+                {
+                    headers: {
+                        Authorization: token,
+                    },
+                }
+            );
+
+            await Swal.fire({
+                icon: "success",
+                title: "Success!",
+                text:
+                    response?.data?.message ||
+                    "Doctor branches assigned successfully.",
+                confirmButtonColor: "#198754",
+            });
+
+            setShowAddDoctorModal(false);
+
+            setDoctorSearch("");
+            setAddDoctorList([]);
+            setSelectedAddDoctor(null);
+            setSelectedAddBranches([]);
+
+            // Refresh filtered doctor list
+            getdoctors(token, branches);
+
+        } catch (error) {
+            console.error(error);
+
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text:
+                    error?.response?.data?.message ||
+                    "Something went wrong.",
+                confirmButtonColor: "#dc3545",
+            });
+        } finally {
+            setAddDoctorLoading(false);
         }
     };
 
@@ -267,6 +427,20 @@ const HospitalDoctor = () => {
                         <div className="appointments-card mb-3 ">
                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3">
                                 <h4 className="mb-0">Doctors List</h4>
+                                <Button
+                                    className="apt_accept_btn"
+                                    onClick={() => {
+                                        setShowAddDoctorModal(true);
+                                        setDoctorType("existing");
+                                        setDoctorSearch("");
+                                        setAddDoctorList([]);
+                                        setSelectedAddDoctor(null);
+                                        setSelectedAddBranches([]);
+                                        setShowDoctorResults(false);
+                                    }}
+                                >
+                                    Add Doctor
+                                </Button>
                             </div>
                         </div>
                         <SmartDataTable
@@ -495,20 +669,24 @@ const HospitalDoctor = () => {
                                                             className="border rounded p-3 mb-2"
                                                         >
                                                             <h6 className="fw-bold">
-                                                                {hospital.name}
+                                                                {hospital?.hospitalname || hospital?.name}
                                                             </h6>
-                                                            <div>
-                                                                {hospital.address}
-                                                            </div>
-                                                            <div>
-                                                                {hospital.city},
-                                                                {" "}
-                                                                {hospital.state},
-                                                                {" "}
-                                                                {hospital.country}
-                                                                -
-                                                                {hospital.pincode}
-                                                            </div>
+                                                            {hospital.branches && hospital?.branches?.map((branch, index) => (
+                                                                <div key={branch.branchid} className="mb-2">
+                                                                    <p className="text-muted fw-bold mb-1 small">
+                                                                        {branch.branchname}
+                                                                    </p>
+                                                                    <a
+                                                                        href={branch.locationurl}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="text-decoration-none small"
+                                                                    >
+                                                                        <BsGeoAlt className="me-1" />
+                                                                        {branch.landmark}, {branch.city}, {branch.state} - {branch.pincode}
+                                                                    </a>
+                                                                </div>
+                                                            ))}
                                                         </div>
                                                     ))
                                                 }
@@ -595,6 +773,295 @@ const HospitalDoctor = () => {
                         >
                             Close
                         </Button>
+                    </Modal.Footer>
+                </Modal>
+                {/* Add Doctor Modal */}
+                <Modal
+                    show={showAddDoctorModal}
+                    onHide={() => {
+                        setShowAddDoctorModal(false);
+                        setDoctorSearch("");
+                        setAddDoctorList([]);
+                        setSelectedAddDoctor(null);
+                        setSelectedAddBranches([]);
+                        setShowDoctorResults(false);
+                    }}
+                    centered
+                    size="lg"
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title>
+                            Add Doctor
+                        </Modal.Title>
+                    </Modal.Header>
+
+                    <Modal.Body>
+
+                        {/* Doctor Type */}
+                        <Form.Group className="mb-4">
+                            <Form.Label className="fw-bold">
+                                Doctor Type
+                            </Form.Label>
+
+                            <div className="d-flex gap-4">
+
+                                <Form.Check
+                                    type="radio"
+                                    id="existingDoctor"
+                                    name="doctorType"
+                                    label="Existing Doctor"
+                                    value="existing"
+                                    checked={doctorType === "existing"}
+                                    onChange={(e) => {
+                                        setDoctorType(e.target.value);
+
+                                        // Reset new doctor related state
+                                        setDoctorSearch("");
+                                        setAddDoctorList([]);
+                                        setSelectedAddDoctor(null);
+                                        setSelectedAddBranches([]);
+                                        setShowDoctorResults(false);
+                                    }}
+                                />
+
+                                <Form.Check
+                                    type="radio"
+                                    id="newDoctor"
+                                    name="doctorType"
+                                    label="New Doctor"
+                                    value="new"
+                                    checked={doctorType === "new"}
+                                    onChange={(e) => {
+                                        setDoctorType(e.target.value);
+
+                                        // Reset existing doctor related state
+                                        setDoctorSearch("");
+                                        setAddDoctorList([]);
+                                        setSelectedAddDoctor(null);
+                                        setSelectedAddBranches([]);
+                                        setShowDoctorResults(false);
+                                    }}
+                                />
+
+                            </div>
+                        </Form.Group>
+
+
+                        {/* Existing Doctor */}
+                        {doctorType === "existing" && (
+                            <>
+                                {/* Search Doctor */}
+                                <Form.Group className="mb-3">
+                                    <Form.Label>
+                                        Search Doctor
+                                    </Form.Label>
+
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Search by doctor name, email or mobile..."
+                                        value={doctorSearch}
+                                        onFocus={() => {
+                                            setShowDoctorResults(true);
+
+                                            if (!doctorSearch.trim()) {
+                                                setAddDoctorList(allDoctors);
+                                            }
+                                        }}
+                                        onChange={(e) =>
+                                            handleDoctorSearch(e.target.value)
+                                        }
+                                    />
+                                </Form.Group>
+
+
+                                {/* Search Result */}
+                                {showDoctorResults && (
+                                    <div
+                                        className="border rounded mb-4"
+                                        style={{
+                                            maxHeight: "250px",
+                                            overflowY: "auto",
+                                        }}
+                                    >
+                                        {addDoctorList.length > 0 ? (
+                                            addDoctorList.map((doctor) => (
+                                                <div
+                                                    key={doctor._id}
+                                                    onClick={() => {
+                                                        handleSelectAddDoctor(doctor);
+                                                        setShowDoctorResults(false);
+                                                    }}
+                                                    className={`d-flex align-items-center p-3 border-bottom ${selectedAddDoctor?._id === doctor._id
+                                                        ? "bg-light"
+                                                        : ""
+                                                        }`}
+                                                    style={{
+                                                        cursor: "pointer",
+                                                    }}
+                                                >
+                                                    <img
+                                                        src={doctor.profile_pic}
+                                                        alt={doctor.name}
+                                                        style={{
+                                                            width: "45px",
+                                                            height: "45px",
+                                                            borderRadius: "50%",
+                                                            objectFit: "cover",
+                                                            marginRight: "12px",
+                                                        }}
+                                                    />
+
+                                                    <div>
+                                                        <div className="fw-bold">
+                                                            {doctor.name}
+                                                        </div>
+
+                                                        <small className="text-muted">
+                                                            {doctor.specialty}
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="p-3 text-center text-muted">
+                                                No doctors found
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+
+                                {/* Selected Doctor */}
+                                {selectedAddDoctor && (
+                                    <div className="card">
+                                        <div className="card-body">
+
+                                            <div className="d-flex align-items-center mb-3">
+
+                                                <img
+                                                    src={selectedAddDoctor.profile_pic}
+                                                    alt={selectedAddDoctor.name}
+                                                    style={{
+                                                        width: "60px",
+                                                        height: "60px",
+                                                        borderRadius: "50%",
+                                                        objectFit: "cover",
+                                                        marginRight: "15px",
+                                                    }}
+                                                />
+
+                                                <div>
+                                                    <h5 className="mb-1">
+                                                        {selectedAddDoctor.name}
+                                                    </h5>
+
+                                                    <div className="text-muted">
+                                                        {selectedAddDoctor.specialty}
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <hr />
+
+                                            {/* Branch Select */}
+                                            <Form.Group>
+                                                <Form.Label>
+                                                    Assign Branch
+                                                    <span className="text-danger">
+                                                        {" "}*
+                                                    </span>
+                                                </Form.Label>
+
+                                                <Select
+                                                    isMulti
+                                                    options={branches.map((branch) => ({
+                                                        value: branch._id,
+                                                        label: branch.branchname,
+                                                    }))}
+                                                    value={branches
+                                                        .filter((branch) =>
+                                                            selectedAddBranches.includes(
+                                                                branch._id
+                                                            )
+                                                        )
+                                                        .map((branch) => ({
+                                                            value: branch._id,
+                                                            label: branch.branchname,
+                                                        }))
+                                                    }
+                                                    onChange={(selected) =>
+                                                        setSelectedAddBranches(
+                                                            selected
+                                                                ? selected.map(
+                                                                    (item) => item.value
+                                                                )
+                                                                : []
+                                                        )
+                                                    }
+                                                    placeholder="Select branches..."
+                                                />
+                                            </Form.Group>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        )}
+
+                        {/* New Doctor */}
+                        {doctorType === "new" && (
+                            <div className="text-center py-4">
+
+                                <p className="text-muted mb-3">
+                                    Create a new doctor profile.
+                                </p>
+
+                                <Button
+                                    variant="primary"
+                                    onClick={() => {
+                                        navigate("/doctor/doctorregister");
+                                    }}
+                                >
+                                    Create New Doctor
+                                </Button>
+                            </div>
+                        )}
+
+                    </Modal.Body>
+
+                    <Modal.Footer>
+
+                        <Button
+                            variant="secondary"
+                            onClick={() => {
+                                setShowAddDoctorModal(false);
+                                setDoctorType("existing");
+                                setDoctorSearch("");
+                                setAddDoctorList([]);
+                                setSelectedAddDoctor(null);
+                                setSelectedAddBranches([]);
+                                setShowDoctorResults(false);
+                            }}
+                        >
+                            Cancel
+                        </Button>
+
+                        {doctorType === "existing" && (
+                            <Button
+                                variant="success"
+                                disabled={
+                                    addDoctorLoading ||
+                                    !selectedAddDoctor ||
+                                    selectedAddBranches.length === 0
+                                }
+                                onClick={assignDoctorBranches}
+                            >
+                                {addDoctorLoading
+                                    ? "Assigning..."
+                                    : "Assign Branch"}
+                            </Button>
+                        )}
+
                     </Modal.Footer>
                 </Modal>
             </Container>

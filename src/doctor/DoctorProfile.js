@@ -1127,7 +1127,7 @@ const DoctorProfile = () => {
                         </Col>
                       </Row>
                     </Tab>
-                    <Tab eventKey="contact" title="Hospital">
+                    {/* <Tab eventKey="contact" title="Hospital">
                       <Row className="g-4">
                         {profile?.hospitals?.length > 0 ? (
                           profile.hospitals.map((hospital, index) => (
@@ -1197,7 +1197,7 @@ const DoctorProfile = () => {
                           Add Hospital
                         </Button>
                       </div>
-                    </Tab>
+                    </Tab> */}
                     <Tab eventKey="identity" title="Identity">
                       <Row className="g-3">
                         <Col sm={12} md={4}>

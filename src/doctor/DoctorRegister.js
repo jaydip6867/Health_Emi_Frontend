@@ -1578,7 +1578,7 @@ const DoctorRegister = () => {
                       )}
                     </Form.Group>
 
-                    <Form.Group className="mb-3">
+                    {/* <Form.Group className="mb-3">
                       <Form.Label className="mb-2">Add Hospital Details</Form.Label>
                       <div className="border rounded p-2" style={{ backgroundColor: '#f8f9fa' }}>
                         <div className="row g-1 mb-2">
@@ -1699,7 +1699,7 @@ const DoctorRegister = () => {
                           ))}
                         </div>
                       )}
-                    </Form.Group>
+                    </Form.Group> */}
                     <Form.Group className="mb-3">
                       <Form.Check
                         type="checkbox"

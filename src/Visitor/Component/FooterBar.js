@@ -29,7 +29,7 @@ const FooterBar = () => {
             <p className="footer-text">
               <b>Health Easy EMI - </b>Your trusted partner for affordable
               healthcare.
-              <br /> Compare dctors, surgeries, book ambulances and consult
+              <br /> Compare doctors, surgeries, book ambulances and consult
               online - all in one secure platform.
               <br /> Making healthcare{" "}
               <b>simple, transparent and financially accessible</b>

@@ -61,6 +61,7 @@ import PnsPolicy from "./Visitor/T&CPage/PnsPolicy";
 import ScrollToTop from "./ScrollToTop";
 import ChatBot from "./components/ChatBot";
 import MedicalLoanForm from "./Visitor/MedicalLoanForm";
+import HospitalDetails from "./Visitor/HospitalDetails";
 import Loan from './Visitor/Loan';
 import EmiTC from "./Visitor/T&CPage/EmiTC";
 import AmbulancePolicy from "./Visitor/T&CPage/AmbulancePolicy";
@@ -95,6 +96,7 @@ function App() {
         ></Route>
         <Route path="/surgery" element={<Surgerydoctorlist />}></Route>
         <Route path="/hospitallist" element={<HospitalList />}></Route>
+        <Route path="/hospitalprofile/:id" element={<HospitalDetails />}></Route>
         <Route
           path="/hospital-doctors/:hospitalTitle"
           element={<HospitalDoctorList />}
