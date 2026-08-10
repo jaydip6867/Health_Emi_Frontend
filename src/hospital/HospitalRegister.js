@@ -982,7 +982,7 @@ const HospitalRegister = () => {
                     )}
 
                     <form onSubmit={handleSubmit} className="medical-loan-form">
-                        {currentStep === 3 && (
+                        {currentStep === 1 && (
                             <section className="form-section">
                                 <h2>1. Basic Information</h2>
                                 <div className="form-grid">
@@ -1039,7 +1039,7 @@ const HospitalRegister = () => {
                             </section>
                         )}
 
-                        {currentStep === 1 && (
+                        {currentStep === 3 && (
                             <section className="form-section">
                                 <h2>3. Primary Contact</h2>
                                 <div className="form-grid">
