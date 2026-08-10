@@ -213,6 +213,19 @@
   background: #cbd5e1;
 }
 
+.form-group.has-error input,
+.form-group.has-error select,
+.form-group.has-error textarea {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.field-error-text {
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
 .selected-filename {
   font-size: 0.8rem;
   color: #0a5ebf;

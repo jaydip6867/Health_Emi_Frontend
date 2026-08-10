@@ -90,6 +90,14 @@ const HospitalRegister = () => {
 
     const [currentBranch, setCurrentBranch] = useState(emptyBranch);
     const [editingBranchIndex, setEditingBranchIndex] = useState(null);
+    const [branchErrors, setBranchErrors] = useState({
+        branchname: '',
+        summary: '',
+        state: '',
+        city: '',
+        pincode: '',
+        landmark: '',
+    });
 
     const INDIA_CODE = "IN";
     const states = State.getStatesOfCountry(INDIA_CODE);
@@ -100,6 +108,21 @@ const HospitalRegister = () => {
                 .find(s => s.name === currentBranch.state)?.isoCode || ""
         )
         : [];
+
+    const validateBranchFields = (branchData = currentBranch) => {
+        const nextErrors = {};
+        const requiredText = (value) => (typeof value === 'string' ? value.trim() : '');
+
+        if (!requiredText(branchData.branchname)) nextErrors.branchname = 'Branch name is required';
+        if (!requiredText(branchData.summary)) nextErrors.summary = 'Address is required';
+        if (!requiredText(branchData.state)) nextErrors.state = 'State is required';
+        if (!requiredText(branchData.city)) nextErrors.city = 'City is required';
+        if (!requiredText(branchData.pincode)) nextErrors.pincode = 'Pincode is required';
+        else if (!/^\d{6}$/.test(branchData.pincode)) nextErrors.pincode = 'Enter a valid 6-digit pincode';
+        if (!requiredText(branchData.landmark)) nextErrors.landmark = 'Landmark is required';
+
+        return nextErrors;
+    };
 
     const stepsList = [
         { number: 1, title: 'Basic Information' },
@@ -441,11 +464,19 @@ const HospitalRegister = () => {
         });
     };
 
+    const handleBranchFieldChange = (field, value) => {
+        setCurrentBranch((prev) => ({ ...prev, [field]: value }));
+        setBranchErrors((prev) => ({ ...prev, [field]: '' }));
+    };
+
     const addBranchItem = () => {
-        if (!currentBranch.branchname.trim())
+        const validationErrors = validateBranchFields(currentBranch);
+        setBranchErrors(validationErrors);
+
+        if (Object.keys(validationErrors).length > 0) {
             return;
-        if (!currentBranch.summary.trim())
-            return;
+        }
+
         const newBranch = {
             ...currentBranch,
             id:
@@ -468,11 +499,27 @@ const HospitalRegister = () => {
             });
         }
         setCurrentBranch(emptyBranch);
+        setBranchErrors({
+            branchname: '',
+            summary: '',
+            state: '',
+            city: '',
+            pincode: '',
+            landmark: '',
+        });
     };
 
     const editBranchItem = (index) => {
         setCurrentBranch({
             ...formData.branchdetails[index]
+        });
+        setBranchErrors({
+            branchname: '',
+            summary: '',
+            state: '',
+            city: '',
+            pincode: '',
+            landmark: '',
         });
         setEditingBranchIndex(index);
     };
@@ -571,7 +618,12 @@ const HospitalRegister = () => {
             if (!Array.isArray(formData.branchdetails) || formData.branchdetails.length === 0) return 'At least one branch detail is required';
             for (const branch of formData.branchdetails) {
                 if (!requiredText(branch.branchname)) return 'Branch name is required for each branch';
-                if (!requiredText(branch.summary)) return 'Branch summary is required for each branch';
+                if (!requiredText(branch.summary)) return 'Address is required for each branch';
+                if (!requiredText(branch.state)) return 'State is required for each branch';
+                if (!requiredText(branch.city)) return 'City is required for each branch';
+                if (!requiredText(branch.pincode)) return 'Pincode is required for each branch';
+                if (!/^\d{6}$/.test(branch.pincode || '')) return 'Please enter a valid 6-digit pincode for each branch';
+                if (!requiredText(branch.landmark)) return 'Landmark is required for each branch';
             }
             if (!requiredText(formData.contactpersonname)) return 'Contact person name is required';
             if (!requiredText(formData.designation)) return 'Designation is required';
@@ -930,7 +982,7 @@ const HospitalRegister = () => {
                     )}
 
                     <form onSubmit={handleSubmit} className="medical-loan-form">
-                        {currentStep === 5 && (
+                        {currentStep === 3 && (
                             <section className="form-section">
                                 <h2>1. Basic Information</h2>
                                 <div className="form-grid">
@@ -987,7 +1039,7 @@ const HospitalRegister = () => {
                             </section>
                         )}
 
-                        {currentStep === 3 && (
+                        {currentStep === 1 && (
                             <section className="form-section">
                                 <h2>3. Primary Contact</h2>
                                 <div className="form-grid">
@@ -1084,19 +1136,15 @@ const HospitalRegister = () => {
                                                     </div>
                                                 </div>
                                                 <div className="branch-card-body">
-                                                    <div className="form-group branch-field-half">
-                                                        <label>Branch Name</label>
+                                                    <div className={`form-group branch-field-half ${branchErrors.branchname ? 'has-error' : ''}`}>
+                                                        <label>Branch Name <span className="required-star">*</span></label>
                                                         <input
                                                             type="text"
                                                             value={currentBranch.branchname}
-                                                            onChange={(e) =>
-                                                                setCurrentBranch({
-                                                                    ...currentBranch,
-                                                                    branchname: e.target.value,
-                                                                })
-                                                            }
+                                                            onChange={(e) => handleBranchFieldChange('branchname', e.target.value)}
                                                             placeholder="Enter branch name"
                                                         />
+                                                        {branchErrors.branchname && <span className="field-error-text">{branchErrors.branchname}</span>}
                                                     </div>
                                                     <div className="form-group branch-field-half">
                                                         <label>Location URL</label>
@@ -1112,19 +1160,15 @@ const HospitalRegister = () => {
                                                             placeholder="Enter location URL"
                                                         />
                                                     </div>
-                                                    <div className="form-group branch-field-full">
-                                                        <label>Summary</label>
+                                                    <div className={`form-group branch-field-full ${branchErrors.summary ? 'has-error' : ''}`}>
+                                                        <label>Address <span className="required-star">*</span></label>
                                                         <textarea
                                                             rows="3"
                                                             value={currentBranch.summary}
-                                                            onChange={(e) =>
-                                                                setCurrentBranch({
-                                                                    ...currentBranch,
-                                                                    summary: e.target.value,
-                                                                })
-                                                            }
-                                                            placeholder="Enter branch summary"
+                                                            onChange={(e) => handleBranchFieldChange('summary', e.target.value)}
+                                                            placeholder="Enter branch address"
                                                         />
+                                                        {branchErrors.summary && <span className="field-error-text">{branchErrors.summary}</span>}
                                                     </div>
                                                     <div className="form-group branch-field-full">
                                                         <label>Photos</label>
@@ -1150,8 +1194,8 @@ const HospitalRegister = () => {
                                                         )}
                                                     </div>
                                                     <div className="branch-location-row branch-field-full">
-                                                        <div className="form-group">
-                                                            <label>State</label>
+                                                        <div className={`form-group ${branchErrors.state ? 'has-error' : ''}`}>
+                                                            <label>State <span className="required-star">*</span></label>
                                                             <select
                                                                 value={currentBranch.state}
                                                                 onChange={(e) => {
@@ -1161,6 +1205,7 @@ const HospitalRegister = () => {
                                                                         city: "",
                                                                         pincode: ""
                                                                     });
+                                                                    setBranchErrors((prev) => ({ ...prev, state: '', city: '', pincode: '' }));
                                                                 }}>
                                                                 <option value="">Select State</option>
                                                                 {states.map(state => (
@@ -1171,9 +1216,10 @@ const HospitalRegister = () => {
                                                                     </option>
                                                                 ))}
                                                             </select>
+                                                            {branchErrors.state && <span className="field-error-text">{branchErrors.state}</span>}
                                                         </div>
-                                                        <div className="form-group">
-                                                            <label>City</label>
+                                                        <div className={`form-group ${branchErrors.city ? 'has-error' : ''}`}>
+                                                            <label>City <span className="required-star">*</span></label>
                                                             <select
                                                                 value={currentBranch.city}
                                                                 onChange={(e) => {
@@ -1185,6 +1231,7 @@ const HospitalRegister = () => {
                                                                         city: e.target.value,
                                                                         pincode: city?.zipCode || ""
                                                                     });
+                                                                    setBranchErrors((prev) => ({ ...prev, city: '' }));
                                                                 }}
                                                                 disabled={!currentBranch.state}
                                                             >
@@ -1200,35 +1247,36 @@ const HospitalRegister = () => {
                                                                     </option>
                                                                 ))}
                                                             </select>
+                                                            {branchErrors.city && <span className="field-error-text">{branchErrors.city}</span>}
                                                         </div>
-                                                        <div className="form-group">
-                                                            <label>Pincode</label>
+                                                        <div className={`form-group ${branchErrors.pincode ? 'has-error' : ''}`}>
+                                                            <label>Pincode <span className="required-star">*</span></label>
                                                             <input
                                                                 type="text"
                                                                 value={currentBranch.pincode}
-                                                                onChange={(e) =>
+                                                                onChange={(e) => {
+                                                                    const sanitized = e.target.value.replace(/\D/g, '').slice(0, 6);
                                                                     setCurrentBranch({
                                                                         ...currentBranch,
-                                                                        pincode: e.target.value,
-                                                                    })
-                                                                }
+                                                                        pincode: sanitized,
+                                                                    });
+                                                                    setBranchErrors((prev) => ({ ...prev, pincode: '' }));
+                                                                }}
                                                                 placeholder="Enter pincode"
+                                                                maxLength="6"
                                                             />
+                                                            {branchErrors.pincode && <span className="field-error-text">{branchErrors.pincode}</span>}
                                                         </div>
                                                     </div>
-                                                    <div className="form-group branch-field-full">
-                                                        <label>Landmark</label>
+                                                    <div className={`form-group branch-field-full ${branchErrors.landmark ? 'has-error' : ''}`}>
+                                                        <label>Landmark <span className="required-star">*</span></label>
                                                         <input
                                                             type="text"
                                                             value={currentBranch.landmark}
-                                                            onChange={(e) =>
-                                                                setCurrentBranch({
-                                                                    ...currentBranch,
-                                                                    landmark: e.target.value,
-                                                                })
-                                                            }
+                                                            onChange={(e) => handleBranchFieldChange('landmark', e.target.value)}
                                                             placeholder="Enter landmark"
                                                         />
+                                                        {branchErrors.landmark && <span className="field-error-text">{branchErrors.landmark}</span>}
                                                     </div>
                                                 </div>
                                             </div>
@@ -1300,7 +1348,7 @@ const HospitalRegister = () => {
                             </section>
                         )}
 
-                        {currentStep === 1 && (
+                        {currentStep === 5 && (
                             <section className="form-section">
                                 <h2>6. Treatment & Department</h2>
                                 <div className="form-grid">
