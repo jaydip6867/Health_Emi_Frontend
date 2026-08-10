@@ -1350,10 +1350,10 @@ const HospitalRegister = () => {
 
                         {currentStep === 5 && (
                             <section className="form-section">
-                                <h2>6. Treatment & Department</h2>
+                                <h2>5. Speciality</h2>
                                 <div className="form-grid">
                                     <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                                        <label>Treatment <span className="required-star">*</span></label>
+                                        <label>Speciality <span className="required-star">*</span></label>
                                         <select
                                             name="treatment"
                                             value={selectedSurgeryType}

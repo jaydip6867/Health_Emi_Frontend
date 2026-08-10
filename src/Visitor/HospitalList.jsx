@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import NavBar from "./Component/NavBar";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import Loader from "../Loader";
@@ -6,23 +6,19 @@ import FooterBar from "./Component/FooterBar";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
-import SearchBox from "./Component/SearchBox";
-import { TbMapPin } from "react-icons/tb";
-import { MdFilterListAlt } from "react-icons/md";
-import DoctorListComponents from "./Component/DoctorListComponent";
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from "../config";
-import { TbChevronRight } from "react-icons/tb";
+import { TbMapPin } from "react-icons/tb";
 import HospitalSearch from "./Component/HospitalSearch";
 
 const HospitalList = () => {
   const navigate = useNavigate();
   const searchRef = useRef();
 
-  const [patient, setpatient] = useState(null);
-  const [token, settoken] = useState(null);
+  const [patient, setPatient] = useState(null);
+  const [token, setToken] = useState(null);
 
-  const [loading, setloading] = useState(false);
-  const [doctor_list, setdoclist] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const [hospitalAllList, setHospitalAllList] = useState([]);
   const [hospitalList, setHospitalList] = useState([]);
 
@@ -30,17 +26,29 @@ const HospitalList = () => {
   // Get Patient Data
   // =========================================================
   useEffect(() => {
-    const getlocaldata = localStorage.getItem(STORAGE_KEYS.PATIENT);
+    const getLocalData = localStorage.getItem(STORAGE_KEYS.PATIENT);
 
-    if (getlocaldata != null) {
+    if (getLocalData) {
       try {
-        const bytes = CryptoJS.AES.decrypt(getlocaldata, SECRET_KEY);
+        const bytes = CryptoJS.AES.decrypt(
+          getLocalData,
+          SECRET_KEY
+        );
+
         const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+
+        if (!decrypted) {
+          return;
+        }
+
         const data = JSON.parse(decrypted);
 
         if (data) {
-          setpatient(data.userData);
-          settoken(`Bearer ${data.accessToken}`);
+          setPatient(data.userData || null);
+
+          if (data.accessToken) {
+            setToken(`Bearer ${data.accessToken}`);
+          }
         }
       } catch (error) {
         console.error("Error decrypting patient data:", error);
@@ -49,196 +57,90 @@ const HospitalList = () => {
   }, [navigate]);
 
   // =========================================================
-  // Get Doctors
+  // Get Hospitals
   // =========================================================
-  useEffect(() => {
-    getdoctorlist();
-  }, [token]);
-
-  const getdoctorlist = async () => {
+  const getHospitalList = useCallback(async (searchValue = "") => {
     try {
-      setloading(true);
+      setLoading(true);
 
-      const endpoint = `${API_BASE_URL}/user/doctors`;
+      const endpoint = `${API_BASE_URL}/user/hospital/list`;
 
       const requestData = {
-        search: "",
+        search: (searchValue || "").trim(),
       };
 
-      const response = await axios({
-        method: "post",
-        url: endpoint,
-        headers: token ? { Authorization: token } : {},
-        data: requestData,
-      });
+      const config = {
+        headers: token
+          ? {
+              Authorization: token,
+              "Content-Type": "application/json",
+            }
+          : {
+              "Content-Type": "application/json",
+            },
+      };
 
-      const doctorsData = response.data?.Data?.docs || [];
+      const response = await axios.post(
+        endpoint,
+        requestData,
+        config
+      );
 
-      setdoclist(Array.isArray(doctorsData) ? doctorsData : []);
+      console.log("Hospital API Response:", response.data);
 
       // =====================================================
-      // Extract Hospitals from all doctors
-      // New API structure:
-      //
-      // hospitals: [
-      //   {
-      //      hospitalid,
-      //      hospitalname,
-      //      branches: [
-      //        {
-      //          branchid,
-      //          branchname,
-      //          city,
-      //          state,
-      //          pincode,
-      //          landmark,
-      //          locationurl
-      //        }
-      //      ]
-      //   }
-      // ]
+      // Direct Hospital List
       // =====================================================
 
-      const hospitalMap = new Map();
+      const hospitals =
+        response?.data?.Data?.docs ||
+        response?.data?.data?.docs ||
+        response?.data?.Data ||
+        response?.data?.data ||
+        [];
 
-      doctorsData.forEach((doctor) => {
-        const hospitals = Array.isArray(doctor?.hospitals)
-          ? doctor.hospitals
-          : [];
+      const hospitalData = Array.isArray(hospitals)
+        ? hospitals
+        : [];
 
-        hospitals.forEach((hospital) => {
-          // New API hospital structure
-          if (hospital?.hospitalid) {
-            const hospitalId = hospital.hospitalid;
+      console.log("Hospital List:", hospitalData);
 
-            if (!hospitalMap.has(hospitalId)) {
-              hospitalMap.set(hospitalId, {
-                ...hospital,
-                doctors: [doctor],
-              });
-            } else {
-              const existingHospital = hospitalMap.get(hospitalId);
-
-              // Avoid duplicate doctors
-              const doctorAlreadyExists = existingHospital.doctors?.some(
-                (d) => d?._id === doctor?._id
-              );
-
-              if (!doctorAlreadyExists) {
-                existingHospital.doctors = [
-                  ...(existingHospital.doctors || []),
-                  doctor,
-                ];
-              }
-            }
-          }
-
-          // =================================================
-          // Optional backward compatibility
-          // Old API structure:
-          // {
-          //    name,
-          //    address
-          // }
-          // =================================================
-          else if (hospital?.name) {
-            const hospitalKey = hospital.name.toLowerCase().trim();
-
-            if (!hospitalMap.has(hospitalKey)) {
-              hospitalMap.set(hospitalKey, {
-                ...hospital,
-                hospitalid: hospital?._id || "",
-                hospitalname: hospital.name,
-                branches: [],
-                doctors: [doctor],
-              });
-            } else {
-              const existingHospital = hospitalMap.get(hospitalKey);
-
-              const doctorAlreadyExists = existingHospital.doctors?.some(
-                (d) => d?._id === doctor?._id
-              );
-
-              if (!doctorAlreadyExists) {
-                existingHospital.doctors = [
-                  ...(existingHospital.doctors || []),
-                  doctor,
-                ];
-              }
-            }
-          }
-        });
-      });
-
-      const uniqueHospitals = Array.from(hospitalMap.values());
-
-      setHospitalAllList(uniqueHospitals);
-      setHospitalList(uniqueHospitals);
+      setHospitalAllList(hospitalData);
+      setHospitalList(hospitalData);
     } catch (error) {
-      console.error("Error fetching doctors list:", error);
+      console.error(
+        "Error fetching hospital list:",
+        error?.response?.data || error
+      );
 
-      setdoclist([]);
       setHospitalAllList([]);
       setHospitalList([]);
     } finally {
-      setloading(false);
+      setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    getHospitalList("");
+  }, [getHospitalList]);
 
   // =========================================================
   // Show All Hospitals
   // =========================================================
   const showAllHospitals = () => {
-    setHospitalList([...hospitalAllList]);
-    console.log(hospitalAllList);
     if (searchRef.current) {
-      searchRef.current.resetFilters();
+      searchRef.current.resetFilters?.();
     }
+    getHospitalList("");
   };
 
   // =========================================================
   // Hospital Search
   // =========================================================
-  const handleHospitalSearch = (searchValue) => {
-    const search = (searchValue || "").toLowerCase().trim();
-
-    if (!search) {
-      setHospitalList([...hospitalAllList]);
-      return;
-    }
-
-    const filtered = hospitalAllList.filter((hospital) => {
-      const hospitalName = (
-        hospital?.hospitalname ||
-        hospital?.name ||
-        ""
-      ).toLowerCase();
-
-      const branchMatch = Array.isArray(hospital?.branches)
-        ? hospital.branches.some((branch) => {
-          const branchName = (
-            branch?.branchname ||
-            ""
-          ).toLowerCase();
-
-          const city = (branch?.city || "").toLowerCase();
-          const state = (branch?.state || "").toLowerCase();
-          const landmark = (branch?.landmark || "").toLowerCase();
-
-          return (
-            branchName.includes(search) ||
-            city.includes(search) ||
-            state.includes(search) ||
-            landmark.includes(search)
-          );
-        })
-        : false;
-
-      return hospitalName.includes(search) || branchMatch;
-    });
-
-    setHospitalList(filtered);
-  };
+  const handleHospitalSearch = useCallback((searchValue) => {
+    const search = (searchValue || "").trim();
+    getHospitalList(search);
+  }, [getHospitalList]);
 
   return (
     <>
@@ -296,7 +198,9 @@ const HospitalList = () => {
           <Row>
             {loading ? (
               <Col className="text-center">
-                <p className="text-muted">Loading hospitals...</p>
+                <p className="text-muted">
+                  Loading hospitals...
+                </p>
               </Col>
             ) : hospitalList.length <= 0 ? (
               <Col className="text-center">
@@ -308,12 +212,21 @@ const HospitalList = () => {
               hospitalList.map((hospital, index) => {
                 const hospitalName =
                   hospital?.hospitalname ||
+                  hospital?.hospitalName ||
                   hospital?.name ||
                   "Hospital";
 
-                const branches = Array.isArray(hospital?.branches)
+                const branches = Array.isArray(
+                  hospital?.branches
+                )
                   ? hospital.branches
                   : [];
+
+                const hospitalId =
+                  hospital?.hospitalid ||
+                  hospital?.hospitalId ||
+                  hospital?._id ||
+                  "";
 
                 return (
                   <Col
@@ -322,8 +235,7 @@ const HospitalList = () => {
                     md={6}
                     lg={4}
                     key={
-                      hospital?.hospitalid ||
-                      hospital?._id ||
+                      hospitalId ||
                       `${hospitalName}-${index}`
                     }
                   >
@@ -349,7 +261,8 @@ const HospitalList = () => {
                                   borderRadius: "8px",
                                 }}
                                 onError={(e) => {
-                                  e.currentTarget.style.display = "none";
+                                  e.currentTarget.style.display =
+                                    "none";
                                 }}
                               />
                             ) : (
@@ -373,7 +286,17 @@ const HospitalList = () => {
                           {/* Hospital Name */}
                           <div>
                             <h2 className="title-hospital mb-0">
-                              <Link to={`/hospitalprofile/${encodeURIComponent(btoa(hospital.hospitalid))}`}> {hospitalName} </Link>
+                              {hospitalId ? (
+                                <Link
+                                  to={`/hospitalprofile/${encodeURIComponent(
+                                    btoa(hospitalId)
+                                  )}`}
+                                >
+                                  {hospitalName}
+                                </Link>
+                              ) : (
+                                hospitalName
+                              )}
                             </h2>
 
                             {branches.length > 0 && (
@@ -389,44 +312,69 @@ const HospitalList = () => {
 
                         <hr className="border-x" />
 
-                        {/* =================================================
-                            Branch List
-                           ================================================= */}
+                        {/* Branch List */}
                         {branches.length > 0 ? (
                           <div className="mt-3">
-
                             <div
                               style={{
                                 maxHeight: "220px",
                                 overflowY: "auto",
                               }}
                             >
-                              {branches.slice(0, 5).map((branch, branchIndex) => (
-                                <div
-                                  key={
-                                    branch?.branchid ||
-                                    `${hospital?.hospitalid}-branch-${branchIndex}`
-                                  }
-                                  className="border rounded-3 p-2 mb-2"
-                                  style={{
-                                    backgroundColor: "#f8fafc",
-                                  }}
-                                >
-                                  <div className="d-flex align-items-start">
-                                    <TbMapPin
-                                      size={20}
-                                      className="text-primary me-2 mt-1"
-                                    />
+                              {branches
+                                .slice(0, 5)
+                                .map(
+                                  (
+                                    branch,
+                                    branchIndex
+                                  ) => (
+                                    <div
+                                      key={
+                                        branch?.branchid ||
+                                        branch?.branchId ||
+                                        branch?._id ||
+                                        `${hospitalId}-branch-${branchIndex}`
+                                      }
+                                      className="border rounded-3 p-2 mb-2"
+                                      style={{
+                                        backgroundColor:
+                                          "#f8fafc",
+                                      }}
+                                    >
+                                      <div className="d-flex align-items-start">
+                                        <TbMapPin
+                                          size={20}
+                                          className="text-primary me-2 mt-1"
+                                        />
 
-                                    <div className="flex-grow-1">
-                                      <div className="fw-bold">
-                                        {branch?.branchname ||
-                                          "Branch"}
+                                        <div className="flex-grow-1">
+                                          <div className="fw-bold">
+                                            {branch?.branchname ||
+                                              branch?.branchName ||
+                                              branch?.name ||
+                                              "Branch"}
+                                          </div>
+
+                                          {(branch?.city ||
+                                            branch?.state ||
+                                            branch?.pincode) && (
+                                            <div className="text-muted small mt-1">
+                                              {[
+                                                branch?.city,
+                                                branch?.state,
+                                                branch?.pincode,
+                                              ]
+                                                .filter(Boolean)
+                                                .join(
+                                                  ", "
+                                                )}
+                                            </div>
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                </div>
-                              ))}
+                                  )
+                                )}
                             </div>
                           </div>
                         ) : (
