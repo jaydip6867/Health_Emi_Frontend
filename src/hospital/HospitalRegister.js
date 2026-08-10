@@ -660,7 +660,7 @@ const HospitalRegister = () => {
         if(step === 6){
             if (!formData.hospitalregistrationcertificate) return 'Hospital registration certificate is required';
             if (!requiredText(formData.nabhaccreditation)) return 'NABH accreditation status is required';
-            if (!formData.nabhcertificate) return 'NABH certificate is required';
+            if (formData.nabhaccreditation === 'Yes' && !formData.nabhcertificate) return 'NABH certificate is required';
             // if (!requiredText(formData.nabhnumber)) return 'NABH number is required';
             // if (!formData.gstcertificate) return 'GST certificate is required';
             if (!formData.pancopy) return 'PAN copy is required';
