@@ -106,7 +106,7 @@ const HospitalRegister = () => {
         { number: 2, title: 'OTP Verification' },
         { number: 3, title: 'Primary Contact' },
         { number: 4, title: 'Banking & Settlement' },
-        { number: 5, title: 'Treatment & Department' },
+        { number: 5, title: 'Speciality' },
         { number: 6, title: 'Documents' },
         // { number: 7, title: 'EMI Program' },
     ];
@@ -602,14 +602,17 @@ const HospitalRegister = () => {
 
         if (step === 5) {
             if (!Array.isArray(formData.treatment) || formData.treatment.length === 0) return 'Please select at least one surgery type';
+            return null;
+        }
+        
+        if(step === 6){
             if (!formData.hospitalregistrationcertificate) return 'Hospital registration certificate is required';
             if (!requiredText(formData.nabhaccreditation)) return 'NABH accreditation status is required';
-            // if (!requiredText(formData.nabhnumber)) return 'NABH number is required';
             if (!formData.nabhcertificate) return 'NABH certificate is required';
+            // if (!requiredText(formData.nabhnumber)) return 'NABH number is required';
             // if (!formData.gstcertificate) return 'GST certificate is required';
             if (!formData.pancopy) return 'PAN copy is required';
             // if (!formData.authorizedsignatoryidproof) return 'Authorized signatory ID proof is required';
-            if (!requiredText(formData.password)) return 'Password is required';
             return null;
         }
 
@@ -927,7 +930,7 @@ const HospitalRegister = () => {
                     )}
 
                     <form onSubmit={handleSubmit} className="medical-loan-form">
-                        {currentStep === 1 && (
+                        {currentStep === 5 && (
                             <section className="form-section">
                                 <h2>1. Basic Information</h2>
                                 <div className="form-grid">
@@ -1297,52 +1300,7 @@ const HospitalRegister = () => {
                             </section>
                         )}
 
-                        {currentStep === 7 && (
-                            <section className="form-section">
-                                <h2>7. EMI Program</h2>
-                                <div className="form-grid">
-                                    <div className="form-group">
-                                        <label>Available Tenures <span className="required-star">*</span></label>
-                                        <input type="text" name="availabletenures" value={formData.availabletenures} onChange={handleInputChange} placeholder="e.g. 6, 12, 24" />
-                                    </div>
-                                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                                        <label>Interest Type <span className="required-star">*</span></label>
-                                        <div className="array-field-list">
-                                            {formData.interesttype.map((interest, index) => (
-                                                <div key={`${index}`} className="array-field-item interest-item">
-                                                    <input
-                                                        type="text"
-                                                        value={interest}
-                                                        onChange={(e) => updateInterestType(index, e.target.value)}
-                                                        placeholder="Enter interest type"
-                                                    />
-                                                    <button type="button" onClick={() => removeInterestType(index)} className="array-item-remove btn btn-danger">
-                                                        <FaRegTrashCan />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                            <button type="button" className="array-item-add btn btn-primary" onClick={addInterestType}>
-                                                Add Interest Type
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Down Payment Required <span className="required-star">*</span></label>
-                                        <select
-                                            name="downpaymentrequired"
-                                            value={formData.downpaymentrequired}
-                                            onChange={handleInputChange}
-                                        >
-                                            <option value="">Select</option>
-                                            <option value="Yes">Yes</option>
-                                            <option value="No">No</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </section>
-                        )}
-
-                        {currentStep === 5 && (
+                        {currentStep === 1 && (
                             <section className="form-section">
                                 <h2>6. Treatment & Department</h2>
                                 <div className="form-grid">
@@ -1432,6 +1390,51 @@ const HospitalRegister = () => {
                                         <label>Password <span className="required-star">*</span></label>
                                         <input type="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="Confirm password" />
                                     </div> */}
+                                </div>
+                            </section>
+                        )}
+
+                        {currentStep === 7 && (
+                            <section className="form-section">
+                                <h2>7. EMI Program</h2>
+                                <div className="form-grid">
+                                    <div className="form-group">
+                                        <label>Available Tenures <span className="required-star">*</span></label>
+                                        <input type="text" name="availabletenures" value={formData.availabletenures} onChange={handleInputChange} placeholder="e.g. 6, 12, 24" />
+                                    </div>
+                                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                                        <label>Interest Type <span className="required-star">*</span></label>
+                                        <div className="array-field-list">
+                                            {formData.interesttype.map((interest, index) => (
+                                                <div key={`${index}`} className="array-field-item interest-item">
+                                                    <input
+                                                        type="text"
+                                                        value={interest}
+                                                        onChange={(e) => updateInterestType(index, e.target.value)}
+                                                        placeholder="Enter interest type"
+                                                    />
+                                                    <button type="button" onClick={() => removeInterestType(index)} className="array-item-remove btn btn-danger">
+                                                        <FaRegTrashCan />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            <button type="button" className="array-item-add btn btn-primary" onClick={addInterestType}>
+                                                Add Interest Type
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Down Payment Required <span className="required-star">*</span></label>
+                                        <select
+                                            name="downpaymentrequired"
+                                            value={formData.downpaymentrequired}
+                                            onChange={handleInputChange}
+                                        >
+                                            <option value="">Select</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </section>
                         )}
