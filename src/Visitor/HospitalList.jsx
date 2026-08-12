@@ -217,9 +217,9 @@ const HospitalList = () => {
                   "Hospital";
 
                 const branches = Array.isArray(
-                  hospital?.branches
+                  hospital?.branchdetails
                 )
-                  ? hospital.branches
+                  ? hospital.branchdetails
                   : [];
 
                 const hospitalId =
@@ -355,7 +355,7 @@ const HospitalList = () => {
                                               "Branch"}
                                           </div>
 
-                                          {(branch?.city ||
+                                          {/* {(branch?.city ||
                                             branch?.state ||
                                             branch?.pincode) && (
                                             <div className="text-muted small mt-1">
@@ -369,7 +369,7 @@ const HospitalList = () => {
                                                   ", "
                                                 )}
                                             </div>
-                                          )}
+                                          )} */}
                                         </div>
                                       </div>
                                     </div>
