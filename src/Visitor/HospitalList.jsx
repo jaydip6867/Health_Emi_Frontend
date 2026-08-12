@@ -7,8 +7,8 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from "../config";
-import { TbMapPin } from "react-icons/tb";
 import HospitalSearch from "./Component/HospitalSearch";
+import { FaDotCircle } from "react-icons/fa";
 
 const HospitalList = () => {
   const navigate = useNavigate();
@@ -342,8 +342,8 @@ const HospitalList = () => {
                                       }}
                                     >
                                       <div className="d-flex align-items-start">
-                                        <TbMapPin
-                                          size={20}
+                                        <FaDotCircle
+                                          size={16}
                                           className="text-primary me-2 mt-1"
                                         />
 
