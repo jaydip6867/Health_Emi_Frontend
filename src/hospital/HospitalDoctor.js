@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom';
-import { Col, Container, Row, Modal, Button, Form } from 'react-bootstrap';
+import { Col, Container, Row, Modal, Button, Form, Accordion } from 'react-bootstrap';
 import { API_BASE_URL, SECRET_KEY, STORAGE_KEYS } from '../config';
 import HospitalSidebar from './HospitalSidebar';
 import SmartDataTable from "../components/SmartDataTable";
@@ -13,7 +13,6 @@ import { BsGeoAlt } from 'react-icons/bs';
 
 const HospitalDoctor = () => {
 
-    const SECRET_KEY = "health-emi";
     var navigate = useNavigate();
 
     const [hospital, sethospital] = useState(null)
@@ -24,6 +23,7 @@ const HospitalDoctor = () => {
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [selectedBranches, setSelectedBranches] = useState([]);
+    const [selectedBranchAssignments, setSelectedBranchAssignments] = useState([]);
     const [assignLoading, setAssignLoading] = useState(false);
     const [showProfileModal, setShowProfileModal] = useState(false);
     const [doctorProfile, setDoctorProfile] = useState(null);
@@ -34,10 +34,248 @@ const HospitalDoctor = () => {
     const [addDoctorList, setAddDoctorList] = useState([]);
     const [selectedAddDoctor, setSelectedAddDoctor] = useState(null);
     const [selectedAddBranches, setSelectedAddBranches] = useState([]);
+    const [selectedAddBranchAssignments, setSelectedAddBranchAssignments] = useState([]);
     const [addDoctorLoading, setAddDoctorLoading] = useState(false);
 
     const [showDoctorResults, setShowDoctorResults] = useState(false);
     const [doctorType, setDoctorType] = useState("existing");
+
+    const DAYS_OF_WEEK = [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+    ];
+
+    const TIME_OPTIONS = [];
+    for (let hour = 1; hour <= 12; hour += 1) {
+        ["00", "30"].forEach((minute) => {
+            TIME_OPTIONS.push({
+                value: `${String(hour).padStart(2, "0")}:${minute}`,
+                label: `${String(hour).padStart(2, "0")}:${minute}`,
+            });
+        });
+    }
+
+    const parseTimeValue = (timeText = "") => {
+        const rawValue = String(timeText || "").trim();
+
+        if (!rawValue) {
+            return { time: "09:00", meridiem: "AM" };
+        }
+
+        const explicitMatch = rawValue.match(/^(\d{1,2}:\d{2})\s*(AM|PM)$/i);
+        if (explicitMatch) {
+            const [hourString, minuteString] = explicitMatch[1].split(":");
+            const hour = Number(hourString);
+            const minutes = String(minuteString).padStart(2, "0");
+            const normalizedHour = ((hour + 11) % 12) + 1;
+
+            return {
+                time: `${String(normalizedHour).padStart(2, "0")}:${minutes}`,
+                meridiem: explicitMatch[2].toUpperCase(),
+            };
+        }
+
+        const fallbackMatch = rawValue.match(/^(\d{1,2}:\d{2})$/);
+        if (fallbackMatch) {
+            const [hourString, minuteString] = fallbackMatch[1].split(":");
+            const hour = Number(hourString);
+            const minutes = String(minuteString).padStart(2, "0");
+            const normalizedHour = ((hour + 11) % 12) + 1;
+
+            return {
+                time: `${String(normalizedHour).padStart(2, "0")}:${minutes}`,
+                meridiem: hour >= 12 ? "PM" : "AM",
+            };
+        }
+
+        return { time: "09:00", meridiem: "AM" };
+    };
+
+    const combineTimeValue = (timeValue, meridiem) => {
+        if (!timeValue) return "";
+        return `${timeValue} ${meridiem}`.trim();
+    };
+
+    const createDefaultTiming = (existingTiming = {}) => {
+        return DAYS_OF_WEEK.reduce((acc, day) => {
+            const dayTiming = existingTiming?.[day] || {};
+            acc[day] = {
+                available: Boolean(dayTiming.available ?? false),
+                slots: Array.isArray(dayTiming.slots)
+                    ? dayTiming.slots.map((slot) => ({
+                        start_time: slot?.start_time || "",
+                        end_time: slot?.end_time || "",
+                    }))
+                    : [],
+            };
+            return acc;
+        }, {});
+    };
+
+    const createBranchAssignmentPayload = (branchId, existingBranch = {}) => ({
+        branchid: branchId,
+        eopd_price: Number(existingBranch?.eopd_price ?? ''),
+        home_visit_price: Number(existingBranch?.home_visit_price ?? ''),
+        clinic_visit_price: Number(existingBranch?.clinic_visit_price ?? ''),
+        timings: createDefaultTiming(existingBranch?.timings),
+    });
+
+    const buildBranchAssignments = (branchIds = [], existingBranchMap = {}) => {
+        return branchIds.map((branchId) => {
+            const mappedBranch = existingBranchMap[String(branchId)] || {};
+            return createBranchAssignmentPayload(branchId, mappedBranch);
+        });
+    };
+
+    const sanitizeBranchAssignments = (assignments = []) => {
+        return assignments.map((assignment) => ({
+            branchid: assignment?.branchid || "",
+            eopd_price: Number(assignment?.eopd_price || 0),
+            home_visit_price: Number(assignment?.home_visit_price || 0),
+            clinic_visit_price: Number(assignment?.clinic_visit_price || 0),
+            timings: DAYS_OF_WEEK.reduce((acc, day) => {
+                const dayTiming = assignment?.timings?.[day] || { available: false, slots: [] };
+                const slots = Array.isArray(dayTiming.slots)
+                    ? dayTiming.slots
+                        .filter((slot) => slot && (slot.start_time || slot.end_time))
+                        .map((slot) => ({
+                            start_time: String(slot.start_time || "").trim() || "09:00 AM",
+                            end_time: String(slot.end_time || "").trim() || "05:00 PM",
+                        }))
+                    : [];
+
+                acc[day] = {
+                    available: Boolean(dayTiming.available),
+                    slots,
+                };
+
+                return acc;
+            }, {}),
+        }));
+    };
+
+    const updateBranchAssignment = (branchId, updater) => {
+        return (prevAssignments = []) =>
+            prevAssignments.map((assignment) => {
+                if (String(assignment.branchid) !== String(branchId)) {
+                    return assignment;
+                }
+
+                return updater(assignment);
+            });
+    };
+
+    const toggleDayAvailability = (branchId, day, setter) => {
+        setter((prevAssignments = []) =>
+            prevAssignments.map((assignment) => {
+                if (String(assignment.branchid) !== String(branchId)) {
+                    return assignment;
+                }
+
+                const currentDay = assignment.timings?.[day] || { available: false, slots: [] };
+
+                return {
+                    ...assignment,
+                    timings: {
+                        ...assignment.timings,
+                        [day]: {
+                            ...currentDay,
+                            available: !currentDay.available,
+                        },
+                    },
+                };
+            })
+        );
+    };
+
+    const addSlot = (branchId, day, setter) => {
+        setter((prevAssignments = []) =>
+            prevAssignments.map((assignment) => {
+                if (String(assignment.branchid) !== String(branchId)) {
+                    return assignment;
+                }
+
+                const currentSlots = assignment.timings?.[day]?.slots || [];
+
+                return {
+                    ...assignment,
+                    timings: {
+                        ...assignment.timings,
+                        [day]: {
+                            ...assignment.timings?.[day],
+                            available: true,
+                            slots: [
+                                ...currentSlots,
+                                { start_time: "09:00 AM", end_time: "05:00 PM" },
+                            ],
+                        },
+                    },
+                };
+            })
+        );
+    };
+
+    const removeSlot = (branchId, day, slotIndex, setter) => {
+        setter((prevAssignments = []) =>
+            prevAssignments.map((assignment) => {
+                if (String(assignment.branchid) !== String(branchId)) {
+                    return assignment;
+                }
+
+                const currentSlots = assignment.timings?.[day]?.slots || [];
+
+                return {
+                    ...assignment,
+                    timings: {
+                        ...assignment.timings,
+                        [day]: {
+                            ...assignment.timings?.[day],
+                            slots: currentSlots.filter((_, index) => index !== slotIndex),
+                        },
+                    },
+                };
+            })
+        );
+    };
+
+    const updateSlotTime = (branchId, day, slotIndex, field, value, setter) => {
+        setter((prevAssignments = []) =>
+            prevAssignments.map((assignment) => {
+                if (String(assignment.branchid) !== String(branchId)) {
+                    return assignment;
+                }
+
+                const currentSlots = assignment.timings?.[day]?.slots || [];
+
+                return {
+                    ...assignment,
+                    timings: {
+                        ...assignment.timings,
+                        [day]: {
+                            ...assignment.timings?.[day],
+                            slots: currentSlots.map((slot, index) => {
+                                if (index !== slotIndex) return slot;
+                                return {
+                                    ...slot,
+                                    [field]: value,
+                                };
+                            }),
+                        },
+                    },
+                };
+            })
+        );
+    };
+
+    const updateSlotTimeParts = (branchId, day, slotIndex, field, timeValue, meridiem, setter) => {
+        const combinedValue = combineTimeValue(timeValue, meridiem);
+        updateSlotTime(branchId, day, slotIndex, field, combinedValue, setter);
+    };
 
     useEffect(() => {
         const getLocalData = localStorage.getItem(STORAGE_KEYS.HOSPITAL);
@@ -157,17 +395,28 @@ const HospitalDoctor = () => {
 
     const openAssignModal = (doctor) => {
         setSelectedDoctor(doctor);
-        const assignedIds = doctor.assignedBranches?.map((item) => item.branchid) || [];
+
+        const existingBranchMap = {};
+        (doctor.assignedBranches || []).forEach((branch) => {
+            existingBranchMap[String(branch.branchid || branch._id)] = branch;
+        });
+
+        const assignedIds = Object.keys(existingBranchMap);
         setSelectedBranches(assignedIds);
+        setSelectedBranchAssignments(buildBranchAssignments(assignedIds, existingBranchMap));
+        console.log("Selected Branch Assignments:", buildBranchAssignments(assignedIds, existingBranchMap));
         setShowAssignModal(true);
     };
-    const handleBranchChange = (e) => {
-        const values = Array.from(
-            e.target.selectedOptions,
-            (option) => option.value
-        );
 
-        setSelectedBranches(values);
+    const handleBranchChange = (selectedOptions) => {
+        const selectedIds = selectedOptions ? selectedOptions.map((item) => item.value) : [];
+        const existingAssignments = {};
+        selectedBranchAssignments.forEach((assignment) => {
+            existingAssignments[String(assignment.branchid)] = assignment;
+        });
+
+        setSelectedBranches(selectedIds);
+        setSelectedBranchAssignments(buildBranchAssignments(selectedIds, existingAssignments));
     };
 
     const assignBranches = async () => {
@@ -175,12 +424,14 @@ const HospitalDoctor = () => {
 
         setAssignLoading(true);
         try {
+            const payload = {
+                doctorid: selectedDoctor._id,
+                branchids: sanitizeBranchAssignments(selectedBranchAssignments),
+            };
+
             const response = await axios.post(
                 `${API_BASE_URL}/hospital/doctors/assign-branches`,
-                {
-                    doctorid: selectedDoctor._id,
-                    branchids: selectedBranches,
-                },
+                payload,
                 {
                     headers: {
                         Authorization: token,
@@ -198,6 +449,7 @@ const HospitalDoctor = () => {
 
             setShowAssignModal(false);
             setSelectedBranches([]);
+            setSelectedBranchAssignments([]);
             setSelectedDoctor(null);
 
             getdoctors(token, branches);
@@ -242,12 +494,14 @@ const HospitalDoctor = () => {
     const handleSelectAddDoctor = (doctor) => {
         setSelectedAddDoctor(doctor);
 
-        const assignedIds =
-            doctor?.assignedBranches?.map(
-                (branch) => branch.branchid || branch._id
-            ) || [];
+        const existingBranchMap = {};
+        (doctor?.assignedBranches || []).forEach((branch) => {
+            existingBranchMap[String(branch.branchid || branch._id)] = branch;
+        });
 
+        const assignedIds = Object.keys(existingBranchMap);
         setSelectedAddBranches(assignedIds);
+        setSelectedAddBranchAssignments(buildBranchAssignments(assignedIds, existingBranchMap));
     };
 
     const assignDoctorBranches = async () => {
@@ -272,12 +526,14 @@ const HospitalDoctor = () => {
         setAddDoctorLoading(true);
 
         try {
+            const payload = {
+                doctorid: selectedAddDoctor._id,
+                branchids: sanitizeBranchAssignments(selectedAddBranchAssignments),
+            };
+
             const response = await axios.post(
                 `${API_BASE_URL}/hospital/doctors/assign-branches`,
-                {
-                    doctorid: selectedAddDoctor._id,
-                    branchids: selectedAddBranches,
-                },
+                payload,
                 {
                     headers: {
                         Authorization: token,
@@ -300,6 +556,7 @@ const HospitalDoctor = () => {
             setAddDoctorList([]);
             setSelectedAddDoctor(null);
             setSelectedAddBranches([]);
+            setSelectedAddBranchAssignments([]);
 
             // Refresh filtered doctor list
             getdoctors(token, branches);
@@ -423,7 +680,7 @@ const HospitalDoctor = () => {
             <Container>
                 <Row className='g-0'>
                     <HospitalSidebar hospital={hospital} />
-                    <Col xs={12} sm={9} className='p-3 mt-3'>
+                    <Col xs={12} lg={9} className='p-3 mt-3'>
                         <div className="appointments-card mb-3 ">
                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3">
                                 <h4 className="mb-0">Doctors List</h4>
@@ -461,6 +718,7 @@ const HospitalDoctor = () => {
                     show={showAssignModal}
                     onHide={() => setShowAssignModal(false)}
                     centered
+                    size="lg"
                 >
                     <Modal.Header closeButton>
                         <Modal.Title>
@@ -469,8 +727,8 @@ const HospitalDoctor = () => {
                     </Modal.Header>
 
                     <Modal.Body>
-                        <Form.Group>
-                            <Form.Label>Select Branches</Form.Label>
+                        <Form.Group className="mb-4">
+                            <Form.Label className="fw-bold">Select Branches</Form.Label>
                             <Select
                                 isMulti
                                 options={branches.map((b) => ({
@@ -478,17 +736,282 @@ const HospitalDoctor = () => {
                                     label: b.branchname,
                                 }))}
                                 value={branches
-                                    .filter((branch) => selectedBranches.includes(branch._id))
+                                    .filter((branch) => selectedBranches.includes(String(branch._id)))
                                     .map((branch) => ({
                                         value: branch._id,
                                         label: branch.branchname,
                                     }))
                                 }
-                                onChange={(selected) =>
-                                    setSelectedBranches(selected.map((item) => item.value))
-                                }
+                                onChange={handleBranchChange}
+                                placeholder="Choose branches..."
                             />
                         </Form.Group>
+
+                        {selectedBranchAssignments.length > 0 && (
+                            <Accordion defaultActiveKey={selectedBranchAssignments[0]?.branchid} className="branch-accordion">
+                                {selectedBranchAssignments.map((assignment) => {
+                                    const branch = branches.find(
+                                        (item) => String(item._id) === String(assignment.branchid)
+                                    );
+
+                                    return (
+                                        <Accordion.Item key={assignment.branchid} eventKey={String(assignment.branchid)} className="mb-3 border rounded-4 overflow-hidden">
+                                            <Accordion.Header>
+                                                <div className="d-flex justify-content-between align-items-center w-100 pe-3">
+                                                    <span className="fw-bold text-primary">{branch?.branchname || "Branch"}</span>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline-danger"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const nextIds = selectedBranches.filter(
+                                                                (branchId) => String(branchId) !== String(assignment.branchid)
+                                                            );
+                                                            setSelectedBranches(nextIds);
+                                                            setSelectedBranchAssignments((prev) =>
+                                                                prev.filter(
+                                                                    (item) => String(item.branchid) !== String(assignment.branchid)
+                                                                )
+                                                            );
+                                                        }}
+                                                    >
+                                                        Remove
+                                                    </Button>
+                                                </div>
+                                            </Accordion.Header>
+                                            <Accordion.Body>
+                                                <Row className="g-3 mb-3">
+                                                    <Col md={4}>
+                                                        <Form.Group>
+                                                            <Form.Label>E-OPD Price</Form.Label>
+                                                            <Form.Control
+                                                                type="number"
+                                                                min="0"
+                                                                value={assignment.eopd_price}
+                                                                placeholder="0"
+                                                                onChange={(e) =>
+                                                                    setSelectedBranchAssignments((prev) =>
+                                                                        prev.map((item) =>
+                                                                            String(item.branchid) === String(assignment.branchid)
+                                                                                ? { ...item, eopd_price: Number(e.target.value || 0) }
+                                                                                : item
+                                                                        )
+                                                                    )
+                                                                }
+                                                            />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col md={4}>
+                                                        <Form.Group>
+                                                            <Form.Label>Home Visit Price</Form.Label>
+                                                            <Form.Control
+                                                                type="number"
+                                                                min="0"
+                                                                value={assignment.home_visit_price}
+                                                                placeholder="0"
+                                                                onChange={(e) =>
+                                                                    setSelectedBranchAssignments((prev) =>
+                                                                        prev.map((item) =>
+                                                                            String(item.branchid) === String(assignment.branchid)
+                                                                                ? { ...item, home_visit_price: Number(e.target.value || 0) }
+                                                                                : item
+                                                                        )
+                                                                    )
+                                                                }
+                                                            />
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col md={4}>
+                                                        <Form.Group>
+                                                            <Form.Label>Clinic Visit Price</Form.Label>
+                                                            <Form.Control
+                                                                type="number"
+                                                                min="0"
+                                                                value={assignment.clinic_visit_price}
+                                                                placeholder="0"
+                                                                onChange={(e) =>
+                                                                    setSelectedBranchAssignments((prev) =>
+                                                                        prev.map((item) =>
+                                                                            String(item.branchid) === String(assignment.branchid)
+                                                                                ? { ...item, clinic_visit_price: Number(e.target.value || 0) }
+                                                                                : item
+                                                                        )
+                                                                    )
+                                                                }
+                                                            />
+                                                        </Form.Group>
+                                                    </Col>
+                                                </Row>
+
+                                                <div>
+                                                    <h6 className="fw-bold mb-3">Timings</h6>
+                                                    {DAYS_OF_WEEK.map((day) => {
+                                                        const dayTiming = assignment.timings?.[day] || {
+                                                            available: false,
+                                                            slots: [],
+                                                        };
+
+                                                        return (
+                                                            <div key={`${assignment.branchid}-${day}`} className="border rounded p-2 mb-2">
+                                                                <div className="d-flex justify-content-between align-items-center mb-2">
+                                                                    <span className="fw-semibold text-capitalize">{day}</span>
+                                                                    <Form.Check
+                                                                        type="switch"
+                                                                        id={`${assignment.branchid}-${day}-available`}
+                                                                        label={dayTiming.available ? "Available" : "Unavailable"}
+                                                                        checked={Boolean(dayTiming.available)}
+                                                                        onChange={() =>
+                                                                            toggleDayAvailability(
+                                                                                assignment.branchid,
+                                                                                day,
+                                                                                setSelectedBranchAssignments
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                </div>
+
+                                                                {dayTiming.slots?.length > 0 ? (
+                                                                    dayTiming.slots.map((slot, slotIndex) => (
+                                                                        <div key={`${assignment.branchid}-${day}-${slotIndex}`} className="row g-2 mb-2 align-items-end">
+                                                                            <div className="col-md-5">
+                                                                                <Form.Group>
+                                                                                    <Form.Label className="small text-muted">Start Time</Form.Label>
+                                                                                    <div className="d-flex gap-2 align-items-center">
+                                                                                        <Form.Select
+                                                                                            value={parseTimeValue(slot.start_time).time}
+                                                                                            size="8"
+                                                                                            onChange={(e) =>
+                                                                                                updateSlotTimeParts(
+                                                                                                    assignment.branchid,
+                                                                                                    day,
+                                                                                                    slotIndex,
+                                                                                                    "start_time",
+                                                                                                    e.target.value,
+                                                                                                    parseTimeValue(slot.start_time).meridiem,
+                                                                                                    setSelectedBranchAssignments
+                                                                                                )
+                                                                                            }
+                                                                                            style={{ minWidth: "110px", borderRadius: "10px" }}
+                                                                                        >
+                                                                                            {TIME_OPTIONS.map((option) => (
+                                                                                                <option key={`start-${option.value}`} value={option.value}>
+                                                                                                    {option.label}
+                                                                                                </option>
+                                                                                            ))}
+                                                                                        </Form.Select>
+                                                                                        <Form.Select
+                                                                                            value={parseTimeValue(slot.start_time).meridiem}
+                                                                                            onChange={(e) =>
+                                                                                                updateSlotTimeParts(
+                                                                                                    assignment.branchid,
+                                                                                                    day,
+                                                                                                    slotIndex,
+                                                                                                    "start_time",
+                                                                                                    parseTimeValue(slot.start_time).time,
+                                                                                                    e.target.value,
+                                                                                                    setSelectedBranchAssignments
+                                                                                                )
+                                                                                            }
+                                                                                            style={{ width: "90px", borderRadius: "10px" }}
+                                                                                        >
+                                                                                            <option value="AM">AM</option>
+                                                                                            <option value="PM">PM</option>
+                                                                                        </Form.Select>
+                                                                                    </div>
+                                                                                </Form.Group>
+                                                                            </div>
+                                                                            <div className="col-md-5">
+                                                                                <Form.Group>
+                                                                                    <Form.Label className="small text-muted">End Time</Form.Label>
+                                                                                    <div className="d-flex gap-2 align-items-center">
+                                                                                        <Form.Select
+                                                                                            value={parseTimeValue(slot.end_time).time}
+                                                                                            onChange={(e) =>
+                                                                                                updateSlotTimeParts(
+                                                                                                    assignment.branchid,
+                                                                                                    day,
+                                                                                                    slotIndex,
+                                                                                                    "end_time",
+                                                                                                    e.target.value,
+                                                                                                    parseTimeValue(slot.end_time).meridiem,
+                                                                                                    setSelectedBranchAssignments
+                                                                                                )
+                                                                                            }
+                                                                                            style={{ minWidth: "110px", borderRadius: "10px" }}
+                                                                                        >
+                                                                                            {TIME_OPTIONS.map((option) => (
+                                                                                                <option key={`end-${option.value}`} value={option.value}>
+                                                                                                    {option.label}
+                                                                                                </option>
+                                                                                            ))}
+                                                                                        </Form.Select>
+                                                                                        <Form.Select
+                                                                                            value={parseTimeValue(slot.end_time).meridiem}
+                                                                                            onChange={(e) =>
+                                                                                                updateSlotTimeParts(
+                                                                                                    assignment.branchid,
+                                                                                                    day,
+                                                                                                    slotIndex,
+                                                                                                    "end_time",
+                                                                                                    parseTimeValue(slot.end_time).time,
+                                                                                                    e.target.value,
+                                                                                                    setSelectedBranchAssignments
+                                                                                                )
+                                                                                            }
+                                                                                            style={{ width: "90px", borderRadius: "10px" }}
+                                                                                        >
+                                                                                            <option value="AM">AM</option>
+                                                                                            <option value="PM">PM</option>
+                                                                                        </Form.Select>
+                                                                                    </div>
+                                                                                </Form.Group>
+                                                                            </div>
+                                                                            <div className="col-md-2">
+                                                                                <Button
+                                                                                    variant="outline-danger"
+                                                                                    size="sm"
+                                                                                    className="w-100"
+                                                                                    onClick={() =>
+                                                                                        removeSlot(
+                                                                                            assignment.branchid,
+                                                                                            day,
+                                                                                            slotIndex,
+                                                                                            setSelectedBranchAssignments
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    Remove
+                                                                                </Button>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))
+                                                                ) : (
+                                                                    <div className="text-muted small mb-2">No slots added</div>
+                                                                )}
+
+                                                                <Button
+                                                                    variant="outline-primary"
+                                                                    size="sm"
+                                                                    onClick={() =>
+                                                                        addSlot(
+                                                                            assignment.branchid,
+                                                                            day,
+                                                                            setSelectedBranchAssignments
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Add Slot
+                                                                </Button>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </Accordion.Body>
+                                        </Accordion.Item>
+                                    );
+                                })}
+                            </Accordion>
+                        )}
                     </Modal.Body>
 
                     <Modal.Footer>
@@ -784,6 +1307,7 @@ const HospitalDoctor = () => {
                         setAddDoctorList([]);
                         setSelectedAddDoctor(null);
                         setSelectedAddBranches([]);
+                        setSelectedAddBranchAssignments([]);
                         setShowDoctorResults(false);
                     }}
                     centered
@@ -820,6 +1344,7 @@ const HospitalDoctor = () => {
                                         setAddDoctorList([]);
                                         setSelectedAddDoctor(null);
                                         setSelectedAddBranches([]);
+                                        setSelectedAddBranchAssignments([]);
                                         setShowDoctorResults(false);
                                     }}
                                 />
@@ -839,6 +1364,7 @@ const HospitalDoctor = () => {
                                         setAddDoctorList([]);
                                         setSelectedAddDoctor(null);
                                         setSelectedAddBranches([]);
+                                        setSelectedAddBranchAssignments([]);
                                         setShowDoctorResults(false);
                                     }}
                                 />
@@ -965,8 +1491,8 @@ const HospitalDoctor = () => {
                                             <hr />
 
                                             {/* Branch Select */}
-                                            <Form.Group>
-                                                <Form.Label>
+                                            <Form.Group className="mb-4">
+                                                <Form.Label className="fw-bold">
                                                     Assign Branch
                                                     <span className="text-danger">
                                                         {" "}*
@@ -982,7 +1508,7 @@ const HospitalDoctor = () => {
                                                     value={branches
                                                         .filter((branch) =>
                                                             selectedAddBranches.includes(
-                                                                branch._id
+                                                                String(branch._id)
                                                             )
                                                         )
                                                         .map((branch) => ({
@@ -990,18 +1516,284 @@ const HospitalDoctor = () => {
                                                             label: branch.branchname,
                                                         }))
                                                     }
-                                                    onChange={(selected) =>
-                                                        setSelectedAddBranches(
-                                                            selected
-                                                                ? selected.map(
-                                                                    (item) => item.value
-                                                                )
-                                                                : []
-                                                        )
-                                                    }
+                                                    onChange={(selected) => {
+                                                        const nextIds = selected ? selected.map((item) => item.value) : [];
+                                                        const existingAssignments = {};
+                                                        selectedAddBranchAssignments.forEach((assignment) => {
+                                                            existingAssignments[String(assignment.branchid)] = assignment;
+                                                        });
+                                                        setSelectedAddBranches(nextIds);
+                                                        setSelectedAddBranchAssignments(
+                                                            buildBranchAssignments(nextIds, existingAssignments)
+                                                        );
+                                                    }}
                                                     placeholder="Select branches..."
                                                 />
                                             </Form.Group>
+
+                                            {selectedAddBranchAssignments.length > 0 && (
+                                                <Accordion defaultActiveKey={selectedAddBranchAssignments[0]?.branchid} className="branch-accordion">
+                                                    {selectedAddBranchAssignments.map((assignment) => {
+                                                        const branch = branches.find(
+                                                            (item) => String(item._id) === String(assignment.branchid)
+                                                        );
+
+                                                        return (
+                                                            <Accordion.Item key={assignment.branchid} eventKey={String(assignment.branchid)} className="mb-3 border rounded-4 overflow-hidden">
+                                                                <Accordion.Header>
+                                                                    <div className="d-flex justify-content-between align-items-center w-100 pe-3">
+                                                                        <span className="fw-bold text-primary">{branch?.branchname || "Branch"}</span>
+                                                                        <Button
+                                                                            size="sm"
+                                                                            variant="outline-danger"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                const nextIds = selectedAddBranches.filter(
+                                                                                    (branchId) => String(branchId) !== String(assignment.branchid)
+                                                                                );
+                                                                                setSelectedAddBranches(nextIds);
+                                                                                setSelectedAddBranchAssignments((prev) =>
+                                                                                    prev.filter(
+                                                                                        (item) =>
+                                                                                            String(item.branchid) !== String(assignment.branchid)
+                                                                                    )
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            Remove
+                                                                        </Button>
+                                                                    </div>
+                                                                </Accordion.Header>
+                                                                <Accordion.Body>
+                                                                    <Row className="g-3 mb-3">
+                                                                        <Col md={4}>
+                                                                            <Form.Group>
+                                                                                <Form.Label>E-OPD Price</Form.Label>
+                                                                                <Form.Control
+                                                                                    type="number"
+                                                                                    min="0"
+                                                                                    value={assignment.eopd_price}
+                                                                                    onChange={(e) =>
+                                                                                        setSelectedAddBranchAssignments((prev) =>
+                                                                                            prev.map((item) =>
+                                                                                                String(item.branchid) === String(assignment.branchid)
+                                                                                                    ? { ...item, eopd_price: Number(e.target.value || 0) }
+                                                                                                    : item
+                                                                                            )
+                                                                                        )
+                                                                                    }
+                                                                                />
+                                                                            </Form.Group>
+                                                                        </Col>
+                                                                        <Col md={4}>
+                                                                            <Form.Group>
+                                                                                <Form.Label>Home Visit Price</Form.Label>
+                                                                                <Form.Control
+                                                                                    type="number"
+                                                                                    min="0"
+                                                                                    value={assignment.home_visit_price}
+                                                                                    onChange={(e) =>
+                                                                                        setSelectedAddBranchAssignments((prev) =>
+                                                                                            prev.map((item) =>
+                                                                                                String(item.branchid) === String(assignment.branchid)
+                                                                                                    ? { ...item, home_visit_price: Number(e.target.value || 0) }
+                                                                                                    : item
+                                                                                            )
+                                                                                        )
+                                                                                    }
+                                                                                />
+                                                                            </Form.Group>
+                                                                        </Col>
+                                                                        <Col md={4}>
+                                                                            <Form.Group>
+                                                                                <Form.Label>Clinic Visit Price</Form.Label>
+                                                                                <Form.Control
+                                                                                    type="number"
+                                                                                    min="0"
+                                                                                    value={assignment.clinic_visit_price}
+                                                                                    onChange={(e) =>
+                                                                                        setSelectedAddBranchAssignments((prev) =>
+                                                                                            prev.map((item) =>
+                                                                                                String(item.branchid) === String(assignment.branchid)
+                                                                                                    ? { ...item, clinic_visit_price: Number(e.target.value || 0) }
+                                                                                                    : item
+                                                                                            )
+                                                                                        )
+                                                                                    }
+                                                                                />
+                                                                            </Form.Group>
+                                                                        </Col>
+                                                                    </Row>
+
+                                                                    <div>
+                                                                        <h6 className="fw-bold mb-3">Timings</h6>
+                                                                        {DAYS_OF_WEEK.map((day) => {
+                                                                            const dayTiming = assignment.timings?.[day] || {
+                                                                                available: false,
+                                                                                slots: [],
+                                                                            };
+
+                                                                            return (
+                                                                                <div key={`${assignment.branchid}-${day}`} className="border rounded p-2 mb-2">
+                                                                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                                                                        <span className="fw-semibold text-capitalize">{day}</span>
+                                                                                        <Form.Check
+                                                                                            type="switch"
+                                                                                            id={`${assignment.branchid}-${day}-available-add`}
+                                                                                            label={dayTiming.available ? "Available" : "Unavailable"}
+                                                                                            checked={Boolean(dayTiming.available)}
+                                                                                            onChange={() =>
+                                                                                                toggleDayAvailability(
+                                                                                                    assignment.branchid,
+                                                                                                    day,
+                                                                                                    setSelectedAddBranchAssignments
+                                                                                                )
+                                                                                            }
+                                                                                        />
+                                                                                    </div>
+
+                                                                                    {dayTiming.slots?.length > 0 ? (
+                                                                                        dayTiming.slots.map((slot, slotIndex) => (
+                                                                                            <div key={`${assignment.branchid}-${day}-${slotIndex}`} className="row g-2 mb-2 align-items-end">
+                                                                                                <div className="col-md-5">
+                                                                                                    <Form.Group>
+                                                                                                        <Form.Label className="small text-muted">Start Time</Form.Label>
+                                                                                                        <div className="d-flex gap-2 align-items-center">
+                                                                                                            <Form.Select
+                                                                                                                value={parseTimeValue(slot.start_time).time}
+                                                                                                                size="8"
+                                                                                                                onChange={(e) =>
+                                                                                                                    updateSlotTimeParts(
+                                                                                                                        assignment.branchid,
+                                                                                                                        day,
+                                                                                                                        slotIndex,
+                                                                                                                        "start_time",
+                                                                                                                        e.target.value,
+                                                                                                                        parseTimeValue(slot.start_time).meridiem,
+                                                                                                                        setSelectedAddBranchAssignments
+                                                                                                                    )
+                                                                                                                }
+                                                                                                                style={{ minWidth: "110px", borderRadius: "10px" }}
+                                                                                                            >
+                                                                                                                {TIME_OPTIONS.map((option) => (
+                                                                                                                    <option key={`add-start-${option.value}`} value={option.value}>
+                                                                                                                        {option.label}
+                                                                                                                    </option>
+                                                                                                                ))}
+                                                                                                            </Form.Select>
+                                                                                                            <Form.Select
+                                                                                                                value={parseTimeValue(slot.start_time).meridiem}
+                                                                                                                onChange={(e) =>
+                                                                                                                    updateSlotTimeParts(
+                                                                                                                        assignment.branchid,
+                                                                                                                        day,
+                                                                                                                        slotIndex,
+                                                                                                                        "start_time",
+                                                                                                                        parseTimeValue(slot.start_time).time,
+                                                                                                                        e.target.value,
+                                                                                                                        setSelectedAddBranchAssignments
+                                                                                                                    )
+                                                                                                                }
+                                                                                                                style={{ width: "90px", borderRadius: "10px" }}
+                                                                                                            >
+                                                                                                                <option value="AM">AM</option>
+                                                                                                                <option value="PM">PM</option>
+                                                                                                            </Form.Select>
+                                                                                                        </div>
+                                                                                                    </Form.Group>
+                                                                                                </div>
+                                                                                                <div className="col-md-5">
+                                                                                                    <Form.Group>
+                                                                                                        <Form.Label className="small text-muted">End Time</Form.Label>
+                                                                                                        <div className="d-flex gap-2 align-items-center">
+                                                                                                            <Form.Select
+                                                                                                                value={parseTimeValue(slot.end_time).time}
+                                                                                                                onChange={(e) =>
+                                                                                                                    updateSlotTimeParts(
+                                                                                                                        assignment.branchid,
+                                                                                                                        day,
+                                                                                                                        slotIndex,
+                                                                                                                        "end_time",
+                                                                                                                        e.target.value,
+                                                                                                                        parseTimeValue(slot.end_time).meridiem,
+                                                                                                                        setSelectedAddBranchAssignments
+                                                                                                                    )
+                                                                                                                }
+                                                                                                                style={{ minWidth: "110px", borderRadius: "10px" }}
+                                                                                                            >
+                                                                                                                {TIME_OPTIONS.map((option) => (
+                                                                                                                    <option key={`add-end-${option.value}`} value={option.value}>
+                                                                                                                        {option.label}
+                                                                                                                    </option>
+                                                                                                                ))}
+                                                                                                            </Form.Select>
+                                                                                                            <Form.Select
+                                                                                                                value={parseTimeValue(slot.end_time).meridiem}
+                                                                                                                onChange={(e) =>
+                                                                                                                    updateSlotTimeParts(
+                                                                                                                        assignment.branchid,
+                                                                                                                        day,
+                                                                                                                        slotIndex,
+                                                                                                                        "end_time",
+                                                                                                                        parseTimeValue(slot.end_time).time,
+                                                                                                                        e.target.value,
+                                                                                                                        setSelectedAddBranchAssignments
+                                                                                                                    )
+                                                                                                                }
+                                                                                                                style={{ width: "90px", borderRadius: "10px" }}
+                                                                                                            >
+                                                                                                                <option value="AM">AM</option>
+                                                                                                                <option value="PM">PM</option>
+                                                                                                            </Form.Select>
+                                                                                                        </div>
+                                                                                                    </Form.Group>
+                                                                                                </div>
+                                                                                                <div className="col-md-2">
+                                                                                                    <Button
+                                                                                                        variant="outline-danger"
+                                                                                                        size="sm"
+                                                                                                        className="w-100"
+                                                                                                        onClick={() =>
+                                                                                                            removeSlot(
+                                                                                                                assignment.branchid,
+                                                                                                                day,
+                                                                                                                slotIndex,
+                                                                                                                setSelectedAddBranchAssignments
+                                                                                                            )
+                                                                                                        }
+                                                                                                    >
+                                                                                                        Remove
+                                                                                                    </Button>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        ))
+                                                                                    ) : (
+                                                                                        <div className="text-muted small mb-2">No slots added</div>
+                                                                                    )}
+
+                                                                                    <Button
+                                                                                        variant="outline-primary"
+                                                                                        size="sm"
+                                                                                        onClick={() =>
+                                                                                            addSlot(
+                                                                                                assignment.branchid,
+                                                                                                day,
+                                                                                                setSelectedAddBranchAssignments
+                                                                                            )
+                                                                                        }
+                                                                                    >
+                                                                                        Add Slot
+                                                                                    </Button>
+                                                                                </div>
+                                                                            );
+                                                                        })}
+                                                                    </div>
+                                                                </Accordion.Body>
+                                                            </Accordion.Item>
+                                                        );
+                                                    })}
+                                                </Accordion>
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -1040,6 +1832,7 @@ const HospitalDoctor = () => {
                                 setAddDoctorList([]);
                                 setSelectedAddDoctor(null);
                                 setSelectedAddBranches([]);
+                                setSelectedAddBranchAssignments([]);
                                 setShowDoctorResults(false);
                             }}
                         >

@@ -167,7 +167,7 @@ const HospitalSurgeryAppointment = () => {
             <Container >
                 <Row className='g-0'>
                     <HospitalSidebar hospital={hospital} />
-                    <Col xs={12} sm={9} className='p-3 mt-3'>
+                    <Col xs={12} lg={9} className='p-3 mt-3'>
                         <div className="appointments-card mb-3 ">
                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3">
                                 <h4 className="mb-0">Surgery Appointments</h4>

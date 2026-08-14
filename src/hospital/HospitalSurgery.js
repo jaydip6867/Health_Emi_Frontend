@@ -545,7 +545,7 @@ const HospitalSurgery = () => {
         <Container>
             <Row className="g-0">
                 <HospitalSidebar hospital={hospital} />
-                <Col xs={12} sm={9} className="p-3 mt-3">
+                <Col xs={12} lg={9} className="p-3 mt-3">
                     <div className="appointments-card">
                         <div className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-3">
                             <h4>Hospital Surgeries</h4>

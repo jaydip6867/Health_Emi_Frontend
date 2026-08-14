@@ -35,7 +35,7 @@ const HospitalDashboard = () => {
       <Container >
         <Row className='g-0'>
           <HospitalSidebar hospital={hospital} />
-          <Col xs={12} sm={9} className='p-3'>
+          <Col xs={12} lg={9} className='p-3'>
             {/* <HospitalNav hospitalname={hospital && hospital.fullname} /> */}
             <div className='bg-white rounded p-2'>
               {
