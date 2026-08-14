@@ -72,6 +72,56 @@ const DoctorProfilePage = () => {
     { time: "08:30 PM", available: true },
   ];
 
+  const parseBranchTimeValue = (timeValue) => {
+    if (!timeValue) return null;
+    const match = String(timeValue).trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (!match) return null;
+
+    let hours = Number(match[1]);
+    const minutes = Number(match[2]);
+    const meridiem = match[3].toUpperCase();
+
+    if (meridiem === "AM" && hours === 12) hours = 0;
+    if (meridiem === "PM" && hours < 12) hours += 12;
+
+    return { hours, minutes, totalMinutes: hours * 60 + minutes };
+  };
+
+  const getBranchAllowedSlotSet = (branch, date) => {
+    const result = new Set();
+
+    if (!date || !branch?.timings) {
+      return result;
+    }
+
+    const dayKey = format(date, "EEEE").toLowerCase();
+    const dayTiming = branch.timings[dayKey];
+
+    if (!dayTiming?.available || !Array.isArray(dayTiming.slots) || dayTiming.slots.length === 0) {
+      return result;
+    }
+
+    dayTiming.slots.forEach((slotRange) => {
+      const start = parseBranchTimeValue(slotRange?.start_time);
+      const end = parseBranchTimeValue(slotRange?.end_time);
+
+      if (!start || !end) return;
+
+      let currentMinutes = start.totalMinutes;
+      const finalMinutes = end.totalMinutes;
+
+      while (currentMinutes + 30 <= finalMinutes) {
+        const slotDate = new Date(date);
+        slotDate.setHours(Math.floor(currentMinutes / 60), currentMinutes % 60, 0, 0);
+        const slotLabel = format(slotDate, "hh:mm a");
+        result.add(slotLabel);
+        currentMinutes += 30;
+      }
+    });
+
+    return result;
+  };
+
   // Slots state to allow disabling booked slots per selected date
   const [slots, setSlots] = useState(timeSlots.map((s) => ({ ...s })));
   const [fetchingSlots, setFetchingSlots] = useState(false);
@@ -120,7 +170,7 @@ const DoctorProfilePage = () => {
   };
 
   // Fetch booked slots for a given date and mark them unavailable
-  const fetchBookedSlots = async (date) => {
+  const fetchBookedSlots = async (date, branch = selectedBranch) => {
     if (!date || !d_id) return;
     try {
       setFetchingSlots(true);
@@ -133,9 +183,18 @@ const DoctorProfilePage = () => {
       });
 
       const data = response?.data?.Data || response?.data || [];
+      const allowedBranchSlots = getBranchAllowedSlotSet(branch, date);
+
       if (!Array.isArray(data)) {
-        setSlots(timeSlots.map((s) => ({ ...s, available: true })));
         setBookedSlots([]);
+        setSlots(
+          timeSlots.map((slot) => ({
+            ...slot,
+            available:
+              (!branch || allowedBranchSlots.has(slot.time)) &&
+              isSlotInFutureForSelectedDate(slot.time),
+          }))
+        );
         return;
       }
 
@@ -153,11 +212,25 @@ const DoctorProfilePage = () => {
       const bookedTimesArr = Array.from(bookedTimes);
       setBookedSlots(bookedTimesArr);
       setSlots(
-        timeSlots.map((s) => ({ ...s, available: !bookedTimes.has(s.time) }))
+        timeSlots.map((slot) => ({
+          ...slot,
+          available:
+            (!branch || allowedBranchSlots.has(slot.time)) &&
+            !bookedTimes.has(slot.time) &&
+            isSlotInFutureForSelectedDate(slot.time),
+        }))
       );
     } catch (err) {
       console.error("Error fetching booked slots:", err);
-      setSlots(timeSlots.map((s) => ({ ...s, available: true })));
+      const allowedBranchSlots = getBranchAllowedSlotSet(selectedBranch, date);
+      setSlots(
+        timeSlots.map((slot) => ({
+          ...slot,
+          available:
+            (!selectedBranch || allowedBranchSlots.has(slot.time)) &&
+            isSlotInFutureForSelectedDate(slot.time),
+        }))
+      );
       setBookedSlots([]);
     } finally {
       setFetchingSlots(false);
@@ -200,10 +273,10 @@ const DoctorProfilePage = () => {
 
   useEffect(() => {
     if (d_id && selectedDate) {
-      fetchBookedSlots(selectedDate);
+      fetchBookedSlots(selectedDate, selectedBranch);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [d_id]);
+  }, [d_id, selectedDate, selectedBranch]);
 
   const getdoctordata = async (d) => {
     await axios({
@@ -2000,7 +2073,7 @@ const DoctorProfilePage = () => {
                             onChange={(date) => {
                               setSelectedDate(date);
                               setSelectedTimeSlot(null);
-                              fetchBookedSlots(date);
+                              fetchBookedSlots(date, selectedBranch);
                             }}
                             inline
                             minDate={new Date()}
@@ -2051,7 +2124,7 @@ const DoctorProfilePage = () => {
                                         }}
                                       >
                                         {slot.time}
-                                        {!slot.available && " (Booked)"}
+                                        {/* {!slot.available && <><br/>Not Available</>} */}
                                       </Button>
                                     </Col>
                                   ))}
