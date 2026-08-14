@@ -393,19 +393,49 @@ const HospitalDoctor = () => {
         console.log("Doctor Profile:", doctor);
     };
 
-    const openAssignModal = (doctor) => {
+    const openAssignModal = async (doctor) => {
         setSelectedDoctor(doctor);
-
-        const existingBranchMap = {};
-        (doctor.assignedBranches || []).forEach((branch) => {
-            existingBranchMap[String(branch.branchid || branch._id)] = branch;
-        });
-
-        const assignedIds = Object.keys(existingBranchMap);
-        setSelectedBranches(assignedIds);
-        setSelectedBranchAssignments(buildBranchAssignments(assignedIds, existingBranchMap));
-        console.log("Selected Branch Assignments:", buildBranchAssignments(assignedIds, existingBranchMap));
         setShowAssignModal(true);
+
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}/hospital/doctors/getone`,
+                {
+                    doctorid: doctor?._id,
+                },
+                {
+                    headers: {
+                        Authorization: token,
+                    },
+                }
+            );
+
+            const doctorDetails = response?.data?.Data || response?.data?.data || doctor;
+            const assignedBranches = Array.isArray(doctorDetails?.assignedBranches)
+                ? doctorDetails.assignedBranches
+                : doctor?.assignedBranches || [];
+
+            const existingBranchMap = {};
+            assignedBranches.forEach((branch) => {
+                existingBranchMap[String(branch.branchid || branch._id)] = branch;
+            });
+
+            const assignedIds = Object.keys(existingBranchMap);
+            setSelectedBranches(assignedIds);
+            setSelectedBranchAssignments(buildBranchAssignments(assignedIds, existingBranchMap));
+            setSelectedDoctor({ ...doctor, ...doctorDetails });
+        } catch (error) {
+            console.error("Error fetching doctor details for assign modal:", error);
+
+            const existingBranchMap = {};
+            (doctor?.assignedBranches || []).forEach((branch) => {
+                existingBranchMap[String(branch.branchid || branch._id)] = branch;
+            });
+
+            const assignedIds = Object.keys(existingBranchMap);
+            setSelectedBranches(assignedIds);
+            setSelectedBranchAssignments(buildBranchAssignments(assignedIds, existingBranchMap));
+        }
     };
 
     const handleBranchChange = (selectedOptions) => {
