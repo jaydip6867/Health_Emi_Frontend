@@ -157,7 +157,7 @@ const D_Consultation = () => {
         {/* add surgery */}
         <Modal show={show} onHide={handleClose} centered size="lg">
           <Modal.Header closeButton>
-            <Modal.Title>Add Surgery Detail</Modal.Title>
+            <Modal.Title>Add Consultation Fees</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Row className="g-4">
