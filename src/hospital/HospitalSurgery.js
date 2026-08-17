@@ -14,7 +14,7 @@ import HospitalSidebar from "./HospitalSidebar";
 import SmartDataTable from "../components/SmartDataTable";
 import { API_BASE_URL, STORAGE_KEYS, } from "../config";
 import Select from 'react-select';
-import { FiChevronsRight, FiX } from "react-icons/fi";
+import { FiChevronsRight, FiEdit2, FiPlus, FiX } from "react-icons/fi";
 import Swal from "sweetalert2";
 import { MdDeleteOutline, MdOutlineEditCalendar, MdOutlineRemoveRedEye } from "react-icons/md";
 const SECRET_KEY = "health-emi";
@@ -30,6 +30,7 @@ const HospitalSurgery = () => {
     const [showModal, setShowModal] = useState(false);
     const [saving, setSaving] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState("");
     const [surgeryTypes, setSurgeryTypes] = useState([]);
     const experienceOptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "20+", "30+", "40+", "60+", "100+"];
     const completedSurgeryOptions = ["10+", "50+", "100+", "500+", "1000+", "5000+", "10000+"];
@@ -180,6 +181,16 @@ const HospitalSurgery = () => {
         });
     };
 
+    useEffect(() => {
+        if (selectedFile) {
+            const objectUrl = URL.createObjectURL(selectedFile);
+            setPreviewUrl(objectUrl);
+            return () => URL.revokeObjectURL(objectUrl);
+        }
+
+        setPreviewUrl(formData.surgery_photo || "");
+    }, [selectedFile, formData.surgery_photo]);
+
     const handleImageChange = (e) => {
         if (e.target.files.length > 0) {
             setSelectedFile(e.target.files[0]);
@@ -245,6 +256,7 @@ const HospitalSurgery = () => {
 
     const openModal = () => {
         setSelectedFile(null);
+        setPreviewUrl("");
         setFormData({
             groupId: "",
             surgery_photo: "",
@@ -583,267 +595,411 @@ const HospitalSurgery = () => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row>
-                        {/* Surgery Photo */}
-                        <Col md={3} xs={4} className="mb-3">
-                            <Form.Label>Surgery Photo</Form.Label>
-                            <Form.Control
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                            />
-                            {formData.surgery_photo && (
-                                <div className="mt-2">
-                                    <img
-                                        src={formData.surgery_photo}
-                                        alt=""
-                                        width={140}
-                                        className="rounded border"
-                                    />
+                <Row className="g-4">
+                    <Col xs={12}>
+                        <div className="bg-white border rounded p-3">
+                            <Form className="row register_doctor">
+                                <Row className="align-items-start">
+                                    <Col xs={6} lg={3} xl={2}>
+                                        <Form.Group controlId="hospital_surgery_photo" className="mb-3 col-12">
+                                            <input
+                                                id="hospital_surgery_photo"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImageChange}
+                                                className="d-none"
+                                            />
+                                            <div className="position-relative" style={{ width: 160, height: 160 }}>
+                                                <div
+                                                    className="bg-light overflow-hidden"
+                                                    style={{ width: '100%', height: '100%', borderRadius: 16 }}
+                                                >
+                                                    {previewUrl ? (
+                                                        <img
+                                                            src={previewUrl}
+                                                            alt="Preview"
+                                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                        />
+                                                    ) : (
+                                                        <div className="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                                                            No Image
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => document.getElementById('hospital_surgery_photo').click()}
+                                                    className="btn btn-primary btn-sm position-absolute d-flex align-items-center justify-content-center"
+                                                    style={{ right: 6, bottom: 6, borderRadius: '50%', width: 32, height: 32 }}
+                                                    aria-label="Change photo"
+                                                >
+                                                    <FiEdit2 size={16} />
+                                                </button>
+                                                {previewUrl && (
+                                                    <button
+                                                        type="button"
+                                                        className="btn-close position-absolute"
+                                                        style={{ top: 6, right: 46, backgroundColor: 'white', padding: 6, borderRadius: '50%' }}
+                                                        onClick={() => {
+                                                            setSelectedFile(null);
+                                                            setPreviewUrl("");
+                                                            setFormData((prev) => ({ ...prev, surgery_photo: '' }));
+                                                        }}
+                                                        aria-label="Remove preview"
+                                                    ></button>
+                                                )}
+                                            </div>
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col xs={12} md={6} lg={9} xl={10}>
+                                        <Row>
+                                            <Form.Group className="mb-3 col-12 col-lg-4">
+                                                <div className="position-relative">
+                                                    <Form.Label>Surgery Type</Form.Label>
+                                                    <Select
+                                                        options={surgeryTypeOptions}
+                                                        value={selectedSurgeryType}
+                                                        onChange={handleSurgeryTypeChange}
+                                                        placeholder="Select Surgery Type"
+                                                        isClearable
+                                                    />
+                                                </div>
+                                            </Form.Group>
+
+                                            <Form.Group className="mb-3 col-12 col-lg-4">
+                                                <div className="position-relative">
+                                                    <Form.Label>Category Name</Form.Label>
+                                                    <Form.Control
+                                                        type="text"
+                                                        name="categoryname"
+                                                        value={formData.categoryname}
+                                                        onChange={handleChange}
+                                                        placeholder="Enter Category Name"
+                                                    />
+                                                </div>
+                                            </Form.Group>
+
+                                            <Form.Group className="mb-3 col-12 col-lg-4">
+                                                <Form.Label>Surgery Name</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="name"
+                                                    value={formData.name}
+                                                    onChange={handleChange}
+                                                    placeholder="Enter Surgery Name"
+                                                />
+                                            </Form.Group>
+
+                                            <Form.Group className="mb-3 col-6 col-lg-4">
+                                                <div className="position-relative">
+                                                    <Form.Label>Hospital Stay (Days)</Form.Label>
+                                                    <Form.Control
+                                                        type="number"
+                                                        name="days"
+                                                        value={formData.days}
+                                                        onChange={handleChange}
+                                                        placeholder="Enter Days"
+                                                    />
+                                                </div>
+                                            </Form.Group>
+
+                                            <Form.Group className="mb-3 col-6 col-lg-4">
+                                                <div className="position-relative">
+                                                    <Form.Label>Years of Experience</Form.Label>
+                                                    <Form.Select
+                                                        name="yearsof_experience"
+                                                        value={formData.yearsof_experience}
+                                                        onChange={handleChange}
+                                                    >
+                                                        <option value="">Select Experience</option>
+                                                        {experienceOptions.map((item) => (
+                                                            <option key={item} value={item}>
+                                                                {item} Years
+                                                            </option>
+                                                        ))}
+                                                    </Form.Select>
+                                                </div>
+                                            </Form.Group>
+
+                                            <Form.Group className="mb-3 col-6 col-lg-4">
+                                                <div className="position-relative">
+                                                    <Form.Label>Completed Surgery</Form.Label>
+                                                    <Form.Select
+                                                        name="completed_surgery"
+                                                        value={formData.completed_surgery}
+                                                        onChange={handleChange}
+                                                    >
+                                                        <option value="">Select Completed Surgery</option>
+                                                        {completedSurgeryOptions.map((item) => (
+                                                            <option key={item} value={item}>
+                                                                {item}
+                                                            </option>
+                                                        ))}
+                                                    </Form.Select>
+                                                </div>
+                                            </Form.Group>
+
+                                            <Form.Group className="mb-3 col-12 col-lg-6">
+                                                <div className="position-relative">
+                                                    <Form.Label>Select Doctors</Form.Label>
+                                                    <Select
+                                                        isMulti
+                                                        options={doctorOptions}
+                                                        value={selectedDoctors}
+                                                        onChange={handleDoctorChange}
+                                                        placeholder="Select Doctors"
+                                                        closeMenuOnSelect={false}
+                                                        isClearable
+                                                    />
+                                                </div>
+                                            </Form.Group>
+
+                                            <Form.Group className="mb-3 col-12 col-lg-6">
+                                                <div className="position-relative">
+                                                    <Form.Label>Features</Form.Label>
+                                                    <Form.Control
+                                                        type="text"
+                                                        name="features"
+                                                        value={formData.features}
+                                                        onChange={handleChange}
+                                                        placeholder="Enter Features"
+                                                    />
+                                                </div>
+                                            </Form.Group>
+                                        </Row>
+                                    </Col>
+                                </Row>
+
+                                <hr />
+
+                                <div>
+                                    <Row>
+                                        <Col xs={12} md={8}>
+                                            <Form.Group controlId="description" className="mb-3 col-12">
+                                                <div className="position-relative">
+                                                    <Form.Label>Description</Form.Label>
+                                                    <Form.Control
+                                                        as="textarea"
+                                                        rows={4}
+                                                        name="description"
+                                                        value={formData.description}
+                                                        onChange={handleChange}
+                                                        placeholder="Enter Surgery Description"
+                                                    />
+                                                </div>
+                                            </Form.Group>
+                                        </Col>
+
+                                        <Col xs={12} md={4}>
+                                            <Row>
+                                                <Form.Group className="mb-3 col-6">
+                                                    <div className="position-relative">
+                                                        <Form.Label>General Price</Form.Label>
+                                                        <Form.Control
+                                                            type="number"
+                                                            name="general_price"
+                                                            value={formData.general_price}
+                                                            onChange={handleChange}
+                                                            placeholder="Ex:- 18000"
+                                                        />
+                                                    </div>
+                                                </Form.Group>
+
+                                                <Form.Group className="mb-3 col-6">
+                                                    <div className="position-relative">
+                                                        <Form.Label>Semi Private Price</Form.Label>
+                                                        <Form.Control
+                                                            type="number"
+                                                            name="semiprivate_price"
+                                                            value={formData.semiprivate_price}
+                                                            onChange={handleChange}
+                                                            placeholder="Ex:- 18000"
+                                                        />
+                                                    </div>
+                                                </Form.Group>
+
+                                                <Form.Group className="mb-3 col-6">
+                                                    <div className="position-relative">
+                                                        <Form.Label>Private Price</Form.Label>
+                                                        <Form.Control
+                                                            type="number"
+                                                            name="private_price"
+                                                            value={formData.private_price}
+                                                            onChange={handleChange}
+                                                            placeholder="Ex:- 18000"
+                                                        />
+                                                    </div>
+                                                </Form.Group>
+
+                                                <Form.Group className="mb-3 col-6">
+                                                    <div className="position-relative">
+                                                        <Form.Label>Deluxe Price</Form.Label>
+                                                        <Form.Control
+                                                            type="number"
+                                                            name="delux_price"
+                                                            value={formData.delux_price}
+                                                            onChange={handleChange}
+                                                            placeholder="Ex:- 18000"
+                                                        />
+                                                    </div>
+                                                </Form.Group>
+                                            </Row>
+                                        </Col>
+                                    </Row>
                                 </div>
-                            )}
-                        </Col>
-                        {/* Surgery Name */}
-                        <Col md={3} xs={4} className="mb-3">
-                            <Form.Label>Surgery Name</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                            />
-                        </Col>
-                        {/* Surgery Type */}
-                        <Col md={3} xs={4} className="mb-3">
-                            <Form.Label>Surgery Type</Form.Label>
-                            <Select
-                                options={surgeryTypeOptions}
-                                value={selectedSurgeryType}
-                                onChange={handleSurgeryTypeChange}
-                                placeholder="Select Surgery Type"
-                                isClearable
-                            />
-                        </Col>
-                        {/* Doctors */}
-                        <Col md={3} xs={4} className="mb-3">
-                            <Form.Label>Select Doctors</Form.Label>
-                            <Select
-                                isMulti
-                                options={doctorOptions}
-                                value={selectedDoctors}
-                                onChange={handleDoctorChange}
-                                placeholder="Select Doctors"
-                                closeMenuOnSelect={false}
-                                isClearable
-                            />
-                        </Col>
-                        {/* Category */}
-                        <Col md={3} xs={4} className="mb-3">
-                            <Form.Label>Category Name</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="categoryname"
-                                value={formData.categoryname}
-                                onChange={handleChange}
-                            />
-                        </Col>
-                        {/* Experience */}
-                        <Col md={3} xs={4} className="mb-3">
-                            <Form.Label>Years of Experience</Form.Label>
-                            <Form.Select
-                                name="yearsof_experience"
-                                value={formData.yearsof_experience}
-                                onChange={handleChange}>
-                                <option value="">
-                                    Select Experience
-                                </option>
-                                {experienceOptions.map((item) => (
-                                    <option key={item} value={item}>
-                                        {item} Years
-                                    </option>
-                                ))}
-                            </Form.Select>
-                        </Col>
-                        {/* Completed */}
-                        <Col md={3} xs={4} className="mb-3">
-                            <Form.Label>Completed Surgery</Form.Label>
-                            <Form.Select
-                                name="completed_surgery"
-                                value={formData.completed_surgery}
-                                onChange={handleChange}>
-                                <option value="">
-                                    Select Completed Surgery
-                                </option>
-                                {completedSurgeryOptions.map((item) => (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                        </Col>
-                        {/* Days */}
-                        <Col md={3} xs={4} className="mb-3">
-                            <Form.Label>Hospital Stay (Days)</Form.Label>
-                            <Form.Control
-                                type="number"
-                                name="days"
-                                value={formData.days}
-                                onChange={handleChange}
-                            />
-                        </Col>
-                        {/* Features */}
-                        <Col md={6} xs={12} className="mb-3">
-                            <Form.Label>Features</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="features"
-                                value={formData.features}
-                                onChange={handleChange}
-                            />
-                        </Col>
-                        {/* Additional Features */}
-                        <Col md={6} xs={12} className="mb-3">
-                            <Form.Label>Additional Features</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="additional_features"
-                                value={formData.additional_features}
-                                onChange={handleChange}
-                            />
-                        </Col>
-                        {/* General */}
-                        <Col md={3} className="mb-3">
-                            <Form.Label>General Price</Form.Label>
-                            <Form.Control
-                                type="number"
-                                name="general_price"
-                                value={formData.general_price}
-                                onChange={handleChange}
-                            />
-                        </Col>
-                        {/* Semi */}
-                        <Col md={3} className="mb-3">
-                            <Form.Label>Semi Private Price</Form.Label>
-                            <Form.Control
-                                type="number"
-                                name="semiprivate_price"
-                                value={formData.semiprivate_price}
-                                onChange={handleChange}
-                            />
-                        </Col>
-                        {/* Private */}
-                        <Col md={3} className="mb-3">
-                            <Form.Label>Private Price</Form.Label>
-                            <Form.Control
-                                type="number"
-                                name="private_price"
-                                value={formData.private_price}
-                                onChange={handleChange}
-                            />
-                        </Col>
-                        {/* Deluxe */}
-                        <Col md={3} className="mb-3">
-                            <Form.Label>Deluxe Price</Form.Label>
-                            <Form.Control
-                                type="number"
-                                name="delux_price"
-                                value={formData.delux_price}
-                                onChange={handleChange}
-                            />
-                        </Col>
-                        {/* Inclusive */}
-                        <Col md={6} xs={12} className="mb-3">
-                            <Form.Label>
-                                Inclusive
-                            </Form.Label>
-                            <div className="d-flex gap-2">
-                                <Form.Control
-                                    value={inclusiveInput}
-                                    onChange={(e) => setInclusiveInput(e.target.value)}
-                                    placeholder="Add inclusive point"
-                                />
-                                <Button onClick={addInclusive}>Add</Button>
-                            </div>
-                            <ul className="list-group mt-3" style={{ fontSize: "0.95rem" }}>
-                                {
-                                    inclusiveList.map((item, index) => (
-                                        <li key={index} className="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2">
-                                            <span>
-                                                <FiChevronsRight className="me-2 text-success" />
-                                                {item}
-                                            </span>
-                                            <Button
-                                                variant="danger"
-                                                size="sm"
-                                                className="rounded-circle"
-                                                onClick={() => removeInclusive(index)}
-                                                style={{
-                                                    width: "28px",
-                                                    height: "28px",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                }}>
-                                                <FiX className="text-white" />
-                                            </Button>
-                                        </li>
-                                    ))
-                                }
-                            </ul>
-                        </Col>
-                        {/* Exclusive */}
-                        <Col md={6} xs={12} className="mb-3">
-                            <Form.Label>
-                                Exclusive
-                            </Form.Label>
-                            <div className="d-flex gap-2">
-                                <Form.Control
-                                    value={exclusiveInput}
-                                    onChange={(e) => setExclusiveInput(e.target.value)}
-                                    placeholder="Add exclusive point"
-                                />
-                                <Button onClick={addExclusive} >Add</Button>
-                            </div>
-                            <ul className="list-group mt-3" style={{ fontSize: "0.95rem" }}>
-                                {
-                                    exclusiveList.map((item, index) => (
-                                        <li key={index} className="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2">
-                                            <span>
-                                                <FiChevronsRight className="me-2 text-success" />
-                                                {item}
-                                            </span>
-                                            <Button
-                                                variant="danger"
-                                                size="sm"
-                                                className="rounded-circle"
-                                                onClick={() => removeExclusive(index)}
-                                                style={{
-                                                    width: "28px",
-                                                    height: "28px",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                }}>
-                                                <FiX className="text-white" />
-                                            </Button>
-                                        </li>
-                                    ))
-                                }
-                            </ul>
-                        </Col>
-                        {/* Description */}
-                        <Col md={12} className="mb-3">
-                            <Form.Label>Description</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={5}
-                                name="description"
-                                value={formData.description}
-                                onChange={handleChange}
-                            />
-                        </Col>
-                    </Row>
-                </Modal.Body>
+
+                                <hr />
+
+                                <Form.Group className="mb-4 col-12 col-md-6">
+                                    <div className="card shadow-sm">
+                                        <div className="card-header bg-light">
+                                            <h5 className="mb-0 fw-bold">Included</h5>
+                                        </div>
+                                        <div className="card-body">
+                                            <div className="d-flex mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    value={inclusiveInput}
+                                                    onChange={(e) => setInclusiveInput(e.target.value)}
+                                                    placeholder="Type and press Enter to add item"
+                                                    onKeyPress={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            addInclusive();
+                                                        }
+                                                    }}
+                                                    className="form-control"
+                                                    style={{ fontSize: '0.95rem' }}
+                                                />
+                                                <Button
+                                                    variant="success"
+                                                    className="ms-2 px-4 d-flex align-items-center"
+                                                    onClick={addInclusive}
+                                                >
+                                                    <FiPlus className="me-2 text-white" />
+                                                    <div>Add</div>
+                                                </Button>
+                                            </div>
+                                            {inclusiveList.length > 0 && (
+                                                <ul className="list-group" style={{ fontSize: '0.95rem' }}>
+                                                    {inclusiveList.map((item, index) => (
+                                                        <li
+                                                            key={index}
+                                                            className="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2"
+                                                        >
+                                                            <span>
+                                                                <FiChevronsRight className="me-2 text-success" />
+                                                                {item}
+                                                            </span>
+                                                            <Button
+                                                                variant="danger"
+                                                                size="sm"
+                                                                onClick={() => removeInclusive(index)}
+                                                                className="rounded-circle"
+                                                                style={{
+                                                                    width: '28px',
+                                                                    height: '28px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                }}
+                                                            >
+                                                                <FiX className="text-white" />
+                                                            </Button>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </div>
+                                    </div>
+                                </Form.Group>
+
+                                <Form.Group className="mb-4 col-12 col-md-6">
+                                    <div className="card shadow-sm">
+                                        <div className="card-header bg-light">
+                                            <h5 className="mb-0 fw-bold">Excluded</h5>
+                                        </div>
+                                        <div className="card-body">
+                                            <div className="d-flex mb-3">
+                                                <Form.Control
+                                                    type="text"
+                                                    value={exclusiveInput}
+                                                    onChange={(e) => setExclusiveInput(e.target.value)}
+                                                    placeholder="Type and press Enter to add item"
+                                                    onKeyPress={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            addExclusive();
+                                                        }
+                                                    }}
+                                                    className="form-control"
+                                                    style={{ fontSize: '0.95rem' }}
+                                                />
+                                                <Button
+                                                    variant="danger"
+                                                    className="ms-2 px-4 d-flex align-items-center"
+                                                    onClick={addExclusive}
+                                                >
+                                                    <FiPlus className="me-2 text-white" />
+                                                    <div>Add</div>
+                                                </Button>
+                                            </div>
+                                            {exclusiveList.length > 0 && (
+                                                <ul className="list-group" style={{ fontSize: '0.95rem' }}>
+                                                    {exclusiveList.map((item, index) => (
+                                                        <li
+                                                            key={index}
+                                                            className="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2"
+                                                        >
+                                                            <span>
+                                                                <FiChevronsRight className="me-2 text-danger" />
+                                                                {item}
+                                                            </span>
+                                                            <Button
+                                                                variant="danger"
+                                                                size="sm"
+                                                                onClick={() => removeExclusive(index)}
+                                                                className="rounded-circle"
+                                                                style={{
+                                                                    width: '28px',
+                                                                    height: '28px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                }}
+                                                            >
+                                                                <FiX className="text-white" />
+                                                            </Button>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </div>
+                                    </div>
+                                </Form.Group>
+
+                                <Form.Group className="mb-4 col-12">
+                                    <div className="card shadow-sm">
+                                        <div className="card-header bg-light">
+                                            <h6 className="mb-0 fw-bold">Additional Features</h6>
+                                        </div>
+                                        <div className="card-body">
+                                            <Form.Control
+                                                type="text"
+                                                name="additional_features"
+                                                value={formData.additional_features}
+                                                onChange={handleChange}
+                                                placeholder="Enter Additional Feature"
+                                            />
+                                        </div>
+                                    </div>
+                                </Form.Group>
+                            </Form>
+                        </div>
+                    </Col>
+                </Row>
+            </Modal.Body>
                 <Modal.Footer>
                     <Button
                         variant="secondary"

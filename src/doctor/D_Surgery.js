@@ -810,7 +810,7 @@ const D_Surgery = () => {
         {/* add surgery */}
         <Modal show={show_ad_sur} onHide={handlesurClose} centered size="xl">
           <Modal.Header closeButton>
-            <Modal.Title>Add Surgery Detail</Modal.Title>
+            <Modal.Title>Add Consultation Fees</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Row className="g-4">
@@ -1377,7 +1377,7 @@ const D_Surgery = () => {
                     <Form.Group className="col-auto mx-auto">
                       <Form.Control
                         type="button"
-                        value={"Add Surgery Deatil"}
+                        value={"Add Surgery"}
                         onClick={() => {
                           updateSurgeryWithLists();
                           addsurgery();

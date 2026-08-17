@@ -96,10 +96,53 @@ const D_Blog = () => {
     description: "",
     showto_doctor: false,
     showto_patient: true,
+    url: "",
+    meta_title: "",
+    meta_description: "",
+    meta_keywords: [],
+    tags: [],
     expirydate: null,
     image: [],
   };
   const [blog, setblog] = useState(blog_var);
+  const [keywordInput, setKeywordInput] = useState("");
+  const [tagInput, setTagInput] = useState("");
+
+  const addKeyword = (e) => {
+    if (e.key === "Enter" && keywordInput.trim()) {
+      e.preventDefault();
+      setblog((prev) => ({
+        ...prev,
+        meta_keywords: [...(prev.meta_keywords || []), keywordInput.trim()],
+      }));
+      setKeywordInput("");
+    }
+  };
+
+  const removeKeyword = (index) => {
+    setblog((prev) => ({
+      ...prev,
+      meta_keywords: (prev.meta_keywords || []).filter((_, i) => i !== index),
+    }));
+  };
+
+  const addTag = (e) => {
+    if (e.key === "Enter" && tagInput.trim()) {
+      e.preventDefault();
+      setblog((prev) => ({
+        ...prev,
+        tags: [...(prev.tags || []), tagInput.trim()],
+      }));
+      setTagInput("");
+    }
+  };
+
+  const removeTag = (index) => {
+    setblog((prev) => ({
+      ...prev,
+      tags: (prev.tags || []).filter((_, i) => i !== index),
+    }));
+  };
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
 
@@ -159,7 +202,12 @@ const D_Blog = () => {
         description: blog.description,
         showto_doctor: blog.showto_doctor,
         showto_patient: blog.showto_patient,
-        image: imageUrls, // This will be an array of image URLs
+        url: blog.url,
+        meta_title: blog.meta_title,
+        meta_description: blog.meta_description,
+        meta_keywords: blog.meta_keywords || [],
+        tags: blog.tags || [],
+        image: imageUrls,
         expirydate: blog.expirydate
           ? new Date(blog.expirydate)
               .toLocaleDateString("en-GB")
@@ -311,7 +359,12 @@ const D_Blog = () => {
 
       seteditrecord({
         ...blogToEdit,
-        image: [...blogImages], // Ensure we have a clean copy of the array
+        image: [...blogImages],
+        url: blogToEdit.url || "",
+        meta_title: blogToEdit.meta_title || "",
+        meta_description: blogToEdit.meta_description || "",
+        meta_keywords: blogToEdit.meta_keywords || [],
+        tags: blogToEdit.tags || [],
       });
 
       // Set initial previews from existing images
@@ -372,11 +425,16 @@ const D_Blog = () => {
       // Prepare the blog data
       const blogData = {
         blogid: edit_record._id,
-        image: imageUrls, // This will be an array of image URLs
+        image: imageUrls,
         title: edit_record.title,
         description: edit_record.description,
         showto_doctor: edit_record.showto_doctor,
         showto_patient: edit_record.showto_patient,
+        url: edit_record.url || "",
+        meta_title: edit_record.meta_title || "",
+        meta_description: edit_record.meta_description || "",
+        meta_keywords: edit_record.meta_keywords || [],
+        tags: edit_record.tags || [],
         expirydate: startDate
           ? startDate.toLocaleDateString("en-GB").replace(/\//g, "-")
           : "",
@@ -685,6 +743,90 @@ const D_Blog = () => {
                       />
                     </div>
                   </Form.Group>
+                  <Form.Group controlId="url" className="col-12 col-md-6">
+                    <Form.Label>URL</Form.Label>
+                    <Form.Control
+                      type="url"
+                      placeholder="https://example.com/blog"
+                      name="url"
+                      value={blog.url}
+                      onChange={(e) => setblog({ ...blog, url: e.target.value })}
+                    />
+                  </Form.Group>
+
+                  <Form.Group controlId="meta_title" className="col-12 col-md-6">
+                    <Form.Label>Meta Title</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter meta title"
+                      name="meta_title"
+                      value={blog.meta_title}
+                      onChange={(e) =>
+                        setblog({ ...blog, meta_title: e.target.value })
+                      }
+                    />
+                  </Form.Group>
+
+                  <Form.Group controlId="meta_description" className="col-12">
+                    <Form.Label>Meta Description</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={3}
+                      placeholder="Enter meta description"
+                      name="meta_description"
+                      value={blog.meta_description}
+                      onChange={(e) =>
+                        setblog({ ...blog, meta_description: e.target.value })
+                      }
+                    />
+                  </Form.Group>
+
+                  <Form.Group controlId="meta_keywords" className="col-12">
+                    <Form.Label>Meta Keywords</Form.Label>
+                    <Form.Control
+                      value={keywordInput}
+                      placeholder="Type and press Enter"
+                      onChange={(e) => setKeywordInput(e.target.value)}
+                      onKeyDown={addKeyword}
+                    />
+                    <div className="mt-2 d-flex flex-wrap gap-2">
+                      {(blog.meta_keywords || []).map((item, index) => (
+                        <span key={index} className="badge bg-primary text-white p-2">
+                          {item}
+                          <button
+                            type="button"
+                            className="btn-close btn-close-white ms-2"
+                            style={{ fontSize: "10px" }}
+                            onClick={() => removeKeyword(index)}
+                          />
+                        </span>
+                      ))}
+                    </div>
+                  </Form.Group>
+
+                  <Form.Group controlId="tags" className="col-12">
+                    <Form.Label>Tags</Form.Label>
+                    <Form.Control
+                      value={tagInput}
+                      placeholder="Type and press Enter"
+                      onChange={(e) => setTagInput(e.target.value)}
+                      onKeyDown={addTag}
+                    />
+                    <div className="mt-2 d-flex flex-wrap gap-2">
+                      {(blog.tags || []).map((item, index) => (
+                        <span key={index} className="badge bg-success text-white p-2">
+                          {item}
+                          <button
+                            type="button"
+                            className="btn-close btn-close-white ms-2"
+                            style={{ fontSize: "10px" }}
+                            onClick={() => removeTag(index)}
+                          />
+                        </span>
+                      ))}
+                    </div>
+                  </Form.Group>
+
                   <Form.Group controlId="expirydate" className="col-12">
                     <Form.Label>Expiry Date</Form.Label>
                     <div>
@@ -801,7 +943,7 @@ const D_Blog = () => {
                       </p>
                     </div>
 
-                    {/* Blog Metadata */}
+                    {/* Blog Show By Doctor & Patient */}
                     <div className="d-flex flex-wrap gap-4 text-muted small border-top pt-3">
                       <div>
                         <span className="fw-medium">Visible To:</span>{" "}
@@ -815,6 +957,69 @@ const D_Blog = () => {
                           {v.expirydate}
                         </div>
                       )}
+                    </div>
+
+                    {/* Blog Meta Information */}
+                    <div className="mt-4">
+                      <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div className="card-header bg-light border-0 py-3 px-4">
+                          <h5 className="mb-0 fw-bold">Meta Information</h5>
+                        </div>
+                        <div className="card-body p-4">
+                          <div className="row g-3 small text-muted">
+                            <div className="col-12 col-md-6">
+                              <div className="bg-light rounded-3 p-3 h-100">
+                                <div className="fw-semibold text-dark mb-1">Title</div>
+                                <div>{v?.meta_title || "No meta title available."}</div>
+                              </div>
+                            </div>
+                            <div className="col-12 col-md-6">
+                              <div className="bg-light rounded-3 p-3 h-100">
+                                <div className="fw-semibold text-dark mb-1">URL</div>
+                                <div className="text-break">
+                                  {v?.url || "No meta url available."}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-12">
+                              <div className="bg-light rounded-3 p-3">
+                                <div className="fw-semibold text-dark mb-1">Description</div>
+                                <div style={{ whiteSpace: "pre-line" }}>
+                                  {v?.meta_description || "No meta description available."}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-12 col-md-6">
+                              <div className="bg-light rounded-3 p-3 h-100">
+                                <div className="fw-semibold text-dark mb-1">Keywords</div>
+                                <div>
+                                  {v?.meta_keywords && v.meta_keywords.length > 0
+                                    ? v.meta_keywords.map((item, index) => (
+                                        <span key={index} className="badge rounded-pill bg-primary-subtle text-primary me-2 mb-1">
+                                          {item}
+                                        </span>
+                                      ))
+                                    : "No meta keywords available."}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-12 col-md-6">
+                              <div className="bg-light rounded-3 p-3 h-100">
+                                <div className="fw-semibold text-dark mb-1">Tags</div>
+                                <div>
+                                  {v?.tags && v.tags.length > 0
+                                    ? v.tags.map((item, index) => (
+                                        <span key={index} className="badge rounded-pill bg-success-subtle text-success me-2 mb-1">
+                                          {item}
+                                        </span>
+                                      ))
+                                    : "No tags available."}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </Modal.Body>
@@ -986,6 +1191,127 @@ const D_Blog = () => {
                       />
                     </div>
                   </Form.Group>
+                  <Form.Group controlId="url" className="mb-3">
+                    <Form.Label>URL</Form.Label>
+                    <Form.Control
+                      type="url"
+                      placeholder="https://example.com/blog"
+                      name="url"
+                      value={edit_record.url || ""}
+                      onChange={(e) =>
+                        seteditrecord({
+                          ...edit_record,
+                          url: e.target.value,
+                        })
+                      }
+                    />
+                  </Form.Group>
+
+                  <Form.Group controlId="meta_title" className="mb-3">
+                    <Form.Label>Meta Title</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter meta title"
+                      name="meta_title"
+                      value={edit_record.meta_title || ""}
+                      onChange={(e) =>
+                        seteditrecord({
+                          ...edit_record,
+                          meta_title: e.target.value,
+                        })
+                      }
+                    />
+                  </Form.Group>
+
+                  <Form.Group controlId="meta_description" className="mb-3">
+                    <Form.Label>Meta Description</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={3}
+                      placeholder="Enter meta description"
+                      name="meta_description"
+                      value={edit_record.meta_description || ""}
+                      onChange={(e) =>
+                        seteditrecord({
+                          ...edit_record,
+                          meta_description: e.target.value,
+                        })
+                      }
+                    />
+                  </Form.Group>
+
+                  <Form.Group controlId="meta_keywords" className="mb-3">
+                    <Form.Label>Meta Keywords</Form.Label>
+                    <Form.Control
+                      value={""}
+                      placeholder="Type and press Enter"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && e.target.value.trim()) {
+                          e.preventDefault();
+                          seteditrecord((prev) => ({
+                            ...prev,
+                            meta_keywords: [...(prev.meta_keywords || []), e.target.value.trim()],
+                          }));
+                          e.target.value = "";
+                        }
+                      }}
+                    />
+                    <div className="mt-2 d-flex flex-wrap gap-2">
+                      {(edit_record.meta_keywords || []).map((item, index) => (
+                        <span key={index} className="badge bg-primary text-white p-2">
+                          {item}
+                          <button
+                            type="button"
+                            className="btn-close btn-close-white ms-2"
+                            style={{ fontSize: "10px" }}
+                            onClick={() =>
+                              seteditrecord((prev) => ({
+                                ...prev,
+                                meta_keywords: (prev.meta_keywords || []).filter((_, i) => i !== index),
+                              }))
+                            }
+                          />
+                        </span>
+                      ))}
+                    </div>
+                  </Form.Group>
+
+                  <Form.Group controlId="tags" className="mb-3">
+                    <Form.Label>Tags</Form.Label>
+                    <Form.Control
+                      value={""}
+                      placeholder="Type and press Enter"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && e.target.value.trim()) {
+                          e.preventDefault();
+                          seteditrecord((prev) => ({
+                            ...prev,
+                            tags: [...(prev.tags || []), e.target.value.trim()],
+                          }));
+                          e.target.value = "";
+                        }
+                      }}
+                    />
+                    <div className="mt-2 d-flex flex-wrap gap-2">
+                      {(edit_record.tags || []).map((item, index) => (
+                        <span key={index} className="badge bg-success text-white p-2">
+                          {item}
+                          <button
+                            type="button"
+                            className="btn-close btn-close-white ms-2"
+                            style={{ fontSize: "10px" }}
+                            onClick={() =>
+                              seteditrecord((prev) => ({
+                                ...prev,
+                                tags: (prev.tags || []).filter((_, i) => i !== index),
+                              }))
+                            }
+                          />
+                        </span>
+                      ))}
+                    </div>
+                  </Form.Group>
+
                   <Form.Group controlId="expirydate" className="mb-3">
                     <Form.Label>Expiry Date</Form.Label>
                     <div>
