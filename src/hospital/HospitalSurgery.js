@@ -123,7 +123,7 @@ const HospitalSurgery = () => {
     const [showViewModal, setShowViewModal] = useState(false);
     const [viewData, setViewData] = useState(null);
 
-    
+
 
     const [formData, setFormData] = useState({
         groupId: "",
